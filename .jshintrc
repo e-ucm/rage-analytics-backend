@@ -1,0 +1,16 @@
+{
+    // More information about these and other values can be found here
+    // https://github.com/jshint/jshint/blob/master/examples/.jshintrc
+
+    "browser": true,
+    "node": true,
+    "mocha": true,
+    "eqeqeq": true,
+    "globalstrict": true,
+    "undef": true,
+    "unused": "vars",
+    // Global variables
+    "globals": {
+        "angular": false
+    }
+}
