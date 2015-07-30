@@ -7,6 +7,33 @@ var path = require('path'),
 var app = express();
 app.config = require((process.env.NODE_ENV === 'test') ? './config-test' : './config');
 
+// Set database
+
+var dbProvider = {
+    db: function () {
+        return this.database;
+    }
+};
+
+var connectToDB = function () {
+    var MongoClient = require('mongodb').MongoClient;
+    var connectionString = app.config.mongodb.uri;
+    MongoClient.connect(connectionString, function (err, db) {
+        if (err) {
+            console.log(err);
+            console.log('Impossible to connect to MongoDB. Retrying in 5s');
+            setTimeout(connectToDB, 5000);
+        } else {
+            console.log('Successfully connected to ' + connectionString);
+            dbProvider.database = db;
+        }
+    });
+};
+
+connectToDB();
+
+require('./lib/db').setDBProvider(dbProvider);
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -28,6 +55,9 @@ app.get('/', function (req, res) {
     res.render('apidoc');
 });
 
+app.use(app.config.apiPath + '/games', require('./routes/games'));
+app.use(app.config.apiPath + '/sessions', require('./routes/sessions'));
+
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     var err = new Error('Not Found');
@@ -38,9 +68,11 @@ app.use(function (req, res, next) {
 // production error handler
 // no stacktraces leaked to user
 app.use(function (err, req, res, next) {
-    res.status(err.status || 500).send({
+    var info = {
         message: err.message
-    });
+    };
+    info.stack = err.stack;
+    res.status(err.status || 500).send(info);
 });
 
 module.exports = app;
