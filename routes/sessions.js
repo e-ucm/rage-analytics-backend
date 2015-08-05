@@ -7,9 +7,12 @@ var express = require('express'),
 var sessions = require('../lib/sessions');
 
 /**
- * @api {get} /api/sessions Returns all the Sessions.
+ * @api {get} /api/sessions/:gameId/:versionsId Returns all the Sessions of a given version of a game.
  * @apiName GetSessions
  * @apiGroup Sessions
+ *
+ * @apiParam {String} gameId The Game id of the session.
+ * @apiParam {String} versionId The Version id of the session.
  *
  * @apiSuccess(200) Success.
  *
@@ -32,8 +35,8 @@ var sessions = require('../lib/sessions');
  *      ]
  *
  */
-router.get('/', function (req, res) {
-    restUtils.processResponse(sessions.getSessions(req.query.gameId, req.query.versionId), res);
+router.get('/:gameId/:versionId', function (req, res) {
+    restUtils.processResponse(sessions.getSessions(req.params.gameId, req.params.versionId), res);
 });
 
 /**
@@ -44,8 +47,6 @@ router.get('/', function (req, res) {
  * @apiParam {String} gameId The Game id of the session.
  * @apiParam {String} versionId The Version id of the session.
  * @apiParam {String} event Determines if we should start or end a session. Allowed values: start, end.
- *
- * @apiSampleRequest http://localhost:3300/api/sessions?gameId=<gameId>&versionId='<versionId>&event=start
  *
  * @apiSuccess(200) Success.
  *
@@ -60,13 +61,15 @@ router.get('/', function (req, res) {
  *      }
  *
  */
-router.post('/', function (req, res) {
-    switch (req.query.event) {
+router.post('/:gameId/:versionId/:event', function (req, res) {
+    switch (req.params.event) {
         case 'start':
-            restUtils.processResponse(sessions.startSession(req.query.gameId, req.query.versionId), res);
+        case 'start/':
+            restUtils.processResponse(sessions.startSession(req.params.gameId, req.params.versionId), res);
             break;
         case 'end':
-            restUtils.processResponse(sessions.endSession(req.query.gameId, req.query.versionId), res);
+        case 'end/':
+            restUtils.processResponse(sessions.endSession(req.params.gameId, req.params.versionId), res);
             break;
         default:
             res.status(400).end();
