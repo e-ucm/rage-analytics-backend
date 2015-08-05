@@ -57,6 +57,10 @@ app.get('/', function (req, res) {
 
 app.use(app.config.apiPath + '/games', require('./routes/games'));
 app.use(app.config.apiPath + '/sessions', require('./routes/sessions'));
+app.use(app.config.apiPath + '/collector', require('./routes/collector'));
+
+var dataSource = require('./lib/traces');
+dataSource.addConsumer(require('./lib/consumers/openlrs')(app.config.lrs));
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
