@@ -7,7 +7,8 @@ var request = require('supertest'),
 var sessions = require('../lib/sessions');
 
 var idCreated,
-    versionCreated;
+    versionCreated,
+    trackingCode;
 
 describe('Games, versions and sessions tests', function () {
 
@@ -80,6 +81,7 @@ describe('Games, versions and sessions tests', function () {
                 should.not.exist(err);
                 should(res.body).be.an.Object();
                 versionCreated = res.body._id;
+                trackingCode = res.body.trackingCode;
                 request.get('/api/games/' + idCreated + '/versions')
                     .expect(200)
                     .set('Accept', 'application/json')
@@ -92,7 +94,66 @@ describe('Games, versions and sessions tests', function () {
             });
     });
 
+    var testCollector = function () {
+        var deferred = Q.defer();
+
+        var dataSource = require('../lib/traces');
+
+        dataSource.add = function () {
+            return true;
+        };
+
+        var statement = {
+            "actor": {
+                "objectType": "Agent",
+                "mbox": "mailto:user@example.com",
+                "name": "Project Tin Can API"
+            },
+            "verb": {
+                "id": "http://adlnet.gov/expapi/verbs/created",
+                "display": {
+                    "en-US": "created"
+                }
+            },
+            "object": {
+                "id": "http://example.adlnet.gov/xapi/example/simplestatement",
+                "definition": {
+                    "name": {
+                        "en-US": "simple statement"
+                    },
+                    "description": {
+                        "en-US": "A simple Experience API statement. Note that the LRS does not need to have any prior information about the Actor (learner), the verb, or the Activity/object."
+                    }
+                }
+            }
+        };
+
+        request.post('/api/collector/start/' + trackingCode)
+            .expect(200)
+            .expect('Content-Type', /json/)
+            .set('Authorization2', 'a:')
+            .end(function (err, res) {
+                should(res.body).be.an.Object();
+                should(res.body.authToken).be.a.String();
+                should(res.body.playerName).be.a.String();
+
+                var authToken = res.body.authToken;
+
+                request.post('/api/collector/track')
+                    .expect(200)
+                    .expect('Content-Type', /json/)
+                    .set('Authorization2', authToken)
+                    .send([statement])
+                    .end(function (err, res) {
+                        should.equal(res.body, true);
+                        deferred.resolve(true);
+                    });
+            });
+        return deferred.promise;
+    };
+
     it('should POST (start/end) a session', function (done) {
+
         var starts = 0;
         var ends = 0;
         sessions.startTasks.push(function () {
@@ -109,35 +170,38 @@ describe('Games, versions and sessions tests', function () {
             });
         });
 
-        request.post('/api/sessions?gameId=' + idCreated + '&versionId=' + versionCreated + '&event=start')
+        request.post('/api/sessions/' + idCreated + '/' + versionCreated + '/start')
             .expect(200)
             .expect('Content-Type', /json/)
             .end(function (err, res) {
                 should.not.exist(err);
-                should(res).be.an.Object();
+                should(res.body).be.an.Object();
                 should.equal(res.body.gameId, idCreated);
                 should.equal(res.body.versionId, versionCreated);
-                request.post('/api/sessions?gameId=' + idCreated + '&versionId=' + versionCreated + '&event=start')
-                    .expect(400)
-                    .end(function (err, res) {
-                        should.not.exist(err);
-                        should.equal(res.text, 'A session for this version already exists');
-                        request.post('/api/sessions?gameId=whatever&versionId=' + versionCreated + '&event=start')
-                            .expect(400)
-                            .end(function (err, res) {
-                                should.not.exist(err);
-                                should.equal(res.text, 'Game does not exist');
-                                request.post('/api/sessions?gameId=' + idCreated + '&versionId=' + versionCreated + '&event=end')
-                                    .expect(200)
-                                    .end(function (err, res) {
-                                        should.not.exist(err);
-                                        should(res).be.an.Object();
-                                        should.equal(starts, 1);
-                                        should.equal(ends, 2);
-                                        done();
-                                    });
-                            });
-                    });
+
+                testCollector().then(function () {
+                    request.post('/api/sessions/' + idCreated + '/' + versionCreated + '/start')
+                        .expect(400)
+                        .end(function (err, res) {
+                            should.not.exist(err);
+                            should.equal(res.text, 'A session for this version already exists');
+                            request.post('/api/sessions/whatever/' + versionCreated + '/start')
+                                .expect(400)
+                                .end(function (err, res) {
+                                    should.not.exist(err);
+                                    should.equal(res.text, 'Game does not exist');
+                                    request.post('/api/sessions/' + idCreated + '/' + versionCreated + '/end')
+                                        .expect(200)
+                                        .end(function (err, res) {
+                                            should.not.exist(err);
+                                            should(res).be.an.Object();
+                                            should.equal(starts, 1);
+                                            should.equal(ends, 2);
+                                            done();
+                                        });
+                                });
+                        });
+                });
             });
     });
 
