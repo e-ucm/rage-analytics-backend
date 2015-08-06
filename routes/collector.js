@@ -8,6 +8,10 @@ var collector = require('../lib/collector');
 
 /**
  * @api {post} /api/collector/start/:trackingCode Returns all the Sessions.
+ *              Note that this method expects an 'Authorization2' header with the following format
+ *              <Authorization2, 'a:'> or <Authorization2, 'a:playerName'>.
+ *              The first value will create a new anonymous player while the second will try to
+ *              find the player with the given 'playerName'.
  * @apiName postCollectorStart
  * @apiGroup Collector
  *
@@ -17,7 +21,10 @@ var collector = require('../lib/collector');
  *
  * @apiSuccessExample Success-Response:
  *      HTTP/1.1 200 OK
- *      authorization token
+ *      {
+ *          authToken: <String>,        - Used as 'Authorization2' header for '/api/collector/track' requests.
+ *          playerName: <String>
+ *      }
  *
  */
 router.post('/start/:trackingCode', function (req, res) {
@@ -26,6 +33,9 @@ router.post('/start/:trackingCode', function (req, res) {
 
 /**
  * @api {post} /api/collector/track Tracks data from the request body.
+ *            Note that this method expects an 'Authorization2' header with the following format
+ *            <Authorization2, 'authToken'>.
+ *            The 'authToken' can be obtained by issuing a request to '/api/collector/start/:trackingCode'.
  * @apiName postCollectorTrack
  * @apiGroup Collector
  *
@@ -33,9 +43,7 @@ router.post('/start/:trackingCode', function (req, res) {
  *
  * @apiSuccessExample Success-Response:
  *      HTTP/1.1 200 OK
- *      {
- *          ...data to be tracked...
- *      }
+ *      true
  *
  */
 router.post('/track', function (req, res) {
