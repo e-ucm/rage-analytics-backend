@@ -7,3 +7,8 @@ exports.mongodb = {
 exports.apiPath = '{{apiPath}}';
 exports.companyName = '{{companyName}}';
 exports.projectName = '{{projectName}}';
+exports.lrs = {
+  uri: process.env.LRS_URI || process.env.LRS_URL || '{{lrsUrl}}',
+  username: '{{lrsUsername}}',
+  password: '{{lrsPassword}}'
+};

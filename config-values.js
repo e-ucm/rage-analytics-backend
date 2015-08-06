@@ -17,6 +17,9 @@
  * @param mongodbUrl - Note that this value mustn't be the same in 'defaultValues' and 'testValues'.
  * @param apiPath - prefix for the REST API requests.
  * @param port - port to listen to.
+ * @param lrsUrl - Base url to the LRS, e.g. http://localhost:8080/xAPI/.
+ * @param lrsUsername - LRS username for 'basic' authentication.
+ * @param lrsPassword - LRS password for 'basic' authentication.
  */
 
 exports.defaultValues = {
@@ -24,7 +27,10 @@ exports.defaultValues = {
     companyName: 'e-UCM Research Group',
     mongodbUrl: 'mongodb://localhost:27017/lrs',
     apiPath: '/api',
-    port: 3300
+    port: 3300,
+    lrsUrl: 'http://localhost:8080/xAPI/',
+    lrsUsername: 'openlrs',     // Used for 'basic' authentication
+    lrsPassword: 'openlrs'
 };
 
 exports.testValues = {
@@ -32,8 +38,8 @@ exports.testValues = {
     companyName: 'e-UCM Research Group (Test)',
     mongodbUrl: 'mongodb://localhost:27017/lrs-test', // This must be different than 'exports.defaultValues.mongodbUrl'
     apiPath: '/api',
-    port: 3330
+    port: 3330,
+    lrsUrl: 'http://localhost:8080/xAPI/',
+    lrsUsername: 'openlrs',
+    lrsPassword: 'openlrs'
 };
-
-
-

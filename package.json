@@ -26,7 +26,8 @@
         "jade": "*",
         "underscore": "*",
         "mongodb": "^2.0.x",
-        "morgan": "^1.6.x"
+        "morgan": "^1.6.x",
+        "request": "^2.60.x"
     },
     "devDependencies": {
         "apidoc": "*",
