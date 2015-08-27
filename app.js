@@ -59,7 +59,18 @@ app.use(app.config.apiPath + '/games', require('./routes/games'));
 app.use(app.config.apiPath + '/sessions', require('./routes/sessions'));
 app.use(app.config.apiPath + '/collector', require('./routes/collector'));
 
+var sessions = require('./lib/sessions');
+
+var kafkaService = require('./lib/services/kafka')(app.config.kafka.uri);
+sessions.startTasks.push(kafkaService.createTopic);
+sessions.endTasks.push(kafkaService.removeTopic);
+
+var stormService = require('./lib/services/storm')(app.config.storm);
+sessions.startTasks.push(stormService.startTopology);
+sessions.endTasks.push(stormService.endTopology);
+
 var dataSource = require('./lib/traces');
+dataSource.addConsumer(require('./lib/consumers/kafka')(app.config.kafka));
 dataSource.addConsumer(require('./lib/consumers/openlrs')(app.config.lrs));
 
 // catch 404 and forward to error handler
