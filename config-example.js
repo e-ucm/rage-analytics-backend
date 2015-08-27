@@ -12,3 +12,10 @@ exports.lrs = {
   username: '{{lrsUsername}}',
   password: '{{lrsPassword}}'
 };
+exports.storm = {
+  realtimeJar: '{{realtimeJar}}',
+  path: '{{stormPath}}'
+};
+exports.kafka = {
+  uri: process.env.LRS_URI || process.env.LRS_URL || '{{kafkaUrl}}'
+};

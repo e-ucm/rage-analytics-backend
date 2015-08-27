@@ -20,6 +20,9 @@
  * @param lrsUrl - Base url to the LRS, e.g. http://localhost:8080/xAPI/.
  * @param lrsUsername - LRS username for 'basic' authentication.
  * @param lrsPassword - LRS password for 'basic' authentication.
+ * @param realtimeJar - Absolute path to the realtime dependency.
+ * @param stormPath - Absolute path to the storm installation (STORM_HOME).
+ * @param kafkaUrl - Kafka server URL, e.g. localhost:2181.
  */
 
 exports.defaultValues = {
@@ -30,7 +33,10 @@ exports.defaultValues = {
     port: 3300,
     lrsUrl: 'http://localhost:8080/xAPI/',
     lrsUsername: 'openlrs',     // Used for 'basic' authentication
-    lrsPassword: 'openlrs'
+    lrsPassword: 'openlrs',
+    realtimeJar: '/home/eucm/hlocal/rage/gleaner/gleaner-realtime/target/realtime-jar-with-dependencies.jar',
+    stormPath: '/home/eucm/hlocal/rage/gleaner/storm/apache-storm-0.9.5',
+    kafkaUrl: 'localhost:2181'
 };
 
 exports.testValues = {
@@ -41,5 +47,8 @@ exports.testValues = {
     port: 3330,
     lrsUrl: 'http://localhost:8080/xAPI/',
     lrsUsername: 'openlrs',
-    lrsPassword: 'openlrs'
+    lrsPassword: 'openlrs',
+    realtimeJar: '/home/eucm/hlocal/rage/gleaner/gleaner-realtime/target/realtime-jar-with-dependencies.jar',
+    stormPath: '/home/eucm/hlocal/rage/gleaner/storm/apache-storm-0.9.5',
+    kafkaUrl: 'localhost:2181'
 };

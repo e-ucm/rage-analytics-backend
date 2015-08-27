@@ -24,10 +24,12 @@
         "easy-collections": "RotaruDan/easy-collections",
         "express": "~4.13.x",
         "jade": "*",
+        "kafka-node": "^0.2.x",
         "underscore": "*",
         "mongodb": "^2.0.x",
         "morgan": "^1.6.x",
-        "request": "^2.60.x"
+        "request": "^2.60.x",
+        "shelljs": "^0.5.x"
     },
     "devDependencies": {
         "apidoc": "*",
