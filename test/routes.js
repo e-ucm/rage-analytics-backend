@@ -8,7 +8,8 @@ var sessions = require('../lib/sessions');
 
 var idCreated,
     versionCreated,
-    trackingCode;
+    trackingCode,
+    sessionId;
 
 describe('Games, versions and sessions tests', function () {
 
@@ -152,10 +153,12 @@ describe('Games, versions and sessions tests', function () {
         return deferred.promise;
     };
 
-    it('should POST (start/end) a session', function (done) {
+    var starts = 0;
+    var ends = 0;
 
-        var starts = 0;
-        var ends = 0;
+    it('should POST (start/end) a session', function (done) {
+        sessions.startTasks = [];
+        sessions.endTasks = [];
         sessions.startTasks.push(function () {
             starts++;
             return Q.fcall(function () {
@@ -173,35 +176,170 @@ describe('Games, versions and sessions tests', function () {
         request.post('/api/sessions/' + idCreated + '/' + versionCreated + '/start')
             .expect(200)
             .expect('Content-Type', /json/)
+            .set('X-Gleaner-User', 'username')
             .end(function (err, res) {
                 should.not.exist(err);
                 should(res.body).be.an.Object();
                 should.equal(res.body.gameId, idCreated);
                 should.equal(res.body.versionId, versionCreated);
+                sessionId = res.body._id;
 
                 testCollector().then(function () {
                     request.post('/api/sessions/' + idCreated + '/' + versionCreated + '/start')
                         .expect(400)
+                        .set('X-Gleaner-User', 'username')
                         .end(function (err, res) {
                             should.not.exist(err);
                             should.equal(res.text, 'A session for this version already exists');
                             request.post('/api/sessions/whatever/' + versionCreated + '/start')
                                 .expect(400)
+                                .set('X-Gleaner-User', 'username')
                                 .end(function (err, res) {
                                     should.not.exist(err);
                                     should.equal(res.text, 'Game does not exist');
                                     request.post('/api/sessions/' + idCreated + '/' + versionCreated + '/end')
-                                        .expect(200)
+                                        .expect(401)
+                                        .set('X-Gleaner-User', 'anotherInvalidUsername')
                                         .end(function (err, res) {
                                             should.not.exist(err);
                                             should(res).be.an.Object();
-                                            should.equal(starts, 1);
-                                            should.equal(ends, 2);
+                                            should.equal(res.text, "You don't have permission to modify this session.");
                                             done();
                                         });
                                 });
                         });
                 });
+            });
+
+
+    });
+
+    it('should PUT (add) a session', function (done) {
+        request.put('/api/sessions/' + sessionId)
+            .expect(401)
+            .set('X-Gleaner-User', 'notAllowedUsername')
+            .end(function (err, res) {
+                should.not.exist(err);
+                should(res).be.an.Object();
+                request.put('/api/sessions/' + sessionId)
+                    .expect(200)
+                    .set('X-Gleaner-User', 'username')
+                    .send({
+                        name: 'someSessionName',
+                        teachers: ['teacher', 'anotherTeacher', 'someOtherTeacher'],
+                        students: ['firstStudent']
+                    })
+                    .end(function (err, res) {
+                        should.not.exist(err);
+                        should(res).be.an.Object();
+                        should.equal(res.body.name, 'someSessionName');
+                        should(res.body.teachers).containDeep(['teacher', 'anotherTeacher']);
+                        should(res.body.students).containDeep(['firstStudent']);
+                        should(res.body.teachers.length).equal(4);
+                        should(res.body.students.length).equal(1);
+                        request.put('/api/sessions/' + sessionId)
+                            .expect(200)
+                            .set('X-Gleaner-User', 'username')
+                            .send({
+                                name: 'anotherSessionName',
+                                invalidKey: 'someValue',
+                                teachers: 'anotherTeacher',
+                                students: 'secondStudent'
+                            })
+                            .end(function (err, res) {
+                                should.not.exist(err);
+                                should(res).be.an.Object();
+                                should.not.exist(res.body.invalidKey);
+                                should.equal(res.body.name, 'anotherSessionName');
+                                should(res.body.teachers).containDeep(['teacher', 'anotherTeacher']);
+                                should(res.body.students).containDeep(['firstStudent', 'secondStudent']);
+                                should(res.body.teachers.length).equal(4);
+                                should(res.body.students.length).equal(2);
+                                done();
+                            });
+                    });
+            });
+
+    });
+
+    it('should PUT (remove) a session', function (done) {
+        request.put('/api/sessions/' + sessionId + '/remove')
+            .expect(401)
+            .set('X-Gleaner-User', 'notAllowedUsername')
+            .end(function (err, res) {
+                should.not.exist(err);
+                should(res).be.an.Object();
+                request.put('/api/sessions/' + sessionId + '/remove')
+                    .expect(200)
+                    .set('X-Gleaner-User', 'username')
+                    .send({
+                        teachers: ['teacher', 'anotherTeacher'],
+                        students: ['firstStudent']
+                    })
+                    .end(function (err, res) {
+                        should.not.exist(err);
+                        should(res).be.an.Object();
+                        should(res.body.teachers).not.containDeep(['teacher', 'anotherTeacher']);
+                        should(res.body.teachers).containDeep(['someOtherTeacher']);
+                        should(res.body.students).not.containDeep(['firstStudent']);
+                        should(res.body.students).containDeep(['secondStudent']);
+                        should(res.body.teachers.length).equal(2);
+                        should(res.body.students.length).equal(1);
+                        request.put('/api/sessions/' + sessionId + '/remove')
+                            .expect(200)
+                            .set('X-Gleaner-User', 'username')
+                            .send({
+                                teachers: 'someOtherTeacher',
+                                students: 'secondStudent'
+                            })
+                            .end(function (err, res) {
+                                should.not.exist(err);
+                                should(res).be.an.Object();
+                                should.not.exist(res.body.invalidKey);
+                                should(res.body.teachers).containDeep(['username']);
+                                should(res.body.teachers.length).equal(1);
+                                should(res.body.students.length).equal(0);
+                                request.post('/api/sessions/' + idCreated + '/' + versionCreated + '/end')
+                                    .expect(200)
+                                    .set('X-Gleaner-User', 'username')
+                                    .end(function (err, res) {
+                                        should.not.exist(err);
+                                        should(res).be.an.Object();
+                                        should.equal(starts, 1);
+                                        should.equal(ends, 2);
+                                        done();
+                                    });
+                            });
+                    });
+            });
+
+    });
+
+    it('should DELETE a session', function (done) {
+        request.delete('/api/sessions/' + sessionId)
+            .expect(401)
+            .set('X-Gleaner-User', 'anotherInvalidUsername')
+            .end(function (err, res) {
+                should.not.exist(err);
+                should(res).be.an.Object();
+                should.equal(res.text, "You don't have permission to delete this session.");
+                request.delete('/api/sessions/' + sessionId)
+                    .expect(200)
+                    .set('X-Gleaner-User', 'username')
+                    .end(function (err, res) {
+                        should.not.exist(err);
+                        should(res).be.an.Object();
+                        request.get('/api/sessions/' + idCreated + '/' + versionCreated)
+                            .expect(200)
+                            .expect('Content-Type', /json/)
+                            .set('X-Gleaner-User', 'username')
+                            .end(function (err, res) {
+                                for (var session in res.body) {
+                                    should(sessionId).not.equal(session._id);
+                                }
+                                done();
+                            });
+                    });
             });
     });
 
@@ -240,4 +378,5 @@ describe('Games, versions and sessions tests', function () {
             });
     });
 
-});
+})
+;

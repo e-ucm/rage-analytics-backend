@@ -40,7 +40,7 @@ router.get('/:gameId/:versionId', function (req, res) {
 });
 
 /**
- * @api {post} /api/sessions Starts or ends a new session depending on the event value.
+ * @api {post} /api/sessions/:gameId/:versionsId Starts or ends a new session depending on the event value.
  * @apiName postSessions
  * @apiGroup Sessions
  *
@@ -62,14 +62,15 @@ router.get('/:gameId/:versionId', function (req, res) {
  *
  */
 router.post('/:gameId/:versionId/:event', function (req, res) {
+
     switch (req.params.event) {
         case 'start':
-        case 'start/':
-            restUtils.processResponse(sessions.startSession(req.params.gameId, req.params.versionId), res);
+            var username = req.headers['x-gleaner-user'];
+            restUtils.processResponse(sessions.startSession(req.params.gameId, req.params.versionId, username), res);
             break;
         case 'end':
-        case 'end/':
-            restUtils.processResponse(sessions.endSession(req.params.gameId, req.params.versionId), res);
+            username = req.headers['x-gleaner-user'];
+            restUtils.processResponse(sessions.endSession(req.params.gameId, req.params.versionId, username), res);
             break;
         default:
             res.status(400).end();
@@ -78,7 +79,96 @@ router.post('/:gameId/:versionId/:event', function (req, res) {
 });
 
 /**
- * @api {get} /api/sessions/:id/results Adds all the results of a session.
+ * @api {put} /api/sessions/:id Changes the name, students and/or teachers array of a session.
+ * @apiName putSessions
+ * @apiGroup Sessions
+ *
+ * @apiParam {String} id The id of the session.
+ * @apiParam {String} name The new name of the session
+ * @apiParam {String or Array<String>} students Array with the username of the students that you want to add to the session.
+ * @apiParam {String or Array<String>} teachers Array with the username of the teachers that you want to add to the session.
+ *
+ * @apiParamExample {json} Request-Example:
+ *      {
+ *          "name": "My New Name",
+ *          "teachers": ["Some Teacher"],
+ *          "students": ["Some Student"]
+ *      }
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "_id": "559a447831b76cec185bf511"
+ *          "gameId": "559a447831b76cec185bf513",
+ *          "versionId": "559a447831b76cec185bf514",
+ *          "start": "2015-07-06T09:01:52.636Z",
+ *          "end": "2015-07-06T09:03:45.631Z",
+ *          "name": "My New Name",
+ *          "teachers": ["Some Teacher"],
+ *          "students": ["Some Student"]
+ *      }
+ */
+router.put('/:id', function (req, res) {
+    var username = req.headers['x-gleaner-user'];
+    restUtils.processResponse(sessions.modifySession(req.params.id, username, req.body, true), res);
+});
+
+/**
+ * @api {put} /api/sessions/:id/remove Removes students and/or teachers from a session.
+ * @apiName putSessions
+ * @apiGroup Sessions
+ *
+ * @apiParam {String} id The id of the session.
+ * @apiParam {String or Array<String>} students Array with the username of the students that you want to remove from the session.
+ * @apiParam {String or Array<String>} teachers Array with the username of the teachers that you want to remove from the session.
+ *
+ * @apiParamExample {json} Request-Example:
+ *      {
+ *          "teachers": ["Some Teacher"],
+ *          "students": ["Some Student"]
+ *      }
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "_id": "559a447831b76cec185bf511"
+ *          "gameId": "559a447831b76cec185bf513",
+ *          "versionId": "559a447831b76cec185bf514",
+ *          "start": "2015-07-06T09:01:52.636Z",
+ *          "end": "2015-07-06T09:03:45.631Z",
+ *          "name": "My New Name",
+ *          "teachers": [],
+ *          "students": []
+ *      }
+ */
+router.put('/:id/remove', function (req, res) {
+    var username = req.headers['x-gleaner-user'];
+    restUtils.processResponse(sessions.modifySession(req.params.id, username, req.body, false), res);
+});
+
+/**
+ * @api {delete} /api/sessions/:id Deletes a session and all the results associated with it
+ * @apiName deleteSessions
+ * @apiGroup Sessions
+ *
+ * @apiParam {String} id The id of the session.
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      true
+ */
+router.delete('/:id', function (req, res) {
+    var username = req.headers['x-gleaner-user'];
+    restUtils.processResponse(sessions.removeSession(req.params.id, username), res);
+});
+
+/**
+ * @api {get} /api/sessions/:id/results Returns all the results of a session.
  * @apiName PostSessionResults
  * @apiGroup Sessions
  *
@@ -96,7 +186,8 @@ router.post('/:gameId/:versionId/:event', function (req, res) {
  *
  */
 router.get('/:id/results', function (req, res) {
-    restUtils.processResponse(sessions.results(req.params.id), res);
+    var username = req.headers['x-gleaner-user'];
+    restUtils.processResponse(sessions.results(req.params.id, username), res);
 });
 
 /**
@@ -120,7 +211,8 @@ router.post('/:id/results/:resultId', function (req, res) {
     if (req.body && req.body._id) {
         delete req.body._id;
     }
-    restUtils.processResponse(sessions.updateResult(req.params.id, req.params.resultId, req.body), res);
+    var username = req.headers['x-gleaner-user'];
+    restUtils.processResponse(sessions.updateResult(req.params.id, req.params.resultId, req.body, username), res);
 });
 
 module.exports = router;

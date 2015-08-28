@@ -28,7 +28,8 @@ var collector = require('../lib/collector');
  *
  */
 router.post('/start/:trackingCode', function (req, res) {
-    restUtils.processResponse(collector.start(req.params.trackingCode, req.headers.authorization2), res);
+    var username = req.headers['x-gleaner-user'];
+    restUtils.processResponse(collector.start(req.params.trackingCode, req.headers.authorization2, username), res);
 });
 
 /**
