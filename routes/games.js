@@ -160,7 +160,7 @@ router.post('/:gameId/versions', restUtils.insert(versions, function (req) {
 router.get('/:gameId/versions/:id', restUtils.findById(versions));
 
 /**
- * @api {post} /api/games/:gameId/versions Adds a new name for a specific version.
+ * @api {post} /api/games/:gameId/versions/:id Adds a new name for a specific version.
  * @apiName PutVersions
  * @apiGroup Games
  *
