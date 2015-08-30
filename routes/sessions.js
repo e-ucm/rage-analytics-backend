@@ -46,7 +46,13 @@ router.get('/:gameId/:versionId', function (req, res) {
  *
  * @apiParam {String} gameId The Game id of the session.
  * @apiParam {String} versionId The Version id of the session.
+ * @apiParam {String} name The session name.
  * @apiParam {String} event Determines if we should start or end a session. Allowed values: start, end.
+ *
+ * @apiParamExample {json} Request-Example:
+ *      {
+ *          "name": "The Session Name"
+ *      }
  *
  * @apiSuccess(200) Success.
  *
@@ -56,6 +62,7 @@ router.get('/:gameId/:versionId', function (req, res) {
  *          "_id": "559a447831b76cec185bf511"
  *          "gameId": "559a447831b76cec185bf513",
  *          "versionId": "559a447831b76cec185bf514",
+ *          "name": "The Session Name",
  *          "start": "2015-07-06T09:01:52.636Z",
  *          "end": "2015-07-06T09:03:45.631Z"
  *      }
@@ -66,7 +73,7 @@ router.post('/:gameId/:versionId/:event', function (req, res) {
     switch (req.params.event) {
         case 'start':
             var username = req.headers['x-gleaner-user'];
-            restUtils.processResponse(sessions.startSession(req.params.gameId, req.params.versionId, username), res);
+            restUtils.processResponse(sessions.startSession(req.params.gameId, req.params.versionId, username, req.body.name), res);
             break;
         case 'end':
             username = req.headers['x-gleaner-user'];
