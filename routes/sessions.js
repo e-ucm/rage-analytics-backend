@@ -40,6 +40,30 @@ router.get('/:gameId/:versionId', function (req, res) {
 });
 
 /**
+ * @api {get} /api/sessions/:id Returns the Session that ahs the given id.
+ * @apiName GetSessions
+ * @apiGroup Sessions
+ *
+ * @apiParam {String} id The Session id
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "_id": "559a447831b76cec185bf501"
+ *          "gameId": "559a447831b76cec185bf513",
+ *          "versionId": "559a447831b76cec185bf514",
+ *          "start": "2015-07-06T09:00:52.630Z",
+ *          "end": "2015-07-06T09:03:45.631Z"
+ *      }
+ *
+ */
+router.get('/:id', function (req, res) {
+    restUtils.processResponse(restUtils.findById(sessions), res);
+});
+
+/**
  * @api {post} /api/sessions/:gameId/:versionsId Starts or ends a new session depending on the event value.
  * @apiName postSessions
  * @apiGroup Sessions
