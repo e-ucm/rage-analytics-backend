@@ -39,7 +39,7 @@ request.post(baseUsersAPI + 'login', {
             headers: {
                 'Authorization': 'Bearer ' + body.user.token
             }
-        }, function (err, httpResponse, body) {
+        }, function (err) {
             if (err) {
                 console.log(err);
                 return process.exit(0);

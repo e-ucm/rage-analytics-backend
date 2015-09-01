@@ -16,15 +16,15 @@ exports.app = {
                 {
                     resources: [
                         '/games',
-                        '/games/:id',
+                        '/games/:gameId',
                         '/games/:gameId/versions',
-                        '/games/:gameId/versions/:id',
-                        '/sessions/:gameId/:versionId',
-                        '/sessions/:gameId/:versionId/:event',
-                        '/sessions/:id',
-                        '/sessions/:id/remove',
-                        '/sessions/:id/results',
-                        '/sessions/:id/results/:resultId'
+                        '/games/:gameId/versions/:versionId',
+                        '/games/:gameId/versions/:versionId/sessions',
+                        '/sessions/:sessionId',
+                        '/sessions/:sessionId/:event',
+                        '/sessions/:sessionId/remove',
+                        '/sessions/:sessionId/results',
+                        '/sessions/:sessionId/results/:resultId'
                     ],
                     permissions: '*'
                 }
