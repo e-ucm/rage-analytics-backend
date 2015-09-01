@@ -3,10 +3,10 @@
     // https://github.com/jshint/jshint/blob/master/examples/.jshintrc
 
     "browser": true,
-    "node": true,
-    "mocha": true,
     "eqeqeq": true,
     "globalstrict": true,
+    "mocha": true,
+    "node": true,
     "undef": true,
     "unused": "vars",
     // Global variables
