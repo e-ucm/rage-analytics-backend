@@ -7,8 +7,8 @@ var request = require('supertest'),
 var sessions = require('../lib/sessions');
 
 var idCreated,
-    versionCreated,
-    trackingCode,
+    versionCreated, versionCreated2,
+    trackingCode, trackingCode2,
     sessionId;
 
 describe('Games, versions and sessions tests', function () {
@@ -34,16 +34,25 @@ describe('Games, versions and sessions tests', function () {
         require('../lib/db').db.dropDatabase(done);
     });
 
-    it('should POST an initial game', function (done) {
+    it('should POST two initial games', function (done) {
         request.post('/api/games')
             .expect(200)
             .set('Accept', 'application/json')
             .end(function (err, res) {
                 should.not.exist(err);
                 should(res).be.an.Object();
-                idCreated = res.body._id;
-                done();
+                request.post('/api/games')
+                    .expect(200)
+                    .set('Accept', 'application/json')
+                    .end(function (err, res) {
+                        should.not.exist(err);
+                        should(res).be.an.Object();
+                        idCreated = res.body._id;
+                        done();
+                    });
             });
+
+
     });
 
     it('should GET an initial game', function (done) {
@@ -53,7 +62,7 @@ describe('Games, versions and sessions tests', function () {
             .expect('Content-Type', /json/)
             .end(function (err, res) {
                 should.not.exist(err);
-                should.equal(res.body.length, 1);
+                should.equal(res.body.length, 2);
                 done();
             });
     });
@@ -64,16 +73,16 @@ describe('Games, versions and sessions tests', function () {
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
             .send({
-                title: 'title'
+                title: 'title2'
             }).end(function (err, res) {
                 should.not.exist(err);
                 should.equal(res.body._id, idCreated);
-                should.equal(res.body.title, 'title');
+                should.equal(res.body.title, 'title2');
                 done();
             });
     });
 
-    it('should POST a specific game version', function (done) {
+    it('should POST a two new game versions', function (done) {
         request.post('/api/games/' + idCreated + '/versions')
             .expect(200)
             .set('Accept', 'application/json')
@@ -81,15 +90,53 @@ describe('Games, versions and sessions tests', function () {
             .end(function (err, res) {
                 should.not.exist(err);
                 should(res.body).be.an.Object();
-                versionCreated = res.body._id;
-                trackingCode = res.body.trackingCode;
-                request.get('/api/games/' + idCreated + '/versions')
+                versionCreated2 = res.body._id;
+                trackingCode2 = res.body.trackingCode;
+                should.not.exist(err);
+                request.post('/api/games/' + idCreated + '/versions')
                     .expect(200)
                     .set('Accept', 'application/json')
                     .expect('Content-Type', /json/)
                     .end(function (err, res) {
                         should.not.exist(err);
-                        should.equal(res.body.length, 1);
+                        should(res.body).be.an.Object();
+                        versionCreated = res.body._id;
+                        trackingCode = res.body.trackingCode;
+                        request.get('/api/games/' + idCreated + '/versions')
+                            .expect(200)
+                            .set('Accept', 'application/json')
+                            .expect('Content-Type', /json/)
+                            .end(function (err, res) {
+                                should.not.exist(err);
+                                should.equal(res.body.length, 2);
+                                done();
+                            });
+                    });
+
+            });
+    });
+
+    it('should GET a specific game version', function (done) {
+        request.get('/api/games/' + idCreated + '/versions/' + versionCreated)
+            .expect(200)
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .end(function (err, res) {
+                should.not.exist(err);
+                should(res.body).be.an.Object();
+                should.equal(res.body._id, versionCreated);
+                should.equal(res.body.gameId, idCreated);
+                should.equal(res.body.trackingCode, trackingCode);
+                request.get('/api/games/' + idCreated + '/versions/' + versionCreated2)
+                    .expect(200)
+                    .set('Accept', 'application/json')
+                    .expect('Content-Type', /json/)
+                    .end(function (err, res) {
+                        should.not.exist(err);
+                        should(res.body).be.an.Object();
+                        should.equal(res.body._id, versionCreated2);
+                        should.equal(res.body.gameId, idCreated);
+                        should.equal(res.body.trackingCode, trackingCode2);
                         done();
                     });
             });
@@ -153,6 +200,30 @@ describe('Games, versions and sessions tests', function () {
         return deferred.promise;
     };
 
+    it('should POST a new session', function (done) {
+        request.post('/api/games/' + idCreated + '/versions/' + versionCreated + '/sessions')
+            .expect(200)
+            .set('Accept', 'application/json')
+            .set('X-Gleaner-User', 'username')
+            .expect('Content-Type', /json/)
+            .end(function (err, res) {
+                should.not.exist(err);
+                should(res.body).be.an.Object();
+                should.equal(res.body.gameId, idCreated);
+                should.equal(res.body.versionId, versionCreated);
+                sessionId = res.body._id;
+                request.get('/api/games/' + idCreated + '/versions/' + versionCreated + '/sessions')
+                    .expect(200)
+                    .set('Accept', 'application/json')
+                    .expect('Content-Type', /json/)
+                    .end(function (err, res) {
+                        should.not.exist(err);
+                        should.equal(res.body.length, 1);
+                        done();
+                    });
+            });
+    });
+
     var starts = 0;
     var ends = 0;
 
@@ -173,7 +244,7 @@ describe('Games, versions and sessions tests', function () {
             });
         });
 
-        request.post('/api/sessions/' + idCreated + '/' + versionCreated + '/start')
+        request.post('/api/sessions/' + sessionId + '/start')
             .expect(200)
             .expect('Content-Type', /json/)
             .set('X-Gleaner-User', 'username')
@@ -185,29 +256,23 @@ describe('Games, versions and sessions tests', function () {
                 sessionId = res.body._id;
 
                 testCollector().then(function () {
-                    request.post('/api/sessions/' + idCreated + '/' + versionCreated + '/start')
+                    request.post('/api/sessions/whatever' + versionCreated + '/start')
                         .expect(400)
                         .set('X-Gleaner-User', 'username')
                         .end(function (err, res) {
                             should.not.exist(err);
-                            should.equal(res.text, 'A session for this version already exists');
-                            request.post('/api/sessions/whatever/' + versionCreated + '/start')
-                                .expect(400)
-                                .set('X-Gleaner-User', 'username')
+                            should.equal(res.text, 'Session does not exist');
+                            request.post('/api/sessions/' + sessionId + '/end')
+                                .expect(401)
+                                .set('X-Gleaner-User', 'anotherInvalidUsername')
                                 .end(function (err, res) {
                                     should.not.exist(err);
-                                    should.equal(res.text, 'Game does not exist');
-                                    request.post('/api/sessions/' + idCreated + '/' + versionCreated + '/end')
-                                        .expect(401)
-                                        .set('X-Gleaner-User', 'anotherInvalidUsername')
-                                        .end(function (err, res) {
-                                            should.not.exist(err);
-                                            should(res).be.an.Object();
-                                            should.equal(res.text, "You don't have permission to modify this session.");
-                                            done();
-                                        });
+                                    should(res).be.an.Object();
+                                    should.equal(res.text, "You don't have permission to modify this session.");
+                                    done();
                                 });
                         });
+
                 });
             });
 
@@ -299,7 +364,7 @@ describe('Games, versions and sessions tests', function () {
                                 should(res.body.teachers).containDeep(['username']);
                                 should(res.body.teachers.length).equal(1);
                                 should(res.body.students.length).equal(0);
-                                request.post('/api/sessions/' + idCreated + '/' + versionCreated + '/end')
+                                request.post('/api/sessions/' + sessionId + '/end')
                                     .expect(200)
                                     .set('X-Gleaner-User', 'username')
                                     .end(function (err, res) {
@@ -367,12 +432,13 @@ describe('Games, versions and sessions tests', function () {
             .end(function (err, res) {
                 should.not.exist(err);
                 should.equal(res.body, true);
-                request.get('/api/games/' + idCreated + '/versions/' + versionCreated)
+                request.get('/api/games')
                     .expect(200)
                     .set('Accept', 'application/json')
+                    .expect('Content-Type', /json/)
                     .end(function (err, res) {
                         should.not.exist(err);
-                        should.not.exist(res.body);
+                        should(idCreated).not.equal(res.body[0]._id);
                         done();
                     });
             });
