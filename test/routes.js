@@ -211,6 +211,9 @@ describe('Games, versions and sessions tests', function () {
                 should(res.body).be.an.Object();
                 should.equal(res.body.gameId, idCreated);
                 should.equal(res.body.versionId, versionCreated);
+                should(res.body.created).be.a.String();
+                should.not.exist(res.body.start);
+                should.not.exist(res.body.end);
                 sessionId = res.body._id;
                 request.get('/api/games/' + idCreated + '/versions/' + versionCreated + '/sessions')
                     .expect(200)
@@ -253,6 +256,9 @@ describe('Games, versions and sessions tests', function () {
                 should(res.body).be.an.Object();
                 should.equal(res.body.gameId, idCreated);
                 should.equal(res.body.versionId, versionCreated);
+                should(res.body.start).be.a.String();
+                should.equal(res.body.end, null);
+                should(res.body.created).not.equal(res.body.start);
                 sessionId = res.body._id;
 
                 testCollector().then(function () {
@@ -322,6 +328,26 @@ describe('Games, versions and sessions tests', function () {
                                 should(res.body.students.length).equal(2);
                                 done();
                             });
+                    });
+            });
+
+    });
+
+    it('should GET a session', function (done) {
+        request.post('/api/games/' + idCreated + '/versions/' + versionCreated + '/sessions')
+            .expect(200)
+            .set('Accept', 'application/json')
+            .set('X-Gleaner-User', 'username')
+            .expect('Content-Type', /json/)
+            .end(function (err, res) {
+                var sessId = res.body._id;
+                request.get('/api/sessions/' + sessId)
+                    .expect(200)
+                    .end(function (err, res) {
+                        should.not.exist(err);
+                        should(res).be.an.Object();
+                        should(res.body._id).equal(sessId);
+                        done();
                     });
             });
 

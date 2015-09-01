@@ -208,6 +208,7 @@ router.post('/:gameId/versions/:id', restUtils.findAndModify(versions, function 
  *              "_id": "559a447831b76cec185bf501"
  *              "gameId": "559a447831b76cec185bf513",
  *              "versionId": "559a447831b76cec185bf514",
+ *              "created": "2015-07-06T09:00:50.630Z",
  *              "start": "2015-07-06T09:00:52.630Z",
  *              "end": "2015-07-06T09:03:45.631Z"
  *          },
@@ -215,7 +216,9 @@ router.post('/:gameId/versions/:id', restUtils.findAndModify(versions, function 
  *              "_id": "559a447831b76cec185bf511"
  *              "gameId": "559a447831b76cec185bf513",
  *              "versionId": "559a447831b76cec185bf514",
- *              "start": "2015-07-06T09:03:52.636Z"
+ *              "created": "2015-07-06T09:00:50.630Z",
+ *              "start": "2015-07-06T09:03:52.636Z",
+ *              "end": "2015-07-06T09:03:58.631Z"
  *          }
  *      ]
  *
@@ -245,11 +248,10 @@ router.get('/:gameId/versions/:versionId/sessions', function (req, res) {
  *          "gameId": "55e433c773415f105025d2d4",
  *          "versionId": "55e433c773415f105025d2d5",
  *          "name": "New name",
- *          "start": "2015-08-31T12:55:05.459Z",
+ *          "created": "2015-08-31T12:55:05.459Z",
  *          "teachers": [
  *              "user"
  *          ],
- *          "end": null,
  *          "_id": "55e44ea9f1448e1067e64d6c"
  *      }
  *
