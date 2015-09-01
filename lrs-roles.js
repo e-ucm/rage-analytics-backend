@@ -21,9 +21,9 @@ exports.app = {
                         '/games/:gameId/versions/:versionId',
                         '/games/:gameId/versions/:versionId/sessions',
                         '/sessions/:sessionId',
-                        '/sessions/:sessionId/:event',
                         '/sessions/:sessionId/remove',
                         '/sessions/:sessionId/results',
+                        '/sessions/:sessionId/:event',
                         '/sessions/:sessionId/results/:resultId'
                     ],
                     permissions: '*'
