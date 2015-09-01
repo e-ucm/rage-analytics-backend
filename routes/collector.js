@@ -7,11 +7,12 @@ var express = require('express'),
 var collector = require('../lib/collector');
 
 /**
- * @api {post} /api/collector/start/:trackingCode Returns all the Sessions.
- *              Note that this method expects an 'Authorization2' header with the following format
- *              <Authorization2, 'a:'> or <Authorization2, 'a:playerName'>.
- *              The first value will create a new anonymous player while the second will try to
- *              find the player with the given 'playerName'.
+ * @api {post} /collector/start/:trackingCode Returns all the Sessions.
+ * @apiDescription Note that this method expects an 'Authorization2' header with the following format
+ *  <Authorization2, 'a:'> or <Authorization2, 'a:playerName'>.
+ *  The first value will create a new anonymous player while the second will try to
+ *  find the player with the given 'playerName'.
+ *
  * @apiName postCollectorStart
  * @apiGroup Collector
  *
@@ -34,9 +35,10 @@ router.post('/start/:trackingCode', function (req, res) {
 
 /**
  * @api {post} /api/collector/track Tracks data from the request body.
- *            Note that this method expects an 'Authorization2' header with the following format
- *            <Authorization2, 'authToken'>.
- *            The 'authToken' can be obtained by issuing a request to '/api/collector/start/:trackingCode'.
+ * @apiDescription Note that this method expects an 'Authorization2' header with the following format
+ *  <Authorization2, 'authToken'>.
+ *  The 'authToken' can be obtained by issuing a request to '/api/collector/start/:trackingCode'.
+ *
  * @apiName postCollectorTrack
  * @apiGroup Collector
  *

@@ -12,7 +12,7 @@ var games = require('../lib/games'),
  * @api {get} /games Returns all the games.
  * @apiName GetGames
  * @apiGroup Games
- * *
+ *
  * @apiSuccess(200) Success.
  *
  * @apiSuccessExample Success-Response:
@@ -29,8 +29,8 @@ router.get('/', restUtils.find(games));
 
 /**
  * @api {post} /games Adds a new game.
- * @apiName PostUser
- * @apiGroup Users
+ * @apiName PostGames
+ * @apiGroup Games
  *
  * @apiParam {String} title The title of the game.
  *
@@ -52,7 +52,7 @@ router.get('/', restUtils.find(games));
 router.post('/', restUtils.insert(games));
 
 /**
- * @api {post} /api/games/:id Changes the game title.
+ * @api {post} /games/:id Changes the game title.
  * @apiName PostGame
  * @apiGroup Games
  *
@@ -77,7 +77,7 @@ router.post('/', restUtils.insert(games));
 router.post('/:id', restUtils.findAndModify(games));
 
 /**
- * @api {delete} /api/games/:id Removes the game.
+ * @api {delete} /games/:id Removes the game.
  * @apiName DeleteGame
  * @apiGroup Games
  *
@@ -93,7 +93,7 @@ router.post('/:id', restUtils.findAndModify(games));
 router.delete('/:id', restUtils.deleteById(games));
 
 /**
- * @api {get} /api/games/:gameId/versions Returns all the versions of a given game.
+ * @api {get} /games/:gameId/versions Returns all the versions of a given game.
  * @apiName GetVersions
  * @apiGroup Games
  *
@@ -119,7 +119,7 @@ router.get('/:gameId/versions', restUtils.find(versions, function (req, callback
 }));
 
 /**
- * @api {post} /api/games/:gameId/versions Adds a new version for a specific game.
+ * @api {post} /games/:gameId/versions Adds a new version for a specific game.
  * @apiName PostVersions
  * @apiGroup Games
  *
@@ -141,7 +141,7 @@ router.post('/:gameId/versions', restUtils.insert(versions, function (req) {
 }));
 
 /**
- * @api {get} /api/games/:gameId/versions/:id Returns a version for a specific game.
+ * @api {get} /games/:gameId/versions/:id Returns a version for a specific game.
  * @apiName GetVersions
  * @apiGroup Games
  *
@@ -161,7 +161,7 @@ router.post('/:gameId/versions', restUtils.insert(versions, function (req) {
 router.get('/:gameId/versions/:id', restUtils.findById(versions));
 
 /**
- * @api {post} /api/games/:gameId/versions/:id Adds a new name for a specific version.
+ * @api {post} /games/:gameId/versions/:id Adds a new name for a specific version.
  * @apiName PutVersions
  * @apiGroup Games
  *
@@ -192,7 +192,7 @@ router.post('/:gameId/versions/:id', restUtils.findAndModify(versions, function 
 }));
 
 /**
- * @api {get} /api/games/:gameId/versions/:versionsId/sessions Returns all the Sessions of a given version of a game.
+ * @api {get} /games/:gameId/versions/:versionsId/sessions Returns all the Sessions of a given version of a game.
  * @apiName GetSessions
  * @apiGroup Sessions
  *
@@ -225,7 +225,7 @@ router.get('/:gameId/versions/:versionId/sessions', function (req, res) {
 });
 
 /**
- * @api {post} /api/games/:gameId/versions/:versionsId/sessions Creates new Session for a given version of a game.
+ * @api {post} /games/:gameId/versions/:versionsId/sessions Creates new Session for a given version of a game.
  * @apiName PostSessions
  * @apiGroup Sessions
  *

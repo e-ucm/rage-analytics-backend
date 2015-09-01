@@ -7,7 +7,7 @@ var express = require('express'),
 var sessions = require('../lib/sessions');
 
 /**
- * @api {post} /api/:sessionId/:event Starts or ends a session depending on the event value.
+ * @api {post} /:sessionId/:event Starts or ends a session depending on the event value.
  * @apiName postSessions
  * @apiGroup Sessions
  *
@@ -43,15 +43,14 @@ router.post('/:sessionId/:event', function (req, res) {
 });
 
 /**
- * @api {put} /api/sessions/:sessionId Changes the name, students and/or teachers array of a session.
+ * @api {put} /sessions/:sessionId Changes the name, students and/or teachers array of a session.
  * @apiName putSessions
  * @apiGroup Sessions
  *
  * @apiParam {String} sessionId The id of the session.
  * @apiParam {String} name The new name of the session
- * @apiParam {String or Array<String>} students Array with the username of the students that you want to add to the session.
- * @apiParam {String or Array<String>} teachers Array with the username of the teachers that you want to add to the session.
- *
+ * @apiParam {String[]} [students] Array with the username of the students that you want to add to the session. Also can be a String
+ * @apiParam {String[]} [teachers] Array with the username of the teachers that you want to add to the session. Also can be a String
  * @apiParamExample {json} Request-Example:
  *      {
  *          "name": "My New Name",
@@ -80,13 +79,13 @@ router.put('/:sessionId', function (req, res) {
 });
 
 /**
- * @api {put} /api/sessions/:sessionId/remove Removes students and/or teachers from a session.
+ * @api {put} /sessions/:sessionId/remove Removes students and/or teachers from a session.
  * @apiName putSessions
  * @apiGroup Sessions
  *
  * @apiParam {String} sessionId The id of the session.
- * @apiParam {String or Array<String>} students Array with the username of the students that you want to remove from the session.
- * @apiParam {String or Array<String>} teachers Array with the username of the teachers that you want to remove from the session.
+ * @apiParam {String[]} [students] Array with the username of the students that you want to remove from the session. Also can be a String
+ * @apiParam {String[]} [teachers] Array with the username of the teachers that you want to remove from the session. Also can be a String
  *
  * @apiParamExample {json} Request-Example:
  *      {
@@ -114,7 +113,7 @@ router.put('/:sessionId/remove', function (req, res) {
 });
 
 /**
- * @api {delete} /api/sessions/:sessionId Deletes a session and all the results associated with it
+ * @api {delete} /sessions/:sessionId Deletes a session and all the results associated with it
  * @apiName deleteSessions
  * @apiGroup Sessions
  *
@@ -132,7 +131,7 @@ router.delete('/:sessionId', function (req, res) {
 });
 
 /**
- * @api {get} /api/sessions/:sessionId/results Returns all the results of a session.
+ * @api {get} /sessions/:sessionId/results Returns all the results of a session.
  * @apiName PostSessionResults
  * @apiGroup Sessions
  *
