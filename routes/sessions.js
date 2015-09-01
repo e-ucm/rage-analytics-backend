@@ -7,42 +7,6 @@ var express = require('express'),
 var sessions = require('../lib/sessions');
 
 /**
- * @api {post} /:sessionId/:event Starts or ends a session depending on the event value.
- * @apiName postSessions
- * @apiGroup Sessions
- *
- * @apiParam {String} event Determines if we should start or end a session. Allowed values: start, end.
- *
- * @apiSuccess(200) Success.
- *
- * @apiSuccessExample Success-Response:
- *      HTTP/1.1 200 OK
- *      {
- *          "_id": "559a447831b76cec185bf511"
- *          "gameId": "559a447831b76cec185bf513",
- *          "versionId": "559a447831b76cec185bf514",
- *          "name": "The Session Name",
- *          "start": "2015-07-06T09:01:52.636Z",
- *          "end": "2015-07-06T09:03:45.631Z"
- *      }
- *
- */
-router.post('/:sessionId/:event', function (req, res) {
-    var username = req.headers['x-gleaner-user'];
-    switch (req.params.event) {
-        case 'start':
-            restUtils.processResponse(sessions.startSession(username, req.params.sessionId), res);
-            break;
-        case 'end':
-            restUtils.processResponse(sessions.endSession(username, req.params.sessionId), res);
-            break;
-        default:
-            res.status(400).end();
-            break;
-    }
-});
-
-/**
  * @api {put} /sessions/:sessionId Changes the name, students and/or teachers array of a session.
  * @apiName putSessions
  * @apiGroup Sessions
@@ -176,6 +140,42 @@ router.post('/:sessionId/results/:resultId', function (req, res) {
     }
     var username = req.headers['x-gleaner-user'];
     restUtils.processResponse(sessions.updateResult(req.params.sessionId, req.params.resultId, req.body, username), res);
+});
+
+/**
+ * @api {post} sessions/:sessionId/:event Starts or ends a session depending on the event value.
+ * @apiName postSessions
+ * @apiGroup Sessions
+ *
+ * @apiParam {String} event Determines if we should start or end a session. Allowed values: start, end.
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "_id": "559a447831b76cec185bf511"
+ *          "gameId": "559a447831b76cec185bf513",
+ *          "versionId": "559a447831b76cec185bf514",
+ *          "name": "The Session Name",
+ *          "start": "2015-07-06T09:01:52.636Z",
+ *          "end": "2015-07-06T09:03:45.631Z"
+ *      }
+ *
+ */
+router.post('/:sessionId/:event', function (req, res) {
+    var username = req.headers['x-gleaner-user'];
+    switch (req.params.event) {
+        case 'start':
+            restUtils.processResponse(sessions.startSession(username, req.params.sessionId), res);
+            break;
+        case 'end':
+            restUtils.processResponse(sessions.endSession(username, req.params.sessionId), res);
+            break;
+        default:
+            res.status(400).end();
+            break;
+    }
 });
 
 module.exports = router;
