@@ -153,6 +153,30 @@ describe('Games, versions and sessions tests', function () {
         return deferred.promise;
     };
 
+    it('should POST a new session', function (done) {
+        request.post('/api/games/' + idCreated + '/versions/' + versionCreated + '/sessions')
+            .expect(200)
+            .set('Accept', 'application/json')
+            .set('X-Gleaner-User', 'username')
+            .expect('Content-Type', /json/)
+            .end(function (err, res) {
+                should.not.exist(err);
+                should(res.body).be.an.Object();
+                should.equal(res.body.gameId, idCreated);
+                should.equal(res.body.versionId, versionCreated);
+                sessionId = res.body._id;
+                request.get('/api/games/' + idCreated + '/versions/' + versionCreated + '/sessions')
+                    .expect(200)
+                    .set('Accept', 'application/json')
+                    .expect('Content-Type', /json/)
+                    .end(function (err, res) {
+                        should.not.exist(err);
+                        should.equal(res.body.length, 1);
+                        done();
+                    });
+            });
+    });
+
     var starts = 0;
     var ends = 0;
 
@@ -173,7 +197,7 @@ describe('Games, versions and sessions tests', function () {
             });
         });
 
-        request.post('/api/sessions/' + idCreated + '/' + versionCreated + '/start')
+        request.post('/api/sessions/' + sessionId + '/start')
             .expect(200)
             .expect('Content-Type', /json/)
             .set('X-Gleaner-User', 'username')
@@ -185,29 +209,23 @@ describe('Games, versions and sessions tests', function () {
                 sessionId = res.body._id;
 
                 testCollector().then(function () {
-                    request.post('/api/sessions/' + idCreated + '/' + versionCreated + '/start')
+                    request.post('/api/sessions/whatever' + versionCreated + '/start')
                         .expect(400)
                         .set('X-Gleaner-User', 'username')
                         .end(function (err, res) {
                             should.not.exist(err);
-                            should.equal(res.text, 'A session for this version already exists');
-                            request.post('/api/sessions/whatever/' + versionCreated + '/start')
-                                .expect(400)
-                                .set('X-Gleaner-User', 'username')
+                            should.equal(res.text, 'Session does not exist');
+                            request.post('/api/sessions/' + sessionId + '/end')
+                                .expect(401)
+                                .set('X-Gleaner-User', 'anotherInvalidUsername')
                                 .end(function (err, res) {
                                     should.not.exist(err);
-                                    should.equal(res.text, 'Game does not exist');
-                                    request.post('/api/sessions/' + idCreated + '/' + versionCreated + '/end')
-                                        .expect(401)
-                                        .set('X-Gleaner-User', 'anotherInvalidUsername')
-                                        .end(function (err, res) {
-                                            should.not.exist(err);
-                                            should(res).be.an.Object();
-                                            should.equal(res.text, "You don't have permission to modify this session.");
-                                            done();
-                                        });
+                                    should(res).be.an.Object();
+                                    should.equal(res.text, "You don't have permission to modify this session.");
+                                    done();
                                 });
                         });
+
                 });
             });
 
@@ -299,7 +317,7 @@ describe('Games, versions and sessions tests', function () {
                                 should(res.body.teachers).containDeep(['username']);
                                 should(res.body.teachers.length).equal(1);
                                 should(res.body.students.length).equal(0);
-                                request.post('/api/sessions/' + idCreated + '/' + versionCreated + '/end')
+                                request.post('/api/sessions/' + sessionId + '/end')
                                     .expect(200)
                                     .set('X-Gleaner-User', 'username')
                                     .end(function (err, res) {
