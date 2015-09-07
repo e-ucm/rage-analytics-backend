@@ -107,9 +107,29 @@ router.delete('/:sessionId', function (req, res) {
  *      HTTP/1.1 200 OK
  *      [
  *          {
- *              // TODO
+ *              "var": {
+ *                  "score": 276,
+ *                  "hasPickedValuableItem": true,
+ *                  "timeSpentInLevel": 1820000,
+ *                  "alias": "somePlayerAlias"
+ *              },
+ *              "zone": "zone6",
+ *              "interact": {
+ *                  "tutorialButton": 2,
+ *                  "helpButton": 9
+ *              },
+ *              "choice": {
+ *                  "preferredFood": {
+ *                      "pizza": 4
+ *                  },
+ *                  "favouriteItem": {
+ *                      "healthPotion": 9,
+ *                      "rusticSword": 4
+ *                  }
+ *              }
  *          }
- *      }
+ *
+ *      ]
  *
  */
 router.get('/:sessionId/results', function (req, res) {
@@ -143,7 +163,7 @@ router.post('/:sessionId/results/:resultId', function (req, res) {
 });
 
 /**
- * @api {post} sessions/:sessionId/:event Starts or ends a session depending on the event value.
+ * @api {post} /sessions/:sessionId/:event Starts or ends a session depending on the event value.
  * @apiName postSessions
  * @apiGroup Sessions
  *

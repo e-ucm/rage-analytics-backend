@@ -32,6 +32,8 @@ router.get('/', restUtils.find(games));
  * @apiName PostGames
  * @apiGroup Games
  *
+ * @apiHeader {String} x-gleaner-user.
+ *
  * @apiParam {String} title The title of the game.
  *
  * @apiParamExample {json} Request-Example:
@@ -46,10 +48,16 @@ router.get('/', restUtils.find(games));
  *      {
  *          "_id": "559a447831b7acec185bf513",
  *          "title": "My Game"
+ *          "author": "x-gleaner-user"
  *      }
  *
  */
-router.post('/', restUtils.insert(games));
+router.post('/', restUtils.insert(games, function (req) {
+    var author = req.headers['x-gleaner-user'];
+    if (author) {
+        req.body.author = author;
+    }
+}));
 
 /**
  * @api {post} /games/:id Changes the game title.
@@ -161,7 +169,7 @@ router.post('/:gameId/versions', restUtils.insert(versions, function (req) {
 router.get('/:gameId/versions/:id', restUtils.findById(versions));
 
 /**
- * @api {post} /games/:gameId/versions/:id Adds a new name for a specific version.
+ * @api {post} /games/:gameId/versions/:id Adds a new name or link for a specific version.
  * @apiName PutVersions
  * @apiGroup Games
  *
@@ -170,7 +178,8 @@ router.get('/:gameId/versions/:id', restUtils.findById(versions));
  *
  * @apiParamExample {json} Request-Example:
  *      {
- *          "name": "New name"
+ *          "name": "New name",
+ *          "link": "New Link"
  *      }
  *
  * @apiSuccess(200) Success.
@@ -179,6 +188,7 @@ router.get('/:gameId/versions/:id', restUtils.findById(versions));
  *      HTTP/1.1 200 OK
  *      {
  *          "name": "New name",
+ *          "link": "New Link",
  *          "_id": "559a447831b76cec185bf513",
  *          "gameId": "559a447831b7acec185bf513"
  *      }
@@ -225,6 +235,41 @@ router.get('/:gameId/versions/:versionId/sessions', function (req, res) {
 });
 
 /**
+ * @api {get} /games/:gameId/versions/:versionsId/sessions/my Returns all the Sessions of a given version of a game where the user participates.
+ * @apiName GetSessions
+ * @apiGroup Sessions
+ *
+ *  @apiHeader {String} x-gleaner-user.
+ *
+ * @apiParam {String} gameId The Game id of the session.
+ * @apiParam {String} versionId The Version id of the session.
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      [
+ *          {
+ *              "_id": "559a447831b76cec185bf501"
+ *              "gameId": "559a447831b76cec185bf513",
+ *              "versionId": "559a447831b76cec185bf514",
+ *              "start": "2015-07-06T09:00:52.630Z",
+ *              "end": "2015-07-06T09:03:45.631Z"
+ *          },
+ *          {
+ *              "_id": "559a447831b76cec185bf511"
+ *              "gameId": "559a447831b76cec185bf513",
+ *              "versionId": "559a447831b76cec185bf514",
+ *              "start": "2015-07-06T09:03:52.636Z"
+ *          }
+ *      ]
+ *
+ */
+router.get('/:gameId/versions/:versionId/sessions/my', function (req, res) {
+    restUtils.processResponse(sessions.getUserSessions(req.params.gameId, req.params.versionId, req.headers['x-gleaner-user']), res);
+});
+
+/**
  * @api {post} /games/:gameId/versions/:versionsId/sessions Creates new Session for a given version of a game.
  * @apiName PostSessions
  * @apiGroup Sessions
@@ -258,5 +303,35 @@ router.post('/:gameId/versions/:versionId/sessions', function (req, res) {
     var username = req.headers['x-gleaner-user'];
     restUtils.processResponse(sessions.createSession(req.params.gameId, req.params.versionId, username, req.body.name), res);
 });
+
+/**
+ * @api {get} /games/my Return all sessions with the userId in the students or teacher array.
+ * @apiName getSessions
+ * @apiGroup Sessions
+ *
+ * @apiHeader {String} x-gleaner-user.
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "_id": "559a447831b76cec185bf511"
+ *          "gameId": "559a447831b76cec185bf513",
+ *          "versionId": "559a447831b76cec185bf514",
+ *          "start": "2015-07-06T09:01:52.636Z",
+ *          "end": "2015-07-06T09:03:45.631Z",
+ *          "name": "Name",
+ *          "teachers": ["x-gleaner-user"],
+ *          "students": ["Some Student"]
+ *      }
+ */
+router.get('/my', restUtils.find(games, function (req, callback) {
+    var user = req.headers['x-gleaner-user'];
+    // Creates a Query for the 'find' operation
+    callback({
+        author: user.toString()
+    });
+}));
 
 module.exports = router;
