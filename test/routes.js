@@ -209,6 +209,7 @@ describe('Games, versions and sessions tests', function () {
             .end(function (err, res) {
                 should.not.exist(err);
                 should(res.body).be.an.Object();
+                should(res.body.allowAnonymous).equal(false);
                 should.equal(res.body.gameId, idCreated);
                 should.equal(res.body.versionId, versionCreated);
                 should(res.body.created).be.a.String();
@@ -297,6 +298,7 @@ describe('Games, versions and sessions tests', function () {
                     .set('X-Gleaner-User', 'username')
                     .send({
                         name: 'someSessionName',
+                        allowAnonymous: true,
                         teachers: ['teacher', 'anotherTeacher', 'someOtherTeacher'],
                         students: ['firstStudent']
                     })
@@ -304,6 +306,7 @@ describe('Games, versions and sessions tests', function () {
                         should.not.exist(err);
                         should(res).be.an.Object();
                         should.equal(res.body.name, 'someSessionName');
+                        should(res.body.allowAnonymous).equal(true);
                         should(res.body.teachers).containDeep(['teacher', 'anotherTeacher']);
                         should(res.body.students).containDeep(['firstStudent']);
                         should(res.body.teachers.length).equal(4);
@@ -321,6 +324,7 @@ describe('Games, versions and sessions tests', function () {
                                 should.not.exist(err);
                                 should(res).be.an.Object();
                                 should.not.exist(res.body.invalidKey);
+                                should(res.body.allowAnonymous).equal(true);
                                 should.equal(res.body.name, 'anotherSessionName');
                                 should(res.body.teachers).containDeep(['teacher', 'anotherTeacher']);
                                 should(res.body.students).containDeep(['firstStudent', 'secondStudent']);

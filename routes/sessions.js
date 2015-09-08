@@ -23,7 +23,11 @@ var sessions = require('../lib/sessions');
  *          "versionId": "559a447831b76cec185bf514",
  *          "created": "2015-07-06T09:00:50.630Z",
  *          "start": "2015-07-06T09:00:52.630Z",
- *          "end": "2015-07-06T09:03:45.631Z"
+ *          "end": "2015-07-06T09:03:45.631Z",
+ *          "name": "Some Session Name",
+ *          "allowAnonymous": false,
+ *          "teachers": ["Ben"],
+ *          "students": ["Alice", "Dan"]
  *      }
  *
  */
@@ -35,12 +39,14 @@ router.get('/:id', restUtils.findById(sessions));
  * @apiGroup Sessions
  *
  * @apiParam {String} sessionId The id of the session.
- * @apiParam {String} name The new name of the session
+ * @apiParam {String} [name] The new name of the session
+ * @apiParam {Boolean} [allowAnonymous] Whether this session should process data from anonymous users or not.
  * @apiParam {String[]} [students] Array with the username of the students that you want to add to the session. Also can be a String
  * @apiParam {String[]} [teachers] Array with the username of the teachers that you want to add to the session. Also can be a String
  * @apiParamExample {json} Request-Example:
  *      {
  *          "name": "My New Name",
+ *          "allowAnonymous": true,
  *          "teachers": ["Some Teacher"],
  *          "students": ["Some Student"]
  *      }
@@ -57,6 +63,7 @@ router.get('/:id', restUtils.findById(sessions));
  *          "start": "2015-07-06T09:01:52.636Z",
  *          "end": "2015-07-06T09:03:45.631Z",
  *          "name": "My New Name",
+ *          "allowAnonymous": true,
  *          "teachers": ["Some Teacher"],
  *          "students": ["Some Student"]
  *      }
@@ -153,7 +160,6 @@ router.delete('/:sessionId', function (req, res) {
  *                  }
  *              }
  *          }
- *
  *      ]
  *
  */
@@ -205,7 +211,11 @@ router.post('/:sessionId/results/:resultId', function (req, res) {
  *          "name": "The Session Name",
  *          "created": "2015-07-06T09:00:50.630Z",
  *          "start": "2015-07-06T09:01:52.636Z",
- *          "end": "2015-07-06T09:03:45.631Z"
+ *          "end": "2015-07-06T09:03:45.631Z",
+ *          "name": "Some Session Name",
+ *          "allowAnonymous": false,
+ *          "teachers": ["Ben"],
+ *          "students": ["Alice", "Dan"]
  *      }
  *
  */
