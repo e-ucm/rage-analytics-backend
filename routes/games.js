@@ -2,7 +2,8 @@
 
 var express = require('express'),
     router = express.Router(),
-    restUtils = require('./rest-utils');
+    restUtils = require('./rest-utils'),
+    request = require('request');
 
 var games = require('../lib/games'),
     versions = require('../lib/versions'),
@@ -335,5 +336,72 @@ router.get('/my', restUtils.find(games, function (req, callback) {
         author: user.toString()
     });
 }));
+
+/**
+ * @api {get} /statements Returns all statements.
+ * @apiName GetSessions
+ * @apiGroup Sessions
+ *
+ * @apiParam {String} id The Session id
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "statements": [
+ *          {
+ *              "id": "e5efec39-3992-401d-be17-86d24c3f1e76",
+ *              "actor": {
+ *              "objectType": "Agent",
+ *              "name": "s",
+ *              "account": {
+ *                  "homePage": "http://www.gleaner.com/",
+ *                  "name": "s"
+ *              }
+ *          },
+ *          "verb": {
+ *              "id": "http://www.gleaner.com/started_game",
+ *              "display": {
+ *                  "es-ES": "started_game",
+ *                  "en-US": "started_game"
+ *              }
+ *          },
+ *          "object": {
+ *              "id": "http://www.gleaner.com/games/lostinspace/none",
+ *              "objectType": "Activity",
+ *              "definition": {
+ *                  "type": "http://www.gleaner.com/objects/none",
+ *                  "extensions": {
+ *                      "event": "game_start",
+ *                      "gameplayId": "55e57b03553dded764546f03"
+ *                  }
+ *              }
+ *          },
+ *          "stored": "2015-09-10T11:01:04Z"
+ *      }
+ *
+ */
+router.get('/statements', function (req, res) {
+
+    var options = {
+        uri: req.app.config.lrs.uri + '/statements',
+        method: 'GET',
+        json: true,
+        headers: {
+            'Authorization': 'Basic ' + new Buffer(req.app.config.lrs.username + ':' + req.app.config.lrs.password)
+                .toString("base64"),
+            'X-Experience-API-Version': '1.0.1'
+        }
+    };
+
+    request(options, function (err, response, body) {
+        if (err) {
+            console.err("Error: " + err.message);
+        } else {
+            res.json(body);
+        }
+    });
+});
 
 module.exports = router;

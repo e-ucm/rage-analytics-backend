@@ -248,7 +248,7 @@ describe('Games, versions and sessions tests', function () {
             });
         });
 
-        request.post('/api/sessions/' + sessionId + '/start')
+        request.post('/api/sessions/' + sessionId + '/event/start')
             .expect(200)
             .expect('Content-Type', /json/)
             .set('X-Gleaner-User', 'username')
@@ -263,13 +263,13 @@ describe('Games, versions and sessions tests', function () {
                 sessionId = res.body._id;
 
                 testCollector().then(function () {
-                    request.post('/api/sessions/whatever' + versionCreated + '/start')
+                    request.post('/api/sessions/whatever' + versionCreated + '/event/start')
                         .expect(400)
                         .set('X-Gleaner-User', 'username')
                         .end(function (err, res) {
                             should.not.exist(err);
                             should.equal(res.text, 'Session does not exist');
-                            request.post('/api/sessions/' + sessionId + '/end')
+                            request.post('/api/sessions/' + sessionId + '/event/end')
                                 .expect(401)
                                 .set('X-Gleaner-User', 'anotherInvalidUsername')
                                 .end(function (err, res) {
@@ -394,7 +394,7 @@ describe('Games, versions and sessions tests', function () {
                                 should(res.body.teachers).containDeep(['username']);
                                 should(res.body.teachers.length).equal(1);
                                 should(res.body.students.length).equal(0);
-                                request.post('/api/sessions/' + sessionId + '/end')
+                                request.post('/api/sessions/' + sessionId + '/event/end')
                                     .expect(200)
                                     .set('X-Gleaner-User', 'username')
                                     .end(function (err, res) {
