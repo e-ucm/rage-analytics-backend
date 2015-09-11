@@ -147,9 +147,16 @@ describe('Games, versions and sessions tests', function () {
 
         var dataSource = require('../lib/traces');
 
-        dataSource.add = function () {
-            return true;
-        };
+        dataSource.clearConsumers();
+        dataSource.addConsumer({
+            addTraces: function(playerId, versionId, gameplayId, data) {
+                for(var i = 0; i < data.length; ++i) {
+                    var extensions = data[i].object.definition.extensions;
+                    should.equal(extensions.gameplayId, gameplayId);
+                    should.equal(extensions.versionId, versionId);
+                }
+            }
+        });
 
         var statement = {
             "actor": {
