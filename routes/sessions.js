@@ -219,7 +219,7 @@ router.post('/:sessionId/results/:resultId', function (req, res) {
  *      }
  *
  */
-router.post('/:sessionId/:event', function (req, res) {
+router.post('/:sessionId/event/:event', function (req, res) {
     var username = req.headers['x-gleaner-user'];
     switch (req.params.event) {
         case 'start':

@@ -11,22 +11,91 @@
 exports.app = {
     roles: [
         {
-            roles: ['developer', 'teacher', 'student'],
-            allows: [
+            "roles": "student",
+            "allows": [
                 {
-                    resources: [
-                        '/games',
-                        '/games/:gameId',
-                        '/games/:gameId/versions',
-                        '/games/:gameId/versions/:versionId',
-                        '/games/:gameId/versions/:versionId/sessions',
-                        '/sessions/:sessionId',
-                        '/sessions/:sessionId/remove',
-                        '/sessions/:sessionId/results',
-                        '/sessions/:sessionId/:event',
-                        '/sessions/:sessionId/results/:resultId'
+                    "resources": [
+                        "/games",
+                        "/games/:gameId/versions",
+                        "/games/:gameId/versions/:versionId",
+                        "/games/:gameId/versions/:versionId/sessions/my",
+                        "/sessions/:sessionId/results"
                     ],
-                    permissions: '*'
+                    "permissions": [
+                        "get"
+                    ]
+                },
+                {
+                    "resources": [
+                        "/sessions/:sessionId"
+                    ],
+                    "permissions": [
+                        "put",
+                        "get"
+                    ]
+                }
+            ]
+        },
+        {
+            "roles": "teacher",
+            "allows": [
+                {
+                    "resources": [
+                        "/games",
+                        "/games/:gameId/versions",
+                        "/games/:gameId/versions/:versionId",
+                        "/games/:gameId/versions/:versionId/sessions/my",
+                        "/sessions/:sessionId/results"
+
+                    ],
+                    "permissions": [
+                        "get"
+                    ]
+                },
+                {
+                    "resources": [
+                        "/sessions/:sessionId",
+                        "/sessions/:sessionId/remove",
+                        "/sessions/:sessionId/results/:resultsId"
+                    ],
+                    "permissions": [
+                        "*"
+                    ]
+                },
+                {
+                    "resources": [
+                        "/games/:gameId/versions/:versionId/sessions",
+                        "/sessions/:sessionId/:event"
+                    ],
+                    "permissions": [
+                        "post"
+                    ]
+                }
+            ]
+        },
+        {
+            "roles": "developer",
+            "allows": [
+                {
+                    "resources": [
+                        "/games/my",
+                        "/games/:gameId",
+                        "/games/:gameId/versions",
+                        "/games/:gameId/versions/:versionId"
+                    ],
+                    "permissions": [
+                        "*"
+                    ]
+                },
+                {
+                    "resources": [
+                        "/games/statements",
+                        "/games/:gameId/versions/:versionId/sessions",
+                        "/sessions/:sessionId"
+                    ],
+                    "permissions": [
+                        "get"
+                    ]
                 }
             ]
         }
