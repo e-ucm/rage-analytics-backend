@@ -186,7 +186,7 @@ describe('Games, versions and sessions tests', function () {
         request.post('/api/collector/start/' + trackingCode)
             .expect(200)
             .expect('Content-Type', /json/)
-            .set('Authorization2', 'a:')
+            .set('Authorization', 'a:')
             .end(function (err, res) {
                 should(res.body).be.an.Object();
                 should(res.body.authToken).be.a.String();
@@ -197,7 +197,7 @@ describe('Games, versions and sessions tests', function () {
                 request.post('/api/collector/track')
                     .expect(200)
                     .expect('Content-Type', /json/)
-                    .set('Authorization2', authToken)
+                    .set('Authorization', authToken)
                     .send([statement])
                     .end(function (err, res) {
                         should.equal(res.body, true);
