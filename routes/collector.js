@@ -30,11 +30,7 @@ var collector = require('../lib/collector');
  */
 router.post('/start/:trackingCode', function (req, res) {
     var username = req.headers['x-gleaner-user'];
-    var authorization = req.headers.authorization2;
-    if(!authorization) {
-        authorization = req.headers.authorization;
-    }
-    restUtils.processResponse(collector.start(req.params.trackingCode, authorization, username), res);
+    restUtils.processResponse(collector.start(req.params.trackingCode, req.headers.authorization, username), res);
 });
 
 /**
@@ -54,7 +50,7 @@ router.post('/start/:trackingCode', function (req, res) {
  *
  */
 router.post('/track', function (req, res) {
-    restUtils.processResponse(collector.track(req.headers.authorization2, req.body), res);
+    restUtils.processResponse(collector.track(req.headers.authorization, req.body), res);
 });
 
 module.exports = router;
