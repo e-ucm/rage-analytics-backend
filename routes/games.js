@@ -21,12 +21,40 @@ var games = require('../lib/games'),
  *      [
  *          {
  *              "_id": "559a447831b7acec185bf513",
- *              "title": "My Game"
+ *              "title": "My Game",
+ *              "author": "developer",
+ *              "public": "false"
  *          }
  *      ]
  *
  */
 router.get('/', restUtils.find(games));
+
+/**
+ * @api {get} /games/public Returns all the public games.
+ * @apiName GetGames
+ * @apiGroup Games
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      [
+ *          {
+ *              "_id": "559a447831b7acec185bf513",
+ *              "title": "My Game",
+ *              "author": "developer",
+ *              "public": "true"
+ *          }
+ *      ]
+ *
+ */
+router.get('/public', restUtils.find(games, function (req, callback) {
+    // Creates a Query for the 'find' operation
+    callback({
+        public: true
+    });
+}));
 
 /**
  * @api {post} /games Adds a new game.
@@ -35,11 +63,13 @@ router.get('/', restUtils.find(games));
  *
  * @apiHeader {String} x-gleaner-user.
  *
- * @apiParam {String} title The title of the game.
+ * @apiParam [{String}] title The title of the game.
+ * @apiParam [{Boolean}] public If other people can see the game.
  *
  * @apiParamExample {json} Request-Example:
  *      {
- *          "title": "My Game"
+ *          "title": "My Game",
+ *          "public": "true"
  *      }
  *
  * @apiSuccess(200) Success.
@@ -49,7 +79,8 @@ router.get('/', restUtils.find(games));
  *      {
  *          "_id": "559a447831b7acec185bf513",
  *          "title": "My Game"
- *          "author": "x-gleaner-user"
+ *          "author": "x-gleaner-user",
+ *          "public": "true"
  *      }
  *
  */
@@ -61,16 +92,18 @@ router.post('/', restUtils.insert(games, function (req) {
 }));
 
 /**
- * @api {post} /games/:id Changes the game title.
+ * @api {post} /games/:id Changes the game title and/or the field public.
  * @apiName PostGame
  * @apiGroup Games
  *
  * @apiParam {String} id Game id.
- * @apiParam {Object} title The new game title.
+ * @apiParam [{Object}] title The new game title.
+ * @apiParam [{Boolean}] public If other people can see the game.
  *
  * @apiParamExample {json} Request-Example:
  *      {
- *          "title": "New title"
+ *          "title": "New title",
+ *          "public" "false",
  *      }
  *
  * @apiSuccess(200) Success.
@@ -79,7 +112,9 @@ router.post('/', restUtils.insert(games, function (req) {
  *      HTTP/1.1 200 OK
  *      {
  *          "_id": "559a447831b7acec185bf513",
- *          "title": "New title"
+ *          "title": "New title",
+ *          "author": "developer",
+ *          "public": "false"
  *      }
  *
  */
