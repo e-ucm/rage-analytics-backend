@@ -82,6 +82,37 @@ describe('Games, versions and sessions tests', function () {
             });
     });
 
+    it('should GET a public game', function (done) {
+        request.get('/api/games/public')
+            .expect(200)
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .end(function (err, res) {
+                should.not.exist(err);
+                should.equal(res.body.length, 0);
+                request.post('/api/games/' + idCreated)
+                    .expect(200)
+                    .set('Accept', 'application/json')
+                    .expect('Content-Type', /json/)
+                    .send({
+                        public: true
+                    }).end(function (err, res) {
+                        should.not.exist(err);
+                        should.equal(res.body._id, idCreated);
+                        should.equal(res.body.public, true);
+                        request.get('/api/games/public')
+                            .expect(200)
+                            .set('Accept', 'application/json')
+                            .expect('Content-Type', /json/)
+                            .end(function (err, res) {
+                                should.not.exist(err);
+                                should.equal(res.body.length, 1);
+                                done();
+                            });
+                    });
+            });
+    });
+
     it('should POST a two new game versions', function (done) {
         request.post('/api/games/' + idCreated + '/versions')
             .expect(200)
@@ -149,8 +180,8 @@ describe('Games, versions and sessions tests', function () {
 
         dataSource.clearConsumers();
         dataSource.addConsumer({
-            addTraces: function(playerId, versionId, gameplayId, data) {
-                for(var i = 0; i < data.length; ++i) {
+            addTraces: function (playerId, versionId, gameplayId, data) {
+                for (var i = 0; i < data.length; ++i) {
                     var extensions = data[i].object.definition.extensions;
                     should.equal(extensions.gameplayId, gameplayId);
                     should.equal(extensions.versionId, versionId);
