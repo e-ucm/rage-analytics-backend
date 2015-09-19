@@ -382,7 +382,7 @@ router.get('/my', restUtils.find(games, function (req, callback) {
  *      }
  *
  */
-router.get('/statements', function (req, res) {
+router.get('/statements', function (req, res, next) {
 
     var options = {
         uri: req.app.config.lrs.uri + '/statements',
@@ -397,8 +397,11 @@ router.get('/statements', function (req, res) {
 
     request(options, function (err, response, body) {
         if (err) {
-            console.err("Error: " + err.message);
+            next(err);
         } else {
+            if (!body) {
+                body = {statements: []};
+            }
             res.json(body);
         }
     });
