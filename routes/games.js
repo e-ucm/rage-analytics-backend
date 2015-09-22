@@ -63,8 +63,8 @@ router.get('/public', restUtils.find(games, function (req, callback) {
  *
  * @apiHeader {String} x-gleaner-user.
  *
- * @apiParam [{String}] title The title of the game.
- * @apiParam [{Boolean}] public If other people can see the game.
+ * @apiParam {String} [title] The title of the game.
+ * @apiParam {Boolean} [public] If other people can see the game.
  *
  * @apiParamExample {json} Request-Example:
  *      {
@@ -97,8 +97,8 @@ router.post('/', restUtils.insert(games, function (req) {
  * @apiGroup Games
  *
  * @apiParam {String} id Game id.
- * @apiParam [{Object}] title The new game title.
- * @apiParam [{Boolean}] public If other people can see the game.
+ * @apiParam {Object} [title] The new game title.
+ * @apiParam {Boolean} [public] If other people can see the game.
  *
  * @apiParamExample {json} Request-Example:
  *      {
