@@ -176,13 +176,40 @@ router.get('/:sessionId/results', function (req, res) {
  * @apiParam {String} sessionId Game id.
  * @apiParam {String} resultId The Result id.
  *
+ * @apiParamExample {json} Request-Example:
+ *      {
+ *          "var": {"score":296},
+ *          "zone": "zone7"
+ *      }
+ *
  * @apiSuccess(200) Success.
  *
  * @apiSuccessExample Success-Response:
  *      HTTP/1.1 200 OK
- *      {
- *          // TODO
- *      }
+ *      [
+ *          {
+ *              "var": {
+ *                  "score": 296,
+ *                  "hasPickedValuableItem": true,
+ *                  "timeSpentInLevel": 1820000,
+ *                  "alias": "somePlayerAlias"
+ *              },
+ *              "zone": "zone7",
+ *              "interact": {
+ *                  "tutorialButton": 2,
+ *                  "helpButton": 9
+ *              },
+ *              "choice": {
+ *                  "preferredFood": {
+ *                      "pizza": 4
+ *                  },
+ *                  "favouriteItem": {
+ *                      "healthPotion": 9,
+ *                      "rusticSword": 4
+ *                  }
+ *              }
+ *          }
+ *      ]
  *
  */
 router.post('/:sessionId/results/:resultId', function (req, res) {

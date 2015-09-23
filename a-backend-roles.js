@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * This file exports the main roles Gleaner uses which are:
+ * This file exports the main roles AnalyticsBackend uses which are:
  *      'developer', 'teacher' and 'student'.
  *
  * Also indicates the anonymous routes used by the gleaner-tracker module to

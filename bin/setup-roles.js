@@ -3,14 +3,14 @@
 
 /**
  * This file issues the needed requests to set up the gleaner application
- * with the roles defined in the 'lrs-roles.js' file.
+ * with the roles defined in the 'a-backend-roles.js' file.
  *
  */
 
 var Path = require('path');
 var request = require('request');
 var config = require(Path.resolve(__dirname, '../config.js'));
-var appData = require(Path.resolve(__dirname, '../lrs-roles.js')).app;
+var appData = require(Path.resolve(__dirname, '../a-backend-roles.js')).app;
 
 var baseUsersAPI = 'http://localhost:3000/api/';
 
