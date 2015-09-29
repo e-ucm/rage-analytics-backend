@@ -52,7 +52,7 @@ if (process.env.NODE_ENV === 'test') {
         projectName: function (done) {
 
             var promptOptions = {
-                default: defaultValues.projectName || 'Learning Record Store'
+                default: defaultValues.projectName || 'Rage Analytics Backend'
             };
 
             Promptly.prompt('Project name: (' + promptOptions.default + ')', promptOptions, done);
@@ -68,7 +68,7 @@ if (process.env.NODE_ENV === 'test') {
         mongodbUrl: ['companyName', function (done) {
 
             var promptOptions = {
-                default: defaultValues.mongodbUrl || 'mongodb://localhost:27017/lrs'
+                default: defaultValues.mongodbUrl || 'mongodb://localhost:27017/analytics-backend'
             };
 
             Promptly.prompt('MongoDB URL: (' + promptOptions.default + ')', promptOptions, done);
