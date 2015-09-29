@@ -12,18 +12,23 @@ var request = require('request');
 var config = require(Path.resolve(__dirname, '../config.js'));
 var appData = require(Path.resolve(__dirname, '../a-backend-roles.js')).app;
 
-var baseUsersAPI = 'http://localhost:3000/api/';
+var baseUsersAPI = config.a2.a2ApiPath;
 
 request.post(baseUsersAPI + 'login', {
         form: {
-            'username': 'root',
-            'password': 'root'
+            'username': config.a2.a2AdminUsername,
+            'password': config.a2.a2AdminPassword
         },
         json: true
     },
     function (err, httpResponse, body) {
         if (err) {
-            console.log(err);
+            console.error(err);
+            if (err.errno && err.errno.indexOf('ECONNREFUSED') > -1) {
+                console.error('Could not connect to MongoDB!');
+                return process.exit(-1);
+            }
+            console.log('Did not register the backend with A2, continuing anyway!');
             return process.exit(0);
         }
 
@@ -41,7 +46,12 @@ request.post(baseUsersAPI + 'login', {
             }
         }, function (err) {
             if (err) {
-                console.log(err);
+                console.error(err);
+                if (err.errno && err.errno.indexOf('ECONNREFUSED') > -1) {
+                    console.error('Could not connect to MongoDB!');
+                    return process.exit(-1);
+                }
+                console.log('Did not register the backend with A2, continuing anyway!');
                 return process.exit(0);
             }
 

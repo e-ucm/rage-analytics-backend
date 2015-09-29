@@ -87,6 +87,11 @@ exports.defaultValues = {
     mongodbUrl: 'mongodb://localhost:27017/analytics-backend',
     apiPath: '/api',
     port: 3300,
+    a2Host: 'localhost',
+    a2Port: '3000',
+    a2ApiPath: 'http://localhost:3000/api/',
+    a2AdminUsername: 'root',
+    a2AdminPassword: process.env.A2_rootPassword || (process.env.A2_ROOTPASSWORD || 'root'),
     lrsHost: 'localhost',
     lrsPort: 8080,
     lrsUrl: 'http://localhost:8080/xAPI/',
@@ -107,6 +112,11 @@ exports.testValues = {
     mongodbUrl: 'mongodb://localhost:27017/analytics-backend-test', // This must be different than 'exports.defaultValues.mongodbUrl'
     apiPath: '/api',
     port: 3330,
+    a2Host: 'localhost',
+    a2Port: '3000',
+    a2ApiPath: 'http://localhost:3000/api/',
+    a2AdminUsername: 'root',
+    a2AdminPassword: 'root',
     lrsHost: 'localhost',
     lrsPort: 8080,
     lrsUrl: 'http://localhost:8080/xAPI/',
@@ -120,7 +130,7 @@ exports.testValues = {
 };
 
 var prefix = 'RAGE_ANALYTICS_BACKEND_';
-var links = ['kafka', 'lrs', 'mongo'];
+var links = ['kafka', 'lrs', 'mongo', 'a2'];
 initFromEnv(exports.defaultValues, prefix, links);
 initFromEnv(exports.testValues, prefix, links);
 
@@ -129,6 +139,11 @@ initFromEnv(exports.testValues, prefix, links);
 // Ensuring that 'mongodbUrl' values are different
 exports.defaultValues.mongodbUrl = 'mongodb://' + exports.defaultValues.mongoHost + ':' + exports.defaultValues.mongoPort + "/analytics-backend";
 exports.testValues.mongodbUrl = exports.defaultValues.mongodbUrl + '-test';
+
+exports.defaultValues.a2ApiPath = 'http://' + exports.defaultValues.a2Host + ':' + exports.defaultValues.a2Port + '/api/';
+exports.testValues.a2ApiPath = exports.defaultValues.a2ApiPath;
+exports.testValues.a2AdminUsername = exports.defaultValues.a2AdminUsername;
+exports.testValues.a2AdminPassword = exports.defaultValues.a2AdminPassword;
 
 exports.defaultValues.lrsUrl = 'http://' + exports.defaultValues.lrsHost + ':' + exports.defaultValues.lrsPort + "/xAPI/";
 exports.testValues.lrsUrl = exports.defaultValues.lrsUrl;

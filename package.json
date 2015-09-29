@@ -10,6 +10,7 @@
     "author": "e-UCM Research Group",
     "license": "Apache 2.0",
     "scripts": {
+        "docker-start": "npm run fast-setup && npm run roles-setup && npm start",
         "start": "node ./bin/www",
         "lint": "jshint --verbose .",
         "setup": "./bin/setup.js",
