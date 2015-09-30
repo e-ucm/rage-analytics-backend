@@ -19,3 +19,8 @@ exports.storm = {
 exports.kafka = {
   uri: process.env.LRS_URI || process.env.LRS_URL || '{{kafkaUrl}}'
 };
+exports.a2 = {
+  a2ApiPath: '{{a2ApiPath}}',
+  a2AdminUsername: '{{a2AdminUsername}}',
+  a2AdminPassword: '{{a2AdminPassword}}'
+};
