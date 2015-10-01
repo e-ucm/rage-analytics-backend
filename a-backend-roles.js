@@ -46,7 +46,6 @@ exports.app = {
                         "/games/:gameId/versions/:versionId",
                         "/games/:gameId/versions/:versionId/sessions/my",
                         "/sessions/:sessionId/results"
-
                     ],
                     "permissions": [
                         "get"
@@ -65,7 +64,7 @@ exports.app = {
                 {
                     "resources": [
                         "/games/:gameId/versions/:versionId/sessions",
-                        "/sessions/:sessionId/:event"
+                        "/sessions/:sessionId/event/:event"
                     ],
                     "permissions": [
                         "post"
@@ -89,12 +88,19 @@ exports.app = {
                 },
                 {
                     "resources": [
-                        "/games/statements",
                         "/games/:gameId/versions/:versionId/sessions",
                         "/sessions/:sessionId"
                     ],
                     "permissions": [
                         "get"
+                    ]
+                },
+                {
+                    "resources": [
+                        "/games"
+                    ],
+                    "permissions": [
+                        "post"
                     ]
                 }
             ]
@@ -103,5 +109,10 @@ exports.app = {
     anonymous: [
         '/collector/start/:trackingCode',
         '/collector/track'
+    ],
+    autoroles: [
+        'student',
+        'teacher',
+        'developer'
     ]
 };
