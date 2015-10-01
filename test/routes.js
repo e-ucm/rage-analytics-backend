@@ -34,6 +34,17 @@ describe('Games, versions and sessions tests', function () {
         require('../lib/db').db.dropDatabase(done);
     });
 
+    it('should return status 200', function (done) {
+        request.get('/api/health')
+            .expect(200)
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .end(function (err, res) {
+                should.not.exist(err);
+                done();
+            });
+    });
+
     it('should POST two initial games', function (done) {
         request.post('/api/games')
             .expect(200)
