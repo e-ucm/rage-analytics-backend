@@ -64,6 +64,7 @@ app.get('/', function (req, res) {
 app.use(app.config.apiPath + '/games', require('./routes/games'));
 app.use(app.config.apiPath + '/sessions', require('./routes/sessions'));
 app.use(app.config.apiPath + '/collector', require('./routes/collector'));
+app.use(app.config.apiPath + '/health', require('./routes/health'));
 
 var sessions = require('./lib/sessions');
 
