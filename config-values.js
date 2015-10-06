@@ -100,9 +100,11 @@ exports.defaultValues = {
     realtimeJar: '/home/eucm/hlocal/rage2/rage-analytics-realtime/target/realtime-jar-with-dependencies.jar',
     stormPath: '/home/eucm/hlocal/rage/gleaner/storm/apache-storm-0.9.5/bin',
     nimbusHost: 'localhost',
+    nimbusPort: '6627',
     kafkaHost: 'localhost',
     kafkaPort: '2181',
-    kafkaUrl: 'localhost:2181'
+    kafkaUrl: 'localhost:2181',
+    myHost: process.env.MY_HOST || 'localhost'
 };
 
 exports.testValues = {
@@ -126,13 +128,15 @@ exports.testValues = {
     realtimeJar: '/home/eucm/hlocal/rage/gleaner/gleaner-realtime/target/realtime-jar-with-dependencies.jar',
     stormPath: '/home/eucm/hlocal/rage/gleaner/storm/apache-storm-0.9.5',
     nimbusHost: 'localhost',
+    nimbusPort: '6627',
     kafkaHost: 'localhost',
     kafkaPort: '2181',
-    kafkaUrl: 'localhost:2181'
+    kafkaUrl: 'localhost:2181',
+    myHost: process.env.MY_HOST || 'localhost'
 };
 
 var prefix = 'RAGE_ANALYTICS_BACKEND_';
-var links = ['kafka', 'lrs', 'mongo', 'a2'];
+var links = ['kzk', 'lrs', 'mongo', 'a2', 'nimbus'];
 initFromEnv(exports.defaultValues, prefix, links);
 initFromEnv(exports.testValues, prefix, links);
 
