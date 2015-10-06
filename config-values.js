@@ -102,7 +102,8 @@ exports.defaultValues = {
     nimbusHost: 'localhost',
     kafkaHost: 'localhost',
     kafkaPort: '2181',
-    kafkaUrl: 'localhost:2181'
+    kafkaUrl: 'localhost:2181',
+    myHost: process.env.MY_HOST || 'localhost'
 };
 
 exports.testValues = {
@@ -128,7 +129,8 @@ exports.testValues = {
     nimbusHost: 'localhost',
     kafkaHost: 'localhost',
     kafkaPort: '2181',
-    kafkaUrl: 'localhost:2181'
+    kafkaUrl: 'localhost:2181',
+    myHost: process.env.MY_HOST || 'localhost'
 };
 
 var prefix = 'RAGE_ANALYTICS_BACKEND_';

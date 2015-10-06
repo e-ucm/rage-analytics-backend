@@ -34,7 +34,7 @@ request.post(baseUsersAPI + 'login', {
 
         appData.name = config.projectName;
         appData.prefix = 'gleaner';
-        appData.host = 'http://localhost:' + config.port + '/api/';
+        appData.host = 'http://' + config.myHost + ':' + config.port + '/api/';
 
         request({
             uri: baseUsersAPI + 'applications',
