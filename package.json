@@ -11,8 +11,9 @@
     "license": "Apache 2.0",
     "scripts": {
         "docker-start": "MY_HOST=$(. bin/getMyHost.sh) npm run fast-setup && npm run roles-setup && npm start",
+        "jscs-fix": "./node_modules/jscs/bin/jscs . --fix",
         "start": "node ./bin/www",
-        "lint": "jshint --verbose .",
+        "lint": "jshint --verbose . && npm run jscs-fix",
         "setup": "./bin/setup.js",
         "fast-setup": "NODE_ENV=test ./bin/setup.js",
         "roles-setup": "./bin/setup-roles.js",
@@ -38,6 +39,7 @@
         "apidoc": "*",
         "coveralls": "*",
         "handlebars": "*",
+        "jscs": "*",
         "istanbul": "*",
         "jshint": "*",
         "mocha": "*",

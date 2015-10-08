@@ -424,8 +424,8 @@ router.get('/statements', function (req, res, next) {
         method: 'GET',
         json: true,
         headers: {
-            'Authorization': 'Basic ' + new Buffer(req.app.config.lrs.username + ':' + req.app.config.lrs.password)
-                .toString("base64"),
+            Authorization: 'Basic ' + new Buffer(req.app.config.lrs.username + ':' + req.app.config.lrs.password)
+                .toString('base64'),
             'X-Experience-API-Version': '1.0.1'
         }
     };
