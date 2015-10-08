@@ -1,0 +1,22 @@
+{
+    // More info about this preset:
+    // https://github.com/jscs-dev/node-jscs/blob/master/presets/node-style-guide.json
+    // Info. about the rules can be found here: http://jscs.info/rules
+    "preset": "node-style-guide",
+
+    "requireSemicolons": true,
+    "requireParenthesesAroundIIFE": true,
+    "maximumLineLength": 160,
+    "validateLineBreaks": "LF",
+    "validateIndentation": 4,
+    "disallowTrailingComma": true,
+    "disallowUnusedParams": false,
+    "requireTrailingComma": false,
+    "disallowMultipleVarDecl": false,
+    "disallowSpacesInsideObjectBrackets": null,
+    "disallowImplicitTypeConversion": ["string"],
+
+    "excludeFiles": [
+        "public/apidoc/**"
+    ]
+}
