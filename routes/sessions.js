@@ -249,15 +249,18 @@ router.post('/:sessionId/results/:resultId', function (req, res) {
 router.post('/:sessionId/event/:event', function (req, res) {
     var username = req.headers['x-gleaner-user'];
     switch (req.params.event) {
-        case 'start':
+        case 'start': {
             restUtils.processResponse(sessions.startSession(username, req.params.sessionId), res);
             break;
-        case 'end':
+        }
+        case 'end': {
             restUtils.processResponse(sessions.endSession(username, req.params.sessionId), res);
             break;
-        default:
+        }
+        default: {
             res.status(400).end();
             break;
+        }
     }
 });
 

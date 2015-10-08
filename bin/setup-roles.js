@@ -16,8 +16,8 @@ var baseUsersAPI = config.a2.a2ApiPath;
 
 request.post(baseUsersAPI + 'login', {
         form: {
-            'username': config.a2.a2AdminUsername,
-            'password': config.a2.a2AdminPassword
+            username: config.a2.a2AdminUsername,
+            password: config.a2.a2AdminPassword
         },
         json: true
     },
@@ -42,7 +42,7 @@ request.post(baseUsersAPI + 'login', {
             body: appData,
             json: true,
             headers: {
-                'Authorization': 'Bearer ' + body.user.token
+                Authorization: 'Bearer ' + body.user.token
             }
         }, function (err) {
             if (err) {

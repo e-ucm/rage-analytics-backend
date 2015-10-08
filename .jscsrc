@@ -15,7 +15,7 @@
     "disallowMultipleVarDecl": false,
     "disallowSpacesInsideObjectBrackets": null,
     "disallowImplicitTypeConversion": ["string"],
-
+    "disallowSpacesInFunction": null,
     "excludeFiles": [
         "public/apidoc/**"
     ]

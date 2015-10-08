@@ -91,7 +91,9 @@ exports.defaultValues = {
     a2Port: '3000',
     a2ApiPath: 'http://localhost:3000/api/',
     a2AdminUsername: 'root',
+    // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
     a2AdminPassword: process.env.A2_rootPassword || (process.env.A2_ROOTPASSWORD || 'root'),
+    // jscs:enable requireCamelCaseOrUpperCaseIdentifiers
     lrsHost: 'localhost',
     lrsPort: 8080,
     lrsUrl: 'http://localhost:8080/xAPI/',
@@ -143,7 +145,7 @@ initFromEnv(exports.testValues, prefix, links);
 // Some control instructions
 
 // Ensuring that 'mongodbUrl' values are different
-exports.defaultValues.mongodbUrl = 'mongodb://' + exports.defaultValues.mongoHost + ':' + exports.defaultValues.mongoPort + "/analytics-backend";
+exports.defaultValues.mongodbUrl = 'mongodb://' + exports.defaultValues.mongoHost + ':' + exports.defaultValues.mongoPort + '/analytics-backend';
 exports.testValues.mongodbUrl = exports.defaultValues.mongodbUrl + '-test';
 
 exports.defaultValues.a2ApiPath = 'http://' + exports.defaultValues.a2Host + ':' + exports.defaultValues.a2Port + '/api/';
@@ -151,7 +153,7 @@ exports.testValues.a2ApiPath = exports.defaultValues.a2ApiPath;
 exports.testValues.a2AdminUsername = exports.defaultValues.a2AdminUsername;
 exports.testValues.a2AdminPassword = exports.defaultValues.a2AdminPassword;
 
-exports.defaultValues.lrsUrl = 'http://' + exports.defaultValues.lrsHost + ':' + exports.defaultValues.lrsPort + "/xAPI/";
+exports.defaultValues.lrsUrl = 'http://' + exports.defaultValues.lrsHost + ':' + exports.defaultValues.lrsPort + '/xAPI/';
 exports.testValues.lrsUrl = exports.defaultValues.lrsUrl;
 
 exports.defaultValues.kafkaUrl = exports.defaultValues.kafkaHost + ':' + exports.defaultValues.kafkaPort;

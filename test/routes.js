@@ -201,25 +201,26 @@ describe('Games, versions and sessions tests', function () {
         });
 
         var statement = {
-            "actor": {
-                "objectType": "Agent",
-                "mbox": "mailto:user@example.com",
-                "name": "Project Tin Can API"
+            actor: {
+                objectType: 'Agent',
+                mbox: 'mailto:user@example.com',
+                name: 'Project Tin Can API'
             },
-            "verb": {
-                "id": "http://adlnet.gov/expapi/verbs/created",
-                "display": {
-                    "en-US": "created"
+            verb: {
+                id: 'http://adlnet.gov/expapi/verbs/created',
+                display: {
+                    'en-US': 'created'
                 }
             },
-            "object": {
-                "id": "http://example.adlnet.gov/xapi/example/simplestatement",
-                "definition": {
-                    "name": {
-                        "en-US": "simple statement"
+            object: {
+                id: 'http://example.adlnet.gov/xapi/example/simplestatement',
+                definition: {
+                    name: {
+                        'en-US': 'simple statement'
                     },
-                    "description": {
-                        "en-US": "A simple Experience API statement. Note that the LRS does not need to have any prior information about the Actor (learner), the verb, or the Activity/object."
+                    description: {
+                        'en-US': 'A simple Experience API statement. Note that the LRS does not need to have any prior ' +
+                        'information about the Actor (learner), the verb, or the Activity/object.'
                     }
                 }
             }
@@ -324,7 +325,7 @@ describe('Games, versions and sessions tests', function () {
                                 .end(function (err, res) {
                                     should.not.exist(err);
                                     should(res).be.an.Object();
-                                    should.equal(res.text, "You don't have permission to modify this session.");
+                                    should.equal(res.text, 'You don\'t have permission to modify this session.');
                                     done();
                                 });
                         });
@@ -466,7 +467,7 @@ describe('Games, versions and sessions tests', function () {
             .end(function (err, res) {
                 should.not.exist(err);
                 should(res).be.an.Object();
-                should.equal(res.text, "You don't have permission to delete this session.");
+                should.equal(res.text, 'You don\'t have permission to delete this session.');
                 request.delete('/api/sessions/' + sessionId)
                     .expect(200)
                     .set('X-Gleaner-User', 'username')
