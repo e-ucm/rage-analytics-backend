@@ -89,6 +89,8 @@ exports.defaultValues = {
     port: 3300,
     a2Host: 'localhost',
     a2Port: '3000',
+    a2Prefix: 'gleaner',
+    a2HomePage: 'http://localhost:3000/',
     a2ApiPath: 'http://localhost:3000/api/',
     a2AdminUsername: 'root',
     // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
@@ -119,6 +121,8 @@ exports.testValues = {
     port: 3330,
     a2Host: 'localhost',
     a2Port: '3000',
+    a2Prefix: 'gleaner',
+    a2HomePage: 'http://localhost:3000/',
     a2ApiPath: 'http://localhost:3000/api/',
     a2AdminUsername: 'root',
     a2AdminPassword: 'root',
@@ -148,8 +152,10 @@ initFromEnv(exports.testValues, prefix, links);
 exports.defaultValues.mongodbUrl = 'mongodb://' + exports.defaultValues.mongoHost + ':' + exports.defaultValues.mongoPort + '/analytics-backend';
 exports.testValues.mongodbUrl = exports.defaultValues.mongodbUrl + '-test';
 
-exports.defaultValues.a2ApiPath = 'http://' + exports.defaultValues.a2Host + ':' + exports.defaultValues.a2Port + '/api/';
+exports.defaultValues.a2HomePage = 'http://' + exports.defaultValues.a2Host + ':' + exports.defaultValues.a2Port + '/';
+exports.defaultValues.a2ApiPath = exports.defaultValues.a2HomePage + 'api/';
 exports.testValues.a2ApiPath = exports.defaultValues.a2ApiPath;
+exports.testValues.a2HomePage = exports.defaultValues.a2HomePage;
 exports.testValues.a2AdminUsername = exports.defaultValues.a2AdminUsername;
 exports.testValues.a2AdminPassword = exports.defaultValues.a2AdminPassword;
 
