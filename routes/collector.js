@@ -23,8 +23,9 @@ var collector = require('../lib/collector');
  * @apiSuccessExample Success-Response:
  *      HTTP/1.1 200 OK
  *      {
- *          authToken: <String>,        - Used as 'Authorization2' header for '/api/collector/track' requests.
- *          playerName: <String>
+ *          authToken: <String>,        - Used as 'Authorization' header for '/api/collector/track' requests.
+ *          objectId: <String>,         - Used as Object.id in the following xAPI statements.
+ *          actor: Object               - https://github.com/adlnet/xAPI-Spec/blob/master/xAPI.md#actor
  *      }
  *
  * @apiError InvalidTrackingCode The 'trackingCode' is not valid.
