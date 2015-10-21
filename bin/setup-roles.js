@@ -33,8 +33,8 @@ request.post(baseUsersAPI + 'login', {
         }
 
         appData.name = config.projectName;
-        appData.prefix = 'gleaner';
-        appData.host = 'http://' + config.myHost + ':' + config.port + '/api/';
+        appData.prefix =  config.a2.a2Prefix;
+        appData.host = 'http://' + config.myHost + ':' + config.port + config.apiPath;
 
         request({
             uri: baseUsersAPI + 'applications',

@@ -11,7 +11,7 @@
     "license": "Apache 2.0",
     "scripts": {
         "docker-start": "MY_HOST=$(. bin/getMyHost.sh) npm run fast-setup && npm run roles-setup && npm start",
-        "jscs-fix": "./node_modules/jscs/bin/jscs . --fix",
+        "jscs-fix": "jscs . --fix",
         "start": "node ./bin/www",
         "lint": "jshint --verbose . && npm run jscs-fix",
         "setup": "./bin/setup.js",

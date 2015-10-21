@@ -99,6 +99,9 @@ describe('Config files  validations', function () {
         should(config.a2).be.an.Object();
         should(config.a2.a2ApiPath).be.a.String();
         should(config.a2.a2ApiPath.indexOf('http')).equal(0);
+        should(config.a2.a2HomePage).be.a.String();
+        should(config.a2.a2HomePage.indexOf('http')).equal(0);
+        should(config.a2.a2Prefix).be.a.String();
         should(config.a2.a2AdminUsername).be.a.String();
         should(config.a2.a2AdminPassword).be.a.String();
 
@@ -122,6 +125,9 @@ describe('Config files  validations', function () {
         should(testConfig.a2).be.an.Object();
         should(testConfig.a2.a2ApiPath).be.a.String();
         should(testConfig.a2.a2ApiPath.indexOf('http')).equal(0);
+        should(testConfig.a2.a2HomePage).be.a.String();
+        should(testConfig.a2.a2HomePage.indexOf('http')).equal(0);
+        should(testConfig.a2.a2Prefix).be.a.String();
         should(testConfig.a2.a2AdminUsername).be.a.String();
         should(testConfig.a2.a2AdminPassword).be.a.String();
 
