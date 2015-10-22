@@ -55,7 +55,12 @@ request.post(baseUsersAPI + 'login', {
                 return process.exit(0);
             }
 
-            console.log('Application and roles setup complete.');
+            if (body.message) {
+                console.log('Error', body.message);
+                console.log('Did not register the backend with A2, continuing anyway!');
+            } else {
+                console.log('Application and roles setup complete.');
+            }
             process.exit(0);
         });
     });
