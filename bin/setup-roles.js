@@ -14,6 +14,85 @@ var appData = require(Path.resolve(__dirname, '../a-backend-roles.js')).app;
 
 var baseUsersAPI = config.a2.a2ApiPath;
 
+var logError = function(err) {
+    console.error(err);
+    if (err.errno && err.errno.indexOf('ECONNREFUSED') > -1) {
+        console.error('Could not connect to MongoDB!');
+        return process.exit(-1);
+    }
+    console.log('Did not register the backend with A2, continuing anyway!');
+};
+
+var registerApp = function (token) {
+    appData.name = config.projectName;
+    appData.prefix = config.a2.a2Prefix;
+    appData.host = 'http://' + config.myHost + ':' + config.port + config.apiPath;
+
+    request({
+        uri: baseUsersAPI + 'applications',
+        method: 'POST',
+        body: appData,
+        json: true,
+        headers: {
+            Authorization: 'Bearer ' + token
+        }
+    }, function (err, httpResponse, body) {
+        if (err) {
+            logError(err);
+            return process.exit(0);
+        }
+
+        if (body.message) {
+            console.log('Error', body.message);
+            console.log('Proceeding to the deletion of the existing application!');
+            request({
+                uri: baseUsersAPI + 'applications',
+                method: 'GET',
+                json: true,
+                headers: {
+                    Authorization: 'Bearer ' + token
+                }
+            }, function (err, httpResponse, body) {
+                if (err) {
+                    logError(err);
+                    return process.exit(0);
+                }
+
+                if (body.message) {
+                    console.log('Error deleting the existing app', body.message);
+                    console.log('Did not register the backend with A2, continuing anyway!');
+                    process.exit(0);
+                } else {
+                    var callback = function (err, httpResponse, body) {
+                        if (err) {
+                            logError(err);
+                            return process.exit(0);
+                        }
+
+                        registerApp(token);
+                    };
+                    for (var i = 0; i < body.data.length; ++i) {
+                        var application = body.data[i];
+                        if (application.prefix === appData.prefix) {
+                            request({
+                                uri: baseUsersAPI + 'applications/' + application._id,
+                                method: 'DELETE',
+                                json: true,
+                                headers: {
+                                    Authorization: 'Bearer ' + token
+                                }
+                            }, callback);
+                        }
+                    }
+                }
+            });
+        } else {
+            console.log('Application and roles setup complete.');
+            process.exit(0);
+        }
+    });
+};
+
 request.post(baseUsersAPI + 'login', {
         form: {
             username: config.a2.a2AdminUsername,
@@ -32,37 +111,7 @@ request.post(baseUsersAPI + 'login', {
             return process.exit(0);
         }
 
-        appData.name = config.projectName;
-        appData.prefix =  config.a2.a2Prefix;
-        appData.host = 'http://' + config.myHost + ':' + config.port + config.apiPath;
-
-        request({
-            uri: baseUsersAPI + 'applications',
-            method: 'POST',
-            body: appData,
-            json: true,
-            headers: {
-                Authorization: 'Bearer ' + body.user.token
-            }
-        }, function (err) {
-            if (err) {
-                console.error(err);
-                if (err.errno && err.errno.indexOf('ECONNREFUSED') > -1) {
-                    console.error('Could not connect to MongoDB!');
-                    return process.exit(-1);
-                }
-                console.log('Did not register the backend with A2, continuing anyway!');
-                return process.exit(0);
-            }
-
-            if (body.message) {
-                console.log('Error', body.message);
-                console.log('Did not register the backend with A2, continuing anyway!');
-            } else {
-                console.log('Application and roles setup complete.');
-            }
-            process.exit(0);
-        });
+        registerApp(body.user.token);
     });
 
 
