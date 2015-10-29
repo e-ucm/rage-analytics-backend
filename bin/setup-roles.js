@@ -56,7 +56,7 @@ request.post(baseUsersAPI + 'login', {
             }
 
             if (body.message) {
-                console.log('Error', body.message,
+                console.error('Error', body.message,
                     'Did not register the backend with A2, continuing anyway!');
             } else {
                 console.log('Application and roles setup complete.');
