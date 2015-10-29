@@ -44,7 +44,7 @@ request.post(baseUsersAPI + 'login', {
             headers: {
                 Authorization: 'Bearer ' + body.user.token
             }
-        }, function (err) {
+        }, function (err, httpResponse, body) {
             if (err) {
                 console.error(err);
                 if (err.errno && err.errno.indexOf('ECONNREFUSED') > -1) {
@@ -55,7 +55,13 @@ request.post(baseUsersAPI + 'login', {
                 return process.exit(0);
             }
 
-            console.log('Application and roles setup complete.');
+            if (body.message) {
+                console.error('Error', body.message,
+                    'Did not register the backend with A2, continuing anyway!');
+            } else {
+                console.log('Application and roles setup complete.');
+            }
+
             process.exit(0);
         });
     });
