@@ -107,6 +107,7 @@ exports.app = {
         }
     ],
     anonymous: [
+        '/games/:id/:versionId',
         '/collector/start/:trackingCode',
         '/collector/track'
     ],
