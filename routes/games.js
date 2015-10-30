@@ -163,6 +163,26 @@ router.get('/:gameId/versions', restUtils.find(versions, function (req, callback
 }));
 
 /**
+ * @api {get} /games/:id/:versionId Returns the game with the given id.
+ *              This route is mainly used as the Object.id of the xAPI statements.
+ * @apiName GetGame
+ * @apiGroup Games
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *          {
+ *              "_id": "559a447831b7acec185bf513",
+ *              "title": "My Game",
+ *              "author": "developer",
+ *              "public": "false"
+ *          }
+ *
+ */
+router.get('/:id/:versionId', restUtils.findById(games));
+
+/**
  * @api {post} /games/:gameId/versions Adds a new version for a specific game.
  * @apiName PostVersions
  * @apiGroup Games

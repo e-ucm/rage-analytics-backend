@@ -4,7 +4,8 @@ var request = require('supertest'),
     should = require('should'),
     Q = require('q');
 
-var sessions = require('../lib/sessions');
+var sessions = require('../lib/sessions'),
+    config;
 
 var idCreated,
     versionCreated, versionCreated2,
@@ -15,7 +16,8 @@ describe('Games, versions and sessions tests', function () {
 
     before(function (done) {
         var app = require('../app');
-        app.listen(app.config.port, function (err) {
+        config = app.config;
+        app.listen(config.port, function (err) {
             if (err) {
                 done(err);
             } else {
@@ -124,7 +126,7 @@ describe('Games, versions and sessions tests', function () {
             });
     });
 
-    it('should POST a two new game versions', function (done) {
+    it('should POST two new game versions', function (done) {
         request.post('/api/games/' + idCreated + '/versions')
             .expect(200)
             .set('Accept', 'application/json')
@@ -233,18 +235,56 @@ describe('Games, versions and sessions tests', function () {
             .end(function (err, res) {
                 should(res.body).be.an.Object();
                 should(res.body.authToken).be.a.String();
-                should(res.body.playerName).be.a.String();
+                should(res.body.objectId).be.a.String();
+                should(res.body.objectId.indexOf('http')).equal(0);
+                should(res.body.actor).be.an.Object();
+                should(res.body.actor.name).be.a.String();
+                should(res.body.actor.account).be.an.Object();
+                should(res.body.actor.account.name).equal('Anonymous');
+                should(res.body.actor.account.homePage).equal(config.a2.a2HomePage);
 
                 var authToken = res.body.authToken;
-
                 request.post('/api/collector/track')
-                    .expect(200)
-                    .expect('Content-Type', /json/)
-                    .set('Authorization', authToken)
+                    .expect(401)
                     .send([statement])
                     .end(function (err, res) {
-                        should.equal(res.body, true);
-                        deferred.resolve(true);
+                        should.not.exist(err);
+
+                        request.post('/api/collector/track')
+                            .expect(200)
+                            .expect('Content-Type', /json/)
+                            .set('Authorization', authToken)
+                            .send([statement])
+                            .end(function (err, res) {
+                                should.equal(res.body, true);
+                                request.post('/api/collector/start/' + trackingCode)
+                                    .expect(200)
+                                    .expect('Content-Type', /json/)
+                                    .set('X-Gleaner-User', 'username')
+                                    .set('Authorization', 'a:')
+                                    .end(function (err, res) {
+                                        should(res.body).be.an.Object();
+                                        should(res.body.authToken).be.a.String();
+                                        should(res.body.objectId).be.a.String();
+                                        should(res.body.objectId.indexOf('http')).equal(0);
+                                        should(res.body.actor).be.an.Object();
+                                        should(res.body.actor.name).be.a.String();
+                                        should(res.body.actor.account).be.an.Object();
+                                        should(res.body.actor.account.name).equal('username');
+                                        should(res.body.actor.account.name).equal(res.body.actor.name);
+                                        should(res.body.actor.account.homePage).equal(config.a2.a2HomePage);
+                                        request.get('/api' + res.body.objectId.substring(res.body.objectId.indexOf(config.a2.a2Prefix) +
+                                                config.a2.a2Prefix.length))
+                                            .expect(200)
+                                            .expect('Content-Type', /json/)
+                                            .end(function(err, res) {
+                                                should.not.exist(err);
+                                                should(res.body.title).be.a.String();
+                                                should(res.body.public).equal(true);
+                                                deferred.resolve(true);
+                                            });
+                                    });
+                            });
                     });
             });
         return deferred.promise;
