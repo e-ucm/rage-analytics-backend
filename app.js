@@ -72,7 +72,7 @@ var kafkaService = require('./lib/services/kafka')(app.config.kafka.uri);
 sessions.startTasks.push(kafkaService.createTopic);
 sessions.endTasks.push(kafkaService.removeTopic);
 
-var stormService = require('./lib/services/storm')(app.config.storm, app.config.mongodb.uri);
+var stormService = require('./lib/services/storm')(app.config.storm, app.config.mongodb.uri, app.config.kafka.uri);
 sessions.startTasks.push(stormService.startTopology);
 sessions.endTasks.push(stormService.endTopology);
 
