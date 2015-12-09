@@ -19,7 +19,7 @@
         "roles-setup": "./bin/setup-roles.js",
         "test": "npm run lint && NODE_ENV=test ./node_modules/mocha/bin/_mocha -R spec",
         "test-win": "npm run lint && set NODE_ENV=test&& mocha -R spec",
-        "test-travis": "npm run lint && npm run fast-setup && NODE_ENV=test ./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- --recursive -R spec",
+        "test-travis": "npm run lint && npm run fast-setup && NODE_ENV=test ./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- -R spec",
         "gen-apidoc": "apidoc -i ./routes -o ./public/apidoc"
     },
     "dependencies": {
