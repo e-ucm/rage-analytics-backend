@@ -363,7 +363,7 @@ router.post('/:gameId/versions/:versionId/sessions', function (req, res) {
 });
 
 /**
- * @api {get} /games/my Return all sessions with the userId in the students or teacher array.
+ * @api {get} /games/my Return all games of the author in the x-gleaner-user header.
  * @apiName getSessions
  * @apiGroup Sessions
  *
@@ -374,14 +374,8 @@ router.post('/:gameId/versions/:versionId/sessions', function (req, res) {
  * @apiSuccessExample Success-Response:
  *      HTTP/1.1 200 OK
  *      {
- *          "_id": "559a447831b76cec185bf511"
- *          "gameId": "559a447831b76cec185bf513",
- *          "versionId": "559a447831b76cec185bf514",
- *          "start": "2015-07-06T09:01:52.636Z",
- *          "end": "2015-07-06T09:03:45.631Z",
- *          "name": "Name",
- *          "teachers": ["x-gleaner-user"],
- *          "students": ["Some Student"]
+ *          "_id": "559a447831b76cec185bf511",
+ *          "author": "x-gleaner-user"
  *      }
  */
 router.get('/my', restUtils.find(games, function (req, callback) {
