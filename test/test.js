@@ -25,6 +25,7 @@ describe('API Test', function(done) {
 
     it('Start tests', function(done) {
         require('./tests/configs');
+        require('./tests/tracesConverterTest');
 
         require('./tests/health')(request);
         require('./tests/gamesTest')(request, db);
