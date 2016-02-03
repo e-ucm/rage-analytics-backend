@@ -131,10 +131,14 @@ router.post('/:id', restUtils.findAndModify(games));
  *
  * @apiSuccessExample Success-Response:
  *      HTTP/1.1 200 OK
- *      true
+ *      {
+ *         "message": "Success."
+ *      }
  *
  */
-router.delete('/:id', restUtils.deleteById(games));
+router.delete('/:id', function (req, res) {
+    restUtils.processResponse(games.removeGame(req.params.id), res);
+});
 
 /**
  * @api {get} /games/:gameId/versions Returns all the versions of a given game.

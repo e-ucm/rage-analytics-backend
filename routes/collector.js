@@ -50,7 +50,9 @@ router.post('/start/:trackingCode', function (req, res) {
  *
  * @apiSuccessExample Success-Response:
  *      HTTP/1.1 200 OK
- *      true
+ *      {
+ *         "message": "Success."
+ *      }
  *
  */
 router.post('/track', function (req, res) {

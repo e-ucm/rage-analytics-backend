@@ -119,7 +119,9 @@ router.put('/:sessionId/remove', function (req, res) {
  *
  * @apiSuccessExample Success-Response:
  *      HTTP/1.1 200 OK
- *      true
+ *      {
+ *         "message": "Success."
+ *      }
  */
 router.delete('/:sessionId', function (req, res) {
     var username = req.headers['x-gleaner-user'];

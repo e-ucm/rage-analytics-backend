@@ -157,7 +157,7 @@ module.exports = function(request, db, config) {
                 .set('Authorization', authToken)
                 .send([statement])
                 .end(function (err, res) {
-                    should.equal(res.body, true);
+                    should(res.body).eql({ message: 'Success.' });
                     done();
                 });
         });
