@@ -20,6 +20,7 @@
         "test": "npm run lint && NODE_ENV=test ./node_modules/mocha/bin/_mocha -R spec",
         "test-win": "npm run lint && set NODE_ENV=test&& mocha -R spec",
         "test-travis": "npm run lint && npm run fast-setup && NODE_ENV=test ./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- -R spec",
+        "test-start": "node ./test/wwwTest",
         "gen-apidoc": "apidoc -i ./routes -o ./public/apidoc"
     },
     "dependencies": {
@@ -28,7 +29,7 @@
         "easy-collections": "e-ucm/easy-collections",
         "express": "~4.13.x",
         "jade": "*",
-        "kafka-node": "^0.2.x",
+        "kafka-node": "^0.3.x",
         "underscore": "*",
         "mongodb": "^2.0.x",
         "morgan": "^1.6.x",
