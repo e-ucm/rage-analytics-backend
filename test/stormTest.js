@@ -89,20 +89,19 @@ dataSource.addConsumer(require('../lib/consumers/kafka')(app.config.kafka));
 var _getAllFilesFromFolder = function(dir) {
 
     var filesystem = require("fs");
-    var results = [];
 
     filesystem.readdirSync(__dirname + dir).forEach(function(file) {
-
         file = dir+'/'+file;
-        results.push(file);
-
+        console.log("reading"+file);
+        var source = Fs.readFileSync(__dirname + file);
+        kafkaService.send(topic, source);
+        //results.push(file);
     });
-
-    return results;
-
+    //return results;
 };
 
-console.log(_getAllFilesFromFolder("/traces"));
+_getAllFilesFromFolder("/traces");
+
 //kafkaService.removeTopic(sessionId);
 //stormService.endTopology(sessionId);
 
