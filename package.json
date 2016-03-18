@@ -1,51 +1,52 @@
 {
-    "name": "Rage-Analytics-Backend",
-    "version": "0.0.1",
-    "private": true,
-    "apidoc": {
-        "description": "API documentation",
-        "title": "API doc",
-        "url" : "/api"
-    },
-    "author": "e-UCM Research Group",
-    "license": "Apache 2.0",
-    "scripts": {
-        "docker-start": "npm run fast-setup && npm run roles-setup && npm start",
-        "jscs-fix": "jscs . --fix",
-        "start": "node ./bin/www",
-        "lint": "jshint --verbose . && npm run jscs-fix",
-        "setup": "./bin/setup.js",
-        "fast-setup": "NODE_ENV=test ./bin/setup.js",
-        "roles-setup": "./bin/setup-roles.js",
-        "test": "npm run lint && NODE_ENV=test ./node_modules/mocha/bin/_mocha -R spec",
-        "test-win": "npm run lint && set NODE_ENV=test&& mocha -R spec",
-        "test-travis": "npm run lint && npm run fast-setup && NODE_ENV=test ./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- -R spec",
-        "gen-apidoc": "apidoc -i ./routes -o ./public/apidoc"
-    },
-    "dependencies": {
-        "async": "^1.3.x",
-        "body-parser": "^1.13.x",
-        "easy-collections": "e-ucm/easy-collections",
-        "express": "~4.13.x",
-        "jade": "*",
-        "kafka-node": "^0.2.x",
-        "underscore": "*",
-        "mongodb": "^2.0.x",
-        "morgan": "^1.6.x",
-        "request": "^2.60.x",
-        "shelljs": "^0.5.x"
-    },
-    "devDependencies": {
-        "apidoc": "*",
-        "coveralls": "*",
-        "handlebars": "*",
-        "jscs": "*",
-        "istanbul": "*",
-        "jshint": "*",
-        "mocha": "*",
-        "promptly": "*",
-        "q": "*",
-        "should": "*",
-        "supertest": "*"
-    }
+  "name": "Rage-Analytics-Backend",
+  "version": "0.0.1",
+  "private": true,
+  "apidoc": {
+    "description": "API documentation",
+    "title": "API doc",
+    "url": "/api"
+  },
+  "author": "e-UCM Research Group",
+  "license": "Apache 2.0",
+  "scripts": {
+    "docker-start": "npm run fast-setup && npm run roles-setup && npm start",
+    "jscs-fix": "jscs . --fix",
+    "start": "node ./bin/www",
+    "lint": "jshint --verbose . && npm run jscs-fix",
+    "setup": "node ./bin/setup.js",
+    "fast-setup": "NODE_ENV=test node ./bin/setup.js",
+    "roles-setup": "node ./bin/setup-roles.js",
+    "test": "npm run lint && NODE_ENV=test ./node_modules/mocha/bin/_mocha -R spec",
+    "test-win": "npm run lint && set NODE_ENV=test&& mocha -R spec",
+    "test-travis": "npm run lint && npm run fast-setup && NODE_ENV=test ./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- -R spec",
+    "gen-apidoc": "apidoc -i ./routes -o ./public/apidoc"
+  },
+  "dependencies": {
+    "async": "^1.3.x",
+    "body-parser": "^1.13.x",
+    "easy-collections": "e-ucm/easy-collections",
+    "express": "~4.13.x",
+    "jade": "*",
+    "kafka-node": "^0.2.x",
+    "underscore": "*",
+    "mongodb": "^2.0.x",
+    "morgan": "^1.6.x",
+    "request": "^2.60.x",
+    "shelljs": "^0.5.x"
+  },
+  "devDependencies": {
+    "apidoc": "*",
+    "coveralls": "*",
+    "grunt": "^0.4.5",
+    "handlebars": "*",
+    "istanbul": "*",
+    "jscs": "*",
+    "jshint": "*",
+    "mocha": "*",
+    "promptly": "*",
+    "q": "*",
+    "should": "*",
+    "supertest": "*"
+  }
 }
