@@ -65,16 +65,13 @@ var kafkaService = require('../lib/services/kafka')(app.config.kafka.uri);
 try{
     var task = kafkaService.createTopic;
     task.call(null, sessionId).then(function(err, retult){
-        console.log("err -> "+err);
-        console.log("retult -> "+retult);
+
     });
 } catch(e){
-    console.log("e -/> "+e);
     setTimeout(function () {
         var task = kafkaService.createTopic;
         task.call(null, sessionId).then(function(err, retult){
-            console.log("err2 -> "+err);
-            console.log("retult2 -> "+retult);
+
         });
     }, 1000);
 }
@@ -83,13 +80,29 @@ var stormService = require('../lib/services/storm')(app.config.storm, app.config
 
 var task = stormService.startTopology;
 task.call(null, sessionId).then(function(err, retult){
-    console.log("storm-err -> "+err);
-    console.log("storm-retult -> "+retult);
+
 });
 
 var dataSource = require('../lib/traces');
 dataSource.addConsumer(require('../lib/consumers/kafka')(app.config.kafka));
 
+var _getAllFilesFromFolder = function(dir) {
+
+    var filesystem = require("fs");
+    var results = [];
+
+    filesystem.readdirSync(__dirname + dir).forEach(function(file) {
+
+        file = dir+'/'+file;
+        results.push(file);
+
+    });
+
+    return results;
+
+};
+
+console.log(_getAllFilesFromFolder("/traces"));
 //kafkaService.removeTopic(sessionId);
 //stormService.endTopology(sessionId);
 

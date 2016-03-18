@@ -1,0 +1,4348 @@
+[
+  {
+    "event": "var",
+    "target": "Codigo Usuario",
+    "value": "301"
+  },
+  {
+    "event": "screen",
+    "value": "Menu Principal"
+  },
+  {
+    "event": "screen",
+    "value": "Juego"
+  },
+  {
+    "event": "zone",
+    "value": "CutScene Comienzo"
+  },
+  {
+    "event": "var",
+    "target": "Dinero",
+    "value": "20"
+  },
+  {
+    "event": "var",
+    "target": "Cortesia",
+    "value": "50"
+  },
+  {
+    "event": "zone",
+    "value": "Escena1"
+  },
+  {
+    "event": "click",
+    "value1": "1218",
+    "value2": "112"
+  },
+  {
+    "event": "click",
+    "value1": "1303",
+    "value2": "232"
+  },
+  {
+    "event": "click",
+    "value1": "1213",
+    "value2": "246"
+  },
+  {
+    "event": "click",
+    "value1": "1361",
+    "value2": "364",
+    "target": "Cofre"
+  },
+  {
+    "event": "click",
+    "value1": "1361",
+    "value2": "364"
+  },
+  {
+    "event": "click",
+    "value1": "1597",
+    "value2": "299"
+  },
+  {
+    "event": "click",
+    "value1": "1228",
+    "value2": "240"
+  },
+  {
+    "event": "var",
+    "target": "Dinero",
+    "value": "70"
+  },
+  {
+    "event": "var",
+    "target": "Cortesia",
+    "value": "40"
+  },
+  {
+    "event": "click",
+    "value1": "1251",
+    "value2": "250"
+  },
+  {
+    "event": "click",
+    "value1": "1581",
+    "value2": "235"
+  },
+  {
+    "event": "click",
+    "value1": "1679",
+    "value2": "298"
+  },
+  {
+    "event": "click",
+    "value1": "1200",
+    "value2": "771"
+  },
+  {
+    "event": "click",
+    "value1": "1234",
+    "value2": "725",
+    "target": "Buho"
+  },
+  {
+    "event": "click",
+    "value1": "1234",
+    "value2": "725",
+    "target": "Buho"
+  },
+  {
+    "event": "click",
+    "value1": "1234",
+    "value2": "725"
+  },
+  {
+    "event": "click",
+    "value1": "1308",
+    "value2": "366"
+  },
+  {
+    "event": "click",
+    "value1": "1249",
+    "value2": "276"
+  },
+  {
+    "event": "click",
+    "value1": "1249",
+    "value2": "276"
+  },
+  {
+    "event": "click",
+    "value1": "763",
+    "value2": "495",
+    "target": "Zorrilla"
+  },
+  {
+    "event": "click",
+    "value1": "763",
+    "value2": "495"
+  },
+  {
+    "event": "click",
+    "value1": "1429",
+    "value2": "186"
+  },
+  {
+    "event": "click",
+    "value1": "1443",
+    "value2": "338",
+    "target": "Dama en apuros"
+  },
+  {
+    "event": "click",
+    "value1": "1443",
+    "value2": "338"
+  },
+  {
+    "event": "click",
+    "value1": "936",
+    "value2": "10"
+  },
+  {
+    "event": "var",
+    "target": "Cortesia",
+    "value": "50"
+  },
+  {
+    "event": "choice",
+    "target": "Ayudar a Lucrecia",
+    "value": "Desenvaniar la espada"
+  },
+  {
+    "event": "click",
+    "value1": "1533",
+    "value2": "391"
+  },
+  {
+    "event": "click",
+    "value1": "994",
+    "value2": "134"
+  },
+  {
+    "event": "choice",
+    "target": "Malhechor huye",
+    "value": "Debo ir tras él"
+  },
+  {
+    "event": "var",
+    "target": "Cortesia",
+    "value": "60"
+  },
+  {
+    "event": "zone",
+    "value": "Minijuego1"
+  },
+  {
+    "event": "click",
+    "value1": "250",
+    "value2": "466"
+  },
+  {
+    "event": "click",
+    "value1": "711",
+    "value2": "565"
+  },
+  {
+    "event": "click",
+    "value1": "773",
+    "value2": "524"
+  },
+  {
+    "event": "click",
+    "value1": "891",
+    "value2": "474"
+  },
+  {
+    "event": "click",
+    "value1": "787",
+    "value2": "454"
+  },
+  {
+    "event": "click",
+    "value1": "175",
+    "value2": "436"
+  },
+  {
+    "event": "click",
+    "value1": "234",
+    "value2": "412"
+  },
+  {
+    "event": "click",
+    "value1": "587",
+    "value2": "321"
+  },
+  {
+    "event": "click",
+    "value1": "845",
+    "value2": "797"
+  },
+  {
+    "event": "click",
+    "value1": "1101",
+    "value2": "413"
+  },
+  {
+    "event": "click",
+    "value1": "1235",
+    "value2": "733"
+  },
+  {
+    "event": "var",
+    "target": "Toques",
+    "value": "0"
+  },
+  {
+    "event": "var",
+    "target": "Tiempo Minijuego1",
+    "value": "11 sg"
+  },
+  {
+    "event": "var",
+    "target": "Dinero",
+    "value": "70"
+  },
+  {
+    "event": "click",
+    "value1": "733",
+    "value2": "715"
+  },
+  {
+    "event": "click",
+    "value1": "1242",
+    "value2": "256"
+  },
+  {
+    "event": "zone",
+    "value": "Escena1.2"
+  },
+  {
+    "event": "click",
+    "value1": "972",
+    "value2": "24"
+  },
+  {
+    "event": "var",
+    "target": "Cortesia",
+    "value": "80"
+  },
+  {
+    "event": "choice",
+    "target": "Que hacemos con Lucrecia",
+    "value": "LLevarla a que la curen"
+  },
+  {
+    "event": "click",
+    "value1": "1199",
+    "value2": "466"
+  },
+  {
+    "event": "click",
+    "value1": "1229",
+    "value2": "272"
+  },
+  {
+    "event": "click",
+    "value1": "1330",
+    "value2": "179",
+    "target": "Lucrecia"
+  },
+  {
+    "event": "click",
+    "value1": "1330",
+    "value2": "179"
+  },
+  {
+    "event": "click",
+    "value1": "312",
+    "value2": "507",
+    "target": "Zorrilla"
+  },
+  {
+    "event": "click",
+    "value1": "312",
+    "value2": "507"
+  },
+  {
+    "event": "click",
+    "value1": "362",
+    "value2": "533",
+    "target": "Zorrilla"
+  },
+  {
+    "event": "click",
+    "value1": "362",
+    "value2": "533"
+  },
+  {
+    "event": "click",
+    "value1": "1680",
+    "value2": "1019"
+  },
+  {
+    "event": "zone",
+    "value": "Transicion Barcelona"
+  },
+  {
+    "event": "zone",
+    "value": "CutScene1"
+  },
+  {
+    "event": "zone",
+    "value": "Escena2"
+  },
+  {
+    "event": "click",
+    "value1": "750",
+    "value2": "98"
+  },
+  {
+    "event": "click",
+    "value1": "811",
+    "value2": "273"
+  },
+  {
+    "event": "click",
+    "value1": "824",
+    "value2": "362",
+    "target": "Cuerdas"
+  },
+  {
+    "event": "click",
+    "value1": "824",
+    "value2": "362",
+    "target": "Cuerdas"
+  },
+  {
+    "event": "click",
+    "value1": "824",
+    "value2": "362"
+  },
+  {
+    "event": "click",
+    "value1": "836",
+    "value2": "372",
+    "target": "Cuerdas"
+  },
+  {
+    "event": "click",
+    "value1": "836",
+    "value2": "372",
+    "target": "Cuerdas"
+  },
+  {
+    "event": "click",
+    "value1": "836",
+    "value2": "372"
+  },
+  {
+    "event": "click",
+    "value1": "836",
+    "value2": "368",
+    "target": "Cuerdas"
+  },
+  {
+    "event": "click",
+    "value1": "836",
+    "value2": "368",
+    "target": "Cuerdas"
+  },
+  {
+    "event": "click",
+    "value1": "836",
+    "value2": "368"
+  },
+  {
+    "event": "click",
+    "value1": "823",
+    "value2": "374",
+    "target": "Cuerdas"
+  },
+  {
+    "event": "click",
+    "value1": "823",
+    "value2": "374",
+    "target": "Cuerdas"
+  },
+  {
+    "event": "click",
+    "value1": "823",
+    "value2": "374"
+  },
+  {
+    "event": "click",
+    "value1": "823",
+    "value2": "374",
+    "target": "Cuerdas"
+  },
+  {
+    "event": "click",
+    "value1": "823",
+    "value2": "374",
+    "target": "Cuerdas"
+  },
+  {
+    "event": "click",
+    "value1": "823",
+    "value2": "374"
+  },
+  {
+    "event": "click",
+    "value1": "1070",
+    "value2": "247"
+  },
+  {
+    "event": "click",
+    "value1": "1394",
+    "value2": "441",
+    "target": "Gaviota"
+  },
+  {
+    "event": "click",
+    "value1": "1394",
+    "value2": "441",
+    "target": "Gaviota"
+  },
+  {
+    "event": "click",
+    "value1": "1394",
+    "value2": "441"
+  },
+  {
+    "event": "click",
+    "value1": "1346",
+    "value2": "309"
+  },
+  {
+    "event": "click",
+    "value1": "1360",
+    "value2": "264"
+  },
+  {
+    "event": "click",
+    "value1": "1540",
+    "value2": "156"
+  },
+  {
+    "event": "click",
+    "value1": "767",
+    "value2": "141",
+    "target": "Lucrecia."
+  },
+  {
+    "event": "click",
+    "value1": "767",
+    "value2": "141"
+  },
+  {
+    "event": "click",
+    "value1": "1316",
+    "value2": "395",
+    "target": "Mendigo"
+  },
+  {
+    "event": "click",
+    "value1": "1316",
+    "value2": "395"
+  },
+  {
+    "event": "click",
+    "value1": "1306",
+    "value2": "439",
+    "target": "Mendigo"
+  },
+  {
+    "event": "click",
+    "value1": "1306",
+    "value2": "439"
+  },
+  {
+    "event": "click",
+    "value1": "914",
+    "value2": "93"
+  },
+  {
+    "event": "choice",
+    "target": "¿Dar dinero a Mendigo?",
+    "value": "Si"
+  },
+  {
+    "event": "var",
+    "target": "Cortesia",
+    "value": "90"
+  },
+  {
+    "event": "var",
+    "target": "Dinero",
+    "value": "65"
+  },
+  {
+    "event": "click",
+    "value1": "1470",
+    "value2": "379",
+    "target": "Barril"
+  },
+  {
+    "event": "click",
+    "value1": "1470",
+    "value2": "379",
+    "target": "Barril"
+  },
+  {
+    "event": "click",
+    "value1": "1470",
+    "value2": "379"
+  },
+  {
+    "event": "click",
+    "value1": "1499",
+    "value2": "189"
+  },
+  {
+    "event": "click",
+    "value1": "235",
+    "value2": "247"
+  },
+  {
+    "event": "click",
+    "value1": "224",
+    "value2": "242",
+    "target": "Lucrecia."
+  },
+  {
+    "event": "click",
+    "value1": "224",
+    "value2": "242"
+  },
+  {
+    "event": "click",
+    "value1": "1154",
+    "value2": "548"
+  },
+  {
+    "event": "click",
+    "value1": "1068",
+    "value2": "526",
+    "target": "Zorrilla."
+  },
+  {
+    "event": "click",
+    "value1": "1068",
+    "value2": "526"
+  },
+  {
+    "event": "click",
+    "value1": "1091",
+    "value2": "512",
+    "target": "Zorrilla."
+  },
+  {
+    "event": "click",
+    "value1": "1091",
+    "value2": "512"
+  },
+  {
+    "event": "click",
+    "value1": "1110",
+    "value2": "532",
+    "target": "Zorrilla."
+  },
+  {
+    "event": "click",
+    "value1": "1110",
+    "value2": "532"
+  },
+  {
+    "event": "click",
+    "value1": "1110",
+    "value2": "532",
+    "target": "Zorrilla."
+  },
+  {
+    "event": "click",
+    "value1": "1110",
+    "value2": "532"
+  },
+  {
+    "event": "click",
+    "value1": "1157",
+    "value2": "58"
+  },
+  {
+    "event": "click",
+    "value1": "1083",
+    "value2": "576"
+  },
+  {
+    "event": "click",
+    "value1": "1125",
+    "value2": "524",
+    "target": "Zorrilla."
+  },
+  {
+    "event": "click",
+    "value1": "1125",
+    "value2": "524"
+  },
+  {
+    "event": "click",
+    "value1": "1125",
+    "value2": "524",
+    "target": "Zorrilla."
+  },
+  {
+    "event": "click",
+    "value1": "1125",
+    "value2": "524"
+  },
+  {
+    "event": "click",
+    "value1": "1125",
+    "value2": "525",
+    "target": "Zorrilla."
+  },
+  {
+    "event": "click",
+    "value1": "1125",
+    "value2": "525"
+  },
+  {
+    "event": "click",
+    "value1": "1125",
+    "value2": "525",
+    "target": "Zorrilla."
+  },
+  {
+    "event": "click",
+    "value1": "1125",
+    "value2": "525"
+  },
+  {
+    "event": "click",
+    "value1": "1378",
+    "value2": "208"
+  },
+  {
+    "event": "click",
+    "value1": "237",
+    "value2": "219",
+    "target": "Lucrecia."
+  },
+  {
+    "event": "click",
+    "value1": "237",
+    "value2": "219"
+  },
+  {
+    "event": "click",
+    "value1": "213",
+    "value2": "193",
+    "target": "Lucrecia."
+  },
+  {
+    "event": "click",
+    "value1": "213",
+    "value2": "193"
+  },
+  {
+    "event": "click",
+    "value1": "1082",
+    "value2": "535",
+    "target": "Zorrilla."
+  },
+  {
+    "event": "click",
+    "value1": "1082",
+    "value2": "535"
+  },
+  {
+    "event": "click",
+    "value1": "1085",
+    "value2": "525",
+    "target": "Zorrilla."
+  },
+  {
+    "event": "click",
+    "value1": "1085",
+    "value2": "525"
+  },
+  {
+    "event": "click",
+    "value1": "1101",
+    "value2": "510",
+    "target": "Zorrilla."
+  },
+  {
+    "event": "click",
+    "value1": "1101",
+    "value2": "510"
+  },
+  {
+    "event": "click",
+    "value1": "1101",
+    "value2": "510",
+    "target": "Zorrilla."
+  },
+  {
+    "event": "click",
+    "value1": "1101",
+    "value2": "510"
+  },
+  {
+    "event": "click",
+    "value1": "1095",
+    "value2": "507",
+    "target": "Zorrilla."
+  },
+  {
+    "event": "click",
+    "value1": "1095",
+    "value2": "507"
+  },
+  {
+    "event": "click",
+    "value1": "1070",
+    "value2": "471",
+    "target": "Zorrilla."
+  },
+  {
+    "event": "click",
+    "value1": "1070",
+    "value2": "471"
+  },
+  {
+    "event": "click",
+    "value1": "1067",
+    "value2": "457",
+    "target": "Zorrilla."
+  },
+  {
+    "event": "click",
+    "value1": "1067",
+    "value2": "457"
+  },
+  {
+    "event": "click",
+    "value1": "1112",
+    "value2": "538"
+  },
+  {
+    "event": "click",
+    "value1": "1109",
+    "value2": "540"
+  },
+  {
+    "event": "click",
+    "value1": "1110",
+    "value2": "597",
+    "target": "Zorrilla."
+  },
+  {
+    "event": "click",
+    "value1": "1110",
+    "value2": "597"
+  },
+  {
+    "event": "click",
+    "value1": "1110",
+    "value2": "597",
+    "target": "Zorrilla."
+  },
+  {
+    "event": "click",
+    "value1": "1110",
+    "value2": "597"
+  },
+  {
+    "event": "click",
+    "value1": "210",
+    "value2": "163",
+    "target": "Lucrecia."
+  },
+  {
+    "event": "click",
+    "value1": "210",
+    "value2": "163"
+  },
+  {
+    "event": "click",
+    "value1": "1826",
+    "value2": "470",
+    "target": "Mesonero Joven"
+  },
+  {
+    "event": "click",
+    "value1": "1826",
+    "value2": "470"
+  },
+  {
+    "event": "click",
+    "value1": "1813",
+    "value2": "464",
+    "target": "Mesonero Joven"
+  },
+  {
+    "event": "click",
+    "value1": "1813",
+    "value2": "464"
+  },
+  {
+    "event": "click",
+    "value1": "1318",
+    "value2": "468"
+  },
+  {
+    "event": "click",
+    "value1": "1566",
+    "value2": "620"
+  },
+  {
+    "event": "click",
+    "value1": "1604",
+    "value2": "636"
+  },
+  {
+    "event": "click",
+    "value1": "1536",
+    "value2": "422"
+  },
+  {
+    "event": "click",
+    "value1": "1530",
+    "value2": "454"
+  },
+  {
+    "event": "click",
+    "value1": "1428",
+    "value2": "0"
+  },
+  {
+    "event": "click",
+    "value1": "1394",
+    "value2": "108"
+  },
+  {
+    "event": "click",
+    "value1": "1440",
+    "value2": "91"
+  },
+  {
+    "event": "click",
+    "value1": "1473",
+    "value2": "96"
+  },
+  {
+    "event": "click",
+    "value1": "1551",
+    "value2": "177"
+  },
+  {
+    "event": "click",
+    "value1": "1551",
+    "value2": "177"
+  },
+  {
+    "event": "click",
+    "value1": "1581",
+    "value2": "195"
+  },
+  {
+    "event": "click",
+    "value1": "1665",
+    "value2": "184"
+  },
+  {
+    "event": "click",
+    "value1": "1776",
+    "value2": "190"
+  },
+  {
+    "event": "click",
+    "value1": "1919",
+    "value2": "198"
+  },
+  {
+    "event": "click",
+    "value1": "1896",
+    "value2": "197"
+  },
+  {
+    "event": "click",
+    "value1": "1519",
+    "value2": "517"
+  },
+  {
+    "event": "click",
+    "value1": "257",
+    "value2": "149",
+    "target": "Lucrecia."
+  },
+  {
+    "event": "click",
+    "value1": "257",
+    "value2": "149"
+  },
+  {
+    "event": "click",
+    "value1": "258",
+    "value2": "157",
+    "target": "Lucrecia."
+  },
+  {
+    "event": "click",
+    "value1": "258",
+    "value2": "157"
+  },
+  {
+    "event": "click",
+    "value1": "258",
+    "value2": "148",
+    "target": "Lucrecia."
+  },
+  {
+    "event": "click",
+    "value1": "258",
+    "value2": "148"
+  },
+  {
+    "event": "click",
+    "value1": "1129",
+    "value2": "479",
+    "target": "Zorrilla."
+  },
+  {
+    "event": "click",
+    "value1": "1129",
+    "value2": "479"
+  },
+  {
+    "event": "click",
+    "value1": "1130",
+    "value2": "479",
+    "target": "Zorrilla."
+  },
+  {
+    "event": "click",
+    "value1": "1130",
+    "value2": "479"
+  },
+  {
+    "event": "click",
+    "value1": "1364",
+    "value2": "510"
+  },
+  {
+    "event": "click",
+    "value1": "1088",
+    "value2": "527",
+    "target": "Zorrilla."
+  },
+  {
+    "event": "click",
+    "value1": "1088",
+    "value2": "527"
+  },
+  {
+    "event": "click",
+    "value1": "1088",
+    "value2": "521",
+    "target": "Zorrilla."
+  },
+  {
+    "event": "click",
+    "value1": "1088",
+    "value2": "521"
+  },
+  {
+    "event": "click",
+    "value1": "1092",
+    "value2": "508",
+    "target": "Zorrilla."
+  },
+  {
+    "event": "click",
+    "value1": "1092",
+    "value2": "508"
+  },
+  {
+    "event": "click",
+    "value1": "1691",
+    "value2": "1047"
+  },
+  {
+    "event": "click",
+    "value1": "1100",
+    "value2": "557",
+    "target": "Zorrilla."
+  },
+  {
+    "event": "click",
+    "value1": "1100",
+    "value2": "557"
+  },
+  {
+    "event": "click",
+    "value1": "1100",
+    "value2": "557",
+    "target": "Zorrilla."
+  },
+  {
+    "event": "click",
+    "value1": "1100",
+    "value2": "557"
+  },
+  {
+    "event": "click",
+    "value1": "1096",
+    "value2": "549",
+    "target": "Zorrilla."
+  },
+  {
+    "event": "click",
+    "value1": "1096",
+    "value2": "549"
+  },
+  {
+    "event": "click",
+    "value1": "1094",
+    "value2": "539",
+    "target": "Zorrilla."
+  },
+  {
+    "event": "click",
+    "value1": "1094",
+    "value2": "539"
+  },
+  {
+    "event": "click",
+    "value1": "883",
+    "value2": "46"
+  },
+  {
+    "event": "click",
+    "value1": "616",
+    "value2": "79"
+  },
+  {
+    "event": "click",
+    "value1": "916",
+    "value2": "0"
+  },
+  {
+    "event": "click",
+    "value1": "916",
+    "value2": "0"
+  },
+  {
+    "event": "click",
+    "value1": "916",
+    "value2": "7"
+  },
+  {
+    "event": "click",
+    "value1": "929",
+    "value2": "49"
+  },
+  {
+    "event": "click",
+    "value1": "929",
+    "value2": "49"
+  },
+  {
+    "event": "click",
+    "value1": "1057",
+    "value2": "89"
+  },
+  {
+    "event": "click",
+    "value1": "1088",
+    "value2": "139"
+  },
+  {
+    "event": "click",
+    "value1": "1159",
+    "value2": "377",
+    "target": "Mendigo"
+  },
+  {
+    "event": "click",
+    "value1": "1159",
+    "value2": "377"
+  },
+  {
+    "event": "click",
+    "value1": "1106",
+    "value2": "218"
+  },
+  {
+    "event": "click",
+    "value1": "1504",
+    "value2": "450",
+    "target": "Zorrilla."
+  },
+  {
+    "event": "click",
+    "value1": "1504",
+    "value2": "450"
+  },
+  {
+    "event": "click",
+    "value1": "1483",
+    "value2": "555",
+    "target": "Zorrilla."
+  },
+  {
+    "event": "click",
+    "value1": "1483",
+    "value2": "555"
+  },
+  {
+    "event": "click",
+    "value1": "1482",
+    "value2": "552",
+    "target": "Zorrilla."
+  },
+  {
+    "event": "click",
+    "value1": "1482",
+    "value2": "552"
+  },
+  {
+    "event": "click",
+    "value1": "1482",
+    "value2": "552",
+    "target": "Zorrilla."
+  },
+  {
+    "event": "click",
+    "value1": "1482",
+    "value2": "552"
+  },
+  {
+    "event": "click",
+    "value1": "1566",
+    "value2": "65"
+  },
+  {
+    "event": "click",
+    "value1": "1562",
+    "value2": "256"
+  },
+  {
+    "event": "click",
+    "value1": "1554",
+    "value2": "185"
+  },
+  {
+    "event": "click",
+    "value1": "1539",
+    "value2": "137"
+  },
+  {
+    "event": "click",
+    "value1": "1777",
+    "value2": "481",
+    "target": "Mesonero Joven"
+  },
+  {
+    "event": "click",
+    "value1": "1777",
+    "value2": "481"
+  },
+  {
+    "event": "click",
+    "value1": "1000",
+    "value2": "136"
+  },
+  {
+    "event": "choice",
+    "target": "Qué desea puerto",
+    "value": "Carro para viajar"
+  },
+  {
+    "event": "click",
+    "value1": "1039",
+    "value2": "127"
+  },
+  {
+    "event": "choice",
+    "target": "Comprar carro",
+    "value": "Carro mediano"
+  },
+  {
+    "event": "var",
+    "target": "Dinero",
+    "value": "35"
+  },
+  {
+    "event": "click",
+    "value1": "1053",
+    "value2": "76"
+  },
+  {
+    "event": "click",
+    "value1": "1187",
+    "value2": "22"
+  },
+  {
+    "event": "choice",
+    "target": "Comprado carro ¿algo mas?",
+    "value": "Dueñas"
+  },
+  {
+    "event": "click",
+    "value1": "1014",
+    "value2": "193"
+  },
+  {
+    "event": "choice",
+    "target": "Comprar dueñas",
+    "value": "1 Dueña"
+  },
+  {
+    "event": "var",
+    "target": "Dinero",
+    "value": "10"
+  },
+  {
+    "event": "var",
+    "target": "Cortesia",
+    "value": "100"
+  },
+  {
+    "event": "click",
+    "value1": "1685",
+    "value2": "214"
+  },
+  {
+    "event": "click",
+    "value1": "1686",
+    "value2": "185"
+  },
+  {
+    "event": "click",
+    "value1": "1687",
+    "value2": "163"
+  },
+  {
+    "event": "click",
+    "value1": "1919",
+    "value2": "192"
+  },
+  {
+    "event": "click",
+    "value1": "1083",
+    "value2": "505",
+    "target": "Zorrilla."
+  },
+  {
+    "event": "click",
+    "value1": "1083",
+    "value2": "505"
+  },
+  {
+    "event": "click",
+    "value1": "1087",
+    "value2": "299"
+  },
+  {
+    "event": "click",
+    "value1": "1121",
+    "value2": "547",
+    "target": "Zorrilla."
+  },
+  {
+    "event": "click",
+    "value1": "1121",
+    "value2": "547"
+  },
+  {
+    "event": "click",
+    "value1": "1226",
+    "value2": "388"
+  },
+  {
+    "event": "click",
+    "value1": "1539",
+    "value2": "520"
+  },
+  {
+    "event": "click",
+    "value1": "1539",
+    "value2": "520"
+  },
+  {
+    "event": "click",
+    "value1": "1472",
+    "value2": "505"
+  },
+  {
+    "event": "click",
+    "value1": "1489",
+    "value2": "550"
+  },
+  {
+    "event": "click",
+    "value1": "1511",
+    "value2": "639"
+  },
+  {
+    "event": "click",
+    "value1": "1476",
+    "value2": "499"
+  },
+  {
+    "event": "click",
+    "value1": "1479",
+    "value2": "490"
+  },
+  {
+    "event": "click",
+    "value1": "1566",
+    "value2": "162"
+  },
+  {
+    "event": "click",
+    "value1": "1551",
+    "value2": "55"
+  },
+  {
+    "event": "click",
+    "value1": "1534",
+    "value2": "0"
+  },
+  {
+    "event": "click",
+    "value1": "1497",
+    "value2": "0"
+  },
+  {
+    "event": "click",
+    "value1": "1290",
+    "value2": "69"
+  },
+  {
+    "event": "click",
+    "value1": "1245",
+    "value2": "56"
+  },
+  {
+    "event": "click",
+    "value1": "1697",
+    "value2": "1027"
+  },
+  {
+    "event": "zone",
+    "value": "Transicion Orgaz"
+  },
+  {
+    "event": "zone",
+    "value": "CutScene2"
+  },
+  {
+    "event": "zone",
+    "value": "Escena3"
+  },
+  {
+    "event": "click",
+    "value1": "547",
+    "value2": "80"
+  },
+  {
+    "event": "click",
+    "value1": "776",
+    "value2": "19"
+  },
+  {
+    "event": "click",
+    "value1": "1063",
+    "value2": "139"
+  },
+  {
+    "event": "click",
+    "value1": "306",
+    "value2": "260",
+    "target": "Zorrilla"
+  },
+  {
+    "event": "click",
+    "value1": "306",
+    "value2": "260"
+  },
+  {
+    "event": "click",
+    "value1": "903",
+    "value2": "131"
+  },
+  {
+    "event": "choice",
+    "target": "Llegada a posada dueña",
+    "value": "¿Quejándose?"
+  },
+  {
+    "event": "click",
+    "value1": "961",
+    "value2": "136"
+  },
+  {
+    "event": "choice",
+    "target": "Dueña quejandose",
+    "value": "Ya se apeó"
+  },
+  {
+    "event": "click",
+    "value1": "952",
+    "value2": "90"
+  },
+  {
+    "event": "choice",
+    "target": "Cómo va en amor",
+    "value": "Cada día va en aumento"
+  },
+  {
+    "event": "click",
+    "value1": "903",
+    "value2": "8"
+  },
+  {
+    "event": "choice",
+    "target": "Por qué no dice algo",
+    "value": "Qué verguenza"
+  },
+  {
+    "event": "click",
+    "value1": "956",
+    "value2": "90"
+  },
+  {
+    "event": "choice",
+    "target": "Vaya un amante",
+    "value": "No me atrevo a mirarla"
+  },
+  {
+    "event": "click",
+    "value1": "1060",
+    "value2": "182"
+  },
+  {
+    "event": "click",
+    "value1": "1641",
+    "value2": "133"
+  },
+  {
+    "event": "click",
+    "value1": "865",
+    "value2": "248"
+  },
+  {
+    "event": "click",
+    "value1": "763",
+    "value2": "437",
+    "target": "Cliente1"
+  },
+  {
+    "event": "click",
+    "value1": "763",
+    "value2": "437"
+  },
+  {
+    "event": "click",
+    "value1": "1247",
+    "value2": "454",
+    "target": "Tendero Viejo"
+  },
+  {
+    "event": "click",
+    "value1": "1247",
+    "value2": "454"
+  },
+  {
+    "event": "click",
+    "value1": "1125",
+    "value2": "241"
+  },
+  {
+    "event": "click",
+    "value1": "967",
+    "value2": "461",
+    "target": "Tendero Viejo"
+  },
+  {
+    "event": "click",
+    "value1": "967",
+    "value2": "461"
+  },
+  {
+    "event": "click",
+    "value1": "1001",
+    "value2": "186"
+  },
+  {
+    "event": "choice",
+    "target": "Qué desea posada",
+    "value": "Dos habitaciones"
+  },
+  {
+    "event": "click",
+    "value1": "1100",
+    "value2": "178"
+  },
+  {
+    "event": "choice",
+    "target": "Comprar habitacion 1",
+    "value": "Humilde"
+  },
+  {
+    "event": "var",
+    "target": "Dinero",
+    "value": "5"
+  },
+  {
+    "event": "click",
+    "value1": "1008",
+    "value2": "134"
+  },
+  {
+    "event": "choice",
+    "target": "Comprar habitacion 2",
+    "value": "Normal"
+  },
+  {
+    "event": "click",
+    "value1": "1038",
+    "value2": "35"
+  },
+  {
+    "event": "choice",
+    "target": "Comprar habitacion 2",
+    "value": "Pajar"
+  },
+  {
+    "event": "click",
+    "value1": "1719",
+    "value2": "1047"
+  },
+  {
+    "event": "click",
+    "value1": "515",
+    "value2": "406",
+    "target": "Cliente1"
+  },
+  {
+    "event": "click",
+    "value1": "515",
+    "value2": "406"
+  },
+  {
+    "event": "click",
+    "value1": "375",
+    "value2": "388",
+    "target": "Lucrecia."
+  },
+  {
+    "event": "click",
+    "value1": "375",
+    "value2": "388"
+  },
+  {
+    "event": "click",
+    "value1": "375",
+    "value2": "388",
+    "target": "Lucrecia."
+  },
+  {
+    "event": "click",
+    "value1": "375",
+    "value2": "388"
+  },
+  {
+    "event": "click",
+    "value1": "1009",
+    "value2": "74"
+  },
+  {
+    "event": "var",
+    "target": "Cortesia",
+    "value": "100"
+  },
+  {
+    "event": "choice",
+    "target": "Compartir habitación",
+    "value": "Zorrilla y yo"
+  },
+  {
+    "event": "click",
+    "value1": "879",
+    "value2": "87"
+  },
+  {
+    "event": "choice",
+    "target": "Repartir habitacion",
+    "value": "Humilde"
+  },
+  {
+    "event": "var",
+    "target": "Cortesia",
+    "value": "90"
+  },
+  {
+    "event": "click",
+    "value1": "833",
+    "value2": "45"
+  },
+  {
+    "event": "click",
+    "value1": "1713",
+    "value2": "1043"
+  },
+  {
+    "event": "zone",
+    "value": "Escena3.2"
+  },
+  {
+    "event": "click",
+    "value1": "927",
+    "value2": "19"
+  },
+  {
+    "event": "choice",
+    "target": "Qué es ese ruido",
+    "value": "Ir a ver"
+  },
+  {
+    "event": "click",
+    "value1": "1173",
+    "value2": "401"
+  },
+  {
+    "event": "zone",
+    "value": "Minijuego2"
+  },
+  {
+    "event": "zone",
+    "value": "Escena3.3"
+  },
+  {
+    "event": "click",
+    "value1": "1664",
+    "value2": "1023"
+  },
+  {
+    "event": "zone",
+    "value": "Transicion Toledo"
+  },
+  {
+    "event": "zone",
+    "value": "CutScene3"
+  },
+  {
+    "event": "zone",
+    "value": "Escena4"
+  },
+  {
+    "event": "click",
+    "value1": "413",
+    "value2": "311"
+  },
+  {
+    "event": "click",
+    "value1": "422",
+    "value2": "241"
+  },
+  {
+    "event": "click",
+    "value1": "818",
+    "value2": "289",
+    "target": "Leonarda"
+  },
+  {
+    "event": "click",
+    "value1": "818",
+    "value2": "289"
+  },
+  {
+    "event": "click",
+    "value1": "951",
+    "value2": "82"
+  },
+  {
+    "event": "choice",
+    "target": "Vienes casado",
+    "value": "Ojalá"
+  },
+  {
+    "event": "click",
+    "value1": "932",
+    "value2": "12"
+  },
+  {
+    "event": "choice",
+    "target": "Traes dinero",
+    "value": "Fortuna no experiencia"
+  },
+  {
+    "event": "click",
+    "value1": "826",
+    "value2": "139"
+  },
+  {
+    "event": "choice",
+    "target": "Como se llama",
+    "value": "Lucrecia ando enamorado"
+  },
+  {
+    "event": "click",
+    "value1": "919",
+    "value2": "15"
+  },
+  {
+    "event": "choice",
+    "target": "Que pensais de Lucrecia",
+    "value": "Estoy enamorado"
+  },
+  {
+    "event": "click",
+    "value1": "919",
+    "value2": "126"
+  },
+  {
+    "event": "click",
+    "value1": "926",
+    "value2": "36"
+  },
+  {
+    "event": "zone",
+    "value": "Escena4.2"
+  },
+  {
+    "event": "click",
+    "value1": "808",
+    "value2": "702"
+  },
+  {
+    "event": "click",
+    "value1": "1813",
+    "value2": "741"
+  },
+  {
+    "event": "click",
+    "value1": "1325",
+    "value2": "784"
+  },
+  {
+    "event": "click",
+    "value1": "1233",
+    "value2": "907"
+  },
+  {
+    "event": "click",
+    "value1": "980",
+    "value2": "881"
+  },
+  {
+    "event": "click",
+    "value1": "928",
+    "value2": "849",
+    "target": "Raton"
+  },
+  {
+    "event": "click",
+    "value1": "928",
+    "value2": "849",
+    "target": "Raton"
+  },
+  {
+    "event": "click",
+    "value1": "928",
+    "value2": "849"
+  },
+  {
+    "event": "click",
+    "value1": "852",
+    "value2": "822",
+    "target": "Raton"
+  },
+  {
+    "event": "click",
+    "value1": "852",
+    "value2": "822",
+    "target": "Raton"
+  },
+  {
+    "event": "click",
+    "value1": "852",
+    "value2": "822"
+  },
+  {
+    "event": "click",
+    "value1": "1679",
+    "value2": "248",
+    "target": "Marcelo"
+  },
+  {
+    "event": "click",
+    "value1": "1679",
+    "value2": "248"
+  },
+  {
+    "event": "click",
+    "value1": "1012",
+    "value2": "14"
+  },
+  {
+    "event": "choice",
+    "target": "Creer a Marcelo",
+    "value": "No Creerle"
+  },
+  {
+    "event": "zone",
+    "value": "Minijuego3"
+  },
+  {
+    "event": "click",
+    "value1": "1499",
+    "value2": "108"
+  },
+  {
+    "event": "click",
+    "value1": "1499",
+    "value2": "108"
+  },
+  {
+    "event": "click",
+    "value1": "570",
+    "value2": "148"
+  },
+  {
+    "event": "click",
+    "value1": "1482",
+    "value2": "121"
+  },
+  {
+    "event": "click",
+    "value1": "1482",
+    "value2": "121"
+  },
+  {
+    "event": "click",
+    "value1": "1482",
+    "value2": "121"
+  },
+  {
+    "event": "click",
+    "value1": "1482",
+    "value2": "121"
+  },
+  {
+    "event": "click",
+    "value1": "1482",
+    "value2": "121"
+  },
+  {
+    "event": "click",
+    "value1": "1482",
+    "value2": "121"
+  },
+  {
+    "event": "click",
+    "value1": "1482",
+    "value2": "121"
+  },
+  {
+    "event": "click",
+    "value1": "1482",
+    "value2": "121"
+  },
+  {
+    "event": "click",
+    "value1": "1482",
+    "value2": "121"
+  },
+  {
+    "event": "click",
+    "value1": "1482",
+    "value2": "121"
+  },
+  {
+    "event": "click",
+    "value1": "1482",
+    "value2": "121"
+  },
+  {
+    "event": "click",
+    "value1": "1482",
+    "value2": "121"
+  },
+  {
+    "event": "click",
+    "value1": "1482",
+    "value2": "121"
+  },
+  {
+    "event": "click",
+    "value1": "1482",
+    "value2": "121"
+  },
+  {
+    "event": "click",
+    "value1": "1482",
+    "value2": "120"
+  },
+  {
+    "event": "click",
+    "value1": "1482",
+    "value2": "120"
+  },
+  {
+    "event": "click",
+    "value1": "1482",
+    "value2": "120"
+  },
+  {
+    "event": "click",
+    "value1": "1482",
+    "value2": "120"
+  },
+  {
+    "event": "click",
+    "value1": "1482",
+    "value2": "120"
+  },
+  {
+    "event": "click",
+    "value1": "1482",
+    "value2": "120"
+  },
+  {
+    "event": "click",
+    "value1": "1481",
+    "value2": "119"
+  },
+  {
+    "event": "click",
+    "value1": "1480",
+    "value2": "117"
+  },
+  {
+    "event": "click",
+    "value1": "1480",
+    "value2": "117"
+  },
+  {
+    "event": "click",
+    "value1": "1480",
+    "value2": "117"
+  },
+  {
+    "event": "click",
+    "value1": "1480",
+    "value2": "117"
+  },
+  {
+    "event": "click",
+    "value1": "1480",
+    "value2": "117"
+  },
+  {
+    "event": "click",
+    "value1": "1480",
+    "value2": "116"
+  },
+  {
+    "event": "click",
+    "value1": "524",
+    "value2": "139"
+  },
+  {
+    "event": "click",
+    "value1": "1271",
+    "value2": "203"
+  },
+  {
+    "event": "zone",
+    "value": "Escena4.3.2"
+  },
+  {
+    "event": "var",
+    "target": "Cortesia",
+    "value": "100"
+  },
+  {
+    "event": "zone",
+    "value": "Escena4.4"
+  },
+  {
+    "event": "click",
+    "value1": "1314",
+    "value2": "281",
+    "target": "Lucrecia"
+  },
+  {
+    "event": "click",
+    "value1": "1314",
+    "value2": "281"
+  },
+  {
+    "event": "screen",
+    "value": "Final Juego"
+  },
+  {
+    "event": "var",
+    "target": "Tipo final",
+    "value": "bodaDonJuan"
+  },
+  {
+    "event": "screen",
+    "value": "MenuPrincipal2"
+  },
+  {
+    "event": "screen",
+    "value": "MarkingOf"
+  },
+  {
+    "event": "screen",
+    "value": "MenuPrincipal2"
+  },
+  {
+    "event": "screen",
+    "value": "Juego"
+  },
+  {
+    "event": "zone",
+    "value": "CutScene Comienzo"
+  },
+  {
+    "event": "var",
+    "target": "Dinero",
+    "value": "20"
+  },
+  {
+    "event": "var",
+    "target": "Cortesia",
+    "value": "50"
+  },
+  {
+    "event": "zone",
+    "value": "Escena1"
+  },
+  {
+    "event": "click",
+    "value1": "1352",
+    "value2": "369"
+  },
+  {
+    "event": "click",
+    "value1": "1347",
+    "value2": "366"
+  },
+  {
+    "event": "click",
+    "value1": "1347",
+    "value2": "366"
+  },
+  {
+    "event": "click",
+    "value1": "1152",
+    "value2": "290"
+  },
+  {
+    "event": "click",
+    "value1": "1358",
+    "value2": "348",
+    "target": "Cofre"
+  },
+  {
+    "event": "click",
+    "value1": "1358",
+    "value2": "348"
+  },
+  {
+    "event": "click",
+    "value1": "1194",
+    "value2": "322"
+  },
+  {
+    "event": "var",
+    "target": "Dinero",
+    "value": "70"
+  },
+  {
+    "event": "var",
+    "target": "Cortesia",
+    "value": "40"
+  },
+  {
+    "event": "click",
+    "value1": "1164",
+    "value2": "233"
+  },
+  {
+    "event": "click",
+    "value1": "1195",
+    "value2": "232"
+  },
+  {
+    "event": "click",
+    "value1": "1370",
+    "value2": "317"
+  },
+  {
+    "event": "click",
+    "value1": "1481",
+    "value2": "340"
+  },
+  {
+    "event": "click",
+    "value1": "1207",
+    "value2": "312"
+  },
+  {
+    "event": "click",
+    "value1": "1247",
+    "value2": "311"
+  },
+  {
+    "event": "click",
+    "value1": "1711",
+    "value2": "345"
+  },
+  {
+    "event": "click",
+    "value1": "1645",
+    "value2": "194"
+  },
+  {
+    "event": "click",
+    "value1": "1538",
+    "value2": "145"
+  },
+  {
+    "event": "click",
+    "value1": "1642",
+    "value2": "291"
+  },
+  {
+    "event": "click",
+    "value1": "1639",
+    "value2": "474"
+  },
+  {
+    "event": "click",
+    "value1": "1484",
+    "value2": "210"
+  },
+  {
+    "event": "click",
+    "value1": "1558",
+    "value2": "348"
+  },
+  {
+    "event": "click",
+    "value1": "1589",
+    "value2": "258"
+  },
+  {
+    "event": "click",
+    "value1": "1510",
+    "value2": "61"
+  },
+  {
+    "event": "click",
+    "value1": "1517",
+    "value2": "65"
+  },
+  {
+    "event": "click",
+    "value1": "1578",
+    "value2": "130"
+  },
+  {
+    "event": "click",
+    "value1": "1625",
+    "value2": "169"
+  },
+  {
+    "event": "click",
+    "value1": "1683",
+    "value2": "169"
+  },
+  {
+    "event": "click",
+    "value1": "1705",
+    "value2": "159"
+  },
+  {
+    "event": "click",
+    "value1": "1705",
+    "value2": "159"
+  },
+  {
+    "event": "click",
+    "value1": "1705",
+    "value2": "159"
+  },
+  {
+    "event": "click",
+    "value1": "1705",
+    "value2": "159"
+  },
+  {
+    "event": "click",
+    "value1": "1267",
+    "value2": "309"
+  },
+  {
+    "event": "click",
+    "value1": "1552",
+    "value2": "401",
+    "target": "Vándalo"
+  },
+  {
+    "event": "click",
+    "value1": "1552",
+    "value2": "401"
+  },
+  {
+    "event": "click",
+    "value1": "1324",
+    "value2": "295"
+  },
+  {
+    "event": "click",
+    "value1": "1570",
+    "value2": "460",
+    "target": "Vándalo"
+  },
+  {
+    "event": "click",
+    "value1": "1570",
+    "value2": "460"
+  },
+  {
+    "event": "click",
+    "value1": "1539",
+    "value2": "432",
+    "target": "Vándalo"
+  },
+  {
+    "event": "click",
+    "value1": "1539",
+    "value2": "432"
+  },
+  {
+    "event": "click",
+    "value1": "304",
+    "value2": "469",
+    "target": "Zorrilla"
+  },
+  {
+    "event": "click",
+    "value1": "304",
+    "value2": "469"
+  },
+  {
+    "event": "click",
+    "value1": "284",
+    "value2": "529",
+    "target": "Zorrilla"
+  },
+  {
+    "event": "click",
+    "value1": "284",
+    "value2": "529"
+  },
+  {
+    "event": "click",
+    "value1": "1580",
+    "value2": "402",
+    "target": "Vándalo"
+  },
+  {
+    "event": "click",
+    "value1": "1580",
+    "value2": "402"
+  },
+  {
+    "event": "click",
+    "value1": "1547",
+    "value2": "493",
+    "target": "Vándalo"
+  },
+  {
+    "event": "click",
+    "value1": "1547",
+    "value2": "493"
+  },
+  {
+    "event": "click",
+    "value1": "1456",
+    "value2": "380"
+  },
+  {
+    "event": "click",
+    "value1": "1470",
+    "value2": "367",
+    "target": "Dama en apuros"
+  },
+  {
+    "event": "click",
+    "value1": "1470",
+    "value2": "367"
+  },
+  {
+    "event": "click",
+    "value1": "986",
+    "value2": "6"
+  },
+  {
+    "event": "var",
+    "target": "Cortesia",
+    "value": "50"
+  },
+  {
+    "event": "choice",
+    "target": "Ayudar a Lucrecia",
+    "value": "Desenvaniar la espada"
+  },
+  {
+    "event": "click",
+    "value1": "979",
+    "value2": "137"
+  },
+  {
+    "event": "choice",
+    "target": "Malhechor huye",
+    "value": "Debo ir tras él"
+  },
+  {
+    "event": "var",
+    "target": "Cortesia",
+    "value": "60"
+  },
+  {
+    "event": "zone",
+    "value": "Minijuego1"
+  },
+  {
+    "event": "click",
+    "value1": "266",
+    "value2": "486"
+  },
+  {
+    "event": "click",
+    "value1": "1203",
+    "value2": "400"
+  },
+  {
+    "event": "click",
+    "value1": "652",
+    "value2": "489"
+  },
+  {
+    "event": "click",
+    "value1": "705",
+    "value2": "543"
+  },
+  {
+    "event": "click",
+    "value1": "1211",
+    "value2": "494"
+  },
+  {
+    "event": "click",
+    "value1": "483",
+    "value2": "508"
+  },
+  {
+    "event": "click",
+    "value1": "730",
+    "value2": "516"
+  },
+  {
+    "event": "click",
+    "value1": "940",
+    "value2": "513"
+  },
+  {
+    "event": "click",
+    "value1": "807",
+    "value2": "513"
+  },
+  {
+    "event": "click",
+    "value1": "773",
+    "value2": "515"
+  },
+  {
+    "event": "click",
+    "value1": "835",
+    "value2": "506"
+  },
+  {
+    "event": "click",
+    "value1": "998",
+    "value2": "509"
+  },
+  {
+    "event": "click",
+    "value1": "827",
+    "value2": "535"
+  },
+  {
+    "event": "click",
+    "value1": "1176",
+    "value2": "570"
+  },
+  {
+    "event": "click",
+    "value1": "754",
+    "value2": "558"
+  },
+  {
+    "event": "click",
+    "value1": "860",
+    "value2": "528"
+  },
+  {
+    "event": "click",
+    "value1": "1133",
+    "value2": "502"
+  },
+  {
+    "event": "click",
+    "value1": "1194",
+    "value2": "661"
+  },
+  {
+    "event": "click",
+    "value1": "1067",
+    "value2": "528"
+  },
+  {
+    "event": "click",
+    "value1": "808",
+    "value2": "547"
+  },
+  {
+    "event": "click",
+    "value1": "1213",
+    "value2": "513"
+  },
+  {
+    "event": "click",
+    "value1": "167",
+    "value2": "687"
+  },
+  {
+    "event": "click",
+    "value1": "481",
+    "value2": "707"
+  },
+  {
+    "event": "click",
+    "value1": "633",
+    "value2": "712"
+  },
+  {
+    "event": "click",
+    "value1": "1045",
+    "value2": "619"
+  },
+  {
+    "event": "click",
+    "value1": "993",
+    "value2": "581"
+  },
+  {
+    "event": "click",
+    "value1": "745",
+    "value2": "583"
+  },
+  {
+    "event": "click",
+    "value1": "1015",
+    "value2": "560"
+  },
+  {
+    "event": "click",
+    "value1": "808",
+    "value2": "599"
+  },
+  {
+    "event": "click",
+    "value1": "834",
+    "value2": "582"
+  },
+  {
+    "event": "click",
+    "value1": "1104",
+    "value2": "536"
+  },
+  {
+    "event": "click",
+    "value1": "732",
+    "value2": "567"
+  },
+  {
+    "event": "click",
+    "value1": "888",
+    "value2": "564"
+  },
+  {
+    "event": "click",
+    "value1": "890",
+    "value2": "564"
+  },
+  {
+    "event": "click",
+    "value1": "891",
+    "value2": "562"
+  },
+  {
+    "event": "click",
+    "value1": "398",
+    "value2": "606"
+  },
+  {
+    "event": "click",
+    "value1": "668",
+    "value2": "600"
+  },
+  {
+    "event": "click",
+    "value1": "711",
+    "value2": "592"
+  },
+  {
+    "event": "click",
+    "value1": "948",
+    "value2": "550"
+  },
+  {
+    "event": "click",
+    "value1": "951",
+    "value2": "546"
+  },
+  {
+    "event": "click",
+    "value1": "1140",
+    "value2": "503"
+  },
+  {
+    "event": "click",
+    "value1": "227",
+    "value2": "614"
+  },
+  {
+    "event": "click",
+    "value1": "673",
+    "value2": "569"
+  },
+  {
+    "event": "click",
+    "value1": "848",
+    "value2": "565"
+  },
+  {
+    "event": "click",
+    "value1": "943",
+    "value2": "593"
+  },
+  {
+    "event": "click",
+    "value1": "975",
+    "value2": "593"
+  },
+  {
+    "event": "click",
+    "value1": "984",
+    "value2": "554"
+  },
+  {
+    "event": "click",
+    "value1": "984",
+    "value2": "536"
+  },
+  {
+    "event": "click",
+    "value1": "984",
+    "value2": "522"
+  },
+  {
+    "event": "click",
+    "value1": "983",
+    "value2": "517"
+  },
+  {
+    "event": "click",
+    "value1": "983",
+    "value2": "517"
+  },
+  {
+    "event": "click",
+    "value1": "983",
+    "value2": "519"
+  },
+  {
+    "event": "click",
+    "value1": "1046",
+    "value2": "514"
+  },
+  {
+    "event": "click",
+    "value1": "1084",
+    "value2": "552"
+  },
+  {
+    "event": "click",
+    "value1": "1132",
+    "value2": "575"
+  },
+  {
+    "event": "click",
+    "value1": "1132",
+    "value2": "575"
+  },
+  {
+    "event": "click",
+    "value1": "1151",
+    "value2": "717"
+  },
+  {
+    "event": "click",
+    "value1": "1135",
+    "value2": "698"
+  },
+  {
+    "event": "click",
+    "value1": "908",
+    "value2": "568"
+  },
+  {
+    "event": "click",
+    "value1": "908",
+    "value2": "568"
+  },
+  {
+    "event": "click",
+    "value1": "908",
+    "value2": "568"
+  },
+  {
+    "event": "click",
+    "value1": "908",
+    "value2": "568"
+  },
+  {
+    "event": "click",
+    "value1": "901",
+    "value2": "563"
+  },
+  {
+    "event": "click",
+    "value1": "900",
+    "value2": "563"
+  },
+  {
+    "event": "click",
+    "value1": "839",
+    "value2": "581"
+  },
+  {
+    "event": "click",
+    "value1": "838",
+    "value2": "582"
+  },
+  {
+    "event": "click",
+    "value1": "996",
+    "value2": "510"
+  },
+  {
+    "event": "click",
+    "value1": "1182",
+    "value2": "540"
+  },
+  {
+    "event": "click",
+    "value1": "979",
+    "value2": "516"
+  },
+  {
+    "event": "click",
+    "value1": "979",
+    "value2": "516"
+  },
+  {
+    "event": "click",
+    "value1": "952",
+    "value2": "513"
+  },
+  {
+    "event": "click",
+    "value1": "910",
+    "value2": "523"
+  },
+  {
+    "event": "click",
+    "value1": "818",
+    "value2": "640"
+  },
+  {
+    "event": "click",
+    "value1": "731",
+    "value2": "690"
+  },
+  {
+    "event": "click",
+    "value1": "731",
+    "value2": "693"
+  },
+  {
+    "event": "click",
+    "value1": "1278",
+    "value2": "268"
+  },
+  {
+    "event": "var",
+    "target": "Toques",
+    "value": "9"
+  },
+  {
+    "event": "var",
+    "target": "Tiempo Minijuego1",
+    "value": "27 sg"
+  },
+  {
+    "event": "var",
+    "target": "Dinero",
+    "value": "115"
+  },
+  {
+    "event": "click",
+    "value1": "1139",
+    "value2": "388"
+  },
+  {
+    "event": "click",
+    "value1": "1145",
+    "value2": "460"
+  },
+  {
+    "event": "click",
+    "value1": "1145",
+    "value2": "470"
+  },
+  {
+    "event": "click",
+    "value1": "1215",
+    "value2": "277"
+  },
+  {
+    "event": "zone",
+    "value": "Escena1.2"
+  },
+  {
+    "event": "click",
+    "value1": "1051",
+    "value2": "13"
+  },
+  {
+    "event": "var",
+    "target": "Cortesia",
+    "value": "80"
+  },
+  {
+    "event": "choice",
+    "target": "Que hacemos con Lucrecia",
+    "value": "LLevarla a que la curen"
+  },
+  {
+    "event": "click",
+    "value1": "1180",
+    "value2": "262"
+  },
+  {
+    "event": "click",
+    "value1": "1681",
+    "value2": "1053"
+  },
+  {
+    "event": "zone",
+    "value": "Transicion Barcelona"
+  },
+  {
+    "event": "zone",
+    "value": "CutScene1"
+  },
+  {
+    "event": "zone",
+    "value": "Escena2"
+  },
+  {
+    "event": "click",
+    "value1": "385",
+    "value2": "680"
+  },
+  {
+    "event": "click",
+    "value1": "1129",
+    "value2": "299"
+  },
+  {
+    "event": "click",
+    "value1": "1268",
+    "value2": "382"
+  },
+  {
+    "event": "click",
+    "value1": "1299",
+    "value2": "275"
+  },
+  {
+    "event": "click",
+    "value1": "1458",
+    "value2": "239"
+  },
+  {
+    "event": "click",
+    "value1": "1485",
+    "value2": "249"
+  },
+  {
+    "event": "click",
+    "value1": "1578",
+    "value2": "201"
+  },
+  {
+    "event": "click",
+    "value1": "1578",
+    "value2": "201"
+  },
+  {
+    "event": "click",
+    "value1": "1582",
+    "value2": "210"
+  },
+  {
+    "event": "click",
+    "value1": "1582",
+    "value2": "210"
+  },
+  {
+    "event": "click",
+    "value1": "1582",
+    "value2": "210"
+  },
+  {
+    "event": "click",
+    "value1": "1582",
+    "value2": "210"
+  },
+  {
+    "event": "click",
+    "value1": "1585",
+    "value2": "213"
+  },
+  {
+    "event": "click",
+    "value1": "1585",
+    "value2": "213"
+  },
+  {
+    "event": "click",
+    "value1": "1585",
+    "value2": "213"
+  },
+  {
+    "event": "click",
+    "value1": "1585",
+    "value2": "213"
+  },
+  {
+    "event": "click",
+    "value1": "1585",
+    "value2": "213"
+  },
+  {
+    "event": "click",
+    "value1": "1585",
+    "value2": "213"
+  },
+  {
+    "event": "click",
+    "value1": "1548",
+    "value2": "386",
+    "target": "Mendigo"
+  },
+  {
+    "event": "click",
+    "value1": "1548",
+    "value2": "386"
+  },
+  {
+    "event": "click",
+    "value1": "853",
+    "value2": "93"
+  },
+  {
+    "event": "choice",
+    "target": "¿Dar dinero a Mendigo?",
+    "value": "Si"
+  },
+  {
+    "event": "var",
+    "target": "Cortesia",
+    "value": "90"
+  },
+  {
+    "event": "var",
+    "target": "Dinero",
+    "value": "110"
+  },
+  {
+    "event": "click",
+    "value1": "1244",
+    "value2": "183"
+  },
+  {
+    "event": "click",
+    "value1": "1372",
+    "value2": "200"
+  },
+  {
+    "event": "click",
+    "value1": "1380",
+    "value2": "209"
+  },
+  {
+    "event": "click",
+    "value1": "1548",
+    "value2": "380"
+  },
+  {
+    "event": "click",
+    "value1": "1786",
+    "value2": "474",
+    "target": "Mesonero Joven"
+  },
+  {
+    "event": "click",
+    "value1": "1786",
+    "value2": "474"
+  },
+  {
+    "event": "click",
+    "value1": "954",
+    "value2": "133"
+  },
+  {
+    "event": "choice",
+    "target": "Qué desea puerto",
+    "value": "Carro para viajar"
+  },
+  {
+    "event": "click",
+    "value1": "837",
+    "value2": "129"
+  },
+  {
+    "event": "choice",
+    "target": "Comprar carro",
+    "value": "Carro mediano"
+  },
+  {
+    "event": "var",
+    "target": "Dinero",
+    "value": "80"
+  },
+  {
+    "event": "click",
+    "value1": "1001",
+    "value2": "22"
+  },
+  {
+    "event": "choice",
+    "target": "Comprado carro ¿algo mas?",
+    "value": "Dueñas"
+  },
+  {
+    "event": "click",
+    "value1": "918",
+    "value2": "201"
+  },
+  {
+    "event": "choice",
+    "target": "Comprar dueñas",
+    "value": "1 Dueña"
+  },
+  {
+    "event": "var",
+    "target": "Dinero",
+    "value": "55"
+  },
+  {
+    "event": "var",
+    "target": "Cortesia",
+    "value": "100"
+  },
+  {
+    "event": "click",
+    "value1": "1692",
+    "value2": "1039"
+  },
+  {
+    "event": "zone",
+    "value": "Transicion Orgaz"
+  },
+  {
+    "event": "zone",
+    "value": "CutScene2"
+  },
+  {
+    "event": "zone",
+    "value": "Escena3"
+  },
+  {
+    "event": "click",
+    "value1": "936",
+    "value2": "241"
+  },
+  {
+    "event": "click",
+    "value1": "592",
+    "value2": "102"
+  },
+  {
+    "event": "click",
+    "value1": "611",
+    "value2": "128"
+  },
+  {
+    "event": "click",
+    "value1": "832",
+    "value2": "92"
+  },
+  {
+    "event": "click",
+    "value1": "950",
+    "value2": "178"
+  },
+  {
+    "event": "click",
+    "value1": "1210",
+    "value2": "206"
+  },
+  {
+    "event": "click",
+    "value1": "1269",
+    "value2": "214"
+  },
+  {
+    "event": "click",
+    "value1": "1207",
+    "value2": "204"
+  },
+  {
+    "event": "click",
+    "value1": "1019",
+    "value2": "223"
+  },
+  {
+    "event": "click",
+    "value1": "1174",
+    "value2": "172"
+  },
+  {
+    "event": "click",
+    "value1": "1780",
+    "value2": "237"
+  },
+  {
+    "event": "click",
+    "value1": "0",
+    "value2": "215"
+  },
+  {
+    "event": "click",
+    "value1": "159",
+    "value2": "227"
+  },
+  {
+    "event": "click",
+    "value1": "371",
+    "value2": "218",
+    "target": "Zorrilla"
+  },
+  {
+    "event": "click",
+    "value1": "371",
+    "value2": "218"
+  },
+  {
+    "event": "click",
+    "value1": "971",
+    "value2": "75"
+  },
+  {
+    "event": "choice",
+    "target": "Llegada a posada dueña",
+    "value": "Falta de respeto"
+  },
+  {
+    "event": "click",
+    "value1": "975",
+    "value2": "34"
+  },
+  {
+    "event": "choice",
+    "target": "Dueña quejandose",
+    "value": "Ya se apeó"
+  },
+  {
+    "event": "click",
+    "value1": "1028",
+    "value2": "77"
+  },
+  {
+    "event": "choice",
+    "target": "Cómo va en amor",
+    "value": "Cada día va en aumento"
+  },
+  {
+    "event": "click",
+    "value1": "966",
+    "value2": "13"
+  },
+  {
+    "event": "choice",
+    "target": "Por qué no dice algo",
+    "value": "Qué verguenza"
+  },
+  {
+    "event": "click",
+    "value1": "1159",
+    "value2": "865",
+    "target": "Cuervo"
+  },
+  {
+    "event": "click",
+    "value1": "1159",
+    "value2": "865",
+    "target": "Cuervo"
+  },
+  {
+    "event": "click",
+    "value1": "1159",
+    "value2": "865"
+  },
+  {
+    "event": "click",
+    "value1": "1319",
+    "value2": "932",
+    "target": "VentanaRaton"
+  },
+  {
+    "event": "click",
+    "value1": "1319",
+    "value2": "932",
+    "target": "VentanaRaton"
+  },
+  {
+    "event": "click",
+    "value1": "1319",
+    "value2": "932"
+  },
+  {
+    "event": "click",
+    "value1": "1319",
+    "value2": "929"
+  },
+  {
+    "event": "click",
+    "value1": "1307",
+    "value2": "938"
+  },
+  {
+    "event": "click",
+    "value1": "785",
+    "value2": "90"
+  },
+  {
+    "event": "choice",
+    "target": "Vaya un amante",
+    "value": "No me atrevo a mirarla"
+  },
+  {
+    "event": "click",
+    "value1": "920",
+    "value2": "110"
+  },
+  {
+    "event": "click",
+    "value1": "1035",
+    "value2": "121"
+  },
+  {
+    "event": "click",
+    "value1": "1035",
+    "value2": "129"
+  },
+  {
+    "event": "click",
+    "value1": "1557",
+    "value2": "137"
+  },
+  {
+    "event": "click",
+    "value1": "1413",
+    "value2": "158"
+  },
+  {
+    "event": "click",
+    "value1": "583",
+    "value2": "411",
+    "target": "Cliente1"
+  },
+  {
+    "event": "click",
+    "value1": "583",
+    "value2": "411"
+  },
+  {
+    "event": "click",
+    "value1": "703",
+    "value2": "496",
+    "target": "Cliente2"
+  },
+  {
+    "event": "click",
+    "value1": "703",
+    "value2": "496"
+  },
+  {
+    "event": "click",
+    "value1": "682",
+    "value2": "502"
+  },
+  {
+    "event": "click",
+    "value1": "877",
+    "value2": "491"
+  },
+  {
+    "event": "click",
+    "value1": "876",
+    "value2": "491",
+    "target": "Cliente2"
+  },
+  {
+    "event": "click",
+    "value1": "876",
+    "value2": "491"
+  },
+  {
+    "event": "click",
+    "value1": "853",
+    "value2": "326"
+  },
+  {
+    "event": "click",
+    "value1": "871",
+    "value2": "310"
+  },
+  {
+    "event": "click",
+    "value1": "871",
+    "value2": "310"
+  },
+  {
+    "event": "click",
+    "value1": "871",
+    "value2": "307"
+  },
+  {
+    "event": "click",
+    "value1": "872",
+    "value2": "289"
+  },
+  {
+    "event": "click",
+    "value1": "872",
+    "value2": "289"
+  },
+  {
+    "event": "click",
+    "value1": "872",
+    "value2": "289"
+  },
+  {
+    "event": "click",
+    "value1": "895",
+    "value2": "481",
+    "target": "Cliente2"
+  },
+  {
+    "event": "click",
+    "value1": "895",
+    "value2": "481"
+  },
+  {
+    "event": "click",
+    "value1": "1112",
+    "value2": "249"
+  },
+  {
+    "event": "click",
+    "value1": "933",
+    "value2": "474"
+  },
+  {
+    "event": "click",
+    "value1": "949",
+    "value2": "446",
+    "target": "Tendero Viejo"
+  },
+  {
+    "event": "click",
+    "value1": "949",
+    "value2": "446"
+  },
+  {
+    "event": "click",
+    "value1": "891",
+    "value2": "187"
+  },
+  {
+    "event": "choice",
+    "target": "Qué desea posada",
+    "value": "Dos habitaciones"
+  },
+  {
+    "event": "click",
+    "value1": "688",
+    "value2": "139"
+  },
+  {
+    "event": "choice",
+    "target": "Comprar habitacion 1",
+    "value": "Normal"
+  },
+  {
+    "event": "var",
+    "target": "Dinero",
+    "value": "35"
+  },
+  {
+    "event": "click",
+    "value1": "786",
+    "value2": "84"
+  },
+  {
+    "event": "choice",
+    "target": "Comprar habitacion 2",
+    "value": "Humilde"
+  },
+  {
+    "event": "var",
+    "target": "Dinero",
+    "value": "30"
+  },
+  {
+    "event": "click",
+    "value1": "409",
+    "value2": "379",
+    "target": "Lucrecia."
+  },
+  {
+    "event": "click",
+    "value1": "409",
+    "value2": "379"
+  },
+  {
+    "event": "click",
+    "value1": "397",
+    "value2": "372",
+    "target": "Lucrecia."
+  },
+  {
+    "event": "click",
+    "value1": "397",
+    "value2": "372"
+  },
+  {
+    "event": "click",
+    "value1": "999",
+    "value2": "75"
+  },
+  {
+    "event": "var",
+    "target": "Cortesia",
+    "value": "100"
+  },
+  {
+    "event": "choice",
+    "target": "Compartir habitación",
+    "value": "Zorrilla y yo"
+  },
+  {
+    "event": "click",
+    "value1": "908",
+    "value2": "29"
+  },
+  {
+    "event": "var",
+    "target": "Cortesia",
+    "value": "100"
+  },
+  {
+    "event": "choice",
+    "target": "Repartir habitación",
+    "value": "Normal"
+  },
+  {
+    "event": "click",
+    "value1": "1677",
+    "value2": "1030"
+  },
+  {
+    "event": "zone",
+    "value": "Escena3.2"
+  },
+  {
+    "event": "click",
+    "value1": "1175",
+    "value2": "367"
+  },
+  {
+    "event": "click",
+    "value1": "1179",
+    "value2": "403"
+  },
+  {
+    "event": "click",
+    "value1": "1175",
+    "value2": "409"
+  },
+  {
+    "event": "click",
+    "value1": "1172",
+    "value2": "411"
+  },
+  {
+    "event": "click",
+    "value1": "1171",
+    "value2": "414"
+  },
+  {
+    "event": "click",
+    "value1": "1171",
+    "value2": "414"
+  },
+  {
+    "event": "click",
+    "value1": "1171",
+    "value2": "414"
+  },
+  {
+    "event": "click",
+    "value1": "1171",
+    "value2": "414"
+  },
+  {
+    "event": "click",
+    "value1": "1171",
+    "value2": "421"
+  },
+  {
+    "event": "click",
+    "value1": "1171",
+    "value2": "421"
+  },
+  {
+    "event": "click",
+    "value1": "1171",
+    "value2": "413"
+  },
+  {
+    "event": "click",
+    "value1": "1173",
+    "value2": "433"
+  },
+  {
+    "event": "click",
+    "value1": "1031",
+    "value2": "21"
+  },
+  {
+    "event": "click",
+    "value1": "1153",
+    "value2": "372"
+  },
+  {
+    "event": "click",
+    "value1": "1158",
+    "value2": "415"
+  },
+  {
+    "event": "click",
+    "value1": "1158",
+    "value2": "415"
+  },
+  {
+    "event": "click",
+    "value1": "1158",
+    "value2": "415"
+  },
+  {
+    "event": "click",
+    "value1": "983",
+    "value2": "34"
+  },
+  {
+    "event": "choice",
+    "target": "Qué es ese ruido",
+    "value": "Ir a ver"
+  },
+  {
+    "event": "click",
+    "value1": "1174",
+    "value2": "412"
+  },
+  {
+    "event": "click",
+    "value1": "1174",
+    "value2": "412"
+  },
+  {
+    "event": "zone",
+    "value": "Minijuego2"
+  },
+  {
+    "event": "click",
+    "value1": "960",
+    "value2": "594"
+  },
+  {
+    "event": "click",
+    "value1": "954",
+    "value2": "564"
+  },
+  {
+    "event": "click",
+    "value1": "923",
+    "value2": "560"
+  },
+  {
+    "event": "zone",
+    "value": "Escena3.3"
+  },
+  {
+    "event": "click",
+    "value1": "1649",
+    "value2": "1052"
+  },
+  {
+    "event": "zone",
+    "value": "Transicion Toledo"
+  },
+  {
+    "event": "zone",
+    "value": "CutScene3"
+  },
+  {
+    "event": "zone",
+    "value": "Escena4"
+  },
+  {
+    "event": "click",
+    "value1": "1074",
+    "value2": "965"
+  },
+  {
+    "event": "click",
+    "value1": "622",
+    "value2": "323"
+  },
+  {
+    "event": "click",
+    "value1": "778",
+    "value2": "320",
+    "target": "Leonarda"
+  },
+  {
+    "event": "click",
+    "value1": "778",
+    "value2": "320"
+  },
+  {
+    "event": "click",
+    "value1": "778",
+    "value2": "319",
+    "target": "Leonarda"
+  },
+  {
+    "event": "click",
+    "value1": "778",
+    "value2": "319"
+  },
+  {
+    "event": "click",
+    "value1": "778",
+    "value2": "319",
+    "target": "Leonarda"
+  },
+  {
+    "event": "click",
+    "value1": "778",
+    "value2": "319"
+  },
+  {
+    "event": "click",
+    "value1": "883",
+    "value2": "79"
+  },
+  {
+    "event": "choice",
+    "target": "Vienes casado",
+    "value": "Ojalá"
+  },
+  {
+    "event": "click",
+    "value1": "743",
+    "value2": "361"
+  },
+  {
+    "event": "click",
+    "value1": "745",
+    "value2": "359"
+  },
+  {
+    "event": "click",
+    "value1": "926",
+    "value2": "21"
+  },
+  {
+    "event": "click",
+    "value1": "936",
+    "value2": "15"
+  },
+  {
+    "event": "choice",
+    "target": "Traes dinero",
+    "value": "Fortuna no experiencia"
+  },
+  {
+    "event": "click",
+    "value1": "815",
+    "value2": "219",
+    "target": "Leonarda"
+  },
+  {
+    "event": "click",
+    "value1": "815",
+    "value2": "219"
+  },
+  {
+    "event": "click",
+    "value1": "815",
+    "value2": "219",
+    "target": "Leonarda"
+  },
+  {
+    "event": "click",
+    "value1": "815",
+    "value2": "219"
+  },
+  {
+    "event": "click",
+    "value1": "815",
+    "value2": "219",
+    "target": "Leonarda"
+  },
+  {
+    "event": "click",
+    "value1": "815",
+    "value2": "219"
+  },
+  {
+    "event": "click",
+    "value1": "844",
+    "value2": "313",
+    "target": "Leonarda"
+  },
+  {
+    "event": "click",
+    "value1": "844",
+    "value2": "313"
+  },
+  {
+    "event": "click",
+    "value1": "923",
+    "value2": "129"
+  },
+  {
+    "event": "choice",
+    "target": "Como se llama",
+    "value": "Lucrecia ando enamorado"
+  },
+  {
+    "event": "click",
+    "value1": "804",
+    "value2": "263",
+    "target": "Leonarda"
+  },
+  {
+    "event": "click",
+    "value1": "804",
+    "value2": "263"
+  },
+  {
+    "event": "click",
+    "value1": "804",
+    "value2": "262",
+    "target": "Leonarda"
+  },
+  {
+    "event": "click",
+    "value1": "804",
+    "value2": "262"
+  },
+  {
+    "event": "click",
+    "value1": "804",
+    "value2": "262",
+    "target": "Leonarda"
+  },
+  {
+    "event": "click",
+    "value1": "804",
+    "value2": "262"
+  },
+  {
+    "event": "click",
+    "value1": "804",
+    "value2": "259",
+    "target": "Leonarda"
+  },
+  {
+    "event": "click",
+    "value1": "804",
+    "value2": "259"
+  },
+  {
+    "event": "click",
+    "value1": "961",
+    "value2": "14"
+  },
+  {
+    "event": "choice",
+    "target": "Que pensais de Lucrecia",
+    "value": "Estoy enamorado"
+  },
+  {
+    "event": "click",
+    "value1": "767",
+    "value2": "364"
+  },
+  {
+    "event": "click",
+    "value1": "767",
+    "value2": "369"
+  },
+  {
+    "event": "click",
+    "value1": "767",
+    "value2": "369"
+  },
+  {
+    "event": "zone",
+    "value": "Escena4.2"
+  },
+  {
+    "event": "click",
+    "value1": "821",
+    "value2": "338"
+  },
+  {
+    "event": "click",
+    "value1": "822",
+    "value2": "335"
+  },
+  {
+    "event": "click",
+    "value1": "1588",
+    "value2": "263",
+    "target": "Claudio"
+  },
+  {
+    "event": "click",
+    "value1": "1588",
+    "value2": "263"
+  },
+  {
+    "event": "click",
+    "value1": "1590",
+    "value2": "261",
+    "target": "Claudio"
+  },
+  {
+    "event": "click",
+    "value1": "1590",
+    "value2": "261"
+  },
+  {
+    "event": "click",
+    "value1": "1602",
+    "value2": "240",
+    "target": "Claudio"
+  },
+  {
+    "event": "click",
+    "value1": "1602",
+    "value2": "240"
+  },
+  {
+    "event": "click",
+    "value1": "1633",
+    "value2": "221",
+    "target": "Marcelo"
+  },
+  {
+    "event": "click",
+    "value1": "1633",
+    "value2": "221"
+  },
+  {
+    "event": "click",
+    "value1": "1647",
+    "value2": "217",
+    "target": "Marcelo"
+  },
+  {
+    "event": "click",
+    "value1": "1647",
+    "value2": "217"
+  },
+  {
+    "event": "click",
+    "value1": "1691",
+    "value2": "229",
+    "target": "Marcelo"
+  },
+  {
+    "event": "click",
+    "value1": "1691",
+    "value2": "229"
+  },
+  {
+    "event": "click",
+    "value1": "1691",
+    "value2": "231",
+    "target": "Marcelo"
+  },
+  {
+    "event": "click",
+    "value1": "1691",
+    "value2": "231"
+  },
+  {
+    "event": "click",
+    "value1": "1691",
+    "value2": "231",
+    "target": "Marcelo"
+  },
+  {
+    "event": "click",
+    "value1": "1691",
+    "value2": "231"
+  },
+  {
+    "event": "click",
+    "value1": "1691",
+    "value2": "231",
+    "target": "Marcelo"
+  },
+  {
+    "event": "click",
+    "value1": "1691",
+    "value2": "231"
+  },
+  {
+    "event": "click",
+    "value1": "1691",
+    "value2": "231",
+    "target": "Marcelo"
+  },
+  {
+    "event": "click",
+    "value1": "1691",
+    "value2": "231"
+  },
+  {
+    "event": "click",
+    "value1": "1691",
+    "value2": "231",
+    "target": "Marcelo"
+  },
+  {
+    "event": "click",
+    "value1": "1691",
+    "value2": "231"
+  },
+  {
+    "event": "click",
+    "value1": "1692",
+    "value2": "231",
+    "target": "Marcelo"
+  },
+  {
+    "event": "click",
+    "value1": "1692",
+    "value2": "231"
+  },
+  {
+    "event": "click",
+    "value1": "1692",
+    "value2": "231",
+    "target": "Marcelo"
+  },
+  {
+    "event": "click",
+    "value1": "1692",
+    "value2": "231"
+  },
+  {
+    "event": "click",
+    "value1": "1033",
+    "value2": "16"
+  },
+  {
+    "event": "choice",
+    "target": "Creer a Marcelo",
+    "value": "No Creerle"
+  },
+  {
+    "event": "click",
+    "value1": "1595",
+    "value2": "240",
+    "target": "Claudio"
+  },
+  {
+    "event": "click",
+    "value1": "1595",
+    "value2": "240"
+  },
+  {
+    "event": "click",
+    "value1": "1636",
+    "value2": "236",
+    "target": "Marcelo"
+  },
+  {
+    "event": "click",
+    "value1": "1636",
+    "value2": "236"
+  },
+  {
+    "event": "click",
+    "value1": "1649",
+    "value2": "242",
+    "target": "Marcelo"
+  },
+  {
+    "event": "click",
+    "value1": "1649",
+    "value2": "242"
+  },
+  {
+    "event": "click",
+    "value1": "1669",
+    "value2": "219",
+    "target": "Marcelo"
+  },
+  {
+    "event": "click",
+    "value1": "1669",
+    "value2": "219"
+  },
+  {
+    "event": "click",
+    "value1": "1672",
+    "value2": "215",
+    "target": "Marcelo"
+  },
+  {
+    "event": "click",
+    "value1": "1672",
+    "value2": "215"
+  },
+  {
+    "event": "zone",
+    "value": "Minijuego3"
+  },
+  {
+    "event": "click",
+    "value1": "1477",
+    "value2": "109"
+  },
+  {
+    "event": "click",
+    "value1": "568",
+    "value2": "146"
+  },
+  {
+    "event": "click",
+    "value1": "1525",
+    "value2": "130"
+  },
+  {
+    "event": "click",
+    "value1": "1521",
+    "value2": "129"
+  },
+  {
+    "event": "click",
+    "value1": "1520",
+    "value2": "120"
+  },
+  {
+    "event": "click",
+    "value1": "1520",
+    "value2": "120"
+  },
+  {
+    "event": "click",
+    "value1": "1520",
+    "value2": "120"
+  },
+  {
+    "event": "click",
+    "value1": "1520",
+    "value2": "117"
+  },
+  {
+    "event": "click",
+    "value1": "1520",
+    "value2": "117"
+  },
+  {
+    "event": "click",
+    "value1": "1520",
+    "value2": "117"
+  },
+  {
+    "event": "click",
+    "value1": "1520",
+    "value2": "117"
+  },
+  {
+    "event": "click",
+    "value1": "1520",
+    "value2": "117"
+  },
+  {
+    "event": "click",
+    "value1": "1520",
+    "value2": "117"
+  },
+  {
+    "event": "click",
+    "value1": "1520",
+    "value2": "117"
+  },
+  {
+    "event": "click",
+    "value1": "1520",
+    "value2": "117"
+  },
+  {
+    "event": "click",
+    "value1": "1520",
+    "value2": "117"
+  },
+  {
+    "event": "click",
+    "value1": "1520",
+    "value2": "117"
+  },
+  {
+    "event": "click",
+    "value1": "1520",
+    "value2": "117"
+  },
+  {
+    "event": "click",
+    "value1": "1520",
+    "value2": "117"
+  },
+  {
+    "event": "click",
+    "value1": "1520",
+    "value2": "125"
+  },
+  {
+    "event": "click",
+    "value1": "1521",
+    "value2": "113"
+  },
+  {
+    "event": "click",
+    "value1": "1521",
+    "value2": "107"
+  },
+  {
+    "event": "click",
+    "value1": "1521",
+    "value2": "107"
+  },
+  {
+    "event": "click",
+    "value1": "1521",
+    "value2": "107"
+  },
+  {
+    "event": "click",
+    "value1": "1521",
+    "value2": "107"
+  },
+  {
+    "event": "click",
+    "value1": "1521",
+    "value2": "107"
+  },
+  {
+    "event": "click",
+    "value1": "1521",
+    "value2": "107"
+  },
+  {
+    "event": "click",
+    "value1": "1521",
+    "value2": "107"
+  },
+  {
+    "event": "click",
+    "value1": "1521",
+    "value2": "107"
+  },
+  {
+    "event": "click",
+    "value1": "1521",
+    "value2": "107"
+  },
+  {
+    "event": "click",
+    "value1": "548",
+    "value2": "115"
+  },
+  {
+    "event": "click",
+    "value1": "1292",
+    "value2": "204"
+  },
+  {
+    "event": "click",
+    "value1": "1296",
+    "value2": "209"
+  },
+  {
+    "event": "zone",
+    "value": "Escena4.3.2"
+  },
+  {
+    "event": "var",
+    "target": "Cortesia",
+    "value": "100"
+  },
+  {
+    "event": "click",
+    "value1": "1827",
+    "value2": "505"
+  },
+  {
+    "event": "click",
+    "value1": "1777",
+    "value2": "502"
+  },
+  {
+    "event": "click",
+    "value1": "1671",
+    "value2": "388"
+  },
+  {
+    "event": "click",
+    "value1": "1642",
+    "value2": "361"
+  },
+  {
+    "event": "zone",
+    "value": "Escena4.4"
+  },
+  {
+    "event": "click",
+    "value1": "1638",
+    "value2": "303"
+  },
+  {
+    "event": "click",
+    "value1": "1638",
+    "value2": "304"
+  },
+  {
+    "event": "click",
+    "value1": "1674",
+    "value2": "169"
+  },
+  {
+    "event": "click",
+    "value1": "1679",
+    "value2": "3"
+  },
+  {
+    "event": "click",
+    "value1": "1911",
+    "value2": "0"
+  },
+  {
+    "event": "click",
+    "value1": "1919",
+    "value2": "233"
+  },
+  {
+    "event": "click",
+    "value1": "1919",
+    "value2": "290"
+  },
+  {
+    "event": "click",
+    "value1": "1291",
+    "value2": "259",
+    "target": "Lucrecia"
+  },
+  {
+    "event": "click",
+    "value1": "1291",
+    "value2": "259"
+  },
+  {
+    "event": "click",
+    "value1": "1298",
+    "value2": "261",
+    "target": "Lucrecia"
+  },
+  {
+    "event": "click",
+    "value1": "1298",
+    "value2": "261"
+  },
+  {
+    "event": "click",
+    "value1": "1305",
+    "value2": "295"
+  },
+  {
+    "event": "click",
+    "value1": "1327",
+    "value2": "321"
+  },
+  {
+    "event": "click",
+    "value1": "1335",
+    "value2": "321"
+  },
+  {
+    "event": "click",
+    "value1": "1351",
+    "value2": "318"
+  },
+  {
+    "event": "click",
+    "value1": "1363",
+    "value2": "318"
+  },
+  {
+    "event": "screen",
+    "value": "Final Juego"
+  },
+  {
+    "event": "var",
+    "target": "Tipo final",
+    "value": "bodaDonJuan"
+  },
+  {
+    "event": "screen",
+    "value": "Final Juego"
+  },
+  {
+    "event": "var",
+    "target": "Tipo final",
+    "value": "bodaDonJuan"
+  },
+  {
+    "event": "screen",
+    "value": "MenuPrincipal2"
+  }
+]
