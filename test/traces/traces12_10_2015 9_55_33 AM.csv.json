@@ -1,6576 +1,9150 @@
 [
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Codigo Usuario",
     "value": "100"
   },
   {
     "event": "screen",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "Menu Principal"
   },
   {
     "event": "screen",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "Juego"
   },
   {
     "event": "zone",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "CutScene Comienzo"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Dinero",
     "value": "20"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Cortesia",
     "value": "50"
   },
   {
     "event": "zone",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "Escena1"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "926",
     "value2": "284"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "926",
     "value2": "284"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "803",
     "value2": "188"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "460",
     "value2": "331"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "460",
     "value2": "331"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "810",
     "value2": "283"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1003",
     "value2": "231"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "904",
     "value2": "323"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "904",
     "value2": "323"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "932",
     "value2": "245"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1137",
     "value2": "428"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1137",
     "value2": "428",
     "target": "Zorrilla"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1137",
     "value2": "428"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1137",
     "value2": "428",
     "target": "Zorrilla"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1137",
     "value2": "428"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1137",
     "value2": "428",
     "target": "Zorrilla"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1137",
     "value2": "428"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "778",
     "value2": "446"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "778",
     "value2": "446"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "778",
     "value2": "446"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "778",
     "value2": "446"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "959",
     "value2": "333"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "959",
     "value2": "333"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "959",
     "value2": "333"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "959",
     "value2": "333"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "959",
     "value2": "333"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "959",
     "value2": "333"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "959",
     "value2": "333"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "959",
     "value2": "332"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "959",
     "value2": "332",
     "target": "Vándalo"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "959",
     "value2": "332"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "959",
     "value2": "332",
     "target": "Vándalo"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "959",
     "value2": "332"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "959",
     "value2": "332",
     "target": "Vándalo"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "959",
     "value2": "332"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "959",
     "value2": "332",
     "target": "Vándalo"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "959",
     "value2": "332"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "959",
     "value2": "332",
     "target": "Vándalo"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "959",
     "value2": "332"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "894",
     "value2": "302"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "894",
     "value2": "302"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "894",
     "value2": "302"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "894",
     "value2": "302"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "894",
     "value2": "302"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "894",
     "value2": "302"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "894",
     "value2": "302"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "894",
     "value2": "302"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "894",
     "value2": "302"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "894",
     "value2": "302"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1097",
     "value2": "270",
     "target": "Vándalo"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1097",
     "value2": "270"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "879",
     "value2": "180"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "879",
     "value2": "180"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "871",
     "value2": "290"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "871",
     "value2": "290"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "942",
     "value2": "335"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "942",
     "value2": "335"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1004",
     "value2": "272",
     "target": "Dama en apuros"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1004",
     "value2": "272"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1075",
     "value2": "145",
     "target": "Dama en apuros"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1075",
     "value2": "145"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1075",
     "value2": "145",
     "target": "Dama en apuros"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1075",
     "value2": "145"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "796",
     "value2": "261"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Cortesia",
     "value": "60"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "864",
     "value2": "243"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "135",
     "value2": "99"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Cortesia",
     "value": "50"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Ayudar a Lucrecia",
     "value": "No hacer nada"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "716",
     "value2": "288"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "716",
     "value2": "291"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "788",
     "value2": "352"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "788",
     "value2": "352"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "788",
     "value2": "352"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1220",
     "value2": "47"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "806",
     "value2": "258"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "806",
     "value2": "258"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "806",
     "value2": "258"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "806",
     "value2": "258"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1003",
     "value2": "329",
     "target": "Vándalo"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1003",
     "value2": "329"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "838",
     "value2": "240"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1067",
     "value2": "354"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1067",
     "value2": "354"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1093",
     "value2": "296",
     "target": "Vándalo"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1093",
     "value2": "296"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1093",
     "value2": "296",
     "target": "Vándalo"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1093",
     "value2": "296"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1093",
     "value2": "296",
     "target": "Vándalo"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1093",
     "value2": "296"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1093",
     "value2": "296",
     "target": "Vándalo"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1093",
     "value2": "296"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "880",
     "value2": "255"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "878",
     "value2": "261"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "109",
     "value2": "37"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "705",
     "value2": "379",
     "target": "Zorrilla"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "705",
     "value2": "379"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "984",
     "value2": "422"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "704",
     "value2": "239",
     "target": "Zorrilla"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "704",
     "value2": "239"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "704",
     "value2": "239",
     "target": "Zorrilla"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "704",
     "value2": "239"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "820",
     "value2": "376"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "820",
     "value2": "376"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1043",
     "value2": "321"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "947",
     "value2": "426"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "848",
     "value2": "397"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "848",
     "value2": "397"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "880",
     "value2": "254"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "880",
     "value2": "254"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "880",
     "value2": "254"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "827",
     "value2": "382"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "827",
     "value2": "382"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "754",
     "value2": "307"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "754",
     "value2": "307"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "752",
     "value2": "302"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "682",
     "value2": "326"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "816",
     "value2": "333"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "816",
     "value2": "333"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "816",
     "value2": "333"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "816",
     "value2": "334"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "836",
     "value2": "439"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "823",
     "value2": "315"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "823",
     "value2": "315"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "823",
     "value2": "315"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "958",
     "value2": "328",
     "target": "Vándalo"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "958",
     "value2": "328"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "958",
     "value2": "328",
     "target": "Vándalo"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "958",
     "value2": "328"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "958",
     "value2": "328",
     "target": "Vándalo"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "958",
     "value2": "328"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "836",
     "value2": "259"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "836",
     "value2": "259"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "846",
     "value2": "366"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "846",
     "value2": "366"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "820",
     "value2": "363"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "820",
     "value2": "363"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "760",
     "value2": "337"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "760",
     "value2": "337"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "760",
     "value2": "337"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "760",
     "value2": "337"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "760",
     "value2": "337"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "647",
     "value2": "303"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "647",
     "value2": "303"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "753",
     "value2": "363"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "753",
     "value2": "363"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "753",
     "value2": "363"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "753",
     "value2": "363"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "753",
     "value2": "363"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "174",
     "value2": "378",
     "target": "Zorrilla"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "174",
     "value2": "378"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "637",
     "value2": "357"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "637",
     "value2": "357"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "637",
     "value2": "357"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "637",
     "value2": "357"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "624",
     "value2": "355"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "624",
     "value2": "355"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "624",
     "value2": "355"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "624",
     "value2": "356"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "624",
     "value2": "356"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "624",
     "value2": "355"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "603",
     "value2": "318"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "603",
     "value2": "318"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "603",
     "value2": "319"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "603",
     "value2": "319"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "603",
     "value2": "319"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "846",
     "value2": "462"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "826",
     "value2": "345"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "826",
     "value2": "346"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "826",
     "value2": "346"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "826",
     "value2": "346"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "707",
     "value2": "264"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "707",
     "value2": "264"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1223",
     "value2": "35"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1223",
     "value2": "35"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1223",
     "value2": "35"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1223",
     "value2": "35"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1223",
     "value2": "35"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1219",
     "value2": "200"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1219",
     "value2": "200"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1219",
     "value2": "200"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1217",
     "value2": "227"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1217",
     "value2": "227"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1217",
     "value2": "227"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1217",
     "value2": "176"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1217",
     "value2": "176"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1217",
     "value2": "176"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1217",
     "value2": "86"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1217",
     "value2": "86"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "836",
     "value2": "333"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "836",
     "value2": "333"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "836",
     "value2": "333"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "836",
     "value2": "333"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "836",
     "value2": "333"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "836",
     "value2": "334"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "44",
     "value2": "67"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "801",
     "value2": "304"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "801",
     "value2": "304"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "886",
     "value2": "315"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "886",
     "value2": "315"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "886",
     "value2": "315"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "886",
     "value2": "315"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "886",
     "value2": "315"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "886",
     "value2": "315"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "886",
     "value2": "315"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "886",
     "value2": "315"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "886",
     "value2": "315"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "886",
     "value2": "315"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "886",
     "value2": "316"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1210",
     "value2": "764"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "440",
     "value2": "447"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "790",
     "value2": "376"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "790",
     "value2": "376"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "790",
     "value2": "376"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1006",
     "value2": "181",
     "target": "Dama en apuros"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1006",
     "value2": "181"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1006",
     "value2": "181",
     "target": "Dama en apuros"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1006",
     "value2": "181"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "756",
     "value2": "14"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Ayudar a Lucrecia",
     "value": "Desenvaniar la espada"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "702",
     "value2": "142"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Malhechor huye",
     "value": "Debo ir tras él"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Cortesia",
     "value": "60"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "918",
     "value2": "270"
   },
   {
     "event": "zone",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "Minijuego1"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "859",
     "value2": "14"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "859",
     "value2": "14"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "178",
     "value2": "197"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "220",
     "value2": "214"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "283",
     "value2": "338"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1279",
     "value2": "566"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "666",
     "value2": "466"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "478",
     "value2": "633"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "736",
     "value2": "767"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "184",
     "value2": "345"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "170",
     "value2": "374"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "170",
     "value2": "374"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "170",
     "value2": "374"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "170",
     "value2": "374"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "170",
     "value2": "374"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "170",
     "value2": "374"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "170",
     "value2": "374"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "170",
     "value2": "374"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "170",
     "value2": "374"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "170",
     "value2": "374"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "170",
     "value2": "374"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "96",
     "value2": "364"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "93",
     "value2": "362"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "92",
     "value2": "362"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "92",
     "value2": "362"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "92",
     "value2": "362"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "92",
     "value2": "362"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "92",
     "value2": "362"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "92",
     "value2": "362"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "92",
     "value2": "362"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "94",
     "value2": "362"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "112",
     "value2": "379"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "381",
     "value2": "487"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "381",
     "value2": "487"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "214",
     "value2": "451"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "187",
     "value2": "453"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "187",
     "value2": "453"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "184",
     "value2": "453"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "191",
     "value2": "406"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "211",
     "value2": "386"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "213",
     "value2": "386"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "213",
     "value2": "386"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1279",
     "value2": "207"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "215",
     "value2": "414"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "215",
     "value2": "414"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "229",
     "value2": "414"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "229",
     "value2": "414"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "229",
     "value2": "414"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "229",
     "value2": "414"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "236",
     "value2": "414"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "532",
     "value2": "269"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Toques",
     "value": "0"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Tiempo Minijuego1",
     "value": "14 sg"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Dinero",
     "value": "20"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "370",
     "value2": "401"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "826",
     "value2": "204"
   },
   {
     "event": "zone",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "Escena1.2"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "953",
     "value2": "301"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "749",
     "value2": "361"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "766",
     "value2": "375"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "767",
     "value2": "375"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "776",
     "value2": "385"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "782",
     "value2": "399"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "781",
     "value2": "420"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "808",
     "value2": "421"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "810",
     "value2": "14"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Cortesia",
     "value": "80"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Que hacemos con Lucrecia",
     "value": "LLevarla a que la curen"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "802",
     "value2": "425"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "789",
     "value2": "173"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "757",
     "value2": "375"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "755",
     "value2": "378"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "815",
     "value2": "318"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "836",
     "value2": "318"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "841",
     "value2": "318"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "841",
     "value2": "318"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "842",
     "value2": "321"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "521",
     "value2": "209"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "526",
     "value2": "220"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "526",
     "value2": "202",
     "target": "Lucrecia"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "526",
     "value2": "202"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "385",
     "value2": "197"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "748",
     "value2": "463"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1064",
     "value2": "177"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "961",
     "value2": "290"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "959",
     "value2": "293"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "959",
     "value2": "293"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "959",
     "value2": "293"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "895",
     "value2": "125"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "910",
     "value2": "209"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "924",
     "value2": "211"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "932",
     "value2": "142"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "139",
     "value2": "45"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "0",
     "value2": "99"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "15",
     "value2": "95"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "21",
     "value2": "95"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "20",
     "value2": "98"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "17",
     "value2": "102"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "0",
     "value2": "160"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "0",
     "value2": "166"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "0",
     "value2": "170"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "970",
     "value2": "367",
     "target": "Zorrilla"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "970",
     "value2": "367"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1203",
     "value2": "275"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1203",
     "value2": "276"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1203",
     "value2": "278"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1199",
     "value2": "294"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1176",
     "value2": "301"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1173",
     "value2": "308"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1173",
     "value2": "309"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1170",
     "value2": "309"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1170",
     "value2": "309",
     "target": "Lucrecia"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1170",
     "value2": "309"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1164",
     "value2": "293"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1161",
     "value2": "285"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1158",
     "value2": "287"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "984",
     "value2": "333"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "996",
     "value2": "364"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "992",
     "value2": "376"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "988",
     "value2": "425"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1014",
     "value2": "426"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1031",
     "value2": "360"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1047",
     "value2": "306"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1055",
     "value2": "319"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1166",
     "value2": "334"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1174",
     "value2": "365"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1170",
     "value2": "397"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1164",
     "value2": "426"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1123",
     "value2": "390"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "827",
     "value2": "272"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "951",
     "value2": "319"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "955",
     "value2": "323"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "950",
     "value2": "323"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "870",
     "value2": "303"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "718",
     "value2": "304"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "702",
     "value2": "328"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "853",
     "value2": "328"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "579",
     "value2": "326"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "650",
     "value2": "312"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "689",
     "value2": "297"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "689",
     "value2": "297"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "689",
     "value2": "297"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "689",
     "value2": "297"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1000",
     "value2": "274"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "987",
     "value2": "294"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "980",
     "value2": "306"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "918",
     "value2": "302"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "555",
     "value2": "0"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "650",
     "value2": "142"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "931",
     "value2": "507"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "814",
     "value2": "0"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "900",
     "value2": "217"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1088",
     "value2": "253"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1153",
     "value2": "195"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1153",
     "value2": "200"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1076",
     "value2": "242"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1076",
     "value2": "271"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "746",
     "value2": "612"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1278",
     "value2": "375"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1129",
     "value2": "391"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "975",
     "value2": "339"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "792",
     "value2": "388"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "879",
     "value2": "380"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "879",
     "value2": "380"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "802",
     "value2": "374"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1239",
     "value2": "212"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "865",
     "value2": "286"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1068",
     "value2": "759"
   },
   {
     "event": "zone",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "Transicion Barcelona"
   },
   {
     "event": "zone",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "CutScene1"
   },
   {
     "event": "zone",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "Escena2"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "615",
     "value2": "367"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1165",
     "value2": "211"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1172",
     "value2": "191"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1149",
     "value2": "353"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1126",
     "value2": "215"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "814",
     "value2": "230"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1144",
     "value2": "281"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1184",
     "value2": "278"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1189",
     "value2": "278"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1190",
     "value2": "278"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1190",
     "value2": "278"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1190",
     "value2": "278"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1192",
     "value2": "278",
     "target": "Mendigo"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1192",
     "value2": "278"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1107",
     "value2": "254",
     "target": "Mendigo"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1107",
     "value2": "254"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "956",
     "value2": "276"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "956",
     "value2": "276"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "957",
     "value2": "276"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "961",
     "value2": "276"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "927",
     "value2": "239"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "925",
     "value2": "236"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1054",
     "value2": "256"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "804",
     "value2": "0"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "776",
     "value2": "13"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "¿Dar dinero a Mendigo?",
     "value": "No"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1219",
     "value2": "315",
     "target": "Mendigo"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1219",
     "value2": "315"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "818",
     "value2": "267"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "758",
     "value2": "77"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "¿Dar dinero a Mendigo?",
     "value": "Si"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Cortesia",
     "value": "90"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Dinero",
     "value": "15"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "858",
     "value2": "198"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "949",
     "value2": "201"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "950",
     "value2": "201"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "946",
     "value2": "187"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "947",
     "value2": "183"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "951",
     "value2": "182"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "959",
     "value2": "187"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "960",
     "value2": "189"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "961",
     "value2": "193"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "972",
     "value2": "383"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1244",
     "value2": "352",
     "target": "Mesonero Joven"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1244",
     "value2": "352"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "904",
     "value2": "329"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "647",
     "value2": "84"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Qué desea puerto",
     "value": "Dueñas"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "946",
     "value2": "216"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "943",
     "value2": "202"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "943",
     "value2": "202"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "940",
     "value2": "185"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Comprar dueñas",
     "value": "1 Dueña"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1233",
     "value2": "357",
     "target": "Mesonero Joven"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1233",
     "value2": "357"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1277",
     "value2": "340",
     "target": "Mesonero Joven"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1277",
     "value2": "340"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1271",
     "value2": "337",
     "target": "Mesonero Joven"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1271",
     "value2": "337"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "927",
     "value2": "314"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "722",
     "value2": "39"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Comprar dueña",
     "value": "Nada"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1261",
     "value2": "334",
     "target": "Mesonero Joven"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1261",
     "value2": "334"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1261",
     "value2": "331",
     "target": "Mesonero Joven"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1261",
     "value2": "331"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1261",
     "value2": "331",
     "target": "Mesonero Joven"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1261",
     "value2": "331"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1249",
     "value2": "327",
     "target": "Mesonero Joven"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1249",
     "value2": "327"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "747",
     "value2": "128"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Qué desea puerto",
     "value": "Carro para viajar"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "710",
     "value2": "82"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Comprar carro",
     "value": "Carro grande"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "878",
     "value2": "167"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "884",
     "value2": "169"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "893",
     "value2": "172"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Comprar carro",
     "value": "carro pequeño"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Dinero",
     "value": "5"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "985",
     "value2": "196"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "731",
     "value2": "90"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Comprado carro ¿algo mas?",
     "value": "Nada"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1009",
     "value2": "386"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1064",
     "value2": "429"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1081",
     "value2": "482"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1081",
     "value2": "482"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1051",
     "value2": "756"
   },
   {
     "event": "zone",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "Transicion Orgaz"
   },
   {
     "event": "zone",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "CutScene2"
   },
   {
     "event": "zone",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "Escena3"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "604",
     "value2": "191"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "604",
     "value2": "190"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "604",
     "value2": "190"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "604",
     "value2": "190"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "604",
     "value2": "190"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "604",
     "value2": "190"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "616",
     "value2": "190"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "655",
     "value2": "199"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "674",
     "value2": "202"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "683",
     "value2": "203"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "704",
     "value2": "208"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "713",
     "value2": "212"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "736",
     "value2": "217"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "757",
     "value2": "223"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "870",
     "value2": "243"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "872",
     "value2": "252"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "897",
     "value2": "262"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "958",
     "value2": "283"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "735",
     "value2": "316",
     "target": "Tendero Viejo"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "735",
     "value2": "316"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "805",
     "value2": "177"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Qué desea posada",
     "value": "Dos habitaciones"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1079",
     "value2": "737"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "917",
     "value2": "320"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "839",
     "value2": "187"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Comprar habitacion 1",
     "value": "Humilde"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Dinero",
     "value": "0"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1047",
     "value2": "744"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1047",
     "value2": "744"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "753",
     "value2": "26"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Comprar habitacion 2",
     "value": "Pajar"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "913",
     "value2": "475"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "851",
     "value2": "270"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1006",
     "value2": "302"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1046",
     "value2": "299"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1134",
     "value2": "326"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1134",
     "value2": "327"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1138",
     "value2": "330"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1067",
     "value2": "326"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1069",
     "value2": "326"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1063",
     "value2": "752"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1055",
     "value2": "730"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "289",
     "value2": "346",
     "target": "Cliente1"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "289",
     "value2": "346"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "740",
     "value2": "141"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "389",
     "value2": "354"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "600",
     "value2": "321"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "592",
     "value2": "357",
     "target": "Cliente2"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "592",
     "value2": "357"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "545",
     "value2": "353"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "544",
     "value2": "350"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "575",
     "value2": "354",
     "target": "Cliente2"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "575",
     "value2": "354"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "861",
     "value2": "315",
     "target": "Tendero Viejo"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "861",
     "value2": "315"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "860",
     "value2": "300",
     "target": "Tendero Viejo"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "860",
     "value2": "300"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "849",
     "value2": "362",
     "target": "Tendero Viejo"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "849",
     "value2": "362"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "849",
     "value2": "344",
     "target": "Tendero Viejo"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "849",
     "value2": "344"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1018",
     "value2": "206"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1074",
     "value2": "205"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1144",
     "value2": "227"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1142",
     "value2": "241"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "704",
     "value2": "450"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1092",
     "value2": "371"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1083",
     "value2": "378"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1092",
     "value2": "373"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1093",
     "value2": "381"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1093",
     "value2": "381"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "993",
     "value2": "292"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "993",
     "value2": "295"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1020",
     "value2": "311"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1146",
     "value2": "339"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1131",
     "value2": "520"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1113",
     "value2": "272"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1140",
     "value2": "245"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1143",
     "value2": "245"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1143",
     "value2": "244"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1222",
     "value2": "192"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1222",
     "value2": "192"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1233",
     "value2": "19"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1221",
     "value2": "28"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "46",
     "value2": "23"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1034",
     "value2": "128"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1082",
     "value2": "197"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1083",
     "value2": "196"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1083",
     "value2": "196"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1083",
     "value2": "196"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1063",
     "value2": "755"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1063",
     "value2": "751"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1059",
     "value2": "748"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "293",
     "value2": "327",
     "target": "Cliente1"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "293",
     "value2": "327"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "237",
     "value2": "272",
     "target": "Lucrecia."
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "237",
     "value2": "272"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "242",
     "value2": "218",
     "target": "Lucrecia."
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "242",
     "value2": "218"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "703",
     "value2": "119"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Cortesia",
     "value": "80"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Compartir habitación",
     "value": "Usted y yo"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "778",
     "value2": "69"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Cortesia",
     "value": "90"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Compartir habitación",
     "value": "Zorrilla y yo"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "772",
     "value2": "12"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Cortesia",
     "value": "70"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Repartir habitación",
     "value": "Pajar"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1114",
     "value2": "242"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1110",
     "value2": "254"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "216",
     "value2": "234",
     "target": "Lucrecia."
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "216",
     "value2": "234"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "210",
     "value2": "248",
     "target": "Lucrecia."
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "210",
     "value2": "248"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "210",
     "value2": "243",
     "target": "Lucrecia."
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "210",
     "value2": "243"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "217",
     "value2": "237",
     "target": "Lucrecia."
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "217",
     "value2": "237"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "216",
     "value2": "242",
     "target": "Lucrecia."
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "216",
     "value2": "242"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1089",
     "value2": "208"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1086",
     "value2": "228"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1074",
     "value2": "79"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "556",
     "value2": "57"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1207",
     "value2": "226"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1161",
     "value2": "201"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1161",
     "value2": "201"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1161",
     "value2": "201"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1163",
     "value2": "198"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1163",
     "value2": "198"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "228",
     "value2": "294",
     "target": "Lucrecia."
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "228",
     "value2": "294"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "222",
     "value2": "269",
     "target": "Lucrecia."
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "222",
     "value2": "269"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "222",
     "value2": "269",
     "target": "Lucrecia."
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "222",
     "value2": "269"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "222",
     "value2": "269",
     "target": "Lucrecia."
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "222",
     "value2": "269"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "222",
     "value2": "269",
     "target": "Lucrecia."
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "222",
     "value2": "269"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "224",
     "value2": "267",
     "target": "Lucrecia."
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "224",
     "value2": "267"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "227",
     "value2": "264",
     "target": "Lucrecia."
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "227",
     "value2": "264"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "225",
     "value2": "259",
     "target": "Lucrecia."
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "225",
     "value2": "259"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1226",
     "value2": "22"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1227",
     "value2": "41"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "826",
     "value2": "160"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "706",
     "value2": "137"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "622",
     "value2": "179"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "622",
     "value2": "179"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "303",
     "value2": "215"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "213",
     "value2": "278",
     "target": "Lucrecia."
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "213",
     "value2": "278"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "409",
     "value2": "290"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "387",
     "value2": "262",
     "target": "Cliente2"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "387",
     "value2": "262"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "274",
     "value2": "260",
     "target": "Cliente1"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "274",
     "value2": "260"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "270",
     "value2": "259"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "252",
     "value2": "236",
     "target": "Lucrecia."
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "252",
     "value2": "236"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "252",
     "value2": "233",
     "target": "Lucrecia."
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "252",
     "value2": "233"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "247",
     "value2": "216",
     "target": "Lucrecia."
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "247",
     "value2": "216"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "287",
     "value2": "283",
     "target": "Cliente1"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "287",
     "value2": "283"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "287",
     "value2": "283",
     "target": "Cliente1"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "287",
     "value2": "283"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "317",
     "value2": "192"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "281",
     "value2": "295",
     "target": "Cliente1"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "281",
     "value2": "295"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "289",
     "value2": "298"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "290",
     "value2": "278",
     "target": "Cliente1"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "290",
     "value2": "278"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "294",
     "value2": "271",
     "target": "Cliente1"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "294",
     "value2": "271"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "296",
     "value2": "267",
     "target": "Cliente1"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "296",
     "value2": "267"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "309",
     "value2": "256"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "310",
     "value2": "252"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "384",
     "value2": "362",
     "target": "Cliente2"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "384",
     "value2": "362"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1058",
     "value2": "745"
   },
   {
     "event": "zone",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "Escena3.2"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "862",
     "value2": "270"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "815",
     "value2": "315"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "810",
     "value2": "295"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "760",
     "value2": "15"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Qué es ese ruido",
     "value": "Ir a ver"
   },
   {
     "event": "zone",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "Minijuego2"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "859",
     "value2": "161"
   },
   {
     "event": "zone",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "Escena3.2.2"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Cortesia",
     "value": "80"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "825",
     "value2": "308",
     "target": "BolsaDinero"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Dinero",
     "value": "75"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Cortesia",
     "value": "60"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "825",
     "value2": "308",
     "target": "BolsaDinero"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "825",
     "value2": "308"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "511",
     "value2": "116"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1055",
     "value2": "191"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "244",
     "value2": "326"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "250",
     "value2": "350"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "251",
     "value2": "346"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "251",
     "value2": "346"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "251",
     "value2": "348"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "251",
     "value2": "348"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "248",
     "value2": "348"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "236",
     "value2": "345"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "197",
     "value2": "265"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "163",
     "value2": "244"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "287",
     "value2": "168"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "956",
     "value2": "303"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "951",
     "value2": "247"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "955",
     "value2": "257"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "986",
     "value2": "238"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1047",
     "value2": "263"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1060",
     "value2": "260"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1080",
     "value2": "264"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1080",
     "value2": "271"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1090",
     "value2": "283"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1175",
     "value2": "345"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1179",
     "value2": "348"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1091",
     "value2": "724"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "377",
     "value2": "288",
     "target": "Zorrilla"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "377",
     "value2": "288"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "736",
     "value2": "16"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Encuentras Zorrilla",
     "value": "Te pille bribón"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "745",
     "value2": "73"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Reconocido Zorrilla",
     "value": "Ibas a robármela"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "583",
     "value2": "19"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Lucrecia que ocurre aquí",
     "value": "Entrar en su habitación"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "678",
     "value2": "189"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "744",
     "value2": "27"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Lucrecia hablar con Zorrilla",
     "value": "Haz caso"
   },
   {
     "event": "zone",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "Escena3.3"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1062",
     "value2": "765"
   },
   {
     "event": "zone",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "Transicion Toledo"
   },
   {
     "event": "zone",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "CutScene3"
   },
   {
     "event": "zone",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "Escena4"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "907",
     "value2": "159"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "911",
     "value2": "159"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "911",
     "value2": "159"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "918",
     "value2": "169"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "942",
     "value2": "184"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "944",
     "value2": "191"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "944",
     "value2": "191"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "947",
     "value2": "197"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "947",
     "value2": "197"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "947",
     "value2": "197"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "947",
     "value2": "197"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "947",
     "value2": "190"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "947",
     "value2": "152"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "947",
     "value2": "142"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "947",
     "value2": "142"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "950",
     "value2": "212"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1151",
     "value2": "632",
     "target": "Raton"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1151",
     "value2": "632",
     "target": "Raton"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1151",
     "value2": "632"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1142",
     "value2": "606",
     "target": "Raton"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1142",
     "value2": "606",
     "target": "Raton"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1142",
     "value2": "606"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1141",
     "value2": "605",
     "target": "Raton"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1141",
     "value2": "605",
     "target": "Raton"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1141",
     "value2": "605"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1138",
     "value2": "604",
     "target": "Raton"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1138",
     "value2": "604",
     "target": "Raton"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1138",
     "value2": "604"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "606",
     "value2": "624",
     "target": "Raton"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "606",
     "value2": "624",
     "target": "Raton"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "606",
     "value2": "624"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "977",
     "value2": "317",
     "target": "Zorrilla."
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "977",
     "value2": "317"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1151",
     "value2": "213"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1155",
     "value2": "217"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1157",
     "value2": "241"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1157",
     "value2": "244"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1157",
     "value2": "244"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "606",
     "value2": "297",
     "target": "Lucrecia."
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "606",
     "value2": "297"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "557",
     "value2": "284"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "579",
     "value2": "266",
     "target": "Lucrecia."
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "579",
     "value2": "266"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "586",
     "value2": "239",
     "target": "Lucrecia."
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "586",
     "value2": "239"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "571",
     "value2": "199",
     "target": "Lucrecia."
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "571",
     "value2": "199"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "580",
     "value2": "299"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "568",
     "value2": "292",
     "target": "Lucrecia."
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "568",
     "value2": "292"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "969",
     "value2": "285",
     "target": "Zorrilla."
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "969",
     "value2": "285"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "754",
     "value2": "397",
     "target": "Cuadro"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "754",
     "value2": "397",
     "target": "Cuadro"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "754",
     "value2": "397"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "827",
     "value2": "395",
     "target": "Cuadro"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "827",
     "value2": "395",
     "target": "Cuadro"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "827",
     "value2": "395"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "815",
     "value2": "388",
     "target": "Cuadro"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "815",
     "value2": "388",
     "target": "Cuadro"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "815",
     "value2": "388"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "815",
     "value2": "388",
     "target": "Cuadro"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "815",
     "value2": "388",
     "target": "Cuadro"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "815",
     "value2": "388"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "949",
     "value2": "335"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "951",
     "value2": "384"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "963",
     "value2": "387",
     "target": "Zorrilla."
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "963",
     "value2": "387"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "964",
     "value2": "387",
     "target": "Zorrilla."
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "964",
     "value2": "387"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "566",
     "value2": "265",
     "target": "Lucrecia."
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "566",
     "value2": "265"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "575",
     "value2": "266",
     "target": "Lucrecia."
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "575",
     "value2": "266"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "585",
     "value2": "331",
     "target": "Lucrecia."
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "585",
     "value2": "331"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "721",
     "value2": "253"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "575",
     "value2": "239",
     "target": "Lucrecia."
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "575",
     "value2": "239"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "581",
     "value2": "205",
     "target": "Lucrecia."
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "581",
     "value2": "205"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "265",
     "value2": "216"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "264",
     "value2": "215"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "264",
     "value2": "215"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "264",
     "value2": "215"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "264",
     "value2": "215"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "264",
     "value2": "215"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "264",
     "value2": "216"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "264",
     "value2": "216"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "262",
     "value2": "346",
     "target": "Campesino Julio"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "262",
     "value2": "346"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "261",
     "value2": "313"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "261",
     "value2": "315"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "262",
     "value2": "322",
     "target": "Campesino Julio"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "262",
     "value2": "322"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "237",
     "value2": "198"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "237",
     "value2": "198"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "470",
     "value2": "328",
     "target": "Leonarda"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "470",
     "value2": "328"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "701",
     "value2": "86"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Vienes casado",
     "value": "Ojalá"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "791",
     "value2": "20"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Traes dinero",
     "value": "Fortuna no experiencia"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "567",
     "value2": "125"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Como se llama",
     "value": "Lucrecia ando enamorado"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "819",
     "value2": "12"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Que pensais de Lucrecia",
     "value": "Estoy enamorado"
   },
   {
     "event": "zone",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "Escena4.2"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "559",
     "value2": "273"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "607",
     "value2": "298",
     "target": "Leonarda"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "607",
     "value2": "298"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "607",
     "value2": "298",
     "target": "Leonarda"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "607",
     "value2": "298"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "604",
     "value2": "290",
     "target": "Leonarda"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "604",
     "value2": "290"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "602",
     "value2": "288",
     "target": "Leonarda"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "602",
     "value2": "288"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "744",
     "value2": "332",
     "target": "Zorrilla"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "744",
     "value2": "332"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "746",
     "value2": "340",
     "target": "Zorrilla"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "746",
     "value2": "340"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "750",
     "value2": "347",
     "target": "Zorrilla"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "750",
     "value2": "347"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "760",
     "value2": "339",
     "target": "Zorrilla"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "760",
     "value2": "339"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "759",
     "value2": "353",
     "target": "Zorrilla"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "759",
     "value2": "353"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "756",
     "value2": "335",
     "target": "Zorrilla"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "756",
     "value2": "335"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "907",
     "value2": "323",
     "target": "Lucrecia"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "907",
     "value2": "323"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "914",
     "value2": "320",
     "target": "Lucrecia"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "914",
     "value2": "320"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "729",
     "value2": "71"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Cortesia",
     "value": "70"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Creer Lucrecia",
     "value": "Creerla"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1088",
     "value2": "244",
     "target": "Claudio"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1088",
     "value2": "244"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1170",
     "value2": "180",
     "target": "Marcelo"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1170",
     "value2": "180"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "728",
     "value2": "92"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Creer a Marcelo",
     "value": "Creerle"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1159",
     "value2": "182",
     "target": "Marcelo"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1159",
     "value2": "182"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1158",
     "value2": "186",
     "target": "Marcelo"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1158",
     "value2": "186"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1070",
     "value2": "253",
     "target": "Claudio"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1070",
     "value2": "253"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1069",
     "value2": "253",
     "target": "Claudio"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1069",
     "value2": "253"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Claudio Toledo interior",
     "value": "A mi me suenas"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Claudio equivocacion",
     "value": "No creerle forzado"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "658",
     "value2": "189"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Reconocer de Claudio",
     "value": "Daga"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "699",
     "value2": "121"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Reconocer de Claudio",
     "value": "Capa"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "733",
     "value2": "73"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Reconocer de Claudio",
     "value": "Botas"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Reconocer de Claudio",
     "value": "Sombrero"
   },
   {
     "event": "zone",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "Escena4.3"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "728",
     "value2": "333",
     "target": "Zorrilla"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "728",
     "value2": "333"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "747",
     "value2": "309",
     "target": "Zorrilla"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "747",
     "value2": "309"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "747",
     "value2": "310",
     "target": "Zorrilla"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "747",
     "value2": "310"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "595",
     "value2": "327",
     "target": "Leonarda"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "595",
     "value2": "327"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "600",
     "value2": "324",
     "target": "Leonarda"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "600",
     "value2": "324"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "896",
     "value2": "232",
     "target": "Lucrecia"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "896",
     "value2": "232"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "914",
     "value2": "316",
     "target": "Lucrecia"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "914",
     "value2": "316"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "915",
     "value2": "310",
     "target": "Lucrecia"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "915",
     "value2": "310"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1140",
     "value2": "173",
     "target": "Marcelo"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1140",
     "value2": "173"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1139",
     "value2": "171",
     "target": "Marcelo"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1139",
     "value2": "171"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "785",
     "value2": "27"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Marcelo es mi esposa",
     "value": "Yo quiero casarme con ella"
   },
   {
     "event": "zone",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "Minijuego3"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1048",
     "value2": "103"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1027",
     "value2": "84"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "368",
     "value2": "94"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "367",
     "value2": "93"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "367",
     "value2": "93"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "367",
     "value2": "93"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "367",
     "value2": "93"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "367",
     "value2": "93"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "367",
     "value2": "93"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "367",
     "value2": "93"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "367",
     "value2": "93"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "367",
     "value2": "93"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "367",
     "value2": "93"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "367",
     "value2": "93"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "367",
     "value2": "93"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "367",
     "value2": "93"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "367",
     "value2": "93"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "367",
     "value2": "93"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "367",
     "value2": "93"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "367",
     "value2": "93"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "367",
     "value2": "93"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "367",
     "value2": "94"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "367",
     "value2": "99"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "367",
     "value2": "99"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "367",
     "value2": "99"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "367",
     "value2": "99"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "367",
     "value2": "99"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "367",
     "value2": "99"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "367",
     "value2": "99"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "367",
     "value2": "100"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "368",
     "value2": "109"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "368",
     "value2": "109"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "368",
     "value2": "109"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "368",
     "value2": "109"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "370",
     "value2": "113"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "370",
     "value2": "113"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "370",
     "value2": "113"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "370",
     "value2": "113"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "370",
     "value2": "113"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "370",
     "value2": "113"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "370",
     "value2": "113"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "370",
     "value2": "113"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "859",
     "value2": "155"
   },
   {
     "event": "screen",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "Final Juego"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Tipo final",
     "value": "muerte"
   },
   {
     "event": "screen",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "MenuPrincipal2"
   },
   {
     "event": "screen",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "Juego"
   },
   {
     "event": "zone",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "CutScene Comienzo"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Dinero",
     "value": "20"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Cortesia",
     "value": "50"
   },
   {
     "event": "zone",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "Escena1"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "950",
     "value2": "273"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "961",
     "value2": "273"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "961",
     "value2": "273"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1061",
     "value2": "335"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1061",
     "value2": "335"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "827",
     "value2": "203"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1230",
     "value2": "611"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1165",
     "value2": "724"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "465",
     "value2": "426"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1279",
     "value2": "397"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1040",
     "value2": "417"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1122",
     "value2": "394"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1252",
     "value2": "444"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1253",
     "value2": "444"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1253",
     "value2": "445"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1145",
     "value2": "352"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1128",
     "value2": "353"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1077",
     "value2": "376"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1043",
     "value2": "409"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1040",
     "value2": "414"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1041",
     "value2": "416"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1041",
     "value2": "415"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1041",
     "value2": "415"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1046",
     "value2": "419"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1046",
     "value2": "419"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1048",
     "value2": "421"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1050",
     "value2": "422"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1052",
     "value2": "422"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1052",
     "value2": "422"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1052",
     "value2": "422"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1053",
     "value2": "422",
     "target": "Zorrilla"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1053",
     "value2": "422"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1053",
     "value2": "422",
     "target": "Zorrilla"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1053",
     "value2": "422"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "847",
     "value2": "332"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "811",
     "value2": "392"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "811",
     "value2": "392"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "831",
     "value2": "385",
     "target": "Zorrilla"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "831",
     "value2": "385"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "864",
     "value2": "369",
     "target": "Zorrilla"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "864",
     "value2": "369"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "978",
     "value2": "396"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "978",
     "value2": "396"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "978",
     "value2": "396"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "978",
     "value2": "396"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "983",
     "value2": "397"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "983",
     "value2": "397"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "983",
     "value2": "397"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "983",
     "value2": "398"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "989",
     "value2": "428"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "990",
     "value2": "429"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "990",
     "value2": "409"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "989",
     "value2": "409"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "902",
     "value2": "402"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "912",
     "value2": "355"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "915",
     "value2": "297"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "915",
     "value2": "280"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1002",
     "value2": "356",
     "target": "Dama en apuros"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1002",
     "value2": "356"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1151",
     "value2": "128"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1241",
     "value2": "79"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "709",
     "value2": "18"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Cortesia",
     "value": "60"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Ayudar a Lucrecia",
     "value": "Desenvaniar la espada"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "781",
     "value2": "242"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Cortesia",
     "value": "70"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "777",
     "value2": "120"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Malhechor huye",
     "value": "Debo ir tras él"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Cortesia",
     "value": "80"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "848",
     "value2": "227"
   },
   {
     "event": "zone",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "Minijuego1"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "168",
     "value2": "373"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "617",
     "value2": "355"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "617",
     "value2": "355"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "512",
     "value2": "378"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "458",
     "value2": "362"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "278",
     "value2": "362"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "418",
     "value2": "362"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "427",
     "value2": "366"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "534",
     "value2": "355"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "245",
     "value2": "379"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "245",
     "value2": "379"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "245",
     "value2": "379"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "295",
     "value2": "311"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "295",
     "value2": "311"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "251",
     "value2": "321"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "251",
     "value2": "321"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "811",
     "value2": "294"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "804",
     "value2": "357"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "785",
     "value2": "341"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "174",
     "value2": "342"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "197",
     "value2": "349"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "701",
     "value2": "498"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1060",
     "value2": "363"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "608",
     "value2": "381"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "0",
     "value2": "365"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "436",
     "value2": "414"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "434",
     "value2": "414"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "392",
     "value2": "418"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "310",
     "value2": "676"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "367",
     "value2": "586"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "324",
     "value2": "491"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "989",
     "value2": "567"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "793",
     "value2": "572"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "789",
     "value2": "558"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "83",
     "value2": "504"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Toques",
     "value": "1"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Tiempo Minijuego1",
     "value": "15 sg"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Dinero",
     "value": "25"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "97",
     "value2": "435"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "161",
     "value2": "481"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "823",
     "value2": "236"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "813",
     "value2": "237"
   },
   {
     "event": "zone",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "Escena1.2"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "892",
     "value2": "251",
     "target": "Lucrecia"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "892",
     "value2": "251"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "848",
     "value2": "265"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "759",
     "value2": "245"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "764",
     "value2": "249"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "768",
     "value2": "254"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "776",
     "value2": "256"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "724",
     "value2": "7"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Cortesia",
     "value": "100"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Que hacemos con Lucrecia",
     "value": "LLevarla a que la curen"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "938",
     "value2": "385"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "971",
     "value2": "383"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "973",
     "value2": "393"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "807",
     "value2": "234"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "841",
     "value2": "205"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1057",
     "value2": "748"
   },
   {
     "event": "zone",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "Transicion Barcelona"
   },
   {
     "event": "zone",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "CutScene1"
   },
   {
     "event": "zone",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "Escena2"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "816",
     "value2": "149"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1060",
     "value2": "263"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1070",
     "value2": "275"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1070",
     "value2": "275"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1060",
     "value2": "278"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1054",
     "value2": "271"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1054",
     "value2": "270"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1054",
     "value2": "245"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1053",
     "value2": "206"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1053",
     "value2": "206"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1053",
     "value2": "206"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1053",
     "value2": "206"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1054",
     "value2": "218"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1040",
     "value2": "225"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "987",
     "value2": "220"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "987",
     "value2": "220"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "987",
     "value2": "220"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "974",
     "value2": "214"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "967",
     "value2": "211",
     "target": "Mendigo"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "967",
     "value2": "211"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "778",
     "value2": "78"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "¿Dar dinero a Mendigo?",
     "value": "Si"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Cortesia",
     "value": "100"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Dinero",
     "value": "20"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1036",
     "value2": "210"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1042",
     "value2": "227",
     "target": "Barril"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1042",
     "value2": "227",
     "target": "Barril"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1042",
     "value2": "227"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1093",
     "value2": "236",
     "target": "Barril"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1093",
     "value2": "236",
     "target": "Barril"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1093",
     "value2": "236"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1093",
     "value2": "236",
     "target": "Barril"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1093",
     "value2": "236",
     "target": "Barril"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1093",
     "value2": "236"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1093",
     "value2": "236",
     "target": "Barril"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1093",
     "value2": "236",
     "target": "Barril"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1093",
     "value2": "236"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1093",
     "value2": "236",
     "target": "Barril"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1093",
     "value2": "236",
     "target": "Barril"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1093",
     "value2": "236"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1085",
     "value2": "236",
     "target": "Barril"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1085",
     "value2": "236",
     "target": "Barril"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1085",
     "value2": "236"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1085",
     "value2": "235",
     "target": "Barril"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1085",
     "value2": "235",
     "target": "Barril"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1085",
     "value2": "235"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1132",
     "value2": "246"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1132",
     "value2": "246"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1132",
     "value2": "246"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1132",
     "value2": "246"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1132",
     "value2": "246"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1132",
     "value2": "246"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1260",
     "value2": "332",
     "target": "Mesonero Joven"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1260",
     "value2": "332"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1260",
     "value2": "332",
     "target": "Mesonero Joven"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1260",
     "value2": "332"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "728",
     "value2": "131"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Qué desea puerto",
     "value": "Carro para viajar"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "901",
     "value2": "243"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "908",
     "value2": "248"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "908",
     "value2": "248"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "816",
     "value2": "167"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Comprar carro",
     "value": "carro pequeño"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Dinero",
     "value": "10"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1019",
     "value2": "745"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "710",
     "value2": "90"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Comprado carro ¿algo mas?",
     "value": "Nada"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1044",
     "value2": "756"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1044",
     "value2": "755"
   },
   {
     "event": "zone",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "Transicion Orgaz"
   },
   {
     "event": "zone",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "CutScene2"
   },
   {
     "event": "zone",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "Escena3"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "718",
     "value2": "208"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "718",
     "value2": "208"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "718",
     "value2": "208"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "718",
     "value2": "208"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "718",
     "value2": "202"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "718",
     "value2": "202"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "718",
     "value2": "202"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "718",
     "value2": "196"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "718",
     "value2": "196"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "718",
     "value2": "196"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "802",
     "value2": "178"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "802",
     "value2": "177"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "802",
     "value2": "177"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "803",
     "value2": "175"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "808",
     "value2": "160"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "827",
     "value2": "159"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "858",
     "value2": "158"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "876",
     "value2": "160"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "898",
     "value2": "204"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "904",
     "value2": "339",
     "target": "Tendero Viejo"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "904",
     "value2": "339"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "813",
     "value2": "116"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Qué desea posada",
     "value": "Habitaciones baratas"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "876",
     "value2": "181"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "870",
     "value2": "169"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "854",
     "value2": "106"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Comprar habitacion 1",
     "value": "Normal"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "743",
     "value2": "213"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "743",
     "value2": "211"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Comprar habitacion 1",
     "value": "Nada"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "789",
     "value2": "219"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1067",
     "value2": "737"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1067",
     "value2": "737"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1048",
     "value2": "762"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "629",
     "value2": "340",
     "target": "Tendero Viejo"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "629",
     "value2": "340"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "699",
     "value2": "180"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Qué desea posada",
     "value": "Dos habitaciones"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "638",
     "value2": "360",
     "target": "Tendero Viejo"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "638",
     "value2": "360"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "751",
     "value2": "267"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "798",
     "value2": "182"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Comprar habitacion 1",
     "value": "Humilde"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Dinero",
     "value": "5"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "924",
     "value2": "337"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "922",
     "value2": "328"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "660",
     "value2": "26"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Comprar habitacion 2",
     "value": "Pajar"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "687",
     "value2": "207"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "694",
     "value2": "208"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "700",
     "value2": "209"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1046",
     "value2": "737"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1046",
     "value2": "737"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1063",
     "value2": "784"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1066",
     "value2": "779"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "359",
     "value2": "370",
     "target": "Cliente2"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "359",
     "value2": "370"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "382",
     "value2": "372",
     "target": "Cliente2"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "382",
     "value2": "372"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "367",
     "value2": "364",
     "target": "Cliente2"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "367",
     "value2": "364"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "367",
     "value2": "364",
     "target": "Cliente2"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "367",
     "value2": "364"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "281",
     "value2": "319",
     "target": "Cliente1"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "281",
     "value2": "319"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "228",
     "value2": "293",
     "target": "Lucrecia."
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "228",
     "value2": "293"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "228",
     "value2": "288",
     "target": "Lucrecia."
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "228",
     "value2": "288"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "698",
     "value2": "78"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Cortesia",
     "value": "100"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Compartir habitación",
     "value": "Zorrilla y yo"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "701",
     "value2": "22"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Cortesia",
     "value": "80"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Repartir habitación",
     "value": "Pajar"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "540",
     "value2": "183"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1042",
     "value2": "766"
   },
   {
     "event": "zone",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "Escena3.2"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "408",
     "value2": "756"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "686",
     "value2": "14"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Qué es ese ruido",
     "value": "Ir a ver"
   },
   {
     "event": "zone",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "Minijuego2"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "607",
     "value2": "383"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "620",
     "value2": "454"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "833",
     "value2": "166"
   },
   {
     "event": "zone",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "Escena3.2.2"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Cortesia",
     "value": "90"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "832",
     "value2": "298",
     "target": "BolsaDinero"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Dinero",
     "value": "80"
   },
   {
     "event": "var",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Cortesia",
     "value": "70"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "832",
     "value2": "298",
     "target": "BolsaDinero"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "832",
     "value2": "298"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "385",
     "value2": "318",
     "target": "Zorrilla"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "385",
     "value2": "318"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "666",
     "value2": "74"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Encuentras Zorrilla",
     "value": "Quién anda ahí"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "680",
     "value2": "174"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "679",
     "value2": "173"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "729",
     "value2": "79"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Reconocido Zorrilla",
     "value": "Qué haces aquí"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "709",
     "value2": "34"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Lucrecia que ocurre aquí",
     "value": "Entrar en su habitación"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "685",
     "value2": "349"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "685",
     "value2": "349"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "710",
     "value2": "18"
   },
   {
     "event": "choice",
+    "gameplayId": "11",
+    "versionId": "1",
     "target": "Lucrecia hablar con Zorrilla",
     "value": "Haz caso"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "618",
     "value2": "176"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "624",
     "value2": "185"
   },
   {
     "event": "zone",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "Escena3.3"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "1252",
     "value2": "766"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "782",
     "value2": "449"
   },
   {
     "event": "click",
+    "gameplayId": "11",
+    "versionId": "1",
     "value1": "517",
     "value2": "431"
   },
   {
     "event": "screen",
+    "gameplayId": "11",
+    "versionId": "1",
     "value": "MenuPrincipal2"
   }
 ]

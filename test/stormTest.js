@@ -85,22 +85,37 @@ task.call(null, sessionId).then(function(err, retult){
 
 var dataSource = require('../lib/traces');
 dataSource.addConsumer(require('../lib/consumers/kafka')(app.config.kafka));
-
+var Q = require('q');
 var _getAllFilesFromFolder = function(dir) {
 
     var filesystem = require("fs");
 
+    var promises = [];
+
+    var options = {
+        encoding: 'utf-8'
+    };
+
     filesystem.readdirSync(__dirname + dir).forEach(function(file) {
         file = dir+'/'+file;
-        console.log("reading"+file);
-        var source = Fs.readFileSync(__dirname + file);
-        kafkaService.send(topic, source);
+        console.log("reading: "+file);
+        filesystem.readFileSync(__dirname + file, options, function(source){
+            console.log("file = "+source);
+            promises.push(kafkaService.send(sessionId, source));
+        });
         //results.push(file);
     });
+    return promises;
     //return results;
 };
 
-_getAllFilesFromFolder("/traces");
+var promises = _getAllFilesFromFolder("/traces");
+Q.all(promises)
+    .then(function () {
+        console.log('traces sended - Success.');
+    }).fail(function (err) {
+        console.log(err+' - Fail.');
+    });
 
 //kafkaService.removeTopic(sessionId);
 //stormService.endTopology(sessionId);
