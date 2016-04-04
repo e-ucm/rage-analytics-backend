@@ -1,0 +1,14 @@
+name: "default-topology"
+
+config:
+  topology.workers: 1
+  topology.max.spout.pending: 1000
+  zookeeperUrl: "localhost:2181"
+  mongoHost: "localhost"
+  mongoPort: 27017
+  mongoDB: "analytics-backend-test"
+  sessionId: "sessionTest"
+
+
+topologySource:
+  className: "es.eucm.gleaner.realtime.RealTime"
