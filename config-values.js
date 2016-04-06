@@ -120,13 +120,14 @@ exports.defaultValues = {
     lrsUsername: 'openlrs',     // Used for 'basic' authentication
     lrsPassword: 'openlrs',
     realtimeJar: '/home/eucm/hlocal/rage2/rage-analytics-realtime/target/realtime-jar-with-dependencies.jar',
-    stormPath: '/home/eucm/hlocal/rage/gleaner/storm/apache-storm-0.9.5/bin',
+    stormPath: '/home/eucm/hlocal/rage/gleaner/storm/apache-storm-0.10.0/bin',
     nimbusHost: 'localhost',
     nimbusPort: '6627',
     kzkHost: 'localhost',
     kzkPort: '2181',
     kafkaUrl: 'localhost:2181',
-    myHost: process.env.MY_HOST || 'localhost'
+    myHost: process.env.MY_HOST || 'localhost',
+    fluxYaml: 'flux.yml'
 };
 
 exports.testValues = {
@@ -150,13 +151,14 @@ exports.testValues = {
     lrsUsername: 'openlrs',
     lrsPassword: 'openlrs',
     realtimeJar: '/home/eucm/hlocal/rage/gleaner/gleaner-realtime/target/realtime-jar-with-dependencies.jar',
-    stormPath: '/home/eucm/hlocal/rage/gleaner/storm/apache-storm-0.9.5',
+    stormPath: '/home/eucm/hlocal/rage/gleaner/storm/apache-storm-0.10.0/bin',
     nimbusHost: 'localhost',
     nimbusPort: '6627',
     kzkHost: 'localhost',
     kzkPort: '2181',
     kafkaUrl: 'localhost:2181',
-    myHost: process.env.MY_HOST || 'localhost'
+    myHost: process.env.MY_HOST || 'localhost',
+    fluxYaml: 'flux.yml'
 };
 
 var prefix = 'RAGE_ANALYTICS_BACKEND_';
