@@ -16,7 +16,8 @@ exports.lrs = {
 exports.storm = {
     realtimeJar: '{{realtimeJar}}',
     path: '{{stormPath}}',
-    nimbusHost: '{{nimbusHost}}'
+    nimbusHost: '{{nimbusHost}}',
+    fluxYaml: '{{fluxYaml}}'
 };
 exports.kafka = {
     uri: process.env.LRS_URI || process.env.LRS_URL || '{{kafkaUrl}}'
