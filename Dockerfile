@@ -1,7 +1,7 @@
 FROM java
 
 # used to download sources, executables
-RUN apt-get update \
+RUN apt-get clean && apt-get update \
   && apt-get install -y gcc g++ make
 
 # NodeJS installation, gpg keys listed at https://github.com/nodejs/node

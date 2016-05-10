@@ -35,10 +35,13 @@ exports.storm = {
     realtimeJar: '{{realtimeJar}}',
     path: '{{stormPath}}',
     nimbusHost: '{{nimbusHost}}',
-    fluxYaml: '{{fluxYaml}}'
+    fluxYaml: '{{fluxYaml}}',
+    analysisFolder: '{{analysisFolder}}',
+    elasticsearchHost: '{{elasticsearchHost}}',
+    elasticsearchPort: '{{elasticsearchPort}}'
 };
 exports.kafka = {
-    uri: process.env.LRS_URI || process.env.LRS_URL || '{{kafkaUrl}}'
+    uri: process.env.KAFKA_URI || process.env.KAFKA_URL || '{{kafkaUrl}}'
 };
 exports.a2 = {
     a2ApiPath: '{{a2ApiPath}}',

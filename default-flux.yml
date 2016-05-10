@@ -8,6 +8,7 @@ config:
   mongoPort: {{mongoPort}}
   mongoDB: "{{mongoDB}}"
   sessionId: "{{sessionId}}"
+  elasticsearchUrl: "{{elasticsearchUrl}}"
 
 
 topologySource:

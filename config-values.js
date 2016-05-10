@@ -127,7 +127,10 @@ exports.defaultValues = {
     kzkPort: '2181',
     kafkaUrl: 'localhost:2181',
     myHost: process.env.MY_HOST || 'localhost',
-    fluxYaml: 'flux.yml'
+    fluxYaml: 'flux.yml',
+    analysisFolder: '/analysis',
+    elasticsearchHost: 'localhost',
+    elasticsearchPort: 9300,
 };
 
 exports.testValues = {
@@ -158,11 +161,14 @@ exports.testValues = {
     kzkPort: '2181',
     kafkaUrl: 'localhost:2181',
     myHost: process.env.MY_HOST || 'localhost',
-    fluxYaml: 'flux.yml'
+    fluxYaml: 'flux.yml',
+    analysisFolder: '/analysis',
+    elasticsearchHost: 'localhost',
+    elasticsearchPort: 9300,
 };
 
 var prefix = 'RAGE_ANALYTICS_BACKEND_';
-var links = ['kzk', 'lrs', 'mongo', 'a2', 'nimbus'];
+var links = ['kzk', 'lrs', 'mongo', 'a2', 'nimbus', 'elasticsearch'];
 initFromEnv(exports.defaultValues, prefix, links);
 initFromEnv(exports.testValues, prefix, links);
 
