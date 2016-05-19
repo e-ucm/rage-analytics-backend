@@ -23,6 +23,7 @@
     "gen-apidoc": "apidoc -i ./routes -o ./public/apidoc"
   },
   "dependencies": {
+    "adm-zip": "*",
     "async": "^1.3.x",
     "body-parser": "^1.13.x",
     "easy-collections": "e-ucm/easy-collections",
@@ -30,8 +31,10 @@
     "jade": "*",
     "kafka-node": "^0.2.x",
     "underscore": "*",
+    "mkdirp": "^0.5.x",
     "mongodb": "^2.0.x",
     "morgan": "^1.6.x",
+    "multer": "^1.1.x",
     "request": "^2.60.x",
     "shelljs": "^0.5.x"
   },
