@@ -11,7 +11,7 @@ module.exports.processResponse = function (promise, res) {
         if (err.status) {
             res.status(err.status);
             if (err.message) {
-                res.send(err.message);
+                res.json(err.message);
             } else {
                 res.end();
             }
