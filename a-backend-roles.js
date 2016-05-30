@@ -71,6 +71,14 @@ exports.app = {
                 },
                 {
                     resources: [
+                        '/analysis/:id'
+                    ],
+                    permissions: [
+                        'get'
+                    ]
+                },
+                {
+                    resources: [
                         '/sessions/:sessionId',
                         '/sessions/:sessionId/remove',
                         '/sessions/:sessionId/results/:resultsId'
@@ -99,6 +107,15 @@ exports.app = {
                         '/games/:gameId',
                         '/games/:gameId/versions',
                         '/games/:gameId/versions/:versionId'
+                    ],
+                    permissions: [
+                        '*'
+                    ]
+                },
+                {
+                    resources: [
+                        '/analysis/:id',
+                        '/analysis/:versionId'
                     ],
                     permissions: [
                         '*'
