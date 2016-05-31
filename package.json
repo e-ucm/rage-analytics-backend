@@ -33,6 +33,7 @@
     "underscore": "*",
     "mkdirp": "^0.5.x",
     "mongodb": "^2.0.x",
+    "elasticsearch": "*",
     "morgan": "^1.6.x",
     "multer": "^1.1.x",
     "request": "^2.60.x",

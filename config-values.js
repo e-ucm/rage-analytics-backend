@@ -103,6 +103,7 @@ exports.defaultValues = {
     mongoHost: 'localhost',
     mongoPort: '27017',
     mongodbUrl: 'mongodb://localhost:27017/analytics-backend',
+    elasticsearchURL: 'http://localhost:9200',
     apiPath: '/api',
     port: 3300,
     a2Host: 'localhost',
@@ -139,6 +140,7 @@ exports.testValues = {
     mongoHost: 'localhost',
     mongoPort: '27017',
     mongodbUrl: 'mongodb://localhost:27017/analytics-backend-test', // This must be different than 'exports.defaultValues.mongodbUrl'
+    elasticsearchURL: 'http://localhost:9200',
     apiPath: '/api',
     port: 3330,
     a2Host: 'localhost',

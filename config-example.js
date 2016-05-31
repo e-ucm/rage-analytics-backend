@@ -23,6 +23,9 @@ exports.myHost = '{{myHost}}';
 exports.mongodb = {
     uri: process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || '{{mongodbUrl}}'
 };
+exports.elasticsearch = {
+    uri: process.env.ELASTIC_HOST || '{{elasticsearchURL}}'
+};
 exports.apiPath = '{{apiPath}}';
 exports.companyName = '{{companyName}}';
 exports.projectName = '{{projectName}}';
