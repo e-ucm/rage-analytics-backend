@@ -1,0 +1,35 @@
+[
+  {
+    "event": "var",
+    "gameplayId": "800000000000000000000000",
+    "versionId": "1",
+    "target": "Codigo Usuario",
+    "value": "101"
+  },
+  {
+    "event": "screen",
+    "gameplayId": "800000000000000000000000",
+    "versionId": "1",
+    "value": "Menu Principal"
+  },
+  {
+    "event": "zone",
+    "gameplayId": "800000000000000000000000",
+    "versionId": "1",
+    "value": "CutScene Comienzo"
+  },  
+  {
+    "event": "click",
+    "gameplayId": "800000000000000000000000",
+    "versionId": "1",
+    "value1": "108",
+    "value2": "9"
+  },
+  {
+    "event": "choice",
+    "gameplayId": "800000000000000000000000",
+    "versionId": "1",
+    "target": "Ayudar a Lucrecia",
+    "value": "Desenvaniar la espada"
+  }
+]

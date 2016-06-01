@@ -1,0 +1,12 @@
+  {
+    "_id": "800000000000000000000000",
+    "zone": "CutScene Comienzo",
+    "var": {
+      "Codigo Usuario": "101"
+    },
+    "choice": {
+      "Ayudar a Lucrecia": {
+        "Desenvaniar la espada": 1
+      }
+    }
+  }

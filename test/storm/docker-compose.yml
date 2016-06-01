@@ -1,0 +1,102 @@
+#
+# RAGE WP2 server-side infrastructure
+# This version requires the use of 
+#   docker v1.9+
+#   docker-compose v1.5, running with --x-experimental-networking
+#
+
+# A scalable cache
+#     saves data to ./data/mongo
+mongo:
+    image: mongo:3.0
+    container_name: "mongo"
+    volumes:
+      - "./data/mongo:/data/db"
+    ports:
+      - "27017:27017"
+
+# Full-text search & analytics DB
+#     saves data to ./data/elastic
+elastic:
+    image: elasticsearch:5.0.0-alpha1
+    container_name: "elastic"
+    volumes:
+      - "./data/elastic:/usr/share/elasticsearch/data"
+    ports: 
+        - "9200:9200"
+        - "9300:9300"
+
+kibana:
+    image: kibana:5.0.0-alpha1
+    container_name: "kibana"
+    environment:
+      - ELASTICSEARCH_URL=http://elastic:9200
+    ports: 
+        - "5601:5601"
+
+# Kafka (A scalable queue) + Zookeeper (Distributed conf. service)
+# as of 2015.11 -- kafka:0.8.2.1, zookeeper:3.4.5+dfsg-2
+kzk:
+    image: eucm/kzk
+    container_name: "kzk"
+    volumes:
+      - "./data/zookeeper:/var/lib/zookeeper"
+      - "./data/kafka:/tmp/kafka-logs"
+    environment:
+      - ADVERTISED_HOST=kzk
+      - AUTO_CREATE_TOPICS=true
+      - DELETE_TOPICS=true
+    ports:
+      - "9092:9092"
+      - "2181:2181"
+
+# nimbus: supervises everything; talks to zookeeper
+# in e-ucm/dockerized-storm -- storm:0.10.0
+#    requires: kzk
+nimbus:
+    image: eucm/storm-nimbus
+    container_name: "nimbus"
+    environment:
+      - KZK_PORT_2181_TCP_ADDR=kzk
+      - NIMBUS_PORT_6627_TCP_ADDR=nimbus
+      - UI_PORT_8081_TCP_ADDR=ui
+    ports:
+      - "6627:6627"
+
+# ui: allows access to logs
+# in e-ucm/dockerized-storm -- storm:0.10.0
+#    requires: nimbus, kzk
+ui:
+    image: eucm/storm-ui
+    container_name: "ui"
+    environment:
+      - KZK_PORT_2181_TCP_ADDR=kzk
+      - NIMBUS_PORT_6627_TCP_ADDR=nimbus
+      - UI_PORT_8081_TCP_ADDR=ui
+    ports: 
+        - "8081:8081"
+
+# Generates RealTime analytics jar, used in Analytics Backend
+realtime:
+    image: eucm/rage-analytics-realtime
+
+# supervisor: supervises actual workers
+# in e-ucm/dockerized-storm -- storm:0.10.0
+#   requires: nimbus, kzk, mongo
+supervisor:
+    image: eucm/storm-supervisor
+    container_name: "supervisor"
+    environment:
+      - KZK_PORT_2181_TCP_ADDR=kzk
+      - NIMBUS_PORT_6627_TCP_ADDR=nimbus
+      - UI_PORT_8081_TCP_ADDR=ui
+    ports:
+      - "6700:6700"
+      - "6701:6701"
+      - "6702:6702"
+      - "6703:6703"
+    volumes_from:
+      - realtime
+    volumes:
+      - "./data/realtime3:/app/output2"
+
