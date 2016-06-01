@@ -307,9 +307,10 @@ router.post('/visualization/session/:visualizationId/:sessionId', function (req,
         if (!error) {
             // Replace template and save it
             var obj = response.hits.hits[0]._source;
-            obj.kibanaSavedObjectMeta.searchSourceJSON = obj.kibanaSavedObjectMeta.searchSourceJSON.replace(
-                new RegExp('{\\"index\\":\\".+\\",', 'g'), '{\\"index\\":\\"' + req.params.sessionId + '\\",');
 
+            obj.kibanaSavedObjectMeta.searchSourceJSON = obj.kibanaSavedObjectMeta.searchSourceJSON.replace(
+                new RegExp('{\\"index\\":\\".+\\",', ''), '{\\"index\\":\\"' + req.params.sessionId + '\\",');
+            obj.title = response.hits.hits[0]._id+'_'+req.params.sessionId;
 
             req.app.esClient.index({
                 index: '.kibana',
@@ -323,6 +324,45 @@ router.post('/visualization/session/:visualizationId/:sessionId', function (req,
                     res.json(error);
                 }
             });
+        } else {
+            res.json(error);
+        }
+    });
+});
+
+/**
+ * @api {post} /api/kibana/dashboard/session/:sessionId Adds a new dashboard in .kibana index of ElasticSearch.
+ * @apiName PostVisualization
+ * @apiGroup Kibana
+ *
+ * @apiParam {String} id The visualization id
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "_index": ".kibana",
+ *          "_type": "visualization",
+ *          "_id": "sessionId",
+ *          "_version": 1,
+ *          "_shards": {
+ *              "total": 2,
+ *              "successful": 1,
+ *              "failed": 0
+ *          },
+ *          "created": true
+ *      }
+ */
+router.post('/dashboard/session/:sessionId', function (req, res) {
+    req.app.esClient.index({
+        index: '.kibana',
+        type: 'dashboard',
+        id: 'dashboard_'+req.params.sessionId,
+        body: req.body
+    }, function (error, response) {
+        if (!error) {
+            res.json(response);
         } else {
             res.json(error);
         }
