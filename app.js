@@ -79,15 +79,17 @@ app.get('/', function (req, res) {
     res.render('apidoc');
 });
 
+var kafkaService = require('./lib/services/kafka')(app.config.kafka.uri);
+var stormService = require('./lib/services/storm')(app.config.storm, app.config.mongodb.uri, app.config.kafka.uri);
+
 app.use(app.config.apiPath + '/games', require('./routes/games'));
-app.use(app.config.apiPath + '/sessions', require('./routes/sessions'));
+app.use(app.config.apiPath + '/sessions', require('./routes/sessions')(kafkaService, stormService));
 app.use(app.config.apiPath + '/analysis', require('./routes/analysis'));
 app.use(app.config.apiPath + '/collector', require('./routes/collector'));
 app.use(app.config.apiPath + '/health', require('./routes/health'));
 
 var sessions = require('./lib/sessions');
 
-var kafkaService = require('./lib/services/kafka')(app.config.kafka.uri);
 sessions.startTasks.push(kafkaService.createTopic);
 sessions.endTasks.push(kafkaService.removeTopic);
 
