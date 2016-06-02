@@ -29,7 +29,7 @@
     "easy-collections": "e-ucm/easy-collections",
     "express": "~4.13.x",
     "jade": "*",
-    "kafka-node": "^0.2.x",
+    "kafka-node": "^0.3.x",
     "underscore": "*",
     "mkdirp": "^0.5.x",
     "mongodb": "^2.0.x",
