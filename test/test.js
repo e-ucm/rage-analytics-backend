@@ -23,7 +23,7 @@ var request = require('supertest'),
 
 var config;
 
-describe('API Test', function(done) {
+describe('API Test', function (done) {
     /**Initialize MongoDB**/
     before(function (done) {
         var app = require('../app');
@@ -41,7 +41,7 @@ describe('API Test', function(done) {
         });
     });
 
-    it('Start tests', function(done) {
+    it('Start tests', function (done) {
         require('./tests/configs');
         require('./tests/tracesConverterTest');
 
@@ -53,6 +53,7 @@ describe('API Test', function(done) {
 
         // Test collector and track, also drop the database.
         require('./tests/collectorTest')(request, db, config);
+
         done();
     });
 
