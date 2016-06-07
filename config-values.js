@@ -131,7 +131,7 @@ exports.defaultValues = {
     fluxYaml: 'flux.yml',
     analysisFolder: './analysis',
     elasticsearchHost: 'localhost',
-    elasticsearchPort: 9300
+    elasticsearchPort: 9200
 };
 
 exports.testValues = {
@@ -166,7 +166,7 @@ exports.testValues = {
     fluxYaml: 'flux.yml',
     analysisFolder: './analysis',
     elasticsearchHost: 'localhost',
-    elasticsearchPort: 9300
+    elasticsearchPort: 9200
 };
 
 var prefix = 'RAGE_ANALYTICS_BACKEND_';
@@ -179,6 +179,8 @@ initFromEnv(exports.testValues, prefix, links);
 // Ensuring that 'mongodbUrl' values are different
 exports.defaultValues.mongodbUrl = 'mongodb://' + exports.defaultValues.mongoHost + ':' + exports.defaultValues.mongoPort + '/analytics-backend';
 exports.testValues.mongodbUrl = exports.defaultValues.mongodbUrl + '-test';
+
+exports.defaultValues.elasticsearchURL= 'http://' + exports.defaultValues.elasticsearchHost + ':' + exports.defaultValues.elasticsearchPort;
 
 exports.defaultValues.a2HomePage = 'http://' + exports.defaultValues.a2Host + ':' + exports.defaultValues.a2Port + '/';
 exports.defaultValues.a2ApiPath = exports.defaultValues.a2HomePage + 'api/';
