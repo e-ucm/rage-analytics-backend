@@ -33,8 +33,9 @@ describe('Traces converter tests', function () {
     it('should correctly convert a ZONE statement', function (done) {
 
         var zoneName = 'TestingZone-5827';
+        var timestamp = '2016-05-16T11:48:25Z';
         var statement = {
-            timestamp: '2016-01-22T14:11:22.798Z',
+            timestamp: timestamp,
             actor: {
                 name: '56a2388d20b8364200f67d9c67412',
                 account: {
@@ -59,7 +60,8 @@ describe('Traces converter tests', function () {
             versionId: definitionObj.extensions.versionId,
             gameplayId: definitionObj.extensions.gameplayId,
             event: 'zone',
-            value: zoneName
+            value: zoneName,
+            timestamp: timestamp
         };
         var trace = getRealtimeData(statement);
         should(trace).eql(resultTrace);
@@ -71,8 +73,9 @@ describe('Traces converter tests', function () {
     it('should correctly convert a SCREEN statement', function (done) {
 
         var screenName = 'MainMenu-2';
+        var timestamp = '2016-05-16T11:48:25Z';
         var statement = {
-            timestamp: '2016-01-22T14:11:22.796Z',
+            timestamp: timestamp,
             actor: {
                 name: '56a2388d20b8364200f67d9c67412',
                 account: {
@@ -97,7 +100,8 @@ describe('Traces converter tests', function () {
             versionId: definitionObj.extensions.versionId,
             gameplayId: definitionObj.extensions.gameplayId,
             event: 'screen',
-            value: screenName
+            value: screenName,
+            timestamp: timestamp
         };
         var trace = getRealtimeData(statement);
         should(trace).eql(resultTrace);
@@ -109,8 +113,9 @@ describe('Traces converter tests', function () {
 
         var choiceName = 'HelpMenuLoginQuestion';
         var choiceValue = 'Option 2 - LogIn using Twitter';
+        var timestamp = '2016-05-16T11:48:25Z';
         var statement = {
-            timestamp: '2016-01-22T14:33:34.352Z',
+            timestamp: timestamp,
             actor: {
                 name: '56a23d8420b8364200f67d9f79692',
                 account: {
@@ -136,7 +141,8 @@ describe('Traces converter tests', function () {
             gameplayId: definitionObj.extensions.gameplayId,
             event: 'choice',
             target: choiceName,
-            value: choiceValue
+            value: choiceValue,
+            timestamp: timestamp
         };
         var trace = getRealtimeData(statement);
         should(trace).eql(resultTrace);
@@ -149,8 +155,9 @@ describe('Traces converter tests', function () {
 
         var varName = 'myTestVar-321';
         var varValue = '30';
+        var timestamp = '2016-05-16T11:48:25Z';
         var statement = {
-            timestamp: '2016-01-22T14:33:34.346Z',
+            timestamp: timestamp,
             actor: {
                 name: '56a23d8420b8364200f67d9f79692',
                 account: {
@@ -176,7 +183,8 @@ describe('Traces converter tests', function () {
             gameplayId: definitionObj.extensions.gameplayId,
             event: 'var',
             target: varName,
-            value: varValue
+            value: varValue,
+            timestamp: timestamp
         };
         var trace = getRealtimeData(statement);
         should(trace).eql(resultTrace);
