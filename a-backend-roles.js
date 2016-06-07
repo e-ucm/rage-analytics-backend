@@ -132,6 +132,7 @@ exports.app = {
                 },
                 {
                     resources: [
+                        '/sessions/test/:versionId',
                         '/games'
                     ],
                     permissions: [
