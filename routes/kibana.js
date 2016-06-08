@@ -48,6 +48,83 @@ router.post('/templates/:type/:id', function (req, res) {
 });
 
 /**
+ * @api {post} /api/kibana/templates/:type/:idTemplate/:idGame Adds a new template in .template index of ElasticSearch.
+ * @apiDescription :type must be visualization or index
+ * @apiName PostTemplate
+ * @apiGroup Templates
+ *
+ * @apiParam {String} id The visualization id
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "_index": ".template",
+ *          "_type": "visualization",
+ *          "_id": "template_visualization",
+ *           "_version": 1,
+ *          "_shards": {
+ *              "total": 2,
+ *              "successful": 1,
+ *              "failed": 0
+ *          },
+ *          "created": true
+ *      }
+ */
+router.post('/templates/:type/:idTemplate/:idAuthor', function (req, res) {
+    if (req.params.type !== 'visualization' && req.params.type !== 'index') {
+        res.json('Invalid type parameter', 300);
+    } else {
+        req.body.author = req.params.idAuthor;
+        req.app.esClient.index({
+            index: '.template',
+            type: req.params.type,
+            id: req.params.idTemplate,
+            body: req.body
+        }, function (error, response) {
+            if (!error) {
+                res.json(response);
+            } else {
+                res.json(error);
+            }
+        });
+    }
+});
+
+/**
+ * @api {get} /api/kibana/templates/:idAuthor Return a list with the author's visualizations.
+ * @apiName GetVisualizationFields
+ * @apiGroup Kibana
+ *
+ * @apiParam {String} id The visualization id
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      ['field1', 'field2', 'field3']
+ */
+router.get('/templates/:idAuthor', function (req, res) {
+    req.app.esClient.search({
+        index: '.template',
+        q: 'author:' + req.params.idAuthor
+    }, function (error, response) {
+        if (!error) {
+            var result = [];
+            if (response.hits) {
+                for (var i = 0; i < response.hits.hits.length; i++) {
+                    result[i] = response.hits.hits[i]._id;
+                }
+            }
+            res.json(result);
+        } else {
+            res.json(error);
+        }
+    });
+});
+
+/**
  * @api {get} /api/kibana/templates/fields/:id Return the fields of visualization with the id.
  * @apiName GetVisualizationFields
  * @apiGroup Kibana
@@ -73,7 +150,7 @@ router.get('/templates/fields/:id', function (req, res) {
                 var sourceField = 'visState';
                 if (response.hits.hits[0]._type === 'index') {
                     sourceField = 'fields';
-                    re = /"name":"(\w+.?\w+)"/g;
+                    re = /"name":"([^_]\w+.?\w+)"/g;
                 }
 
                 var pos = 0;
@@ -166,7 +243,88 @@ router.post('/visualization/game/:id', function (req, res) {
 });
 
 /**
- * @api {post} /api/kibana/visualization/list/:id Adds a list of visualization names in a document with the id.
+ * @api {get} /api/kibana/visualization/game/:id
+ * @apiName GetFields
+ * @apiGroup Kibana
+ *
+ * @apiParam {String} id The visualization id
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "_index": ".games",
+ *          "_type": "visualization",
+ *          "_id": "testing",
+ *          "_version": 1,
+ *          "_shards": {
+ *              "total": 2,
+ *              "successful": 1,
+ *              "failed": 0
+ *          },
+ *          "created": true
+ *      }
+ */
+router.get('/visualization/tuples/fields/game/:id', function (req, res) {
+    req.app.esClient.search({
+        index: '.games',
+        type: 'fields',
+        q: '_id:fields' + req.params.id
+    }, function (error, response) {
+        if (!error) {
+            if (response.hits.hits[0]) {
+                res.json(response.hits.hits[0]._source);
+            } else {
+                res.json(new Error('Fields not found', 300));
+            }
+        } else {
+            res.json(error);
+        }
+    });
+});
+
+/**
+ * @api {post} /api/kibana/visualization/game/:id
+ * @apiName GetFields
+ * @apiGroup Kibana
+ *
+ * @apiParam {String} id The visualization id
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "_index": ".games",
+ *          "_type": "visualization",
+ *          "_id": "testing",
+ *          "_version": 1,
+ *          "_shards": {
+ *              "total": 2,
+ *              "successful": 1,
+ *              "failed": 0
+ *          },
+ *          "created": true
+ *      }
+ */
+router.post('/visualization/tuples/fields/game/:id', function (req, res) {
+    req.app.esClient.index({
+        index: '.games',
+        type: 'fields',
+        id: 'fields' + req.params.id,
+        body: req.body
+    }, function (error, response) {
+        if (!error) {
+            res.json(response);
+        } else {
+            res.json(error);
+        }
+    });
+});
+
+/**
+ * @api {post} /api/kibana/visualization/list/:id Replace the visualization names in a document with the id.
  * @apiName PostVisualization
  * @apiGroup Kibana
  *
@@ -205,6 +363,71 @@ router.post('/visualization/list/:id', function (req, res) {
 });
 
 /**
+ * @api {put} /api/kibana/visualization/list/:id Adds a list of visualization names in a document with the id.
+ * @apiName PostVisualization
+ * @apiGroup Kibana
+ *
+ * @apiParam {String} id The list id
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "_index": ".games",
+ *          "_type": "list",
+ *          "_id": "visualization_list",
+ *          "_version": 1,
+ *          "_shards": {
+ *              "total": 2,
+ *              "successful": 1,
+ *              "failed": 0
+ *          },
+ *          "created": true
+ *      }
+ */
+router.put('/visualization/list/:id', function (req, res) {
+    req.app.esClient.search({
+        index: '.games',
+        type: 'list',
+        q: '_id:' + req.params.id
+    }, function (error, response) {
+        if (!error) {
+            var body = [];
+            if (response.hits.hits[0]) {
+                response = response.hits.hits[0]._source.visualizations;
+                for (var i = 0; i < response.length; i++) {
+                    addDifferents(req, body, response[i]);
+                }
+            }
+            body = {
+                visualizations: req.body.visualizations.concat(body)
+            };
+            req.app.esClient.index({
+                index: '.games',
+                type: 'list',
+                id: req.params.id,
+                body: body
+            }, function (error, response) {
+                if (!error) {
+                    res.json(response);
+                } else {
+                    res.json(error);
+                }
+            });
+        }
+    });
+});
+
+function addDifferents(req, body, obj) {
+    req.body.visualizations.forEach(function (v) {
+        if (v !== obj) {
+            body.push(obj);
+        }
+    });
+}
+
+/**
  * @api {get} /api/kibana/visualization/list/:id Return the list with the id.
  * @apiName GetVisualizationFields
  * @apiGroup Kibana
@@ -224,11 +447,69 @@ router.post('/visualization/list/:id', function (req, res) {
 router.get('/visualization/list/:id', function (req, res) {
     req.app.esClient.search({
         index: '.games',
+        type: 'list',
         q: '_id:' + req.params.id
     }, function (error, response) {
         if (!error) {
             if (response.hits.hits[0]) {
-                res.json(response.hits.hits[0]._source);
+                res.json(response.hits.hits[0]._source.visualizations);
+            } else {
+                res.json([]);
+            }
+        } else {
+            res.json(error);
+        }
+    });
+});
+
+/**
+ * @api {delete} /api/kibana/visualization/list/:listId/:idToRemove Remove the idToRemove in the list with listId.
+ * @apiName GetVisualizationFields
+ * @apiGroup Kibana
+ *
+ * @apiParam {String} listId The list id
+ * @apiParam {String} idToRemove The id to remove
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "visualizations": [
+ *              "UserScore_56962ebf5d817ba040bdca5f"
+ *          ]
+ *      }
+ */
+router.delete('/visualization/list/:listId/:idToRemove', function (req, res) {
+    req.app.esClient.search({
+        index: '.games',
+        type: 'list',
+        q: '_id:' + req.params.listId
+    }, function (error, response) {
+        if (!error) {
+            if (response.hits.hits[0]) {
+                var obj = response.hits.hits[0]._source;
+
+                var i = 0;
+                obj.visualizations.forEach(function (v) {
+                    if (v === req.params.idToRemove) {
+                        obj.visualizations.splice(i,1);
+                    }
+                    i++;
+                });
+
+                req.app.esClient.index({
+                    index: '.games',
+                    type: 'list',
+                    id: req.params.listId,
+                    body: obj
+                }, function (error, response) {
+                    if (!error) {
+                        res.json(obj);
+                    } else {
+                        res.json(error);
+                    }
+                });
             } else {
                 res.json([]);
             }
@@ -318,7 +599,7 @@ router.post('/visualization/session/:visualizationId/:sessionId', function (req,
         q: '_id:' + req.params.visualizationId
     }, function (error, response) {
         if (!error) {
-            if (response.hits.hits[0]) {
+            if (response.hits.hits[0] && response.hits.hits[0]._source.kibanaSavedObjectMeta) {
                 var re = /"index":"(\w+.?\w+)"/;
 
                 var obj = response.hits.hits[0]._source;
@@ -328,7 +609,7 @@ router.post('/visualization/session/:visualizationId/:sessionId', function (req,
                 obj.kibanaSavedObjectMeta.searchSourceJSON = obj.kibanaSavedObjectMeta.searchSourceJSON.replace(m[1], req.params.sessionId);
                 // Replace template and save it
                 obj.title = response.hits.hits[0]._id + '_' + req.params.sessionId;
-                
+
                 req.app.esClient.index({
                     index: '.kibana',
                     type: 'visualization',
