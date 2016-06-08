@@ -113,7 +113,7 @@ router.get('/templates/:idAuthor', function (req, res) {
         if (!error) {
             var result = [];
             if (response.hits) {
-                for(var i = 0; i < response.hits.hits.length; i++){
+                for (var i = 0; i < response.hits.hits.length; i++) {
                     result[i] = response.hits.hits[i]._id;
                 }
             }
@@ -150,7 +150,7 @@ router.get('/templates/fields/:id', function (req, res) {
                 var sourceField = 'visState';
                 if (response.hits.hits[0]._type === 'index') {
                     sourceField = 'fields';
-                    re = /"name":"(\w+.?\w+)"/g;
+                    re = /"name":"([^_]\w+.?\w+)"/g;
                 }
 
                 var pos = 0;
@@ -243,6 +243,87 @@ router.post('/visualization/game/:id', function (req, res) {
 });
 
 /**
+ * @api {get} /api/kibana/visualization/game/:id
+ * @apiName GetFields
+ * @apiGroup Kibana
+ *
+ * @apiParam {String} id The visualization id
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "_index": ".games",
+ *          "_type": "visualization",
+ *          "_id": "testing",
+ *          "_version": 1,
+ *          "_shards": {
+ *              "total": 2,
+ *              "successful": 1,
+ *              "failed": 0
+ *          },
+ *          "created": true
+ *      }
+ */
+router.get('/visualization/tuples/fields/game/:id', function (req, res) {
+    req.app.esClient.search({
+        index: '.games',
+        type: 'fields',
+        q: '_id:fields' + req.params.id
+    }, function (error, response) {
+        if (!error) {
+            if (response.hits.hits[0]) {
+                res.json(response.hits.hits[0]._source);
+            } else {
+                res.json(new Error('Fields not found', 300));
+            }
+        } else {
+            res.json(error);
+        }
+    });
+});
+
+/**
+ * @api {post} /api/kibana/visualization/game/:id
+ * @apiName GetFields
+ * @apiGroup Kibana
+ *
+ * @apiParam {String} id The visualization id
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "_index": ".games",
+ *          "_type": "visualization",
+ *          "_id": "testing",
+ *          "_version": 1,
+ *          "_shards": {
+ *              "total": 2,
+ *              "successful": 1,
+ *              "failed": 0
+ *          },
+ *          "created": true
+ *      }
+ */
+router.post('/visualization/tuples/fields/game/:id', function (req, res) {
+    req.app.esClient.index({
+        index: '.games',
+        type: 'fields',
+        id: 'fields' + req.params.id,
+        body: req.body
+    }, function (error, response) {
+        if (!error) {
+            res.json(response);
+        } else {
+            res.json(error);
+        }
+    });
+});
+
+/**
  * @api {post} /api/kibana/visualization/list/:id Replace the visualization names in a document with the id.
  * @apiName PostVisualization
  * @apiGroup Kibana
@@ -313,18 +394,14 @@ router.put('/visualization/list/:id', function (req, res) {
     }, function (error, response) {
         if (!error) {
             var body = [];
-            if(response.hits.hits[0]){
+            if (response.hits.hits[0]) {
                 response = response.hits.hits[0]._source.visualizations;
-                for(var i = 0; i < response.length; i++){
-                    req.body.visualizations.forEach(function (v){
-                        if(v!==response[i]){
-                            body.push(response[i])
-                        }
-                    });
+                for (var i = 0; i < response.length; i++) {
+                    addDifferents(req, body, response[i]);
                 }
             }
             body = {
-                visualizations : req.body.visualizations.concat(body)
+                visualizations: req.body.visualizations.concat(body)
             };
             req.app.esClient.index({
                 index: '.games',
@@ -341,6 +418,14 @@ router.put('/visualization/list/:id', function (req, res) {
         }
     });
 });
+
+function addDifferents(req, body, obj) {
+    req.body.visualizations.forEach(function (v) {
+        if (v !== obj) {
+            body.push(obj);
+        }
+    });
+}
 
 /**
  * @api {get} /api/kibana/visualization/list/:id Return the list with the id.
@@ -368,6 +453,63 @@ router.get('/visualization/list/:id', function (req, res) {
         if (!error) {
             if (response.hits.hits[0]) {
                 res.json(response.hits.hits[0]._source.visualizations);
+            } else {
+                res.json([]);
+            }
+        } else {
+            res.json(error);
+        }
+    });
+});
+
+/**
+ * @api {delete} /api/kibana/visualization/list/:listId/:idToRemove Remove the idToRemove in the list with listId.
+ * @apiName GetVisualizationFields
+ * @apiGroup Kibana
+ *
+ * @apiParam {String} listId The list id
+ * @apiParam {String} idToRemove The id to remove
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "visualizations": [
+ *              "UserScore_56962ebf5d817ba040bdca5f"
+ *          ]
+ *      }
+ */
+router.delete('/visualization/list/:listId/:idToRemove', function (req, res) {
+    req.app.esClient.search({
+        index: '.games',
+        type: 'list',
+        q: '_id:' + req.params.listId
+    }, function (error, response) {
+        if (!error) {
+            if (response.hits.hits[0]) {
+                var obj = response.hits.hits[0]._source;
+
+                var i = 0;
+                obj.visualizations.forEach(function (v) {
+                    if (v === req.params.idToRemove) {
+                        obj.visualizations.splice(i,1);
+                    }
+                    i++;
+                });
+
+                req.app.esClient.index({
+                    index: '.games',
+                    type: 'list',
+                    id: req.params.listId,
+                    body: obj
+                }, function (error, response) {
+                    if (!error) {
+                        res.json(obj);
+                    } else {
+                        res.json(error);
+                    }
+                });
             } else {
                 res.json([]);
             }
@@ -457,7 +599,7 @@ router.post('/visualization/session/:visualizationId/:sessionId', function (req,
         q: '_id:' + req.params.visualizationId
     }, function (error, response) {
         if (!error) {
-            if (response.hits.hits[0]) {
+            if (response.hits.hits[0] && response.hits.hits[0]._source.kibanaSavedObjectMeta) {
                 var re = /"index":"(\w+.?\w+)"/;
 
                 var obj = response.hits.hits[0]._source;
