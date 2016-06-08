@@ -81,7 +81,8 @@ exports.app = {
                     resources: [
                         '/sessions/:sessionId',
                         '/sessions/:sessionId/remove',
-                        '/sessions/:sessionId/results/:resultsId'
+                        '/sessions/:sessionId/results/:resultsId',
+                        '/kibana/*'
                     ],
                     permissions: [
                         '*'
@@ -106,7 +107,8 @@ exports.app = {
                         '/games/my',
                         '/games/:gameId',
                         '/games/:gameId/versions',
-                        '/games/:gameId/versions/:versionId'
+                        '/games/:gameId/versions/:versionId',
+                        '/kibana/*'
                     ],
                     permissions: [
                         '*'

@@ -21,7 +21,8 @@
 var path = require('path'),
     logger = require('morgan'),
     express = require('express'),
-    bodyParser = require('body-parser');
+    bodyParser = require('body-parser'),
+    elasticsearch = require('elasticsearch');
 
 var app = express();
 app.config = require((process.env.NODE_ENV === 'test') ? './config-test' : './config');
@@ -48,6 +49,22 @@ var connectToDB = function () {
         }
     });
 };
+
+app.esClient = new elasticsearch.Client({
+        host: app.config.elasticsearch.uri,
+        api: '5.0'
+    });
+
+app.esClient.ping({
+    // Ping usually has a 3000ms timeout
+    requestTimeout: 3000
+}, function (error) {
+    if (error) {
+        console.trace('elasticsearch cluster is down!');
+    } else {
+        console.log('Successfully connected to elasticsearch: ' + app.config.elasticsearch.uri);
+    }
+});
 
 connectToDB();
 
@@ -87,6 +104,7 @@ app.use(app.config.apiPath + '/sessions', require('./routes/sessions')(kafkaServ
 app.use(app.config.apiPath + '/analysis', require('./routes/analysis'));
 app.use(app.config.apiPath + '/collector', require('./routes/collector'));
 app.use(app.config.apiPath + '/health', require('./routes/health'));
+app.use(app.config.apiPath + '/kibana', require('./routes/kibana'));
 
 var sessions = require('./lib/sessions');
 
