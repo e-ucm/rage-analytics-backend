@@ -41,6 +41,7 @@ router.post('/templates/:type/:id', function (req, res) {
             if (!error) {
                 res.json(response);
             } else {
+                res.status(error.status);
                 res.json(error);
             }
         });
@@ -86,6 +87,7 @@ router.post('/templates/:type/:idTemplate/:idAuthor', function (req, res) {
             if (!error) {
                 res.json(response);
             } else {
+                res.status(error.status);
                 res.json(error);
             }
         });
@@ -119,6 +121,7 @@ router.get('/templates/:idAuthor', function (req, res) {
             }
             res.json(result);
         } else {
+            res.status(error.status);
             res.json(error);
         }
     });
@@ -169,6 +172,7 @@ router.get('/templates/fields/:id', function (req, res) {
             }
             res.json(result);
         } else {
+            res.status(error.status);
             res.json(error);
         }
     });
@@ -234,9 +238,10 @@ router.post('/visualization/game/:id', function (req, res) {
                     }
                 });
             } else {
-                res.json(new Error('Template not found', 300));
+                res.json(new Error('Template not found', 404));
             }
         } else {
+            res.status(error.status);
             res.json(error);
         }
     });
@@ -276,9 +281,10 @@ router.get('/visualization/tuples/fields/game/:id', function (req, res) {
             if (response.hits.hits[0]) {
                 res.json(response.hits.hits[0]._source);
             } else {
-                res.json(new Error('Fields not found', 300));
+                res.json(new Error('Fields not found', 404));
             }
         } else {
+            res.status(error.status);
             res.json(error);
         }
     });
@@ -318,6 +324,7 @@ router.post('/visualization/tuples/fields/game/:id', function (req, res) {
         if (!error) {
             res.json(response);
         } else {
+            res.status(error.status);
             res.json(error);
         }
     });
@@ -357,6 +364,7 @@ router.post('/visualization/list/:id', function (req, res) {
         if (!error) {
             res.json(response);
         } else {
+            res.status(error.status);
             res.json(error);
         }
     });
@@ -412,6 +420,7 @@ router.put('/visualization/list/:id', function (req, res) {
                 if (!error) {
                     res.json(response);
                 } else {
+                    res.status(error.status);
                     res.json(error);
                 }
             });
@@ -457,6 +466,7 @@ router.get('/visualization/list/:id', function (req, res) {
                 res.json([]);
             }
         } else {
+            res.status(error.status);
             res.json(error);
         }
     });
@@ -507,6 +517,7 @@ router.delete('/visualization/list/:listId/:idToRemove', function (req, res) {
                     if (!error) {
                         res.json(obj);
                     } else {
+                        res.status(error.status);
                         res.json(error);
                     }
                 });
@@ -514,6 +525,7 @@ router.delete('/visualization/list/:listId/:idToRemove', function (req, res) {
                 res.json([]);
             }
         } else {
+            res.status(error.status);
             res.json(error);
         }
     });
@@ -560,11 +572,12 @@ router.post('/index/:indexTemplate/:indexName', function (req, res) {
                 if (!error) {
                     res.json(response);
                 } else {
+                    res.status(error.status);
                     res.json(error);
                 }
             });
         } else {
-            res.json(new Error('Template not found', 300));
+            res.json(new Error('Template not found', 404));
         }
     });
 });
@@ -619,13 +632,15 @@ router.post('/visualization/session/:visualizationId/:sessionId', function (req,
                     if (!error) {
                         res.json(response);
                     } else {
+                        res.status(error.status);
                         res.json(error);
                     }
                 });
             } else {
-                res.json(new Error('Template not found', 300));
+                res.json(new Error('Template not found', 404));
             }
         } else {
+            res.status(error.status);
             res.json(error);
         }
     });
@@ -665,6 +680,7 @@ router.post('/dashboard/session/:sessionId', function (req, res) {
         if (!error) {
             res.json(response);
         } else {
+            res.status(error.status);
             res.json(error);
         }
     });
