@@ -128,6 +128,37 @@ router.get('/templates/:idAuthor', function (req, res) {
 });
 
 /**
+ * @api {get} /api/kibana/templates/index/:id Return the index with the id.
+ * @apiName GetIndexTemplate
+ * @apiGroup Kibana
+ *
+ * @apiParam {String} id The visualization id
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      ['field1', 'field2', 'field3']
+ */
+router.get('/templates/index/:id', function (req, res) {
+    req.app.esClient.search({
+        index: '.template',
+        q: '_id:' + req.params.id
+    }, function (error, response) {
+        if (!error) {
+            if (response.hits.hits[0]) {
+                res.json(response.hits.hits[0]);
+            } else {
+                res.json(new Error('Index not found', 404));
+            }
+        } else {
+            res.status(error.status);
+            res.json(error);
+        }
+    });
+});
+
+/**
  * @api {get} /api/kibana/templates/fields/:id Return the fields of visualization with the id.
  * @apiName GetVisualizationFields
  * @apiGroup Kibana
