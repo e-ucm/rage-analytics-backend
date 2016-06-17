@@ -63,28 +63,22 @@ var setupVisualizationTemplates = function() {
             index: '.template',
             q: '_id:' + visualization.title
         }, function (error, response) {
-            if (!error) {
-
-                if (response.hits && response.hits.total > 0) {
-                    console.log('Visualization template named:' + visualization.title + 'already exist, updating...');
-                }
-
-                esClient.index({
-                    id: visualization.title,
-                    index: '.template',
-                    type: 'visualization',
-                    body: visualization
-                }, function (error, response) {
-                    if (!error) {
-                        console.log('Added Visualization template named: ' + visualization.title);
-                    } else {
-                        return handleError(error);
-                    }
-                });
-
-            } else {
-                handleError(error);
+            if (response && response.hits && response.hits.total > 0) {
+                console.log('Visualization template named:' + visualization.title + 'already exist, updating...');
             }
+
+            esClient.index({
+                id: visualization.title,
+                index: '.template',
+                type: 'visualization',
+                body: visualization
+            }, function (error, response) {
+                if (!error) {
+                    console.log('Added Visualization template named: ' + visualization.title);
+                } else {
+                    return handleError(error);
+                }
+            });
         });
     });
 };
