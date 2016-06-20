@@ -49,7 +49,7 @@ router.post('/templates/:type/:id', function (req, res) {
 });
 
 /**
- * @api {post} /api/kibana/templates/:type/:idTemplate/:idGame Adds a new template in .template index of ElasticSearch.
+ * @api {post} /api/kibana/templates/:type/:idTemplate/:idAuthor Adds a new template in .template index of ElasticSearch.
  * @apiDescription :type must be visualization or index
  * @apiName PostTemplate
  * @apiGroup Templates
@@ -220,7 +220,7 @@ function exist(result, element) {
 }
 
 /**
- * @api {post} /api/kibana/visualization/game/:id Adds a new visualization in .kibana index of ElasticSearch.
+ * @api {post} /api/kibana/visualization/game/:gameId/:id Adds a new visualization in .kibana index of ElasticSearch.
  * @apiName PostVisualization
  * @apiGroup Kibana
  *
@@ -243,7 +243,7 @@ function exist(result, element) {
  *          "created": true
  *      }
  */
-router.post('/visualization/game/:id', function (req, res) {
+router.post('/visualization/game/:gameId/:id', function (req, res) {
     req.app.esClient.search({
         index: '.template',
         q: '_id:' + req.params.id
@@ -257,7 +257,7 @@ router.post('/visualization/game/:id', function (req, res) {
                 });
 
                 req.app.esClient.index({
-                    index: '.games',
+                    index: '.games' + req.params.gameId,
                     type: 'visualization',
                     id: req.params.id,
                     body: obj
@@ -279,7 +279,7 @@ router.post('/visualization/game/:id', function (req, res) {
 });
 
 /**
- * @api {get} /api/kibana/visualization/game/:id
+ * @api {get} /api/kibana/tuples/fields/game/:id
  * @apiName GetFields
  * @apiGroup Kibana
  *
@@ -304,7 +304,7 @@ router.post('/visualization/game/:id', function (req, res) {
  */
 router.get('/visualization/tuples/fields/game/:id', function (req, res) {
     req.app.esClient.search({
-        index: '.games',
+        index: '.games' + req.params.id,
         type: 'fields',
         q: '_id:fields' + req.params.id
     }, function (error, response) {
@@ -322,7 +322,7 @@ router.get('/visualization/tuples/fields/game/:id', function (req, res) {
 });
 
 /**
- * @api {post} /api/kibana/visualization/game/:id
+ * @api {post} /api/kibana/tuples/fields/game/:id
  * @apiName GetFields
  * @apiGroup Kibana
  *
@@ -347,7 +347,7 @@ router.get('/visualization/tuples/fields/game/:id', function (req, res) {
  */
 router.post('/visualization/tuples/fields/game/:id', function (req, res) {
     req.app.esClient.index({
-        index: '.games',
+        index: '.games' + req.params.id,
         type: 'fields',
         id: 'fields' + req.params.id,
         body: req.body
@@ -387,7 +387,7 @@ router.post('/visualization/tuples/fields/game/:id', function (req, res) {
  */
 router.post('/visualization/list/:id', function (req, res) {
     req.app.esClient.index({
-        index: '.games',
+        index: '.games' + req.params.id,
         type: 'list',
         id: req.params.id,
         body: req.body
@@ -427,7 +427,7 @@ router.post('/visualization/list/:id', function (req, res) {
  */
 router.put('/visualization/list/:id', function (req, res) {
     req.app.esClient.search({
-        index: '.games',
+        index: '.games' + req.params.id,
         type: 'list',
         q: '_id:' + req.params.id
     }, function (error, response) {
@@ -443,7 +443,7 @@ router.put('/visualization/list/:id', function (req, res) {
                 visualizations: req.body.visualizations.concat(body)
             };
             req.app.esClient.index({
-                index: '.games',
+                index: '.games' + req.params.id,
                 type: 'list',
                 id: req.params.id,
                 body: body
@@ -486,7 +486,7 @@ function addDifferents(req, body, obj) {
  */
 router.get('/visualization/list/:id', function (req, res) {
     req.app.esClient.search({
-        index: '.games',
+        index: '.games' + req.params.id,
         type: 'list',
         q: '_id:' + req.params.id
     }, function (error, response) {
@@ -523,7 +523,7 @@ router.get('/visualization/list/:id', function (req, res) {
  */
 router.delete('/visualization/list/:listId/:idToRemove', function (req, res) {
     req.app.esClient.search({
-        index: '.games',
+        index: '.games' + req.params.listId,
         type: 'list',
         q: '_id:' + req.params.listId
     }, function (error, response) {
@@ -540,7 +540,7 @@ router.delete('/visualization/list/:listId/:idToRemove', function (req, res) {
                 });
 
                 req.app.esClient.index({
-                    index: '.games',
+                    index: '.games' + req.params.listId,
                     type: 'list',
                     id: req.params.listId,
                     body: obj
@@ -563,7 +563,7 @@ router.delete('/visualization/list/:listId/:idToRemove', function (req, res) {
 });
 
 /**
- * @api {post} /api/kibana/index/:indexTemplate/:indexId Adds a new index in .kibana index of ElasticSearch.
+ * @api {post} /api/kibana/index/:indexTemplate/:indexName Adds a new index in .kibana index of ElasticSearch.
  * @apiName PostIndex
  * @apiGroup Index
  *
@@ -614,7 +614,7 @@ router.post('/index/:indexTemplate/:indexName', function (req, res) {
 });
 
 /**
- * @api {post} /api/kibana/visualization/session/:gameId/:sessionId Adds a new visualization in .kibana index of ElasticSearch.
+ * @api {post} /api/kibana/visualization/session/:gameId/:visualizationId/:sessionId Adds a new visualization in .kibana index of ElasticSearch.
  * @apiName PostVisualization
  * @apiGroup Kibana
  *
@@ -637,9 +637,9 @@ router.post('/index/:indexTemplate/:indexName', function (req, res) {
  *          "created": true
  *      }
  */
-router.post('/visualization/session/:visualizationId/:sessionId', function (req, res) {
+router.post('/visualization/session/:gameId/:visualizationId/:sessionId', function (req, res) {
     req.app.esClient.search({
-        index: '.games',
+        index: '.games' + req.params.gameId,
         q: '_id:' + req.params.visualizationId
     }, function (error, response) {
         if (!error) {
