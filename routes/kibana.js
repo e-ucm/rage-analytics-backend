@@ -7,9 +7,10 @@ var express = require('express'),
  * @api {post} /api/kibana/templates/:type/:id Adds a new template in .template index of ElasticSearch.
  * @apiDescription :type must be visualization or index
  * @apiName PostTemplate
- * @apiGroup Templates
+ * @apiGroup Template
  *
  * @apiParam {String} id The visualization id
+ * @apiParam {String} type Visualization or index
  *
  * @apiSuccess(200) Success.
  *
@@ -18,8 +19,8 @@ var express = require('express'),
  *      {
  *          "_index": ".template",
  *          "_type": "visualization",
- *         "_id": "template_visualization",
- *           "_version": 1,
+ *          "_id": "template_visualization",
+ *          "_version": 1,
  *          "_shards": {
  *              "total": 2,
  *              "successful": 1,
@@ -52,9 +53,11 @@ router.post('/templates/:type/:id', function (req, res) {
  * @api {post} /api/kibana/templates/:type/:idTemplate/:idAuthor Adds a new template in .template index of ElasticSearch.
  * @apiDescription :type must be visualization or index
  * @apiName PostTemplate
- * @apiGroup Templates
+ * @apiGroup Template
  *
- * @apiParam {String} id The visualization id
+ * @apiParam {String} type The template id
+ * @apiParam {String} idTemplate The template type (Visualization or index)
+ * @apiParam {String} idAuthor The author of template
  *
  * @apiSuccess(200) Success.
  *
@@ -64,7 +67,7 @@ router.post('/templates/:type/:id', function (req, res) {
  *          "_index": ".template",
  *          "_type": "visualization",
  *          "_id": "template_visualization",
- *           "_version": 1,
+ *          "_version": 1,
  *          "_shards": {
  *              "total": 2,
  *              "successful": 1,
@@ -96,16 +99,16 @@ router.post('/templates/:type/:idTemplate/:idAuthor', function (req, res) {
 
 /**
  * @api {get} /api/kibana/templates/:idAuthor Return a list with the author's visualizations.
- * @apiName GetVisualizationFields
- * @apiGroup Kibana
+ * @apiName GetVisualization
+ * @apiGroup Template
  *
- * @apiParam {String} id The visualization id
+ * @apiParam {String} idAuthor The author id
  *
  * @apiSuccess(200) Success.
  *
  * @apiSuccessExample Success-Response:
  *      HTTP/1.1 200 OK
- *      ['field1', 'field2', 'field3']
+ *      ['visualization1', 'visualization2', 'visualization5']
  */
 router.get('/templates/:idAuthor', function (req, res) {
     req.app.esClient.search({
@@ -130,7 +133,7 @@ router.get('/templates/:idAuthor', function (req, res) {
 /**
  * @api {get} /api/kibana/templates/index/:id Return the index with the id.
  * @apiName GetIndexTemplate
- * @apiGroup Kibana
+ * @apiGroup Template
  *
  * @apiParam {String} id The visualization id
  *
@@ -138,7 +141,17 @@ router.get('/templates/:idAuthor', function (req, res) {
  *
  * @apiSuccessExample Success-Response:
  *      HTTP/1.1 200 OK
- *      ['field1', 'field2', 'field3']
+ *      {
+ *          "_index": ".template",
+ *          "_type": "index",
+ *          "_id": "5767d5852fc65e241be46b71",
+ *          "_score": 1,
+ *          "_source": {
+ *          "title": "defaultIndex",
+ *          "timeFieldName": "timestamp",
+ *          "fields": "[{\"name\":\"_index\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"indexed\":false,\"analyzed\":false,\"doc_values\":false}]"
+ *      }
+ *
  */
 router.get('/templates/index/:id', function (req, res) {
     req.app.esClient.search({
@@ -161,7 +174,7 @@ router.get('/templates/index/:id', function (req, res) {
 /**
  * @api {get} /api/kibana/templates/fields/:id Return the fields of visualization with the id.
  * @apiName GetVisualizationFields
- * @apiGroup Kibana
+ * @apiGroup Template
  *
  * @apiParam {String} id The visualization id
  *
@@ -220,10 +233,11 @@ function exist(result, element) {
 }
 
 /**
- * @api {post} /api/kibana/visualization/game/:gameId/:id Adds a new visualization in .kibana index of ElasticSearch.
+ * @api {post} /api/kibana/visualization/game/:gameId/:id Adds a new visualization with the index fields of game gameId.
  * @apiName PostVisualization
- * @apiGroup Kibana
+ * @apiGroup GameVisualization
  *
+ * @apiParam {String} gameId The game id
  * @apiParam {String} id The visualization id
  *
  * @apiSuccess(200) Success.
@@ -279,27 +293,20 @@ router.post('/visualization/game/:gameId/:id', function (req, res) {
 });
 
 /**
- * @api {get} /api/kibana/tuples/fields/game/:id
- * @apiName GetFields
- * @apiGroup Kibana
+ * @api {get} /api/kibana/tuples/fields/game/:id Return the values that use a game for the visualizations
+ * @apiName GetVisualizationValues
+ * @apiGroup GameVisualization
  *
- * @apiParam {String} id The visualization id
+ * @apiParam {String} id The game id
  *
  * @apiSuccess(200) Success.
  *
  * @apiSuccessExample Success-Response:
  *      HTTP/1.1 200 OK
  *      {
- *          "_index": ".games",
- *          "_type": "visualization",
- *          "_id": "testing",
- *          "_version": 1,
- *          "_shards": {
- *              "total": 2,
- *              "successful": 1,
- *              "failed": 0
- *          },
- *          "created": true
+ *          "date": "time_field",
+ *          "score": "score_var",
+ *          "progress": "percentage"
  *      }
  */
 router.get('/visualization/tuples/fields/game/:id', function (req, res) {
@@ -322,20 +329,27 @@ router.get('/visualization/tuples/fields/game/:id', function (req, res) {
 });
 
 /**
- * @api {post} /api/kibana/tuples/fields/game/:id
- * @apiName GetFields
- * @apiGroup Kibana
+ * @api {post} /api/kibana/tuples/fields/game/:id Add the values that use a game for the visualizations
+ * @apiName PostVisualizationValues
+ * @apiGroup GameVisualization
  *
  * @apiParam {String} id The visualization id
+ *
+ * @apiParamExample {json} Request-Example:
+ *      {
+ *          "date": "time_field",
+ *          "score": "score_var",
+ *          "progress": "percentage"
+ *      }
  *
  * @apiSuccess(200) Success.
  *
  * @apiSuccessExample Success-Response:
  *      HTTP/1.1 200 OK
  *      {
- *          "_index": ".games",
- *          "_type": "visualization",
- *          "_id": "testing",
+ *          "_index": ".games123",
+ *          "_type": "fields",
+ *          "_id": "fields123",
  *          "_version": 1,
  *          "_shards": {
  *              "total": 2,
@@ -362,20 +376,72 @@ router.post('/visualization/tuples/fields/game/:id', function (req, res) {
 });
 
 /**
- * @api {post} /api/kibana/visualization/list/:id Replace the visualization names in a document with the id.
- * @apiName PostVisualization
- * @apiGroup Kibana
+ * @api {get} /api/kibana/visualization/list/:id Return the list of visualizations used in a game with the id.
+ * @apiName GetVisualizationList
+ * @apiGroup GameVisualization
  *
- * @apiParam {String} id The list id
+ * @apiParam {String} id The game id
  *
  * @apiSuccess(200) Success.
  *
  * @apiSuccessExample Success-Response:
  *      HTTP/1.1 200 OK
  *      {
- *          "_index": ".games",
+ *          "visualizations": [
+ *              "UserScore_56962ebf5d817ba040bdca5f"
+ *          ]
+ *      }
+ */
+router.get('/visualization/list/:id', function (req, res) {
+    req.app.esClient.search({
+        index: '.games' + req.params.id,
+        type: 'list',
+        q: '_id:' + req.params.id
+    }, function (error, response) {
+        if (!error) {
+            if (response.hits.hits[0]) {
+                res.json(response.hits.hits[0]._source.visualizations);
+            } else {
+                res.json([]);
+            }
+        } else {
+            res.status(error.status);
+            res.json(error);
+        }
+    });
+});
+
+/**
+ * @api {post} /api/kibana/visualization/list/:id Add the list of visualizations used in a game.
+ * @apiName PostVisualizationList
+ * @apiGroup GameVisualization
+ *
+ * @apiParam {String} id The game id
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *        "visualizations": [
+ *          "SessionActivityOverTime",
+ *          "TotalSessionTracesCount",
+ *          "PlayersActivity",
+ *          "DifferentAlternativesPreferred",
+ *          "TotalSessionPlayers",
+ *          "ActivityCountPerPlayer",
+ *          "AlternativesResponsesCount",
+ *          "xAPIVerbsActivity",
+ *          "AlternativesCountPerPlayer",
+ *          "PlayersActivityOverTime"
+ *        ]
+ * }
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "_index": ".games123",
  *          "_type": "list",
- *          "_id": "visualization_list",
+ *          "_id": "123",
  *          "_version": 1,
  *          "_shards": {
  *              "total": 2,
@@ -402,11 +468,18 @@ router.post('/visualization/list/:id', function (req, res) {
 });
 
 /**
- * @api {put} /api/kibana/visualization/list/:id Adds a list of visualization names in a document with the id.
- * @apiName PostVisualization
- * @apiGroup Kibana
+ * @api {put} /api/kibana/visualization/list/:id Update the list of visualizations used in a game.
+ * @apiName UpdateVisualizationList
+ * @apiGroup GameVisualization
  *
- * @apiParam {String} id The list id
+ * @apiParam {String} id The game id
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *        "visualizations": [
+ *          "SessionActivityOverTime",
+ *        ]
+ * }
  *
  * @apiSuccess(200) Success.
  *
@@ -468,49 +541,20 @@ function addDifferents(req, body, obj) {
 }
 
 /**
- * @api {get} /api/kibana/visualization/list/:id Return the list with the id.
- * @apiName GetVisualizationFields
- * @apiGroup Kibana
+ * @api {delete} /api/kibana/visualization/list/:gameId/:idToRemove Remove the visualization with idToRemove of the game gameId.
+ * @apiName RemoveVisualizationList
+ * @apiGroup GameVisualization
  *
- * @apiParam {String} id The visualization id
- *
- * @apiSuccess(200) Success.
- *
- * @apiSuccessExample Success-Response:
- *      HTTP/1.1 200 OK
- *      {
- *          "visualizations": [
- *              "UserScore_56962ebf5d817ba040bdca5f"
- *          ]
- *      }
- */
-router.get('/visualization/list/:id', function (req, res) {
-    req.app.esClient.search({
-        index: '.games' + req.params.id,
-        type: 'list',
-        q: '_id:' + req.params.id
-    }, function (error, response) {
-        if (!error) {
-            if (response.hits.hits[0]) {
-                res.json(response.hits.hits[0]._source.visualizations);
-            } else {
-                res.json([]);
-            }
-        } else {
-            res.status(error.status);
-            res.json(error);
-        }
-    });
-});
-
-/**
- * @api {delete} /api/kibana/visualization/list/:listId/:idToRemove Remove the idToRemove in the list with listId.
- * @apiName GetVisualizationFields
- * @apiGroup Kibana
- *
- * @apiParam {String} listId The list id
+ * @apiParam {String} gameId The list id
  * @apiParam {String} idToRemove The id to remove
  *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *        "visualizations": [
+ *          "SessionActivityOverTime",
+ *        ]
+ * }
+ *
  * @apiSuccess(200) Success.
  *
  * @apiSuccessExample Success-Response:
@@ -521,11 +565,11 @@ router.get('/visualization/list/:id', function (req, res) {
  *          ]
  *      }
  */
-router.delete('/visualization/list/:listId/:idToRemove', function (req, res) {
+router.delete('/visualization/list/:gameId/:idToRemove', function (req, res) {
     req.app.esClient.search({
-        index: '.games' + req.params.listId,
+        index: '.games' + req.params.gameId,
         type: 'list',
-        q: '_id:' + req.params.listId
+        q: '_id:' + req.params.gameId
     }, function (error, response) {
         if (!error) {
             if (response.hits.hits[0]) {
@@ -540,9 +584,9 @@ router.delete('/visualization/list/:listId/:idToRemove', function (req, res) {
                 });
 
                 req.app.esClient.index({
-                    index: '.games' + req.params.listId,
+                    index: '.games' + req.params.gameId,
                     type: 'list',
-                    id: req.params.listId,
+                    id: req.params.gameId,
                     body: obj
                 }, function (error, response) {
                     if (!error) {
@@ -563,11 +607,12 @@ router.delete('/visualization/list/:listId/:idToRemove', function (req, res) {
 });
 
 /**
- * @api {post} /api/kibana/index/:indexTemplate/:indexName Adds a new index in .kibana index of ElasticSearch.
+ * @api {post} /api/kibana/index/:indexTemplate/:indexName Adds a new index using the template indexTemplate of ElasticSearch.
  * @apiName PostIndex
- * @apiGroup Index
+ * @apiGroup Kibana
  *
- * @apiParam {String} id The visualization id
+ * @apiParam {String} indexTemplate The index template id
+ * @apiParam {String} indexName The index name
  *
  * @apiSuccess(200) Success.
  *
@@ -576,8 +621,8 @@ router.delete('/visualization/list/:listId/:idToRemove', function (req, res) {
  *      {
  *          "_index": ".kibana",
  *          "_type": "index-pattern",
- *         "_id": "0535H53W34g",
- *           "_version": 1,
+ *          "_id": "0535H53W34g",
+ *          "_version": 1,
  *          "_shards": {
  *              "total": 2,
  *              "successful": 1,
@@ -614,11 +659,13 @@ router.post('/index/:indexTemplate/:indexName', function (req, res) {
 });
 
 /**
- * @api {post} /api/kibana/visualization/session/:gameId/:visualizationId/:sessionId Adds a new visualization in .kibana index of ElasticSearch.
+ * @api {post} /api/kibana/visualization/session/:gameId/:visualizationId/:sessionId Adds new visualization using the template visualizationId.
  * @apiName PostVisualization
  * @apiGroup Kibana
  *
- * @apiParam {String} id The visualization id
+ * @apiParam {String} gameId The game id
+ * @apiParam {String} visualizationId The visualization id
+ * @apiParam {String} sessionId The session id
  *
  * @apiSuccess(200) Success.
  *
@@ -679,10 +726,24 @@ router.post('/visualization/session/:gameId/:visualizationId/:sessionId', functi
 
 /**
  * @api {post} /api/kibana/dashboard/session/:sessionId Adds a new dashboard in .kibana index of ElasticSearch.
- * @apiName PostVisualization
+ * @apiName PostDashboard
  * @apiGroup Kibana
  *
- * @apiParam {String} id The visualization id
+ * @apiParam {String} id The session id
+ *
+ * @apiParamExample {json} Request-Example:
+ *      {
+ *          "title": "dashboard_123",
+ *          "description2": "default visualization",
+ *          "panelsJSON": "[{ id:visualization_123, type:visualization, panelIndex: 1, size_x:3, size_y:2, col:1, row:1}]",
+ *          "optionsJSON": "{"darkTheme":false}",
+ *          "uiStateJSON": "{vis: {legendOpen: false}}",
+ *          "version": 1,
+ *          "timeRestore": false,
+ *          "kibanaSavedObjectMeta": {
+ *              searchSourceJSON: '{"filter":[{"query":{"query_string":{"query":"*","analyze_wildcard":true}}}]}'
+ *          }
+ *      }
  *
  * @apiSuccess(200) Success.
  *
