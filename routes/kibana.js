@@ -50,13 +50,12 @@ router.post('/templates/:type/:id', function (req, res) {
 });
 
 /**
- * @api {post} /api/kibana/templates/:type/:idTemplate/:idAuthor Adds a new template in .template index of ElasticSearch.
+ * @api {post} /api/kibana/templates/:type/author/:idAuthor Adds a new template in .template index of ElasticSearch.
  * @apiDescription :type must be visualization or index
  * @apiName PostTemplate
  * @apiGroup Template
  *
  * @apiParam {String} type The template id
- * @apiParam {String} idTemplate The template type (Visualization or index)
  * @apiParam {String} idAuthor The author of template
  *
  * @apiSuccess(200) Success.
@@ -76,24 +75,59 @@ router.post('/templates/:type/:id', function (req, res) {
  *          "created": true
  *      }
  */
-router.post('/templates/:type/:idTemplate/:idAuthor', function (req, res) {
+router.post('/templates/:type/author/:idAuthor', function (req, res) {
+    req.app.esClient.search({
+        size: 100,
+        from: 0,
+        index: '.template',
+        type: req.params.type,
+        body: {
+            query: {
+                bool: {
+                    must: [
+                        {
+                            term: {
+                                author: req.params.idAuthor
+                            }
+                        },
+                        {
+                            term: {
+                                title: req.body.title
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    }, function (error, response) {
+        if (!error) {
+            var obj = {
+                index: '.template',
+                type: req.params.type,
+                body: req.body
+            };
+            if (response.hits && response.hits.hits.length > 0) {
+                obj.id = response.hit.hits[0]._id;
+            }
+            req.body.author = req.params.idAuthor;
+            req.app.esClient.index(obj, function (error, response) {
+                if (!error) {
+                    res.json(response);
+                } else {
+                    res.status(error.status);
+                    res.json(error);
+                }
+            });
+        } else {
+            res.status(error.status);
+            res.json(error);
+        }
+    });
+
     if (req.params.type !== 'visualization' && req.params.type !== 'index') {
         res.json('Invalid type parameter', 300);
     } else {
-        req.body.author = req.params.idAuthor;
-        req.app.esClient.index({
-            index: '.template',
-            type: req.params.type,
-            id: req.params.idTemplate,
-            body: req.body
-        }, function (error, response) {
-            if (!error) {
-                res.json(response);
-            } else {
-                res.status(error.status);
-                res.json(error);
-            }
-        });
+
     }
 });
 
@@ -108,10 +142,21 @@ router.post('/templates/:type/:idTemplate/:idAuthor', function (req, res) {
  *
  * @apiSuccessExample Success-Response:
  *      HTTP/1.1 200 OK
- *      ['visualization1', 'visualization2', 'visualization5']
+ *      [{
+ *          id: 'visualization1',
+ *          title: 'title1'
+ *        },{
+ *          id: 'visualization2',
+ *          title: 'title2'
+ *        },{'
+ *          id: 'visualization5',
+ *          title: 'title5'
+ *        }]
  */
 router.get('/templates/:idAuthor', function (req, res) {
     req.app.esClient.search({
+        size: 100,
+        from: 0,
         index: '.template',
         q: 'author:' + req.params.idAuthor
     }, function (error, response) {
@@ -119,7 +164,10 @@ router.get('/templates/:idAuthor', function (req, res) {
             var result = [];
             if (response.hits) {
                 for (var i = 0; i < response.hits.hits.length; i++) {
-                    result[i] = response.hits.hits[i]._id;
+                    result[i] = {
+                        id: response.hits.hits[i]._id,
+                        title: response.hits.hits[i]._source.title
+                    };
                 }
             }
             res.json(result);
@@ -238,7 +286,6 @@ function exist(result, element) {
  * @apiGroup GameVisualization
  *
  * @apiParam {String} gameId The game id
- * @apiParam {String} id The visualization id
  *
  * @apiSuccess(200) Success.
  *
@@ -273,7 +320,7 @@ router.post('/visualization/game/:gameId/:id', function (req, res) {
                 req.app.esClient.index({
                     index: '.games' + req.params.gameId,
                     type: 'visualization',
-                    id: req.params.id,
+                    id: obj.title,
                     body: obj
                 }, function (error, response) {
                     if (!error) {
@@ -386,11 +433,10 @@ router.post('/visualization/tuples/fields/game/:id', function (req, res) {
  *
  * @apiSuccessExample Success-Response:
  *      HTTP/1.1 200 OK
- *      {
- *          "visualizations": [
- *              "UserScore_56962ebf5d817ba040bdca5f"
+ *          [
+ *              "56962ebf5d817ba040bdca5f",
+ *              "56962eb123d17ba040bdca5f"
  *          ]
- *      }
  */
 router.get('/visualization/list/:id', function (req, res) {
     req.app.esClient.search({
@@ -533,11 +579,16 @@ router.put('/visualization/list/:id', function (req, res) {
 });
 
 function addDifferents(req, body, obj) {
+    var addObj = true;
     req.body.visualizations.forEach(function (v) {
-        if (v !== obj) {
-            body.push(obj);
+        if (v === obj) {
+            addObj = false;
         }
     });
+
+    if (addObj) {
+        body.push(obj);
+    }
 }
 
 /**
