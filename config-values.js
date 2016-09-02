@@ -131,7 +131,8 @@ exports.defaultValues = {
     fluxYaml: 'flux.yml',
     analysisFolder: './analysis',
     elasticsearchHost: 'localhost',
-    elasticsearchPort: 9200
+    elasticsearchPort: 9200,
+    defaultKibanaIndex: 'default-kibana-index'
 };
 
 exports.testValues = {
@@ -166,7 +167,8 @@ exports.testValues = {
     fluxYaml: 'flux.yml',
     analysisFolder: './analysis',
     elasticsearchHost: 'localhost',
-    elasticsearchPort: 9200
+    elasticsearchPort: 9200,
+    defaultKibanaIndex: 'default-kibana-index'
 };
 
 var prefix = 'RAGE_ANALYTICS_BACKEND_';

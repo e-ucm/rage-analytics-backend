@@ -27,7 +27,7 @@ var Path = require('path');
 var config = require(Path.resolve(__dirname, '../config.js'));
 var elasticsearch = require('elasticsearch');
 
-var defaultKibanaIndexValue = 'default-kibana-index';
+var defaultKibanaIndexValue = config.kibana.defaultIndex;
 
 var esClient = new elasticsearch.Client({
     host: config.elasticsearch.uri,

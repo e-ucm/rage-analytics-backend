@@ -1,7 +1,88 @@
 'use strict';
 
 var express = require('express'),
-    router = express.Router();
+    router = express.Router(),
+    request = require('request');
+
+/**
+ * Logs in as an admin and tries to set the permissions for the user that
+ * performed the request
+ * @param config
+ * @param data The Lookup permissions, e.g.
+ *     {
+ *          "key":"_id",
+ *          "user": "dev"
+ *          "resource":"id1",
+ *          "methods":["post","put"],
+ *          "url":"/url/*"
+ *      }
+ * @param callback
+ */
+var updateKibanaPermission = function (config, user, resources, callback) {
+    var baseUsersAPI = config.a2.a2ApiPath;
+    request.post(baseUsersAPI + 'login', {
+            form: {
+                username: config.a2.a2AdminUsername,
+                password: config.a2.a2AdminPassword
+            },
+            json: true
+        },
+        function (err, httpResponse, body) {
+            if (err) {
+                return callback(err);
+            }
+
+            request({
+                uri: baseUsersAPI + 'applications/look/kibana',
+                method: 'PUT',
+                body: {
+                    key: 'docs._id',
+                    user: user,
+                    resources: resources,
+                    methods: ['post', 'put'],
+                    url: '/elasticsearch/_mget'
+                },
+                json: true,
+                headers: {
+                    Authorization: 'Bearer ' + body.user.token
+                }
+            }, function (err, httpResponse, body) {
+                if (err) {
+                    return callback(err);
+                }
+
+                callback();
+            });
+        });
+};
+
+/**
+ * Creates a resources array to define the correct permissions
+ * @param req
+ * @param callback
+ */
+var buildKibanaResources = function (req, callback) {
+    req.app.esClient.search({
+        size: 1,
+        from: 0,
+        index: '.kibana',
+        type: 'config'
+    }, function (error, response) {
+        if (error) {
+            return callback(error);
+        }
+        var resources = [];
+        if (response.hits && response.hits.hits.length === 1) {
+            resources.push(response.hits.hits[0]._id);
+            resources.push(req.app.config.kibana.defaultIndex);
+            var indexName = req.params.indexName;
+            resources.push(indexName);
+            callback(null, resources);
+        } else {
+            callback(new Error('No Kibana version found!'));
+        }
+    });
+};
 
 /**
  * @api {post} /api/kibana/templates/:type/:id Adds a new template in .template index of ElasticSearch.
@@ -629,7 +710,7 @@ router.delete('/visualization/list/:gameId/:idToRemove', function (req, res) {
                 var i = 0;
                 obj.visualizations.forEach(function (v) {
                     if (v === req.params.idToRemove) {
-                        obj.visualizations.splice(i,1);
+                        obj.visualizations.splice(i, 1);
                     }
                     i++;
                 });
@@ -658,12 +739,13 @@ router.delete('/visualization/list/:gameId/:idToRemove', function (req, res) {
 });
 
 /**
- * @api {post} /api/kibana/index/:indexTemplate/:indexName Adds a new index using the template indexTemplate of ElasticSearch.
+ * @api {post} /api/kibana/index/:indexTemplate/:indexName/:sessionId Adds a new index using the template indexTemplate of ElasticSearch.
  * @apiName PostIndex
  * @apiGroup Kibana
  *
  * @apiParam {String} indexTemplate The index template id
  * @apiParam {String} indexName The index name
+ * @apiParam {String} sessionId The session id
  *
  * @apiSuccess(200) Success.
  *
@@ -697,7 +779,19 @@ router.post('/index/:indexTemplate/:indexName', function (req, res) {
                 body: response.hits.hits[0]._source
             }, function (error, response) {
                 if (!error) {
-                    res.json(response);
+                    buildKibanaResources(req, function (err, resources) {
+                        if (err) {
+                            return res.json(err);
+                        }
+                        updateKibanaPermission(req.app.config,
+                            req.headers['x-gleaner-user'],
+                            resources, function (err) {
+                                if (err) {
+                                    return res.json(err);
+                                }
+                                res.json(response);
+                            });
+                    });
                 } else {
                     res.status(error.status);
                     res.json(error);
@@ -757,9 +851,9 @@ router.post('/visualization/session/:gameId/:visualizationId/:sessionId', functi
                     type: 'visualization',
                     id: response.hits.hits[0]._id + '_' + req.params.sessionId,
                     body: obj
-                }, function (error, response) {
+                }, function (error, result) {
                     if (!error) {
-                        res.json(response);
+                        res.json(result);
                     } else {
                         res.status(error.status);
                         res.json(error);
@@ -821,7 +915,21 @@ router.post('/dashboard/session/:sessionId', function (req, res) {
         body: req.body
     }, function (error, response) {
         if (!error) {
-            res.json(response);
+
+            var visualizations = JSON.parse(req.body.panelsJSON);
+            var resources = ['dashboard_' + req.params.sessionId];
+            visualizations.forEach(function (visualization) {
+                resources.push(visualization.id);
+            });
+
+            updateKibanaPermission(req.app.config,
+                req.headers['x-gleaner-user'],
+                resources, function (err) {
+                    if (err) {
+                        return res.json(err);
+                    }
+                    res.json(response);
+                });
         } else {
             res.status(error.status);
             res.json(error);
