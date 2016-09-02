@@ -42,6 +42,7 @@ describe('API Test', function (done) {
     });
 
     it('Start tests', function (done) {
+        this.timeout(8000);
         require('./tests/configs');
         require('./tests/tracesConverterTest');
 
