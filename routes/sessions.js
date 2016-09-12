@@ -279,9 +279,9 @@ module.exports = function (kafkaService, stormService) {
         return true;
     };
 
-    var startTopology = function (sessionId, callback) {
+    var startTopology = function (sessionId, versionId, callback) {
         var task = stormService.startTopology;
-        task.call(null, sessionId)
+        task.call(null, sessionId, versionId)
             .then(function (result) {
                 callback(null, result);
             }).fail(function (err) {
@@ -503,13 +503,14 @@ module.exports = function (kafkaService, stormService) {
         }
 
         var sessionId = 'test-' + req.params.versionId.toLowerCase();
+        var testVersionId = sessionId;
 
         // Create the Kafka Topic
         var task = kafkaService.createTopic;
 
         task.call(null, sessionId)
             .then(function (result) {
-                startTopology(sessionId, processTraces(analysisData, sessionId, res));
+                startTopology(sessionId, testVersionId, processTraces(analysisData, sessionId, res));
             })
             .fail(function (err) {
                 if (err) {
@@ -518,7 +519,7 @@ module.exports = function (kafkaService, stormService) {
                         JSON.stringify(err)
                     });
                 }
-                startTopology(sessionId, processTraces(analysisData, sessionId, res));
+                startTopology(sessionId, testVersionId, processTraces(analysisData, sessionId, res));
             });
     });
 
