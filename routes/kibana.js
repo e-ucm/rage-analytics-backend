@@ -136,7 +136,7 @@ router.post('/templates/:type/:id', function (req, res) {
  * @apiName PostTemplate
  * @apiGroup Template
  *
- * @apiParam {String} type The template id
+ * @apiParam {String} type The template type
  * @apiParam {String} idAuthor The author of template
  *
  * @apiSuccess(200) Success.
@@ -401,7 +401,7 @@ router.post('/visualization/game/:gameId/:id', function (req, res) {
                 req.app.esClient.index({
                     index: '.games' + req.params.gameId,
                     type: 'visualization',
-                    id: obj.title,
+                    id: req.params.id,
                     body: obj
                 }, function (error, response) {
                     if (!error) {
