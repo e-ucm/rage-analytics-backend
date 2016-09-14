@@ -91,7 +91,8 @@ exports.app = {
                 {
                     resources: [
                         '/games/:gameId/versions/:versionId/sessions',
-                        '/sessions/:sessionId/event/:event'
+                        '/sessions/:sessionId/event/:event',
+                        '/sessions/:sessionId/results'
                     ],
                     permissions: [
                         'post'
