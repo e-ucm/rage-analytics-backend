@@ -504,7 +504,7 @@ router.post('/visualization/tuples/fields/game/:id', function (req, res) {
 });
 
 /**
- * @api {get} /api/kibana/visualization/list/:id Return the list of visualizations used in a game with the id.
+ * @api {get} /api/kibana/visualization/list/:usr/:id Return the list of visualizations used in a game with the id.
  * @apiName GetVisualizationList
  * @apiGroup GameVisualization
  *
@@ -519,7 +519,7 @@ router.post('/visualization/tuples/fields/game/:id', function (req, res) {
  *              "56962eb123d17ba040bdca5f"
  *          ]
  */
-router.get('/visualization/list/:id', function (req, res) {
+router.get('/visualization/list/:usr/:id', function (req, res) {
     req.app.esClient.search({
         index: '.games' + req.params.id,
         type: 'list',
@@ -527,7 +527,17 @@ router.get('/visualization/list/:id', function (req, res) {
     }, function (error, response) {
         if (!error) {
             if (response.hits.hits[0]) {
-                res.json(response.hits.hits[0]._source.visualizations);
+                if (req.params.usr === 'dev') {
+                    res.json(response.hits.hits[0]._source.visualizationsDev ? response.hits.hits[0]._source.visualizationsDev : []);
+                } else if ('tch') {
+                    res.json(response.hits.hits[0]._source.visualizationsTch ? response.hits.hits[0]._source.visualizationsTch : []);
+                } else if ('all') {
+                    var c = response.hits.hits[0]._source.visualizationsTch.concat(
+                        response.hits.hits[0]._source.visualizationsDev.filter(function (item) {
+                            return response.hits.hits[0]._source.visualizationsTch.indexOf(item) < 0;
+                        }));
+                    res.json(c);
+                }
             } else {
                 res.json([]);
             }
@@ -547,18 +557,23 @@ router.get('/visualization/list/:id', function (req, res) {
  *
  * @apiParamExample {json} Request-Example:
  * {
- *        "visualizations": [
+ *        "visualizationsTch": [
  *          "SessionActivityOverTime",
- *          "TotalSessionTracesCount",
  *          "PlayersActivity",
  *          "DifferentAlternativesPreferred",
  *          "TotalSessionPlayers",
- *          "ActivityCountPerPlayer",
  *          "AlternativesResponsesCount",
  *          "xAPIVerbsActivity",
  *          "AlternativesCountPerPlayer",
+ *        ],
+ *        "visualizationsDev": [
+ *          "SessionActivityOverTime",
+ *          "TotalSessionPlayers",
+ *          "ActivityCountPerPlayer",
+ *          "AlternativesResponsesCount",
  *          "PlayersActivityOverTime"
  *        ]
+ *
  * }
  *
  * @apiSuccess(200) Success.
@@ -603,7 +618,7 @@ router.post('/visualization/list/:id', function (req, res) {
  *
  * @apiParamExample {json} Request-Example:
  * {
- *        "visualizations": [
+ *        "visualizationsDev": [
  *          "SessionActivityOverTime",
  *        ]
  * }
@@ -632,24 +647,39 @@ router.put('/visualization/list/:id', function (req, res) {
         q: '_id:' + req.params.id
     }, function (error, response) {
         if (!error) {
-            var body = [];
             if (response.hits.hits[0]) {
-                response = response.hits.hits[0]._source.visualizations;
-                for (var i = 0; i < response.length; i++) {
-                    addDifferents(req, body, response[i]);
+                response = response.hits.hits[0]._source;
+                if (!response.visualizationsDev) {
+                    response.visualizationsDev = [];
                 }
+
+                if (!response.visualizationsTch) {
+                    response.visualizationsTch = [];
+                }
+
+                if (req.body.visualizationsDev) {
+                    for (var i = 0; i < req.body.visualizationsDev.length; i++) {
+                        addDifferents(response.visualizationsDev, req.body.visualizationsDev[i]);
+                    }
+                }
+                req.body.visualizationsDev = response.visualizationsDev;
+
+                if (req.body.visualizationsTch) {
+                    for (var j = 0; j < req.body.visualizationsTch.length; j++) {
+                        addDifferents(response.visualizationsTch, req.body.visualizationsTch[j]);
+                    }
+                }
+                req.body.visualizationsTch = response.visualizationsTch;
             }
-            body = {
-                visualizations: req.body.visualizations.concat(body)
-            };
+
             req.app.esClient.index({
                 index: '.games' + req.params.id,
                 type: 'list',
                 id: req.params.id,
-                body: body
+                body: req.body
             }, function (error, response) {
                 if (!error) {
-                    res.json(response);
+                    res.json(req.body);
                 } else {
                     res.status(error.status);
                     res.json(error);
@@ -659,45 +689,40 @@ router.put('/visualization/list/:id', function (req, res) {
     });
 });
 
-function addDifferents(req, body, obj) {
+function addDifferents(array, obj) {
     var addObj = true;
-    req.body.visualizations.forEach(function (v) {
+    array.forEach(function (v) {
         if (v === obj) {
             addObj = false;
         }
     });
 
     if (addObj) {
-        body.push(obj);
+        array.push(obj);
     }
 }
 
 /**
- * @api {delete} /api/kibana/visualization/list/:gameId/:idToRemove Remove the visualization with idToRemove of the game gameId.
+ * @api {delete} /api/kibana/visualization/list/:gameId/:list/:idToRemove Remove the visualization with idToRemove of the game gameId.
  * @apiName RemoveVisualizationList
  * @apiGroup GameVisualization
  *
  * @apiParam {String} gameId The list id
+ * @apiParam {String} list The list
  * @apiParam {String} idToRemove The id to remove
- *
- * @apiParamExample {json} Request-Example:
- * {
- *        "visualizations": [
- *          "SessionActivityOverTime",
- *        ]
- * }
  *
  * @apiSuccess(200) Success.
  *
  * @apiSuccessExample Success-Response:
  *      HTTP/1.1 200 OK
  *      {
- *          "visualizations": [
+ *          "visualizationsDev": [
  *              "UserScore_56962ebf5d817ba040bdca5f"
- *          ]
+ *          ],
+ *          "visualizationsTch": []
  *      }
  */
-router.delete('/visualization/list/:gameId/:idToRemove', function (req, res) {
+router.delete('/visualization/list/:gameId/:list/:idToRemove', function (req, res) {
     req.app.esClient.search({
         index: '.games' + req.params.gameId,
         type: 'list',
@@ -708,12 +733,25 @@ router.delete('/visualization/list/:gameId/:idToRemove', function (req, res) {
                 var obj = response.hits.hits[0]._source;
 
                 var i = 0;
-                obj.visualizations.forEach(function (v) {
+                var list;
+                if (req.params.list === 'dev') {
+                    list = obj.visualizationsDev ? obj.visualizationsDev : [];
+                } else {
+                    list = obj.visualizationsTch ? obj.visualizationsTch : [];
+                }
+
+                list.forEach(function (v) {
                     if (v === req.params.idToRemove) {
-                        obj.visualizations.splice(i, 1);
+                        list.splice(i, 1);
                     }
                     i++;
                 });
+
+                if (req.params.list === 'dev') {
+                    obj.visualizationsDev = list;
+                } else {
+                    obj.visualizationsTch = list;
+                }
 
                 req.app.esClient.index({
                     index: '.games' + req.params.gameId,
