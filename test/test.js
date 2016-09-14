@@ -24,6 +24,7 @@ var request = require('supertest'),
 var config;
 
 describe('API Test', function (done) {
+    this.timeout(20000);
     /**Initialize MongoDB**/
     before(function (done) {
         var app = require('../app');
@@ -42,7 +43,6 @@ describe('API Test', function (done) {
     });
 
     it('Start tests', function (done) {
-        this.timeout(8000);
         require('./tests/configs');
         require('./tests/tracesConverterTest');
 
