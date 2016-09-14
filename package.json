@@ -25,6 +25,7 @@
     "gen-apidoc": "apidoc -i ./routes -o ./public/apidoc"
   },
   "dependencies": {
+    "adjective-adjective-animal": "*",
     "adm-zip": "*",
     "async": "^1.3.x",
     "body-parser": "^1.13.x",

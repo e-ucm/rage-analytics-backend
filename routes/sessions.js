@@ -132,8 +132,8 @@ module.exports = function (kafkaService, stormService) {
     });
 
     /**
-     * @api {get} /sessions/:sessionId/results Returns all the results of a session.
-     * @apiName PostSessionResults
+     * @api {get} /sessions/:sessionId/results Returns all the results of a session given a DSL query (body).
+     * @apiName GetSessionResults
      * @apiGroup Sessions
      *
      * @apiParam {String} sessionId The Session id.
@@ -143,39 +143,39 @@ module.exports = function (kafkaService, stormService) {
      * @apiSuccessExample Success-Response:
      *      HTTP/1.1 200 OK
      *      [
-     *          {
-     *              "var": {
-     *                  "score": 276,
-     *                  "hasPickedValuableItem": true,
-     *                  "timeSpentInLevel": 1820000,
-     *                  "alias": "somePlayerAlias"
-     *              },
-     *              "zone": "zone6",
-     *              "interact": {
-     *                  "tutorialButton": 2,
-     *                  "helpButton": 9
-     *              },
-     *              "choice": {
-     *                  "preferredFood": {
-     *                      "pizza": 4
-     *                  },
-     *                  "favouriteItem": {
-     *                      "healthPotion": 9,
-     *                      "rusticSword": 4
-     *                  }
-     *              }
-     *          }
+     *         {
+     *             "selected": {
+     *               "menu": {
+     *                 "Inicio": 1
+     *               }
+     *             },
+     *             "progressed": {
+     *               "serious-game": {
+     *                 "EscenaIncio": 1
+     *               }
+     *             },
+     *             "accessed": {
+     *               "screen": {
+     *                 "Creditos": 1
+     *               }
+     *             },
+     *             "initialized": {
+     *               "serious-game": {
+     *                 "EscenaIncio": 1
+     *               }
+     *             }
+     *           }
      *      ]
      *
      */
     router.get('/:sessionId/results', function (req, res) {
         var username = req.headers['x-gleaner-user'];
-        restUtils.processResponse(sessions.results(req.params.sessionId, username), res);
+        restUtils.processResponse(sessions.results(req.params.sessionId, username, req.app.esClient), res);
     });
 
     /**
      * @api {post} /sessions/:sessionId/results/:resultId Updates a specific result from a session.
-     * @apiName PostResult
+     * @apiName PostSessionResults
      * @apiGroup Sessions
      *
      * @apiParam {String} sessionId Game id.
@@ -183,8 +183,8 @@ module.exports = function (kafkaService, stormService) {
      *
      * @apiParamExample {json} Request-Example:
      *      {
-     *          "var": {"score":296},
-     *          "zone": "zone7"
+     *          "question": {"ATNombreManiobra":2},
+     *          "menu": {"ResumenAT":2}
      *      }
      *
      * @apiSuccess(200) Success.
@@ -193,27 +193,52 @@ module.exports = function (kafkaService, stormService) {
      *      HTTP/1.1 200 OK
      *      [
      *          {
-     *              "var": {
-     *                  "score": 296,
-     *                  "hasPickedValuableItem": true,
-     *                  "timeSpentInLevel": 1820000,
-     *                  "alias": "somePlayerAlias"
-     *              },
-     *              "zone": "zone7",
-     *              "interact": {
-     *                  "tutorialButton": 2,
-     *                  "helpButton": 9
-     *              },
-     *              "choice": {
-     *                  "preferredFood": {
-     *                      "pizza": 4
-     *                  },
-     *                  "favouriteItem": {
-     *                      "healthPotion": 9,
-     *                      "rusticSword": 4
-     *                  }
-     *              }
-     *          }
+     *             "accessed": {
+     *               "cutscene": {
+     *                 "VideoInciarTos": 1,
+     *                 "VideoHeimlich": 1
+     *               },
+     *               "area": {
+     *                 "FinAtragantamiento": 1
+     *               }
+     *             },
+     *             "selected": {
+     *               "alternative": {
+     *                 "ManosPechoHeimlich": 1,
+     *                 "ManosHeimlich": 1,
+     *                 "IniciarTos": 1,
+     *                 "ColocacionHeimlich": 1
+     *               },
+     *               "question": {
+     *                 "ATNombreManiobra": 2
+     *               },
+     *               "menu": {
+     *                 "ResumenAT": 2,
+     *                 "Inicio": 1
+     *               }
+     *             },
+     *             "progressed": {
+     *               "level": {
+     *                 "Atragantamiento": 6
+     *               },
+     *               "serious-game": {
+     *                 "EscenaIncio": 1
+     *               }
+     *             },
+     *             "initialized": {
+     *               "serious-game": {
+     *                 "EscenaIncio": 1
+     *               },
+     *               "level": {
+     *                 "Atragantamiento": 1
+     *               }
+     *             },
+     *             "completed": {
+     *               "level": {
+     *                 "Atragantamiento": 1
+     *               }
+     *             }
+     *           }
      *      ]
      *
      */
@@ -222,7 +247,7 @@ module.exports = function (kafkaService, stormService) {
             delete req.body._id;
         }
         var username = req.headers['x-gleaner-user'];
-        restUtils.processResponse(sessions.updateResult(req.params.sessionId, req.params.resultId, req.body, username), res);
+        restUtils.processResponse(sessions.updateResult(req.params.sessionId, req.params.resultId, req.body, username, req.app.esClient), res);
     });
 
     /**
