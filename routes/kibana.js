@@ -386,39 +386,49 @@ function exist(result, element) {
  *      }
  */
 router.post('/visualization/game/:gameId/:id', function (req, res) {
-    req.app.esClient.search({
-        index: '.template',
-        q: '_id:' + req.params.id
+    if (req.body.visualizationTemplate) {
+        Object.keys(req.body).forEach(function (key) {
+            req.body.visualizationTemplate.visState = req.body.visualizationTemplate.visState.replace(new RegExp(key, 'g'), req.body[key]);
+        });
+        setGameVisualizationByTemplate(req, res, req.body.visualizationTemplate);
+    } else {
+        req.app.esClient.search({
+            index: '.template',
+            q: '_id:' + req.params.id
+        }, function (error, response) {
+            if (!error) {
+                // Replace template and save it
+                if (response.hits.hits[0]) {
+                    var obj = response.hits.hits[0]._source;
+                    Object.keys(req.body).forEach(function (key) {
+                        obj.visState = obj.visState.replace(new RegExp(key, 'g'), req.body[key]);
+                    });
+                    setGameVisualizationByTemplate(req, res, obj);
+                } else {
+                    res.json(new Error('Template not found', 404));
+                }
+            } else {
+                res.status(error.status);
+                res.json(error);
+            }
+        });
+    }
+});
+
+var setGameVisualizationByTemplate = function(req, res, obj) {
+    req.app.esClient.index({
+        index: '.games' + req.params.gameId,
+        type: 'visualization',
+        id: req.params.id,
+        body: obj
     }, function (error, response) {
         if (!error) {
-            // Replace template and save it
-            if (response.hits.hits[0]) {
-                var obj = response.hits.hits[0]._source;
-                Object.keys(req.body).forEach(function (key) {
-                    obj.visState = obj.visState.replace(new RegExp(key, 'g'), req.body[key]);
-                });
-
-                req.app.esClient.index({
-                    index: '.games' + req.params.gameId,
-                    type: 'visualization',
-                    id: req.params.id,
-                    body: obj
-                }, function (error, response) {
-                    if (!error) {
-                        res.json(response);
-                    } else {
-                        res.json(error);
-                    }
-                });
-            } else {
-                res.json(new Error('Template not found', 404));
-            }
-        } else {
-            res.status(error.status);
-            res.json(error);
+            return res.json(response);
         }
+
+        return res.json(error);
     });
-});
+};
 
 /**
  * @api {get} /api/kibana/tuples/fields/game/:id Return the values that use a game for the visualizations
@@ -875,7 +885,6 @@ router.post('/visualization/session/:gameId/:visualizationId/:sessionId', functi
         if (!error) {
             if (response.hits.hits[0] && response.hits.hits[0]._source.kibanaSavedObjectMeta) {
                 var re = /"index":"(\w+.?\w+)"/;
-
                 var obj = response.hits.hits[0]._source;
                 // Replace template and save it
                 var m = re.exec(obj.kibanaSavedObjectMeta.searchSourceJSON);
