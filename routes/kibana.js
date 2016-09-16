@@ -226,12 +226,18 @@ router.post('/templates/:type/author/:idAuthor', function (req, res) {
  *      [{
  *          id: 'visualization1',
  *          title: 'title1'
+ *          isDeveloper: false,
+ *          isTeacher: false
  *        },{
  *          id: 'visualization2',
  *          title: 'title2'
+ *          isDeveloper: true,
+ *          isTeacher: true
  *        },{'
  *          id: 'visualization5',
- *          title: 'title5'
+ *          title: 'title5',
+ *          isDeveloper: true,
+ *          isTeacher: false
  *        }]
  */
 router.get('/templates/:idAuthor', function (req, res) {
@@ -247,7 +253,9 @@ router.get('/templates/:idAuthor', function (req, res) {
                 for (var i = 0; i < response.hits.hits.length; i++) {
                     result[i] = {
                         id: response.hits.hits[i]._id,
-                        title: response.hits.hits[i]._source.title
+                        title: response.hits.hits[i]._source.title,
+                        isDeveloper: response.hits.hits[i]._source.isDeveloper,
+                        isTeacher: response.hits.hits[i]._source.isTeacher
                     };
                 }
             }
