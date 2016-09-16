@@ -111,13 +111,14 @@ var sessions = require('./lib/sessions');
 sessions.startTasks.push(kafkaService.createTopic);
 sessions.endTasks.push(kafkaService.removeTopic);
 
-var stormService = require('./lib/services/storm')(app.config.storm, app.config.mongodb.uri, app.config.kafka.uri);
+var stormService = require('./lib/services/storm')(app.config.storm, app.config.kafka.uri);
 sessions.startTasks.push(stormService.startTopology);
 sessions.endTasks.push(stormService.endTopology);
 
 var dataSource = require('./lib/traces');
 dataSource.addConsumer(require('./lib/consumers/kafka')(app.config.kafka));
 dataSource.addConsumer(require('./lib/consumers/openlrs')(app.config.lrs));
+dataSource.addConsumer(require('./lib/consumers/elasticsearch')(app.esClient));
 
 // Catch 404 and forward to error handler
 app.use(function (req, res, next) {

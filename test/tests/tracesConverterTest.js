@@ -22,7 +22,9 @@ var should = require('should');
 
 describe('Traces converter tests', function () {
 
-    var getRealtimeData = require('../../lib/tracesConverter');
+    var tracesConverter = require('../../lib/tracesConverter');
+    var getElasticSearchData = tracesConverter.toElasticSearch;
+    var getRealtimeData = tracesConverter.toRealTime;
     var definitionObj = {
         extensions: {
             versionId: 'testVersionId',
@@ -335,6 +337,11 @@ describe('Traces converter tests', function () {
             timestamp: timestamp
         };
         var trace = getRealtimeData(statement);
+        should(trace).eql(resultTrace);
+        trace = getElasticSearchData(statement);
+
+        delete resultTrace.gameplayId;
+        delete resultTrace.versionId;
         should(trace).eql(resultTrace);
 
         done();
