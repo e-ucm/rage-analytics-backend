@@ -35,6 +35,7 @@ ENV USER_NAME="user" \
 # setup sources, user, group and workdir
 COPY ./ ${WORK_DIR}/
 RUN groupadd -r ${USER_NAME} \
+    && mkdir /app/analysis \
     && useradd -r -d ${WORK_DIR} -g ${USER_NAME} ${USER_NAME} \
     && chown -R ${USER_NAME}:${USER_NAME} ${WORK_DIR}
 ENV HOME=${WORK_DIR}
