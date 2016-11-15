@@ -24,6 +24,7 @@ module.exports = function (kafkaService, stormService) {
      *          "_id": "559a447831b76cec185bf501"
      *          "gameId": "559a447831b76cec185bf513",
      *          "versionId": "559a447831b76cec185bf514",
+     *          "classId": "559a447831b76cec185bf515",
      *          "created": "2015-07-06T09:00:50.630Z",
      *          "start": "2015-07-06T09:00:52.630Z",
      *          "end": "2015-07-06T09:03:45.631Z",
@@ -62,6 +63,7 @@ module.exports = function (kafkaService, stormService) {
      *          "_id": "559a447831b76cec185bf511"
      *          "gameId": "559a447831b76cec185bf513",
      *          "versionId": "559a447831b76cec185bf514",
+     *          "classId": "559a447831b76cec185bf515",
      *          "created": "2015-07-06T09:00:50.630Z",
      *          "start": "2015-07-06T09:01:52.636Z",
      *          "end": "2015-07-06T09:03:45.631Z",
@@ -98,6 +100,7 @@ module.exports = function (kafkaService, stormService) {
      *          "_id": "559a447831b76cec185bf511"
      *          "gameId": "559a447831b76cec185bf513",
      *          "versionId": "559a447831b76cec185bf514",
+     *          "classId": "559a447831b76cec185bf515",
      *          "created": "2015-07-06T09:00:50.630Z",
      *          "start": "2015-07-06T09:01:52.636Z",
      *          "end": "2015-07-06T09:03:45.631Z",
@@ -265,6 +268,7 @@ module.exports = function (kafkaService, stormService) {
      *          "_id": "559a447831b76cec185bf511"
      *          "gameId": "559a447831b76cec185bf513",
      *          "versionId": "559a447831b76cec185bf514",
+     *          "classId": "559a447831b76cec185bf515",
      *          "name": "The Session Name",
      *          "created": "2015-07-06T09:00:50.630Z",
      *          "start": "2015-07-06T09:01:52.636Z",

@@ -23,9 +23,10 @@ var should = require('should'),
 
 var idGame = new ObjectID('dummyGameId0'),
     idVersion = new ObjectID('dummyVersId0'),
-    idSession = new ObjectID('dummySessId0');
+    idSession = new ObjectID('dummySessId0'),
+    idClass = new ObjectID('dummyClasId0');
 
-module.exports = function(request, db) {
+module.exports = function (request, db) {
 
     /**-------------------------------------------------------------**/
     /**-------------------------------------------------------------**/
@@ -45,19 +46,27 @@ module.exports = function(request, db) {
                             _id: idVersion,
                             gameId: idGame
                         }, function () {
-                            db.collection('sessions').insert(
-                                [{
-                                    _id: idSession,
-                                    gameId: idGame,
-                                    versionId: idVersion,
-                                    name: 'name',
-                                    allowAnonymous: true,
-                                    teachers: ['Teacher1'],
-                                    students: ['Student1']
-                                }, {
-                                    gameId: idGame,
+                            db.collection('classes').insert(
+                                {
+                                    _id: idClass,
                                     versionId: idVersion
-                                }], done);
+                                }, function () {
+                                    db.collection('sessions').insert(
+                                        [{
+                                            _id: idSession,
+                                            gameId: idGame,
+                                            versionId: idVersion,
+                                            classId: idClass,
+                                            name: 'name',
+                                            allowAnonymous: true,
+                                            teachers: ['Teacher1'],
+                                            students: ['Student1']
+                                        }, {
+                                            gameId: idGame,
+                                            versionId: idVersion,
+                                            classId: idClass
+                                        }], done);
+                                });
                         });
                 });
         });
@@ -65,13 +74,15 @@ module.exports = function(request, db) {
         afterEach(function (done) {
             db.collection('games').drop(function () {
                 db.collection('versions').drop(function () {
-                    db.collection('sessions').drop(done);
+                    db.collection('classes').drop(function () {
+                        db.collection('sessions').drop(done);
+                    });
                 });
             });
         });
 
         it('should POST a new session', function (done) {
-            request.post('/api/games/' + idGame + '/versions/' + idVersion + '/sessions')
+            request.post('/api/games/' + idGame + '/versions/' + idVersion + '/classes/' + idClass + '/sessions')
                 .expect(200)
                 .set('Accept', 'application/json')
                 .set('X-Gleaner-User', 'username')
@@ -90,7 +101,7 @@ module.exports = function(request, db) {
         });
 
         it('should GET sessions', function (done) {
-            request.get('/api/games/' + idGame + '/versions/' + idVersion + '/sessions')
+            request.get('/api/games/' + idGame + '/versions/' + idVersion + '/classes/' + idClass + '/sessions')
                 .expect(200)
                 .end(function (err, res) {
                     should.not.exist(err);
@@ -101,7 +112,7 @@ module.exports = function(request, db) {
         });
 
         it('should GET my sessions', function (done) {
-            request.get('/api/games/' + idGame + '/versions/' + idVersion + '/sessions/my')
+            request.get('/api/games/' + idGame + '/versions/' + idVersion + '/classes/' + idClass + '/sessions/my')
                 .expect(200)
                 .set('X-Gleaner-User', 'Teacher1')
                 .end(function (err, res) {
