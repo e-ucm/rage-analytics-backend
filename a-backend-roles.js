@@ -36,7 +36,8 @@ exports.app = {
                         '/games/public',
                         '/games/:gameId/versions',
                         '/games/:gameId/versions/:versionId',
-                        '/games/:gameId/versions/:versionId/sessions/my',
+                        '/games/:gameId/versions/:versionId/classes/my',
+                        '/games/:gameId/versions/:versionId/classes/:classId/sessions/my',
                         '/sessions/:sessionId/results'
                     ],
                     permissions: [
@@ -62,7 +63,8 @@ exports.app = {
                         '/games/public',
                         '/games/:gameId/versions',
                         '/games/:gameId/versions/:versionId',
-                        '/games/:gameId/versions/:versionId/sessions/my',
+                        '/games/:gameId/versions/:versionId/classes/my',
+                        '/games/:gameId/versions/:versionId/classes/:classId/sessions/my',
                         '/sessions/:sessionId/results'
                     ],
                     permissions: [
@@ -79,6 +81,8 @@ exports.app = {
                 },
                 {
                     resources: [
+                        '/classes/:classId',
+                        '/classes/:classId/remove',
                         '/sessions/:sessionId',
                         '/sessions/:sessionId/remove',
                         '/sessions/:sessionId/results/:resultsId',
@@ -90,7 +94,8 @@ exports.app = {
                 },
                 {
                     resources: [
-                        '/games/:gameId/versions/:versionId/sessions',
+                        '/games/:gameId/versions/:versionId/classes',
+                        '/games/:gameId/versions/:versionId/classes/:classId/sessions',
                         '/sessions/:sessionId/event/:event',
                         '/sessions/:sessionId/results'
                     ],
@@ -126,7 +131,9 @@ exports.app = {
                 },
                 {
                     resources: [
-                        '/games/:gameId/versions/:versionId/sessions',
+                        '/games/:gameId/versions/:versionId/classes',
+                        '/classes/:classId',
+                        '/games/:gameId/versions/:versionId/classes/:classId/sessions',
                         '/sessions/:sessionId'
                     ],
                     permissions: [

@@ -7,6 +7,7 @@ var express = require('express'),
 
 var games = require('../lib/games'),
     versions = require('../lib/versions'),
+    classes = require('../lib/classes'),
     sessions = require('../lib/sessions');
 
 /**
@@ -262,9 +263,10 @@ router.post('/:gameId/versions/:id', restUtils.findAndModify(versions, function 
 }));
 
 /**
- * @api {get} /games/:gameId/versions/:versionsId/sessions Returns all the Sessions of a given version of a game.
- * @apiName GetSessions
- * @apiGroup Sessions
+ * @api {get} /games/:gameId/versions/:versionsId/classes Returns all the Classes of a
+ * given version of a game.
+ * @apiName GetClasses
+ * @apiGroup Classes
  *
  * @apiParam {String} gameId The Game id of the session.
  * @apiParam {String} versionId The Version id of the session.
@@ -276,31 +278,26 @@ router.post('/:gameId/versions/:id', restUtils.findAndModify(versions, function 
  *      [
  *          {
  *              "_id": "559a447831b76cec185bf501"
- *              "gameId": "559a447831b76cec185bf513",
  *              "versionId": "559a447831b76cec185bf514",
  *              "created": "2015-07-06T09:00:50.630Z",
- *              "start": "2015-07-06T09:00:52.630Z",
- *              "end": "2015-07-06T09:03:45.631Z"
  *          },
  *          {
  *              "_id": "559a447831b76cec185bf511"
- *              "gameId": "559a447831b76cec185bf513",
  *              "versionId": "559a447831b76cec185bf514",
- *              "created": "2015-07-06T09:00:50.630Z",
- *              "start": "2015-07-06T09:03:52.636Z",
- *              "end": "2015-07-06T09:03:58.631Z"
+ *              "created": "2015-07-06T09:00:50.630Z"
  *          }
  *      ]
  *
  */
-router.get('/:gameId/versions/:versionId/sessions', function (req, res) {
-    restUtils.processResponse(sessions.getSessions(req.params.gameId, req.params.versionId), res);
+router.get('/:gameId/versions/:versionId/classes', function (req, res) {
+    restUtils.processResponse(classes.getClasses(req.params.gameId, req.params.versionId), res);
 });
 
 /**
- * @api {get} /games/:gameId/versions/:versionsId/sessions/my Returns all the Sessions of a given version of a game where the user participates.
- * @apiName GetSessions
- * @apiGroup Sessions
+ * @api {get} /games/:gameId/versions/:versionsId/classes/my Returns all the Classes of a given
+ * version of a game where the user participates.
+ * @apiName GetClasses
+ * @apiGroup Classes
  *
  *  @apiHeader {String} x-gleaner-user.
  *
@@ -315,27 +312,26 @@ router.get('/:gameId/versions/:versionId/sessions', function (req, res) {
  *          {
  *              "_id": "559a447831b76cec185bf501"
  *              "gameId": "559a447831b76cec185bf513",
- *              "versionId": "559a447831b76cec185bf514",
- *              "start": "2015-07-06T09:00:52.630Z",
- *              "end": "2015-07-06T09:03:45.631Z"
+ *              "versionId": "559a447831b76cec185bf514"
  *          },
  *          {
  *              "_id": "559a447831b76cec185bf511"
  *              "gameId": "559a447831b76cec185bf513",
- *              "versionId": "559a447831b76cec185bf514",
- *              "start": "2015-07-06T09:03:52.636Z"
+ *              "versionId": "559a447831b76cec185bf514"
  *          }
  *      ]
  *
  */
-router.get('/:gameId/versions/:versionId/sessions/my', function (req, res) {
-    restUtils.processResponse(sessions.getUserSessions(req.params.gameId, req.params.versionId, req.headers['x-gleaner-user']), res);
+router.get('/:gameId/versions/:versionId/classes/my', function (req, res) {
+    restUtils.processResponse(classes.getUserClasses(req.params.gameId, req.params.versionId,
+        req.headers['x-gleaner-user']), res);
 });
 
 /**
- * @api {post} /games/:gameId/versions/:versionsId/sessions Creates new Session for a given version of a game.
- * @apiName PostSessions
- * @apiGroup Sessions
+ * @api {post} /games/:gameId/versions/:versionsId/classes Creates new Class for a
+ * given version of a game.
+ * @apiName PostClasses
+ * @apiGroup Classes
  *
  * @apiParam {String} gameId The Game id of the session.
  * @apiParam {String} versionId The Version id of the session.
@@ -361,9 +357,128 @@ router.get('/:gameId/versions/:versionId/sessions/my', function (req, res) {
  *      }
  *
  */
-router.post('/:gameId/versions/:versionId/sessions', function (req, res) {
+router.post('/:gameId/versions/:versionId/classes', function (req, res) {
     var username = req.headers['x-gleaner-user'];
-    restUtils.processResponse(sessions.createSession(req.params.gameId, req.params.versionId, username, req.body.name), res);
+    restUtils.processResponse(classes.createClass(req.params.gameId, req.params.versionId,
+        username, req.body.name), res);
+});
+
+/**
+ * @api {get} /games/:gameId/versions/:versionsId/classes/:classId/sessions Returns all the Sessions of a
+ * given version of a game.
+ * @apiName GetSessions
+ * @apiGroup Sessions
+ *
+ * @apiParam {String} gameId The Game id of the session.
+ * @apiParam {String} versionId The Version id of the session.
+ * @apiParam {String} classId The Class id of the session.
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      [
+ *          {
+ *              "_id": "559a447831b76cec185bf501"
+ *              "gameId": "559a447831b76cec185bf513",
+ *              "versionId": "559a447831b76cec185bf514",
+ *              "classId": "559a447831b76cec185bf542",
+ *              "created": "2015-07-06T09:00:50.630Z",
+ *              "start": "2015-07-06T09:00:52.630Z",
+ *              "end": "2015-07-06T09:03:45.631Z"
+ *          },
+ *          {
+ *              "_id": "559a447831b76cec185bf511"
+ *              "gameId": "559a447831b76cec185bf513",
+ *              "versionId": "559a447831b76cec185bf514",
+ *              "classId": "559a447831b76cec185bf547",
+ *              "created": "2015-07-06T09:00:50.630Z",
+ *              "start": "2015-07-06T09:03:52.636Z",
+ *              "end": "2015-07-06T09:03:58.631Z"
+ *          }
+ *      ]
+ *
+ */
+router.get('/:gameId/versions/:versionId/classes/:classId/sessions', function (req, res) {
+    restUtils.processResponse(sessions.getSessions(req.params.gameId, req.params.versionId, req.params.classId), res);
+});
+
+/**
+ * @api {get} /games/:gameId/versions/:versionsId/classes/:classId/sessions/my Returns all the Sessions of a given
+ * version of a game where the user participates.
+ * @apiName GetSessions
+ * @apiGroup Sessions
+ *
+ *  @apiHeader {String} x-gleaner-user.
+ *
+ * @apiParam {String} gameId The Game id of the session.
+ * @apiParam {String} versionId The Version id of the session.
+ * @apiParam {String} classId The Class id of the session.
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      [
+ *          {
+ *              "_id": "559a447831b76cec185bf501"
+ *              "gameId": "559a447831b76cec185bf513",
+ *              "versionId": "559a447831b76cec185bf514",
+ *              "classId": "559a447831b76cec185bf542",
+ *              "start": "2015-07-06T09:00:52.630Z",
+ *              "end": "2015-07-06T09:03:45.631Z"
+ *          },
+ *          {
+ *              "_id": "559a447831b76cec185bf511"
+ *              "gameId": "559a447831b76cec185bf513",
+ *              "versionId": "559a447831b76cec185bf514",
+ *              "classId": "559a447831b76cec185bf546",
+ *              "start": "2015-07-06T09:03:52.636Z"
+ *          }
+ *      ]
+ *
+ */
+router.get('/:gameId/versions/:versionId/classes/:classId/sessions/my', function (req, res) {
+    restUtils.processResponse(sessions.getUserSessions(req.params.gameId, req.params.versionId, req.params.classId,
+        req.headers['x-gleaner-user']), res);
+});
+
+/**
+ * @api {post} /games/:gameId/versions/:versionsId/classes/:classId/sessions Creates new Session for a
+ * given version of a game.
+ * @apiName PostSessions
+ * @apiGroup Sessions
+ *
+ * @apiParam {String} gameId The Game id of the session.
+ * @apiParam {String} versionId The Version id of the session.
+ * @apiParam {String} classId The Class id of the session.
+ *
+ * @apiParamExample {json} Request-Example:
+ *      {
+ *          "name": "New name"
+ *      }
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "gameId": "55e433c773415f105025d2d4",
+ *          "versionId": "55e433c773415f105025d2d5",
+ *          "classId": "55e433c773415f105025d2d3",
+ *          "name": "New name",
+ *          "created": "2015-08-31T12:55:05.459Z",
+ *          "teachers": [
+ *              "user"
+ *          ],
+ *          "_id": "55e44ea9f1448e1067e64d6c"
+ *      }
+ *
+ */
+router.post('/:gameId/versions/:versionId/classes/:classId/sessions', function (req, res) {
+    var username = req.headers['x-gleaner-user'];
+    restUtils.processResponse(sessions.createSession(req.params.gameId, req.params.versionId, req.params.classId,
+        username, req.body.name), res);
 });
 
 /**

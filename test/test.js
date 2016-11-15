@@ -49,6 +49,7 @@ describe('API Test', function (done) {
         require('./tests/health')(request);
         require('./tests/gamesTest')(request, db);
         require('./tests/versionsTest')(request, db);
+        require('./tests/classesTest')(request, db);
         require('./tests/sessionsTest')(request, db);
         require('./tests/analysisTest')(request, db);
 
