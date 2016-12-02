@@ -131,6 +131,14 @@ exports.app = {
                 },
                 {
                     resources: [
+                        '/games/:gameId/remove'
+                    ],
+                    permissions: [
+                        'put'
+                    ]
+                },
+                {
+                    resources: [
                         '/games/:gameId/versions/:versionId/classes',
                         '/classes/:classId',
                         '/games/:gameId/versions/:versionId/classes/:classId/sessions',
@@ -153,7 +161,7 @@ exports.app = {
         }
     ],
     anonymous: [
-        '/games/:id/:versionId',
+        '/games/:id/xapi/:versionId',
         '/collector/start/:trackingCode',
         '/collector/track'
     ],
