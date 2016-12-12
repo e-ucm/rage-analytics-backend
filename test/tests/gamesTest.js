@@ -23,7 +23,7 @@ var should = require('should'),
 
 var idGame = new ObjectID('dummyGameId0');
 
-module.exports = function(request, db) {
+module.exports = function (request, db) {
 
     /**-------------------------------------------------------------**/
     /**-------------------------------------------------------------**/
@@ -40,7 +40,8 @@ module.exports = function(request, db) {
                     {
                         _id: idGame,
                         title: 'Dummy',
-                        author: 'Dummy'
+                        authors: ['DummyUsername'],
+                        developers: ['DummyUsername']
                     }], done);
         });
         afterEach(function (done) {
@@ -58,22 +59,11 @@ module.exports = function(request, db) {
                 });
         });
 
-        it('should GET games', function (done) {
-            request.get('/api/games')
-                .expect(200)
-                .set('Accept', 'application/json')
-                .expect('Content-Type', /json/)
-                .end(function (err, res) {
-                    should.not.exist(err);
-                    should.equal(res.body.length, 2);
-                    done();
-                });
-        });
-
         it('should UPDATE a specific game', function (done) {
-            request.post('/api/games/' + idGame)
+            request.put('/api/games/' + idGame)
                 .expect(200)
                 .set('Accept', 'application/json')
+                .set('X-Gleaner-User', 'DummyUsername')
                 .expect('Content-Type', /json/)
                 .send({
                     title: 'title2',
@@ -84,6 +74,77 @@ module.exports = function(request, db) {
                     should.equal(res.body.title, 'title2');
                     should.equal(res.body.public, true);
                     done();
+                });
+        });
+
+
+        it('should UPDATE the author of a specific game', function (done) {
+            request.put('/api/games/' + idGame)
+                .expect(200)
+                .set('Accept', 'application/json')
+                .set('X-Gleaner-User', 'DummyUsername')
+                .expect('Content-Type', /json/)
+                .send({
+                    title: 'title3',
+                    developers: 'username2'
+                }).end(function (err, res) {
+
+                    should.not.exist(err);
+                    should(res.body.authors).containDeep(['DummyUsername']);
+                    should(res.body.developers).containDeep(['username2', 'DummyUsername']);
+                    should.equal(res.body.title, 'title3');
+
+                    request.put('/api/games/' + idGame)
+                        .expect(200)
+                        .set('Accept', 'application/json')
+                        .set('X-Gleaner-User', 'DummyUsername')
+                        .expect('Content-Type', /json/)
+                        .send({
+                            title: 'title4',
+                            developers: ['username6', 'username7']
+                        }).end(function (err, res) {
+                            should.not.exist(err);
+                            should(res.body.authors).containDeep(['DummyUsername']);
+                            should(res.body.developers)
+                                .containDeep(['username2', 'DummyUsername',
+                                    'username6', 'username7']);
+                            should.equal(res.body.title, 'title4');
+
+                            request.put('/api/games/' + idGame + '/remove')
+                                .expect(200)
+                                .set('Accept', 'application/json')
+                                .set('X-Gleaner-User', 'username7')
+                                .expect('Content-Type', /json/)
+                                .send({
+                                    developers: ['username2', 'username7']
+                                }).end(function (err, res) {
+                                    request.put('/api/games/' + idGame + '/remove')
+                                        .expect(200)
+                                        .set('Accept', 'application/json')
+                                        .set('X-Gleaner-User', 'DummyUsername')
+                                        .expect('Content-Type', /json/)
+                                        .send({
+                                            developers: ['username2', 'username7']
+                                        }).end(function (err, res) {
+                                            should.not.exist(err);
+                                            should(res.body.authors).containDeep(['DummyUsername']);
+                                            (res.body.developers).should.not
+                                                .containDeep(['username2', 'username7']);
+                                            should.equal(res.body.title, 'title4');
+
+                                            request.get('/api/games/my')
+                                                .expect(200)
+                                                .set('X-Gleaner-User', 'username6')
+                                                .set('Accept', 'application/json')
+                                                .expect('Content-Type', /json/)
+                                                .end(function (err, res) {
+                                                    should.not.exist(err);
+                                                    should.equal(res.body.length, 1);
+                                                    done();
+                                                });
+                                        });
+                                });
+                        });
                 });
         });
 
@@ -102,7 +163,7 @@ module.exports = function(request, db) {
         it('should GET my games', function (done) {
             request.get('/api/games/my')
                 .expect(200)
-                .set('X-Gleaner-User', 'Dummy')
+                .set('X-Gleaner-User', 'DummyUsername')
                 .set('Accept', 'application/json')
                 .expect('Content-Type', /json/)
                 .end(function (err, res) {
@@ -111,5 +172,6 @@ module.exports = function(request, db) {
                     done();
                 });
         });
+
     });
 };

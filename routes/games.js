@@ -11,25 +11,33 @@ var games = require('../lib/games'),
     sessions = require('../lib/sessions');
 
 /**
- * @api {get} /games Returns all the games.
- * @apiName GetGames
- * @apiGroup Games
+ * @api {get} /games/my Return all games of the author in the x-gleaner-user header.
+ * @apiName getSessions
+ * @apiGroup Sessions
+ *
+ * @apiHeader {String} x-gleaner-user.
  *
  * @apiSuccess(200) Success.
  *
  * @apiSuccessExample Success-Response:
  *      HTTP/1.1 200 OK
- *      [
- *          {
- *              "_id": "559a447831b7acec185bf513",
- *              "title": "My Game",
- *              "author": "developer",
- *              "public": "false"
- *          }
- *      ]
- *
+ *    [
+ *      {
+ *          "_id": "559a447831b76cec185bf511",
+ *          "title": "My Game",
+ *          "authors": ["someDeveloper"],
+ *          "developers": ["someDeveloper"],
+ *          "public": "true"
+ *      }
+ *    ]
  */
-router.get('/', restUtils.find(games));
+router.get('/my', restUtils.find(games, function (req, callback) {
+    var user = req.headers['x-gleaner-user'];
+    // Creates a Query for the 'find' operation
+    callback({
+        developers: user.toString()
+    });
+}));
 
 /**
  * @api {get} /games/public Returns all the public games.
@@ -44,7 +52,8 @@ router.get('/', restUtils.find(games));
  *          {
  *              "_id": "559a447831b7acec185bf513",
  *              "title": "My Game",
- *              "author": "developer",
+ *              "authors": ["someDeveloper"],
+ *              "developers": ["someDeveloper"],
  *              "public": "true"
  *          }
  *      ]
@@ -80,31 +89,31 @@ router.get('/public', restUtils.find(games, function (req, callback) {
  *      {
  *          "_id": "559a447831b7acec185bf513",
  *          "title": "My Game"
- *          "author": "x-gleaner-user",
+ *          "authors": ["someDeveloper"],
+ *          "developers": ["someDeveloper"],
  *          "public": "true"
  *      }
  *
  */
-router.post('/', restUtils.insert(games, function (req) {
-    var author = req.headers['x-gleaner-user'];
-    if (author) {
-        req.body.author = author;
-    }
-}));
+router.post('/', function (req, res) {
+    var username = req.headers['x-gleaner-user'];
+    restUtils.processResponse(games.createGame(username,
+        req.body.title || '', req.params.public || false), res);
+});
 
 /**
- * @api {post} /games/:id Changes the game title and/or the field public.
- * @apiName PostGame
+ * @api {put} /games/:gameId Changes the title, developers and public attribute of a game.
+ * @apiName PutGames
  * @apiGroup Games
  *
- * @apiParam {String} id Game id.
- * @apiParam {Object} [title] The new game title.
- * @apiParam {Boolean} [public] If other people can see the game.
- *
+ * @apiParam {String} gameId The id of the game.
+ * @apiParam {String} [title] The new title of the game
+ * @apiParam {Boolean} [public] Whether the game is public or not.
+ * @apiParam {String[]} [developers] Array with the username of the authors that you want to add to the game. Also can be a String
  * @apiParamExample {json} Request-Example:
  *      {
- *          "title": "New title",
- *          "public" "false",
+ *          "name": "My New Name",
+ *          "title": ["Some Username"]
  *      }
  *
  * @apiSuccess(200) Success.
@@ -113,13 +122,45 @@ router.post('/', restUtils.insert(games, function (req) {
  *      HTTP/1.1 200 OK
  *      {
  *          "_id": "559a447831b7acec185bf513",
- *          "title": "New title",
- *          "author": "developer",
- *          "public": "false"
+ *          "title": "My Game"
+ *          "authors": ["someDeveloper"],
+ *          "developers": ["someDeveloper"],
+ *          "public": "true"
+ *      }
+ */
+router.put('/:gameId', function (req, res) {
+    var username = req.headers['x-gleaner-user'];
+    restUtils.processResponse(games.modifyGame(req.params.gameId, username, req.body, true), res);
+});
+
+/**
+ * @api {put} /games/:gameId/remove Removes an author of the game
+ * @apiName PutGames
+ * @apiGroup Games
+ *
+ * @apiParam {String} gameId The id of the game.
+ * @apiParam {String[]} [author] Array with the username of the authors that you want to add to the game. Also can be a String
+ * @apiParamExample {json} Request-Example:
+ *      {
+ *          "developers": ["Some Username"]
  *      }
  *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "_id": "559a447831b7acec185bf513",
+ *          "title": "My Game"
+ *          "authors": ["someDeveloper"],
+ *          "developers": ["someDeveloper"],
+ *          "public": "true"
+ *      }
  */
-router.post('/:id', restUtils.findAndModify(games));
+router.put('/:gameId/remove', function (req, res) {
+    var username = req.headers['x-gleaner-user'];
+    restUtils.processResponse(games.modifyGame(req.params.gameId, username, req.body, false), res);
+});
 
 /**
  * @api {delete} /games/:id Removes the game.
@@ -138,8 +179,13 @@ router.post('/:id', restUtils.findAndModify(games));
  *
  */
 router.delete('/:id', function (req, res) {
-    restUtils.processResponse(games.removeGame(req.params.id), res);
+    var username = req.headers['x-gleaner-user'];
+    restUtils.processResponse(games.removeGame(username, req.params.id), res);
 });
+
+/**
+ * VERSIONS
+ **/
 
 /**
  * @api {get} /games/:gameId/versions Returns all the versions of a given game.
@@ -168,7 +214,7 @@ router.get('/:gameId/versions', restUtils.find(versions, function (req, callback
 }));
 
 /**
- * @api {get} /games/:id/:versionId Returns the game with the given id.
+ * @api {get} /games/:id/xapi/:versionId Returns the game with the given id.
  *              This route is mainly used as the Object.id of the xAPI statements.
  * @apiName GetGame
  * @apiGroup Games
@@ -177,15 +223,16 @@ router.get('/:gameId/versions', restUtils.find(versions, function (req, callback
  *
  * @apiSuccessExample Success-Response:
  *      HTTP/1.1 200 OK
- *          {
- *              "_id": "559a447831b7acec185bf513",
- *              "title": "My Game",
- *              "author": "developer",
- *              "public": "false"
- *          }
+ *      {
+ *          "_id": "559a447831b7acec185bf513",
+ *          "title": "My Game"
+ *          "authors": ["someDeveloper"],
+ *          "developers": ["someDeveloper"],
+ *          "public": "true"
+ *      }
  *
  */
-router.get('/:id/:versionId', restUtils.findById(games));
+router.get('/:id/xapi/:versionId', restUtils.findById(games));
 
 /**
  * @api {post} /games/:gameId/versions Adds a new version for a specific game.
@@ -223,7 +270,7 @@ router.post('/:gameId/versions', restUtils.insert(versions, function (req) {
  *      HTTP/1.1 200 OK
  *      {
  *          "_id": "559a447831b76cec185bf513",
- *          "gameId": "559a447831b7acec185bf513"
+ *          "gameId": "559a447831b7acec185bf514"
  *      }
  *
  */
@@ -261,6 +308,10 @@ router.post('/:gameId/versions/:id', restUtils.findAndModify(versions, function 
         delete req.body.gameId;
     }
 }));
+
+/**
+ * CLASSES
+ */
 
 /**
  * @api {get} /games/:gameId/versions/:versionsId/classes Returns all the Classes of a
@@ -362,6 +413,10 @@ router.post('/:gameId/versions/:versionId/classes', function (req, res) {
     restUtils.processResponse(classes.createClass(req.params.gameId, req.params.versionId,
         username, req.body.name), res);
 });
+
+/**
+ * SESSIONS
+ */
 
 /**
  * @api {get} /games/:gameId/versions/:versionsId/classes/:classId/sessions Returns all the Sessions of a
@@ -480,30 +535,6 @@ router.post('/:gameId/versions/:versionId/classes/:classId/sessions', function (
     restUtils.processResponse(sessions.createSession(req.params.gameId, req.params.versionId, req.params.classId,
         username, req.body.name), res);
 });
-
-/**
- * @api {get} /games/my Return all games of the author in the x-gleaner-user header.
- * @apiName getSessions
- * @apiGroup Sessions
- *
- * @apiHeader {String} x-gleaner-user.
- *
- * @apiSuccess(200) Success.
- *
- * @apiSuccessExample Success-Response:
- *      HTTP/1.1 200 OK
- *      {
- *          "_id": "559a447831b76cec185bf511",
- *          "author": "x-gleaner-user"
- *      }
- */
-router.get('/my', restUtils.find(games, function (req, callback) {
-    var user = req.headers['x-gleaner-user'];
-    // Creates a Query for the 'find' operation
-    callback({
-        author: user.toString()
-    });
-}));
 
 /**
  * @api {get} /statements Returns all statements.
