@@ -38,7 +38,8 @@ exports.app = {
                         '/games/:gameId/versions/:versionId',
                         '/games/:gameId/versions/:versionId/classes/my',
                         '/games/:gameId/versions/:versionId/classes/:classId/sessions/my',
-                        '/sessions/:sessionId/results'
+                        '/sessions/:sessionId/results',
+                        '/lti/keyid/:gameId/:versionId/:classId'
                     ],
                     permissions: [
                         'get'
@@ -60,20 +61,14 @@ exports.app = {
             allows: [
                 {
                     resources: [
+                        '/analysis/:id',
                         '/games/public',
                         '/games/:gameId/versions',
                         '/games/:gameId/versions/:versionId',
                         '/games/:gameId/versions/:versionId/classes/my',
                         '/games/:gameId/versions/:versionId/classes/:classId/sessions/my',
-                        '/sessions/:sessionId/results'
-                    ],
-                    permissions: [
-                        'get'
-                    ]
-                },
-                {
-                    resources: [
-                        '/analysis/:id'
+                        '/sessions/:sessionId/results',
+                        '/lti/keyid/:gameId/:versionId/:classId'
                     ],
                     permissions: [
                         'get'
@@ -97,7 +92,8 @@ exports.app = {
                         '/games/:gameId/versions/:versionId/classes',
                         '/games/:gameId/versions/:versionId/classes/:classId/sessions',
                         '/sessions/:sessionId/event/:event',
-                        '/sessions/:sessionId/results'
+                        '/sessions/:sessionId/results',
+                        '/lti'
                     ],
                     permissions: [
                         'post'
@@ -142,7 +138,8 @@ exports.app = {
                         '/games/:gameId/versions/:versionId/classes',
                         '/classes/:classId',
                         '/games/:gameId/versions/:versionId/classes/:classId/sessions',
-                        '/sessions/:sessionId'
+                        '/sessions/:sessionId',
+                        '/lti/keyid/:gameId/:versionId/:classId'
                     ],
                     permissions: [
                         'get'
@@ -163,7 +160,8 @@ exports.app = {
     anonymous: [
         '/games/:id/xapi/:versionId',
         '/collector/start/:trackingCode',
-        '/collector/track'
+        '/collector/track',
+        '/lti/key/:id'
     ],
     autoroles: [
         'student',
