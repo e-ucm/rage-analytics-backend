@@ -112,8 +112,9 @@ router.post('/', function (req, res) {
  * @apiParam {String[]} [developers] Array with the username of the authors that you want to add to the game. Also can be a String
  * @apiParamExample {json} Request-Example:
  *      {
- *          "name": "My New Name",
- *          "title": ["Some Username"]
+ *          "title": "My New Name",
+ *          "developers": ["Some Username"],
+ *          "public": "true"
  *      }
  *
  * @apiSuccess(200) Success.
@@ -124,7 +125,7 @@ router.post('/', function (req, res) {
  *          "_id": "559a447831b7acec185bf513",
  *          "title": "My Game"
  *          "authors": ["someDeveloper"],
- *          "developers": ["someDeveloper"],
+ *          "developers": ["Some Username"],
  *          "public": "true"
  *      }
  */
@@ -153,7 +154,7 @@ router.put('/:gameId', function (req, res) {
  *          "_id": "559a447831b7acec185bf513",
  *          "title": "My Game"
  *          "authors": ["someDeveloper"],
- *          "developers": ["someDeveloper"],
+ *          "developers": [],
  *          "public": "true"
  *      }
  */
