@@ -43,7 +43,7 @@
     "shelljs": "^0.5.x"
   },
   "devDependencies": {
-    "apidoc": "*",
+    "apidoc": "0.15.1",
     "coveralls": "*",
     "grunt": "^0.4.5",
     "handlebars": "*",
