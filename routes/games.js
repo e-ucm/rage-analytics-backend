@@ -98,7 +98,7 @@ router.get('/public', restUtils.find(games, function (req, callback) {
 router.post('/', function (req, res) {
     var username = req.headers['x-gleaner-user'];
     restUtils.processResponse(games.createGame(username,
-        req.body.title || '', req.params.public || false), res);
+        req.body.title || '', req.body.public || false), res);
 });
 
 /**
