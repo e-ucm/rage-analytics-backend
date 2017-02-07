@@ -173,5 +173,27 @@ module.exports = function (request, db) {
                 });
         });
 
+        it('should DELETE a game', function (done) {
+            request.delete('/api/games/' + idGame)
+                .expect(200)
+                .set('X-Gleaner-User', 'DummyUsername')
+                .set('Accept', 'application/json')
+                .expect('Content-Type', /json/)
+                .end(function (err, res) {
+                    should.not.exist(err);
+
+                    request.get('/api/games/my')
+                        .expect(200)
+                        .set('X-Gleaner-User', 'DummyUsername')
+                        .set('Accept', 'application/json')
+                        .expect('Content-Type', /json/)
+                        .end(function (err, res) {
+                            should.not.exist(err);
+                            should.equal(res.body.length, 0);
+                            done();
+                        });
+                });
+        });
+
     });
 };
