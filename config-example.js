@@ -43,6 +43,8 @@ exports.storm = {
     elasticsearchHost: '{{elasticsearchHost}}',
     elasticsearchPort: '{{elasticsearchPort}}'
 };
+exports.maxSizeRequest = '1mb';
+
 exports.kafka = {
     uri: process.env.KAFKA_URI || process.env.KAFKA_URL || '{{kafkaUrl}}'
 };

@@ -79,8 +79,8 @@ if (app.get('env') === 'development') {
     app.use(logger('dev'));
 }
 
-app.use(bodyParser.json({limit: '1mb'}));
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json({limit: app.config.maxSizeRequest}));
+app.use(bodyParser.urlencoded({extended: false, limit: app.config.maxSizeRequest}));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(function (req, res, next) {
