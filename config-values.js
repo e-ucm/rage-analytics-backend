@@ -132,7 +132,8 @@ exports.defaultValues = {
     analysisFolder: './analysis',
     elasticsearchHost: 'localhost',
     elasticsearchPort: 9200,
-    defaultKibanaIndex: 'default-kibana-index'
+    defaultKibanaIndex: 'default-kibana-index',
+    maxSizeRequest: '1mb'
 };
 
 exports.testValues = {
@@ -168,7 +169,8 @@ exports.testValues = {
     analysisFolder: './analysis',
     elasticsearchHost: 'localhost',
     elasticsearchPort: 9200,
-    defaultKibanaIndex: 'default-kibana-index'
+    defaultKibanaIndex: 'default-kibana-index',
+    maxSizeRequest: '1mb'
 };
 
 var prefix = 'RAGE_ANALYTICS_BACKEND_';
