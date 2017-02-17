@@ -5,7 +5,7 @@ var express = require('express'),
     restUtils = require('./rest-utils');
 
 var sessions = require('../lib/sessions'),
-    getRealTimeData = require('../lib/tracesConverter').toRealTime;
+    getRealTimeData = require('../lib/tracesConverter');
 
 module.exports = function (kafkaService, stormService) {
 
