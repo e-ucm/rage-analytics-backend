@@ -5,7 +5,7 @@ module.exports.processResponse = function (promise, res) {
         res.json(result);
     }).fail(function (err) {
         if (err.stack) {
-            console.log(err.stack);
+            console.error(err.stack);
         }
 
         if (err.status) {
