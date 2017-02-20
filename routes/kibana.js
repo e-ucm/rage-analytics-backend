@@ -547,12 +547,12 @@ router.get('/visualization/list/:usr/:id', function (req, res) {
             if (response.hits.hits[0]) {
                 if (req.params.usr === 'dev') {
                     res.json(response.hits.hits[0]._source.visualizationsDev ? response.hits.hits[0]._source.visualizationsDev : []);
-                } else if ('tch') {
+                } else if (req.params.usr === 'tch') {
                     res.json(response.hits.hits[0]._source.visualizationsTch ? response.hits.hits[0]._source.visualizationsTch : []);
-                } else if ('all') {
+                } else if (req.params.usr === 'all') {
                     var c = response.hits.hits[0]._source.visualizationsTch.concat(
                         response.hits.hits[0]._source.visualizationsDev.filter(function (item) {
-                            return response.hits.hits[0]._source.visualizationsTch.indexOf(item) < 0;
+                            return !isIdContained(response.hits.hits[0]._source.visualizationsTch, item);
                         }));
                     res.json(c);
                 }
@@ -575,23 +575,41 @@ router.get('/visualization/list/:usr/:id', function (req, res) {
  *
  * @apiParamExample {json} Request-Example:
  * {
- *        "visualizationsTch": [
- *          "SessionActivityOverTime",
- *          "PlayersActivity",
- *          "DifferentAlternativesPreferred",
- *          "TotalSessionPlayers",
- *          "AlternativesResponsesCount",
- *          "xAPIVerbsActivity",
- *          "AlternativesCountPerPlayer",
- *        ],
- *        "visualizationsDev": [
- *          "SessionActivityOverTime",
- *          "TotalSessionPlayers",
- *          "ActivityCountPerPlayer",
- *          "AlternativesResponsesCount",
- *          "PlayersActivityOverTime"
- *        ]
- *
+ *        "visualizationsTch": [{
+ *              "id": "SessionActivityOverTime",
+ *              "order": 1,
+ *              "fillRow": false
+ *        },
+ *        {
+ *              "id": "SessionActivityOverTime",
+ *              "order": 2,
+ *              "fillRow": false
+ *        },
+ *        {
+ *              "id": "PlayersActivity",
+ *              "order": 3,
+ *              "fillRow": true
+ *        },
+ *        {
+ *              "id": "DifferentAlternativesPreferred",
+ *              "order": 4,
+ *              "fillRow": false
+ *        }],
+ *        "visualizationsDev": [{
+ *              "id": "SessionActivityOverTime",
+ *              "order": 1,
+ *              "fillRow": true
+ *        },
+ *        {
+ *              "id": "TotalSessionPlayers",
+ *              "order": 2,
+ *              "fillRow": false
+ *        },
+ *        {
+ *              "id": "ActivityCountPerPlayer",
+ *              "order": 3,
+ *              "fillRow": true
+ *        }]
  * }
  *
  * @apiSuccess(200) Success.
@@ -636,9 +654,11 @@ router.post('/visualization/list/:id', function (req, res) {
  *
  * @apiParamExample {json} Request-Example:
  * {
- *        "visualizationsDev": [
- *          "SessionActivityOverTime",
- *        ]
+ *        "visualizationsDev": [{
+ *              "id": "SessionActivityOverTime",
+ *              "order": 5,
+ *              "fillRow": false
+ *        }]
  * }
  *
  * @apiSuccess(200) Success.
@@ -677,14 +697,14 @@ router.put('/visualization/list/:id', function (req, res) {
 
                 if (req.body.visualizationsDev) {
                     for (var i = 0; i < req.body.visualizationsDev.length; i++) {
-                        addDifferents(response.visualizationsDev, req.body.visualizationsDev[i]);
+                        updateList(response.visualizationsDev, req.body.visualizationsDev[i]);
                     }
                 }
                 req.body.visualizationsDev = response.visualizationsDev;
 
                 if (req.body.visualizationsTch) {
                     for (var j = 0; j < req.body.visualizationsTch.length; j++) {
-                        addDifferents(response.visualizationsTch, req.body.visualizationsTch[j]);
+                        updateList(response.visualizationsTch, req.body.visualizationsTch[j]);
                     }
                 }
                 req.body.visualizationsTch = response.visualizationsTch;
@@ -707,12 +727,15 @@ router.put('/visualization/list/:id', function (req, res) {
     });
 });
 
-function addDifferents(array, obj) {
+function updateList(array, obj) {
     var addObj = true;
+    var i = 0;
     array.forEach(function (v) {
-        if (v === obj) {
+        if (v.id === obj.id) {
+            array[i] = obj;
             addObj = false;
         }
+        i++;
     });
 
     if (addObj) {
@@ -759,7 +782,7 @@ router.delete('/visualization/list/:gameId/:list/:idToRemove', function (req, re
                 }
 
                 list.forEach(function (v) {
-                    if (v === req.params.idToRemove) {
+                    if (v.id === req.params.idToRemove) {
                         list.splice(i, 1);
                     }
                     i++;
@@ -991,5 +1014,14 @@ router.post('/dashboard/session/:sessionId', function (req, res) {
         }
     });
 });
+
+function isIdContained(array, id){
+    array.forEach(function(element){
+        if(element.id === id) {
+            return true;
+        }
+        return false;
+    });
+}
 
 module.exports = router;
