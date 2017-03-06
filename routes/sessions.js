@@ -298,15 +298,6 @@ module.exports = function (kafkaService, stormService) {
         }
     });
 
-    var checkStatementsFormat = function (data) {
-        for (var i = 0; i < data.length; ++i) {
-            var realtimeData = getRealTimeData(data[i]);
-            if (!realtimeData) {
-                return false;
-            }
-        }
-        return true;
-    };
 
     var startTopology = function (sessionId, versionId, callback) {
         var task = stormService.startTopology;
@@ -330,8 +321,13 @@ module.exports = function (kafkaService, stormService) {
             var traces = [];
             for (var i = 0; i < data.length; ++i) {
                 var realtimeData = getRealTimeData(data[i]);
-                if (realtimeData) {
-                    traces.push(realtimeData);
+                if (realtimeData.error || !realtimeData.trace) {
+                    return res.status(400).json({
+                        message: 'Error parsing statement, error:' + realtimeData.error
+                    });
+                }
+                if (realtimeData.trace) {
+                    traces.push(realtimeData.trace);
                 }
             }
             kafkaService.send(sessionId, traces)
@@ -522,12 +518,6 @@ module.exports = function (kafkaService, stormService) {
             analysisData.length === 0) {
             return res.status(400).json({
                 message: 'Provide an array of xAPI Statements inside the body of the request.'
-            });
-        }
-
-        if (!checkStatementsFormat(analysisData)) {
-            return res.status(400).json({
-                message: 'The statements format is not correct.'
             });
         }
 

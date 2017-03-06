@@ -110,26 +110,45 @@ module.exports = function (request, db, config) {
         });
 
         var authToken;
+        var name = '57345599db69cf4200fa41d971088';
+        var event = 'initialized';
+        var target = 'testName';
+        var timestamp = '2016-05-16T11:48:25Z';
+        var type = 'type';
         var statement = {
-            verb: {
-                id: 'http://adlnet.gov/expapi/verbs/created',
-                display: {
-                    'en-US': 'created'
+            id: '19de3bf2-6b7f-4399-a71b-da5f3674c8f8',
+            actor: {
+                name: name,
+                account: {
+                    homePage: 'http://a2:3000/',
+                    name: 'Anonymous'
                 }
             },
+            verb: {
+                id: 'http://id.tincanapi.com/verb/' + event
+            },
             object: {
-                objectType: 'Activity',
-                id: 'http://example.adlnet.gov/xapi/example/simplestatement',
+                id: 'http://example.com/games/SuperMarioBros/Screens/' + target,
                 definition: {
-                    name: {
-                        'en-US': 'simple statement'
+                    extensions: {
+                        type: 'defType',
+                        extensions: {
+                            versionId: 'testVersionId',
+                            gameplayId: 'testGameplayId'
+                        }
                     },
-                    description: {
-                        'en-US': 'A simple Experience API statement. Note that the LRS does not need to have any prior ' +
-                        'information about the Actor (learner), the verb, or the Activity/object.'
-                    }
+                    type: 'https://rage.e-ucm.es/xapi/seriousgames/activities/' + type
                 }
-            }
+            },
+            result: {
+                extensions: {
+                    ext1: '123',
+                    '/ext2': '456',
+                    'asdasd/asdasd3': 0,
+                    '23.423.4756/ext3': '411'
+                }
+            },
+            timestamp: timestamp
         };
 
         it('Testing the start collector', function (done) {
@@ -285,7 +304,7 @@ module.exports = function (request, db, config) {
                 .send([errStatement])
                 .end(function (err, res) {
                     should(res.body).eql('Statement ' + errStatement +
-                        ' doesn\'t have a valid format.');
+                        ' doesn\'t have a valid format. Error: Actor is missing for statement, ' + errStatement);
 
 
                     var noVerbStatement = {
@@ -311,7 +330,7 @@ module.exports = function (request, db, config) {
                         .send([noVerbStatement])
                         .end(function (err, res) {
                             should(res.body).eql('Statement ' + noVerbStatement +
-                                ' doesn\'t have a valid format.');
+                                ' doesn\'t have a valid format. Error: Actor is missing for statement, ' + noVerbStatement);
 
 
                             var noVerbIdStatement = {
@@ -342,7 +361,7 @@ module.exports = function (request, db, config) {
                                 .send([noVerbIdStatement])
                                 .end(function (err, res) {
                                     should(res.body).eql('Statement ' + noVerbIdStatement +
-                                        ' doesn\'t have a valid format.');
+                                        ' doesn\'t have a valid format. Error: Actor is missing for statement, ' + noVerbIdStatement);
 
                                     var noUrlVerbIdStatement = {
                                         verb: {
@@ -373,7 +392,7 @@ module.exports = function (request, db, config) {
                                         .send([noUrlVerbIdStatement])
                                         .end(function (err, res) {
                                             should(res.body).eql('Statement ' + noUrlVerbIdStatement +
-                                                ' doesn\'t have a valid format.');
+                                                ' doesn\'t have a valid format. Error: Actor is missing for statement, ' + noUrlVerbIdStatement);
 
 
                                             done();
@@ -402,7 +421,7 @@ module.exports = function (request, db, config) {
                 .send([noObjectErrStatement])
                 .end(function (err, res) {
                     should(res.body).eql('Statement ' + noObjectErrStatement +
-                        ' doesn\'t have a valid format.');
+                        ' doesn\'t have a valid format. Error: Actor is missing for statement, ' + noObjectErrStatement);
 
 
                     var noObjectIdStatement = {
@@ -433,7 +452,7 @@ module.exports = function (request, db, config) {
                         .send([noObjectIdStatement])
                         .end(function (err, res) {
                             should(res.body).eql('Statement ' + noObjectIdStatement +
-                                ' doesn\'t have a valid format.');
+                                ' doesn\'t have a valid format. Error: Actor is missing for statement, ' + noObjectIdStatement);
 
 
                             var noUrlOjbectIdStatement = {
@@ -465,7 +484,7 @@ module.exports = function (request, db, config) {
                                 .send([noUrlOjbectIdStatement])
                                 .end(function (err, res) {
                                     should(res.body).eql('Statement ' + noUrlOjbectIdStatement +
-                                        ' doesn\'t have a valid format.');
+                                        ' doesn\'t have a valid format. Error: Actor is missing for statement, ' + noUrlOjbectIdStatement);
                                     done();
                                 });
                         });
