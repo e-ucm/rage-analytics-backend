@@ -28,7 +28,7 @@ var idGame = new ObjectID('dummyGameId0'),
     idSession = new ObjectID('dummySessId0'),
     trackingCode = '123';
 
-module.exports = function(request, db, config) {
+module.exports = function (request, db, config) {
 
     /**-------------------------------------------------------------**/
     /**-------------------------------------------------------------**/
@@ -67,7 +67,7 @@ module.exports = function(request, db, config) {
         after(function (done) {
             db.collection('games').drop(function () {
                 db.collection('versions').drop(function () {
-                    db.collection('sessions').drop(function() {
+                    db.collection('sessions').drop(function () {
                         db.db.dropDatabase(done);
                     });
                 });
@@ -110,30 +110,45 @@ module.exports = function(request, db, config) {
         });
 
         var authToken;
+        var name = '57345599db69cf4200fa41d971088';
+        var event = 'initialized';
+        var target = 'testName';
+        var timestamp = '2016-05-16T11:48:25Z';
+        var type = 'type';
         var statement = {
+            id: '19de3bf2-6b7f-4399-a71b-da5f3674c8f8',
             actor: {
-                objectType: 'Agent',
-                mbox: 'mailto:user@example.com',
-                name: 'Project Tin Can API'
+                name: name,
+                account: {
+                    homePage: 'http://a2:3000/',
+                    name: 'Anonymous'
+                }
             },
             verb: {
-                id: 'http://adlnet.gov/expapi/verbs/created',
-                display: {
-                    'en-US': 'created'
-                }
+                id: 'http://id.tincanapi.com/verb/' + event
             },
             object: {
-                id: 'http://example.adlnet.gov/xapi/example/simplestatement',
+                id: 'http://example.com/games/SuperMarioBros/Screens/' + target,
                 definition: {
-                    name: {
-                        'en-US': 'simple statement'
+                    extensions: {
+                        type: 'defType',
+                        extensions: {
+                            versionId: 'testVersionId',
+                            gameplayId: 'testGameplayId'
+                        }
                     },
-                    description: {
-                        'en-US': 'A simple Experience API statement. Note that the LRS does not need to have any prior ' +
-                        'information about the Actor (learner), the verb, or the Activity/object.'
-                    }
+                    type: 'https://rage.e-ucm.es/xapi/seriousgames/activities/' + type
                 }
-            }
+            },
+            result: {
+                extensions: {
+                    ext1: '123',
+                    '/ext2': '456',
+                    'asdasd/asdasd3': 0,
+                    '23.423.4756/ext3': '411'
+                }
+            },
+            timestamp: timestamp
         };
 
         it('Testing the start collector', function (done) {
@@ -152,6 +167,7 @@ module.exports = function(request, db, config) {
                     should.equal(res.body.actor.account.name, 'Anonymous');
                     should.equal(res.body.actor.account.homePage, config.a2.a2HomePage);
                     authToken = res.body.authToken;
+                    statement.actor = res.body.actor;
                     done();
                 });
         });
@@ -161,11 +177,13 @@ module.exports = function(request, db, config) {
 
             dataSource.clearConsumers();
             dataSource.addConsumer({
-                addTraces: function (playerId, versionId, gameplayId, data) {
+                addTraces: function (playerId, versionId, gameplayId, data, convertedTraces) {
                     for (var i = 0; i < data.length; ++i) {
                         var extensions = data[i].object.definition.extensions;
                         should.equal(extensions.gameplayId, gameplayId);
                         should.equal(extensions.versionId, versionId);
+                        should.equal(convertedTraces[i].gameplayId, gameplayId);
+                        should.equal(convertedTraces[i].versionId, versionId);
                     }
                 }
             });
@@ -175,7 +193,353 @@ module.exports = function(request, db, config) {
                 .set('Authorization', authToken)
                 .send([statement])
                 .end(function (err, res) {
-                    should(res.body).eql({ message: 'Success.' });
+                    should(res.body).eql({message: 'Success.'});
+                    done();
+                });
+        });
+
+        it('Testing collector track fails ith the same status and message as the consumer', function (done) {
+            var dataSource = require('../../lib/traces');
+
+            var status = 700;
+            var message = 'Provoked error!';
+
+            dataSource.clearConsumers();
+            dataSource.addConsumer({
+                addTraces: function (playerId, versionId, gameplayId, data, convertedTraces) {
+                    var deferred = Q.defer();
+                    setTimeout(function () {
+                        var err = new Error(message);
+                        err.status = status;
+                        deferred.reject(err);
+                    }, 50);
+                    return deferred.promise;
+                }
+            });
+            request.post('/api/collector/track')
+                .expect(status)
+                .expect('Content-Type', /json/)
+                .set('Authorization', authToken)
+                .send([statement])
+                .end(function (err, res) {
+                    should(res.body).eql(message);
+                    done();
+                });
+        });
+
+
+        it('Testing collector track fails status 400 if consumer throws a non status error', function (done) {
+            var dataSource = require('../../lib/traces');
+            var message = 'Provoked error!';
+            dataSource.clearConsumers();
+            dataSource.addConsumer({
+                addTraces: function (playerId, versionId, gameplayId, data, convertedTraces) {
+                    var deferred = Q.defer();
+                    setTimeout(function () {
+                        var err = new Error(message);
+                        deferred.reject(err);
+                    }, 50);
+                    return deferred.promise;
+                }
+            });
+            request.post('/api/collector/track')
+                .expect(400)
+                .expect('Content-Type', /json/)
+                .set('Authorization', authToken)
+                .send([statement])
+                .end(function (err, res) {
+                    should(res.body).eql(message);
+                    done();
+                });
+        });
+
+        it('Testing collector track fails for a non array object ', function (done) {
+            var dataSource = require('../../lib/traces');
+            dataSource.clearConsumers();
+
+            request.post('/api/collector/track')
+                .expect(400)
+                .expect('Content-Type', /json/)
+                .set('Authorization', authToken)
+                .send({})
+                .end(function (err, res) {
+                    should(res.body).eql('Statements must be an array!');
+                    request.post('/api/collector/track')
+                        .expect(400)
+                        .expect('Content-Type', /json/)
+                        .set('Authorization', authToken)
+                        .send(null)
+                        .end(function (err, res) {
+                            should(res.body).eql('Statements must be an array!');
+                            request.post('/api/collector/track')
+                                .expect(400)
+                                .expect('Content-Type', /json/)
+                                .set('Authorization', authToken)
+                                .send(undefined)
+                                .end(function (err, res) {
+                                    should(res.body).eql('Statements must be an array!');
+                                    request.post('/api/collector/track')
+                                        .expect(400)
+                                        .expect('Content-Type', /json/)
+                                        .set('Authorization', authToken)
+                                        .send()
+                                        .end(function (err, res) {
+                                            should(res.body).eql('Statements must be an array!');
+                                            done();
+                                        });
+                                });
+                        });
+                });
+        });
+
+        it('Testing collector track fails for a wrongly formatter statement (verb error) ', function (done) {
+            var dataSource = require('../../lib/traces');
+            dataSource.clearConsumers();
+
+            var errStatement = {};
+            request.post('/api/collector/track')
+                .expect(400)
+                .expect('Content-Type', /json/)
+                .set('Authorization', authToken)
+                .send([errStatement])
+                .end(function (err, res) {
+                    should(res.body).eql('Statement ' + errStatement +
+                        ' doesn\'t have a valid format. Error: Actor is missing for statement, ' + errStatement);
+
+
+                    var noVerbStatement = {
+                        object: {
+                            objectType: 'Activity',
+                            id: 'http://example.adlnet.gov/xapi/example/simplestatement',
+                            definition: {
+                                name: {
+                                    'en-US': 'simple statement'
+                                },
+                                description: {
+                                    'en-US': 'A simple Experience API statement. Note that the LRS does not need to have any prior ' +
+                                    'information about the Actor (learner), the verb, or the Activity/object.'
+                                }
+                            }
+                        }
+                    };
+
+                    request.post('/api/collector/track')
+                        .expect(400)
+                        .expect('Content-Type', /json/)
+                        .set('Authorization', authToken)
+                        .send([noVerbStatement])
+                        .end(function (err, res) {
+                            should(res.body).eql('Statement ' + noVerbStatement +
+                                ' doesn\'t have a valid format. Error: Actor is missing for statement, ' + noVerbStatement);
+
+
+                            var noVerbIdStatement = {
+                                verb: {
+                                    display: {
+                                        'en-US': 'created'
+                                    }
+                                },
+                                object: {
+                                    objectType: 'Activity',
+                                    id: 'http://example.adlnet.gov/xapi/example/simplestatement',
+                                    definition: {
+                                        name: {
+                                            'en-US': 'simple statement'
+                                        },
+                                        description: {
+                                            'en-US': 'A simple Experience API statement. Note that the LRS does not need to have any prior ' +
+                                            'information about the Actor (learner), the verb, or the Activity/object.'
+                                        }
+                                    }
+                                }
+                            };
+
+                            request.post('/api/collector/track')
+                                .expect(400)
+                                .expect('Content-Type', /json/)
+                                .set('Authorization', authToken)
+                                .send([noVerbIdStatement])
+                                .end(function (err, res) {
+                                    should(res.body).eql('Statement ' + noVerbIdStatement +
+                                        ' doesn\'t have a valid format. Error: Actor is missing for statement, ' + noVerbIdStatement);
+
+                                    var noUrlVerbIdStatement = {
+                                        verb: {
+                                            id: 'nourlId',
+                                            display: {
+                                                'en-US': 'created'
+                                            }
+                                        },
+                                        object: {
+                                            objectType: 'Activity',
+                                            id: 'http://example.adlnet.gov/xapi/example/simplestatement',
+                                            definition: {
+                                                name: {
+                                                    'en-US': 'simple statement'
+                                                },
+                                                description: {
+                                                    'en-US': 'A simple Experience API statement. Note that the LRS does not need to have any prior ' +
+                                                    'information about the Actor (learner), the verb, or the Activity/object.'
+                                                }
+                                            }
+                                        }
+                                    };
+
+                                    request.post('/api/collector/track')
+                                        .expect(400)
+                                        .expect('Content-Type', /json/)
+                                        .set('Authorization', authToken)
+                                        .send([noUrlVerbIdStatement])
+                                        .end(function (err, res) {
+                                            should(res.body).eql('Statement ' + noUrlVerbIdStatement +
+                                                ' doesn\'t have a valid format. Error: Actor is missing for statement, ' + noUrlVerbIdStatement);
+
+
+                                            done();
+                                        });
+                                });
+                        });
+                });
+        });
+
+
+        it('Testing collector track fails for a wrongly formatter statement (object error) ', function (done) {
+            var dataSource = require('../../lib/traces');
+            dataSource.clearConsumers();
+
+            var noObjectErrStatement = {
+                verb: {
+                    id: 'http://adlnet.gov/expapi/verbs/created',
+                    display: {
+                        'en-US': 'created'
+                    }
+                }};
+            request.post('/api/collector/track')
+                .expect(400)
+                .expect('Content-Type', /json/)
+                .set('Authorization', authToken)
+                .send([noObjectErrStatement])
+                .end(function (err, res) {
+                    should(res.body).eql('Statement ' + noObjectErrStatement +
+                        ' doesn\'t have a valid format. Error: Actor is missing for statement, ' + noObjectErrStatement);
+
+
+                    var noObjectIdStatement = {
+                        verb: {
+                            id: 'http://adlnet.gov/expapi/verbs/created',
+                            display: {
+                                'en-US': 'created'
+                            }
+                        },
+                        object: {
+                            objectType: 'Activity',
+                            definition: {
+                                name: {
+                                    'en-US': 'simple statement'
+                                },
+                                description: {
+                                    'en-US': 'A simple Experience API statement. Note that the LRS does not need to have any prior ' +
+                                    'information about the Actor (learner), the verb, or the Activity/object.'
+                                }
+                            }
+                        }
+                    };
+
+                    request.post('/api/collector/track')
+                        .expect(400)
+                        .expect('Content-Type', /json/)
+                        .set('Authorization', authToken)
+                        .send([noObjectIdStatement])
+                        .end(function (err, res) {
+                            should(res.body).eql('Statement ' + noObjectIdStatement +
+                                ' doesn\'t have a valid format. Error: Actor is missing for statement, ' + noObjectIdStatement);
+
+
+                            var noUrlOjbectIdStatement = {
+                                verb: {
+                                    id: 'http://adlnet.gov/expapi/verbs/created',
+                                    display: {
+                                        'en-US': 'created'
+                                    }
+                                },
+                                object: {
+                                    objectType: 'Activity',
+                                    id: 'simplestatement',
+                                    definition: {
+                                        name: {
+                                            'en-US': 'simple statement'
+                                        },
+                                        description: {
+                                            'en-US': 'A simple Experience API statement. Note that the LRS does not need to have any prior ' +
+                                            'information about the Actor (learner), the verb, or the Activity/object.'
+                                        }
+                                    }
+                                }
+                            };
+
+                            request.post('/api/collector/track')
+                                .expect(400)
+                                .expect('Content-Type', /json/)
+                                .set('Authorization', authToken)
+                                .send([noUrlOjbectIdStatement])
+                                .end(function (err, res) {
+                                    should(res.body).eql('Statement ' + noUrlOjbectIdStatement +
+                                        ' doesn\'t have a valid format. Error: Actor is missing for statement, ' + noUrlOjbectIdStatement);
+                                    done();
+                                });
+                        });
+                });
+        });
+
+        it('Testing collector track fails ' +
+            'with the same status and message as the consumer that fails first', function (done) {
+            var dataSource = require('../../lib/traces');
+
+            var status1 = 700;
+            var message1 = 'Provoked error 1!';
+
+            var status2 = 900;
+            var message2 = 'Provoked error 2!';
+            var consumer2Called = false;
+            var consumer2Failed = false;
+
+            var firstConsumer = {
+                addTraces: function (playerId, versionId, gameplayId, data, convertedTraces) {
+                    consumer2Called = true;
+                    var deferred = Q.defer();
+                    setTimeout(function () {
+                        var err = new Error(message1);
+                        err.status = status1;
+                        consumer2Failed = true;
+                        deferred.reject(err);
+                    }, 200);
+                    return deferred.promise;
+                }
+            };
+            var secondConsumer = {
+                addTraces: function (playerId, versionId, gameplayId, data, convertedTraces) {
+                    var deferred = Q.defer();
+                    setTimeout(function () {
+                        var err = new Error(message2);
+                        err.status = status2;
+                        deferred.reject(err);
+                    }, 50);
+                    return deferred.promise;
+                }
+            };
+
+            dataSource.clearConsumers();
+            dataSource.addConsumer(firstConsumer);
+            dataSource.addConsumer(secondConsumer);
+            request.post('/api/collector/track')
+                .expect(status2)
+                .expect('Content-Type', /json/)
+                .set('Authorization', authToken)
+                .send([statement])
+                .end(function (err, res) {
+                    should(res.body).eql(message2);
+                    should(consumer2Called).eql(true);
+                    should(consumer2Failed).eql(false);
                     done();
                 });
         });

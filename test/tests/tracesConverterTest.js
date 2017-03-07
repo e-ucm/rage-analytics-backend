@@ -23,9 +23,9 @@ var should = require('should');
 describe('Traces converter tests', function () {
 
     var tracesConverter = require('../../lib/tracesConverter');
-    var getElasticSearchData = tracesConverter.toElasticSearch;
-    var getRealtimeData = tracesConverter.toRealTime;
+    var getRealtimeData = tracesConverter;
     var definitionObj = {
+        type: 'defType',
         extensions: {
             versionId: 'testVersionId',
             gameplayId: 'testGameplayId'
@@ -65,9 +65,12 @@ describe('Traces converter tests', function () {
             gameplayId: definitionObj.extensions.gameplayId,
             event: event,
             target: target,
-            timestamp: timestamp
+            timestamp: timestamp,
+            type: definitionObj.type
         };
-        var trace = getRealtimeData(statement);
+        var result = getRealtimeData(statement);
+        var trace = result.trace;
+        should(result.error).eql(undefined);
         should(trace).eql(resultTrace);
 
         done();
@@ -103,9 +106,12 @@ describe('Traces converter tests', function () {
             gameplayId: definitionObj.extensions.gameplayId,
             event: event,
             target: target,
-            timestamp: timestamp
+            timestamp: timestamp,
+            type: definitionObj.type
         };
-        var trace = getRealtimeData(statement);
+        var result = getRealtimeData(statement);
+        var trace = result.trace;
+        should(result.error).eql(undefined);
         should(trace).eql(resultTrace);
 
         done();
@@ -149,12 +155,17 @@ describe('Traces converter tests', function () {
             gameplayId: definitionObj.extensions.gameplayId,
             event: event,
             target: target,
-            progress: progress,
+            ext: {
+                progress: progress
+            },
             success: false,
             completion: false,
-            timestamp: timestamp
+            timestamp: timestamp,
+            type: definitionObj.type
         };
-        var trace = getRealtimeData(statement);
+        var result = getRealtimeData(statement);
+        var trace = result.trace;
+        should(result.error).eql(undefined);
         should(trace).eql(resultTrace);
 
         done();
@@ -200,9 +211,12 @@ describe('Traces converter tests', function () {
             response: response,
             success: false,
             completion: false,
-            timestamp: timestamp
+            timestamp: timestamp,
+            type: definitionObj.type
         };
-        var trace = getRealtimeData(statement);
+        var result = getRealtimeData(statement);
+        var trace = result.trace;
+        should(result.error).eql(undefined);
         should(trace).eql(resultTrace);
 
         done();
@@ -247,9 +261,12 @@ describe('Traces converter tests', function () {
             response: response,
             success: false,
             completion: false,
-            timestamp: timestamp
+            timestamp: timestamp,
+            type: definitionObj.type
         };
-        var trace = getRealtimeData(statement);
+        var result = getRealtimeData(statement);
+        var trace = result.trace;
+        should(result.error).eql(undefined);
         should(trace).eql(resultTrace);
 
         done();
@@ -293,7 +310,9 @@ describe('Traces converter tests', function () {
             type: type,
             timestamp: timestamp
         };
-        var trace = getRealtimeData(statement);
+        var result = getRealtimeData(statement);
+        var trace = result.trace;
+        should(result.error).eql(undefined);
         should(trace).eql(resultTrace);
 
         done();
@@ -336,13 +355,111 @@ describe('Traces converter tests', function () {
             type: type,
             timestamp: timestamp
         };
-        var trace = getRealtimeData(statement);
+        var result = getRealtimeData(statement);
+        var trace = result.trace;
+        should(result.error).eql(undefined);
         should(trace).eql(resultTrace);
-        trace = getElasticSearchData(statement);
 
-        delete resultTrace.gameplayId;
-        delete resultTrace.versionId;
+        done();
+    });
+
+
+    it('should correctly convert result.extensions to ext object', function (done) {
+
+        var name = '57345599db69cf4200fa41d971088';
+        var event = 'skipped';
+        var target = 'testMenu';
+        var timestamp = '2016-05-16T11:48:25Z';
+        var type = 'testType';
+        var statement = {
+            id: '19de3bf2-6b7f-4399-a71b-da5f3674c8f8',
+            actor: {
+                name: name,
+                account: {
+                    homePage: 'http://a2:3000/',
+                    name: 'Anonymous'
+                }
+            },
+            verb: {
+                id: 'http://id.tincanapi.com/verb/' + event
+            },
+            object: {
+                id: 'http://example.com/games/SuperMarioBros/Screens/' + target,
+                definition: {
+                    extensions: definitionObj.extensions,
+                    type: 'https://rage.e-ucm.es/xapi/seriousgames/activities/' + type
+                }
+            },
+            result: {
+                extensions: {
+                    ext1: '123',
+                    '/ext2': '456',
+                    'asdasd/asdasd3': 0,
+                    '23.423.4756/ext3': '411'
+                }
+            },
+            timestamp: timestamp
+        };
+        var resultTrace = {
+            name: name,
+            versionId: definitionObj.extensions.versionId,
+            gameplayId: definitionObj.extensions.gameplayId,
+            event: event,
+            target: target,
+            type: type,
+            timestamp: timestamp,
+            ext: {
+                ext1: '123',
+                ext2: '456',
+                asdasd3: 0,
+                ext3: '411'
+            }
+        };
+        var result = getRealtimeData(statement);
+        var trace = result.trace;
+        should(result.error).eql(undefined);
         should(trace).eql(resultTrace);
+
+        done();
+    });
+
+    it('should not convert result.extensions ending with /', function (done) {
+
+        var name = '57345599db69cf4200fa41d971088';
+        var event = 'skipped';
+        var target = 'testMenu';
+        var timestamp = '2016-05-16T11:48:25Z';
+        var type = 'testType';
+        var statement = {
+            id: '19de3bf2-6b7f-4399-a71b-da5f3674c8f8',
+            actor: {
+                name: name,
+                account: {
+                    homePage: 'http://a2:3000/',
+                    name: 'Anonymous'
+                }
+            },
+            verb: {
+                id: 'http://id.tincanapi.com/verb/' + event
+            },
+            object: {
+                id: 'http://example.com/games/SuperMarioBros/Screens/' + target,
+                definition: {
+                    extensions: definitionObj.extensions,
+                    type: 'https://rage.e-ucm.es/xapi/seriousgames/activities/' + type
+                }
+            },
+            result: {
+                extensions: {
+                    '23.423.4756/ext4//': '434'
+                }
+            },
+            timestamp: timestamp
+        };
+        var result = getRealtimeData(statement);
+        var trace = result.trace;
+        should(result.error).not.eql(undefined);
+        should(trace).eql(undefined);
 
         done();
     });
