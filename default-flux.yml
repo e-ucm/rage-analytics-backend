@@ -12,4 +12,4 @@ config:
 # spout, bolts and streams definitions. Example: https://github.com/apache/storm/blob/master/external/flux/README.md#basic-word-count-example.
 # Or topology Source. Example: https://github.com/apache/storm/blob/master/external/flux/README.md#existing-topologies
 topologySource:
-  className: "es.eucm.rage.realtime.Analysis"  # Name of the Storm Trident main class inside the "realtime-jar-with-dependencies.jar"
+  className: "es.eucm.rage.realtime.simple.Analysis"  # Name of the Storm Trident main class inside the "realtime-jar-with-dependencies.jar"
