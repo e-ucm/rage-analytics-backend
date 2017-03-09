@@ -28,7 +28,8 @@ describe('Traces converter tests', function () {
         type: 'defType',
         extensions: {
             versionId: 'testVersionId',
-            gameplayId: 'testGameplayId'
+            gameplayId: 'testGameplayId',
+            session: 1
         }
     };
 
@@ -63,6 +64,7 @@ describe('Traces converter tests', function () {
             name: name,
             versionId: definitionObj.extensions.versionId,
             gameplayId: definitionObj.extensions.gameplayId,
+            session: definitionObj.extensions.session,
             event: event,
             target: target,
             timestamp: timestamp,
@@ -104,6 +106,7 @@ describe('Traces converter tests', function () {
             name: name,
             versionId: definitionObj.extensions.versionId,
             gameplayId: definitionObj.extensions.gameplayId,
+            session: definitionObj.extensions.session,
             event: event,
             target: target,
             timestamp: timestamp,
@@ -153,6 +156,7 @@ describe('Traces converter tests', function () {
             name: name,
             versionId: definitionObj.extensions.versionId,
             gameplayId: definitionObj.extensions.gameplayId,
+            session: definitionObj.extensions.session,
             event: event,
             target: target,
             ext: {
@@ -206,6 +210,7 @@ describe('Traces converter tests', function () {
             name: name,
             versionId: definitionObj.extensions.versionId,
             gameplayId: definitionObj.extensions.gameplayId,
+            session: definitionObj.extensions.session,
             event: event,
             target: target,
             response: response,
@@ -256,6 +261,7 @@ describe('Traces converter tests', function () {
             name: name,
             versionId: definitionObj.extensions.versionId,
             gameplayId: definitionObj.extensions.gameplayId,
+            session: definitionObj.extensions.session,
             event: event,
             target: target,
             response: response,
@@ -305,6 +311,7 @@ describe('Traces converter tests', function () {
             name: name,
             versionId: definitionObj.extensions.versionId,
             gameplayId: definitionObj.extensions.gameplayId,
+            session: definitionObj.extensions.session,
             event: event,
             target: target,
             type: type,
@@ -350,6 +357,7 @@ describe('Traces converter tests', function () {
             name: name,
             versionId: definitionObj.extensions.versionId,
             gameplayId: definitionObj.extensions.gameplayId,
+            session: definitionObj.extensions.session,
             event: event,
             target: target,
             type: type,
@@ -404,6 +412,7 @@ describe('Traces converter tests', function () {
             name: name,
             versionId: definitionObj.extensions.versionId,
             gameplayId: definitionObj.extensions.gameplayId,
+            session: definitionObj.extensions.session,
             event: event,
             target: target,
             type: type,
@@ -459,6 +468,528 @@ describe('Traces converter tests', function () {
         var result = getRealtimeData(statement);
         var trace = result.trace;
         should(result.error).not.eql(undefined);
+        should(trace).eql(undefined);
+
+        done();
+    });
+
+
+    // Full Error Checking
+
+
+    it('should not convert a statement with a missing actor', function (done) {
+
+        var event = 'skipped';
+        var target = 'testMenu';
+        var timestamp = '2016-05-16T11:48:25Z';
+        var type = 'testType';
+        var statement = {
+            id: '19de3bf2-6b7f-4399-a71b-da5f3674c8f8',
+            verb: {
+                id: 'http://id.tincanapi.com/verb/' + event
+            },
+            object: {
+                id: 'http://example.com/games/SuperMarioBros/Screens/' + target,
+                definition: {
+                    extensions: definitionObj.extensions,
+                    type: 'https://rage.e-ucm.es/xapi/seriousgames/activities/' + type
+                }
+            },
+            result: {
+                extensions: {
+                    '23.423.4756/ext4': '434'
+                }
+            },
+            timestamp: timestamp
+        };
+        var result = getRealtimeData(statement);
+        var trace = result.trace;
+        should(result.error.message).eql('Actor is missing for statement, ' + statement);
+        should(trace).eql(undefined);
+
+        done();
+    });
+
+    it('should not convert a statement with a missing actor name', function (done) {
+
+        var event = 'skipped';
+        var target = 'testMenu';
+        var timestamp = '2016-05-16T11:48:25Z';
+        var type = 'testType';
+        var statement = {
+            id: '19de3bf2-6b7f-4399-a71b-da5f3674c8f8',
+            actor: {
+                account: {
+                    homePage: 'http://a2:3000/',
+                    name: 'Anonymous'
+                }
+            },
+            verb: {
+                id: 'http://id.tincanapi.com/verb/' + event
+            },
+            object: {
+                id: 'http://example.com/games/SuperMarioBros/Screens/' + target,
+                definition: {
+                    extensions: definitionObj.extensions,
+                    type: 'https://rage.e-ucm.es/xapi/seriousgames/activities/' + type
+                }
+            },
+            result: {
+                extensions: {
+                    '23.423.4756/ext4': '434'
+                }
+            },
+            timestamp: timestamp
+        };
+        var result = getRealtimeData(statement);
+        var trace = result.trace;
+        should(result.error.message).eql('Actor name is missing for statement, ' + statement);
+        should(trace).eql(undefined);
+
+        done();
+    });
+
+    it('should not convert a statement with missing timestamp', function (done) {
+
+        var name = 'testName';
+        var event = 'skipped';
+        var target = 'testMenu';
+        var type = 'testType';
+        var statement = {
+            id: '19de3bf2-6b7f-4399-a71b-da5f3674c8f8',
+            actor: {
+                name: name,
+                account: {
+                    homePage: 'http://a2:3000/',
+                    name: 'Anonymous'
+                }
+            },
+            verb: {
+                id: 'http://id.tincanapi.com/verb/' + event
+            },
+            object: {
+                id: 'http://example.com/games/SuperMarioBros/Screens/' + target,
+                definition: {
+                    extensions: definitionObj.extensions,
+                    type: 'https://rage.e-ucm.es/xapi/seriousgames/activities/' + type
+                }
+            },
+            result: {
+                extensions: {
+                    '23.423.4756/ext4': '434'
+                }
+            }
+        };
+        var result = getRealtimeData(statement);
+        var trace = result.trace;
+        should(result.error.message).eql('Timestamp is missing for statement, ' + statement);
+        should(trace).eql(undefined);
+
+        done();
+    });
+
+
+    it('should not convert a statement with a missing verb', function (done) {
+
+        var timestamp = '2016-05-16T11:48:25Z';
+        var name = 'testName';
+        var target = 'testMenu';
+        var type = 'testType';
+        var statement = {
+            id: '19de3bf2-6b7f-4399-a71b-da5f3674c8f8',
+            actor: {
+                name: name,
+                account: {
+                    homePage: 'http://a2:3000/',
+                    name: 'Anonymous'
+                }
+            },
+            object: {
+                id: 'http://example.com/games/SuperMarioBros/Screens/' + target,
+                definition: {
+                    extensions: definitionObj.extensions,
+                    type: 'https://rage.e-ucm.es/xapi/seriousgames/activities/' + type
+                }
+            },
+            result: {
+                extensions: {
+                    '23.423.4756/ext4': '434'
+                }
+            },
+            timestamp: timestamp
+        };
+        var result = getRealtimeData(statement);
+        var trace = result.trace;
+        should(result.error.message).eql('Verb is missing for statement, ' + statement);
+        should(trace).eql(undefined);
+
+        done();
+    });
+
+
+    it('should not convert a statement with a missing verb id', function (done) {
+
+        var timestamp = '2016-05-16T11:48:25Z';
+        var name = 'testName';
+        var target = 'testMenu';
+        var type = 'testType';
+        var statement = {
+            id: '19de3bf2-6b7f-4399-a71b-da5f3674c8f8',
+            actor: {
+                name: name,
+                account: {
+                    homePage: 'http://a2:3000/',
+                    name: 'Anonymous'
+                }
+            },
+            verb: {
+
+            },
+            object: {
+                id: 'http://example.com/games/SuperMarioBros/Screens/' + target,
+                definition: {
+                    extensions: definitionObj.extensions,
+                    type: 'https://rage.e-ucm.es/xapi/seriousgames/activities/' + type
+                }
+            },
+            result: {
+                extensions: {
+                    '23.423.4756/ext4': '434'
+                }
+            },
+            timestamp: timestamp
+        };
+        var result = getRealtimeData(statement);
+        var trace = result.trace;
+        should(result.error.message).eql('Verb Id is missing for statement, ' + statement);
+        should(trace).eql(undefined);
+
+        done();
+    });
+
+    it('should not convert a statement with a verb id ending with /', function (done) {
+
+        var timestamp = '2016-05-16T11:48:25Z';
+        var name = 'testName';
+        var target = 'testMenu';
+        var type = 'testType';
+        var statement = {
+            id: '19de3bf2-6b7f-4399-a71b-da5f3674c8f8',
+            actor: {
+                name: name,
+                account: {
+                    homePage: 'http://a2:3000/',
+                    name: 'Anonymous'
+                }
+            },
+            verb: {
+                id: 'http://...asddsfdg//'
+            },
+            object: {
+                id: 'http://example.com/games/SuperMarioBros/Screens/' + target,
+                definition: {
+                    extensions: definitionObj.extensions,
+                    type: 'https://rage.e-ucm.es/xapi/seriousgames/activities/' + type
+                }
+            },
+            result: {
+                extensions: {
+                    '23.423.4756/ext4': '434'
+                }
+            },
+            timestamp: timestamp
+        };
+        var result = getRealtimeData(statement);
+        var trace = result.trace;
+        should(result.error.message).eql('Verb Id cannot end with / for statement, ' + statement);
+        should(trace).eql(undefined);
+
+        done();
+    });
+
+    it('should not convert a statement with a missing object', function (done) {
+
+        var timestamp = '2016-05-16T11:48:25Z';
+        var name = 'testName';
+        var statement = {
+            id: '19de3bf2-6b7f-4399-a71b-da5f3674c8f8',
+            actor: {
+                name: name,
+                account: {
+                    homePage: 'http://a2:3000/',
+                    name: 'Anonymous'
+                }
+            },
+            verb: {
+                id: 'http://.../asddsfdg'
+            },
+            result: {
+                extensions: {
+                    '23.423.4756/ext4': '434'
+                }
+            },
+            timestamp: timestamp
+        };
+        var result = getRealtimeData(statement);
+        var trace = result.trace;
+        should(result.error.message).eql('Object is missing for statement, ' + statement);
+        should(trace).eql(undefined);
+
+        done();
+    });
+
+    it('should not convert a statement with a missing object id', function (done) {
+
+        var timestamp = '2016-05-16T11:48:25Z';
+        var name = 'testName';
+        var statement = {
+            id: '19de3bf2-6b7f-4399-a71b-da5f3674c8f8',
+            actor: {
+                name: name,
+                account: {
+                    homePage: 'http://a2:3000/',
+                    name: 'Anonymous'
+                }
+            },
+            verb: {
+                id: 'http://.../asddsfdg'
+            },
+            object: {
+
+            },
+            result: {
+                extensions: {
+                    '23.423.4756/ext4': '434'
+                }
+            },
+            timestamp: timestamp
+        };
+        var result = getRealtimeData(statement);
+        var trace = result.trace;
+        should(result.error.message).eql('Object Id is missing for statement, ' + statement);
+        should(trace).eql(undefined);
+
+        done();
+    });
+
+    it('should not convert a statement with an object id ending with /', function (done) {
+
+        var timestamp = '2016-05-16T11:48:25Z';
+        var name = 'testName';
+        var statement = {
+            id: '19de3bf2-6b7f-4399-a71b-da5f3674c8f8',
+            actor: {
+                name: name,
+                account: {
+                    homePage: 'http://a2:3000/',
+                    name: 'Anonymous'
+                }
+            },
+            verb: {
+                id: 'http://.../asddsfdg'
+            },
+            object: {
+                id: 'http://..objectId/'
+            },
+            result: {
+                extensions: {
+                    '23.423.4756/ext4': '434'
+                }
+            },
+            timestamp: timestamp
+        };
+        var result = getRealtimeData(statement);
+        var trace = result.trace;
+        should(result.error.message).eql('Object Id cannot end with / for statement, ' + statement);
+        should(trace).eql(undefined);
+
+        done();
+    });
+
+
+    it('should not convert a statement with a missing object definition', function (done) {
+
+        var timestamp = '2016-05-16T11:48:25Z';
+        var name = 'testName';
+        var statement = {
+            id: '19de3bf2-6b7f-4399-a71b-da5f3674c8f8',
+            actor: {
+                name: name,
+                account: {
+                    homePage: 'http://a2:3000/',
+                    name: 'Anonymous'
+                }
+            },
+            verb: {
+                id: 'http://.../asddsfdg'
+            },
+            object: {
+                id: 'http://../objectId'
+            },
+            result: {
+                extensions: {
+                    '23.423.4756/ext4': '434'
+                }
+            },
+            timestamp: timestamp
+        };
+        var result = getRealtimeData(statement);
+        var trace = result.trace;
+        should(result.error.message).eql('Object definition is missing for statement, ' + statement);
+        should(trace).eql(undefined);
+
+        done();
+    });
+
+    it('should not convert a statement with a missing object definition type', function (done) {
+
+        var timestamp = '2016-05-16T11:48:25Z';
+        var name = 'testName';
+        var statement = {
+            id: '19de3bf2-6b7f-4399-a71b-da5f3674c8f8',
+            actor: {
+                name: name,
+                account: {
+                    homePage: 'http://a2:3000/',
+                    name: 'Anonymous'
+                }
+            },
+            verb: {
+                id: 'http://.../asddsfdg'
+            },
+            object: {
+                id: 'http://../objectId',
+                definition: {
+
+                }
+            },
+            result: {
+                extensions: {
+                    '23.423.4756/ext4': '434'
+                }
+            },
+            timestamp: timestamp
+        };
+        var result = getRealtimeData(statement);
+        var trace = result.trace;
+        should(result.error.message).eql('Object definition type is missing for statement, ' + statement);
+        should(trace).eql(undefined);
+
+        done();
+    });
+
+    it('should not convert a statement with an object definition type ending with /', function (done) {
+
+        var timestamp = '2016-05-16T11:48:25Z';
+        var name = 'testName';
+        var statement = {
+            id: '19de3bf2-6b7f-4399-a71b-da5f3674c8f8',
+            actor: {
+                name: name,
+                account: {
+                    homePage: 'http://a2:3000/',
+                    name: 'Anonymous'
+                }
+            },
+            verb: {
+                id: 'http://.../asddsfdg'
+            },
+            object: {
+                id: 'http://../objectId',
+                definition: {
+                    type: 'http://.../objectDefinitionType//'
+                }
+            },
+            result: {
+                extensions: {
+                    '23.423.4756/ext4': '434'
+                }
+            },
+            timestamp: timestamp
+        };
+        var result = getRealtimeData(statement);
+        var trace = result.trace;
+        should(result.error.message).eql('Object definition type cannot end with / for statement, ' + statement);
+        should(trace).eql(undefined);
+
+        done();
+    });
+
+    it('should not convert a statement with a result score raw value missing', function (done) {
+
+        var timestamp = '2016-05-16T11:48:25Z';
+        var name = 'testName';
+        var statement = {
+            id: '19de3bf2-6b7f-4399-a71b-da5f3674c8f8',
+            actor: {
+                name: name,
+                account: {
+                    homePage: 'http://a2:3000/',
+                    name: 'Anonymous'
+                }
+            },
+            verb: {
+                id: 'http://.../asddsfdg'
+            },
+            object: {
+                id: 'http://../objectId',
+                definition: {
+                    type: 'http://.../objectDefinitionType'
+                }
+            },
+            result: {
+                score: {
+
+                },
+                extensions: {
+                    '23.423.4756/ext4': '434'
+                }
+            },
+            timestamp: timestamp
+        };
+        var result = getRealtimeData(statement);
+        var trace = result.trace;
+        should(result.error.message).eql('Result.score.raw should not be undefined or null for statement, ' + statement);
+        should(trace).eql(undefined);
+
+        done();
+    });
+
+    it('should not convert a statement with a result score raw value missing', function (done) {
+
+        var timestamp = '2016-05-16T11:48:25Z';
+        var name = 'testName';
+        var statement = {
+            id: '19de3bf2-6b7f-4399-a71b-da5f3674c8f8',
+            actor: {
+                name: name,
+                account: {
+                    homePage: 'http://a2:3000/',
+                    name: 'Anonymous'
+                }
+            },
+            verb: {
+                id: 'http://.../asddsfdg'
+            },
+            object: {
+                id: 'http://../objectId',
+                definition: {
+                    type: 'http://.../objectDefinitionType'
+                }
+            },
+            result: {
+                score: {
+                    raw: 3
+                },
+                extensions: {
+                    '23.423.4756/ext4/': '434'
+                }
+            },
+            timestamp: timestamp
+        };
+        var result = getRealtimeData(statement);
+        var trace = result.trace;
+        should(result.error.message).eql('Extension 23.423.4756/ext4/ cannot end with / for result, ' + statement.result);
         should(trace).eql(undefined);
 
         done();
