@@ -742,6 +742,7 @@ describe('Traces converter tests', function () {
 
         var timestamp = '2016-05-16T11:48:25Z';
         var name = 'testName';
+        var type = 'testType';
         var statement = {
             id: '19de3bf2-6b7f-4399-a71b-da5f3674c8f8',
             actor: {
@@ -755,7 +756,10 @@ describe('Traces converter tests', function () {
                 id: 'http://.../asddsfdg'
             },
             object: {
-
+                definition: {
+                    extensions: definitionObj.extensions,
+                    type: 'https://rage.e-ucm.es/xapi/seriousgames/activities/' + type
+                }
             },
             result: {
                 extensions: {
@@ -776,6 +780,7 @@ describe('Traces converter tests', function () {
 
         var timestamp = '2016-05-16T11:48:25Z';
         var name = 'testName';
+        var type = 'testType';
         var statement = {
             id: '19de3bf2-6b7f-4399-a71b-da5f3674c8f8',
             actor: {
@@ -789,7 +794,11 @@ describe('Traces converter tests', function () {
                 id: 'http://.../asddsfdg'
             },
             object: {
-                id: 'http://..objectId/'
+                id: 'http://..objectId/',
+                definition: {
+                    extensions: definitionObj.extensions,
+                    type: 'https://rage.e-ucm.es/xapi/seriousgames/activities/' + type
+                }
             },
             result: {
                 extensions: {
