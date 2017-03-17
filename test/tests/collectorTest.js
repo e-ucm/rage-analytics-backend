@@ -110,6 +110,8 @@ module.exports = function (request, db, config) {
         });
 
         var authToken;
+        var playerId;
+        var animalName;
         var name = '57345599db69cf4200fa41d971088';
         var event = 'initialized';
         var target = 'testName';
@@ -165,8 +167,11 @@ module.exports = function (request, db, config) {
                     should(res.body.actor.name).be.String();
                     should(res.body.actor.account).be.Object();
                     should.equal(res.body.actor.account.name, 'Anonymous');
+                    should.equal(res.body.session, 1);
                     should.equal(res.body.actor.account.homePage, config.a2.a2HomePage);
                     authToken = res.body.authToken;
+                    playerId = res.body.playerId;
+                    animalName = res.body.actor.name;
                     statement.actor = res.body.actor;
                     done();
                 });
@@ -413,7 +418,8 @@ module.exports = function (request, db, config) {
                     display: {
                         'en-US': 'created'
                     }
-                }};
+                }
+            };
             request.post('/api/collector/track')
                 .expect(400)
                 .expect('Content-Type', /json/)
@@ -544,7 +550,77 @@ module.exports = function (request, db, config) {
                 });
         });
 
-        it('Testing the end collector', function (done) {
+        // Test collector sessions count
+
+        var startNewSession = function(expectedSession) {
+            request.post('/api/collector/start/' + trackingCode)
+                .expect(200)
+                .expect('Content-Type', /json/)
+                .set('Authorization', 'a:' + playerId)
+                .end(function (err, res) {
+                    should(res.body).be.Object();
+                    should(res.body.authToken).be.String();
+                    should(res.body.objectId).be.String();
+                    should.equal(res.body.objectId.indexOf('http'), 0);
+                    should(res.body.actor).be.Object();
+                    should.equal(res.body.actor.name, animalName);
+                    should(res.body.actor.account).be.Object();
+                    should.equal(res.body.actor.account.name, 'Anonymous');
+                    should.equal(res.body.session, expectedSession);
+                    should.equal(res.body.actor.account.homePage, config.a2.a2HomePage);
+                    authToken = res.body.authToken;
+                    statement.actor = res.body.actor;
+
+                    var dataSource = require('../../lib/traces');
+                    dataSource.clearConsumers();
+                    var checkSessionCount = {
+                        addTraces: function (playerId, versionId, gameplayId, data, convertedTraces) {
+                            var deferred = Q.defer();
+                            setTimeout(function () {
+                                should(convertedTraces[0].session).eql(expectedSession);
+                                deferred.resolve();
+                            }, 100);
+                            return deferred.promise;
+                        }
+                    };
+                    dataSource.addConsumer(checkSessionCount);
+                    var numStatementsSent = 5;
+                    var checkSuccess = function(err, res) {
+                        should(res.body).eql({
+                            message: 'Success.'
+                        });
+                    };
+                    for (var i = 0; i < numStatementsSent; ++i) {
+                        request.post('/api/collector/track')
+                            .expect(200)
+                            .expect('Content-Type', /json/)
+                            .set('Authorization', authToken)
+                            .send([statement])
+                            .end(checkSuccess);
+                    }
+                });
+        };
+
+        it('Testing the start collector with an anonymous user', function (done) {
+            startNewSession(2);
+            setTimeout(function() {
+                startNewSession(3);
+            }, 300);
+            setTimeout(function() {
+                startNewSession(4);
+            }, 600);
+            setTimeout(function() {
+                startNewSession(5);
+            }, 900);
+            setTimeout(function() {
+                startNewSession(6);
+            }, 1200);
+            setTimeout(function() {
+                startNewSession(7);
+            }, 1500);
+            setTimeout(done, 1800);
+        });
+        it('Testing the end collector', function (done) {this.timeout(15000);
             request.post('/api/sessions/' + idSession + '/event/end')
                 .expect(200)
                 .set('X-Gleaner-User', 'Teacher1')
@@ -554,5 +630,6 @@ module.exports = function (request, db, config) {
                     done();
                 });
         });
+
     });
 };
