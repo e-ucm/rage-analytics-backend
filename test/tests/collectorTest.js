@@ -694,7 +694,7 @@ module.exports = function (request, db, config) {
 
         // Test Non anonymous users login and session count
 
-        var startNewIdentifiedSession = function (expectedSession, playerIdentifier, checkAnimalName) {
+        var startNewIdentifiedSession = function (expectedSession, playerIdentifier) {
             request.post('/api/collector/start/' + trackingCode)
                 .expect(200)
                 .expect('Content-Type', /json/)
@@ -707,11 +707,6 @@ module.exports = function (request, db, config) {
                     should(res.body.objectId).be.String();
                     should.equal(res.body.objectId.indexOf('http'), 0);
                     should(res.body.actor).be.Object();
-                    if (checkAnimalName) {
-                        should.equal(res.body.actor.name, checkAnimalName);
-                    } else {
-                        should(res.body.actor.name).be.String();
-                    }
                     should(res.body.actor.account).be.Object();
                     // Identified actor has actor.account.name === actor.name
                     should.equal(res.body.actor.account.name, res.body.actor.name);
@@ -758,21 +753,21 @@ module.exports = function (request, db, config) {
         };
 
         it('Testing the start collector with an identified user', function (done) {
-            startNewIdentifiedSession(1, 'dan', null);
+            startNewIdentifiedSession(1, 'dan');
             setTimeout(function () {
-                startNewIdentifiedSession(2, 'dan', null);
+                startNewIdentifiedSession(2, 'dan');
             }, 300);
             setTimeout(function () {
                 startNewSession(1, '');
             }, 600);
             setTimeout(function () {
-                startNewIdentifiedSession(3, 'dan', null);
+                startNewIdentifiedSession(3, 'dan');
             }, 900);
             setTimeout(function () {
                 startNewSession(6, playerId, animalName);
             }, 1200);
             setTimeout(function () {
-                startNewIdentifiedSession(4, 'dan', null);
+                startNewIdentifiedSession(4, 'dan');
             }, 1500);
             setTimeout(done, 1800);
         });
