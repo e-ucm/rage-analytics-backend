@@ -423,7 +423,7 @@ router.post('/visualization/game/:gameId/:id', function (req, res) {
     }
 });
 
-var setGameVisualizationByTemplate = function(req, res, obj) {
+var setGameVisualizationByTemplate = function (req, res, obj) {
     req.app.esClient.index({
         index: '.games' + req.params.gameId,
         type: 'visualization',
@@ -892,12 +892,12 @@ router.post('/visualization/session/:gameId/:visualizationId/:sessionId', functi
     }, function (error, response) {
         if (!error) {
             if (response.hits.hits[0] && response.hits.hits[0]._source.kibanaSavedObjectMeta) {
-                var re = /"index":"(\w+.?\w+)"/;
+                var re = /"index":"(\w+-)?(\w+.?\w+)"/;
                 var obj = response.hits.hits[0]._source;
                 // Replace template and save it
                 var m = re.exec(obj.kibanaSavedObjectMeta.searchSourceJSON);
 
-                obj.kibanaSavedObjectMeta.searchSourceJSON = obj.kibanaSavedObjectMeta.searchSourceJSON.replace(m[1], req.params.sessionId);
+                obj.kibanaSavedObjectMeta.searchSourceJSON = obj.kibanaSavedObjectMeta.searchSourceJSON.replace(m[2], req.params.sessionId);
                 // Replace template and save it
                 obj.title = response.hits.hits[0]._id + '_' + req.params.sessionId;
 
