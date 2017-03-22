@@ -4,9 +4,7 @@ var express = require('express'),
     router = express.Router(),
     restUtils = require('./rest-utils');
 
-var classes = require('../lib/classes'),
-    sessions = require('../lib/sessions');
-
+var classes = require('../lib/classes');
 /**
  * @api {get} /classes Returns all the classes.
  * @apiName GetClasses
@@ -140,7 +138,7 @@ router.put('/:classId/remove', function (req, res) {
  */
 router.delete('/:classId', function (req, res) {
     var username = req.headers['x-gleaner-user'];
-    restUtils.processResponse(sessions.removeClass(req.params.classId, username), res);
+    restUtils.processResponse(classes.removeClass(req.params.classId, username), res);
 });
 
 module.exports = router;
