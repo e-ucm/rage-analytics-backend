@@ -161,7 +161,7 @@ module.exports = function (request, db, config) {
                 .end(function (err, res) {
                     should.deepEqual(res.body, {
                         message: 'Authorization header found but the expected format ' +
-                        'is \'Bearer JSON Web Token\' obtained from login in A2'
+                        'is \'Bearer JSON Web Token\' obtained by logging in to A2'
                     });
                     done();
                 });
@@ -175,6 +175,8 @@ module.exports = function (request, db, config) {
                     should(res.body).be.Object();
                     should(res.body.authToken).be.String();
                     should(res.body.objectId).be.String();
+                    should(res.body.playerAnimalName).be.String();
+                    should.equal(res.body.playerAnimalName, res.body.actor.name);
                     should.equal(res.body.objectId.indexOf('http'), 0);
                     should(res.body.actor).be.Object();
                     should(res.body.actor.name).be.String();
@@ -617,6 +619,8 @@ module.exports = function (request, db, config) {
                     should(res.body).be.Object();
                     should(res.body.authToken).be.String();
                     should(res.body.objectId).be.String();
+                    should(res.body.playerAnimalName).be.String();
+                    should.equal(res.body.playerAnimalName, res.body.actor.name);
                     should.equal(res.body.objectId.indexOf('http'), 0);
                     should(res.body.actor).be.Object();
                     if (checkAnimalName) {
@@ -707,9 +711,12 @@ module.exports = function (request, db, config) {
                     should(res.body.objectId).be.String();
                     should.equal(res.body.objectId.indexOf('http'), 0);
                     should(res.body.actor).be.Object();
+                    should(res.body.playerAnimalName).be.String();
+                    should(res.body.playerAnimalName).not.equal(res.body.actor.account.name);
                     should(res.body.actor.account).be.Object();
                     // Identified actor has actor.account.name === actor.name
                     should.equal(res.body.actor.account.name, res.body.actor.name);
+                    should.equal(res.body.actor.account.name, playerIdentifier);
                     should.equal(res.body.session, expectedSession);
                     should.equal(res.body.actor.account.homePage, config.a2.a2HomePage);
                     authToken = res.body.authToken;
@@ -772,6 +779,23 @@ module.exports = function (request, db, config) {
             setTimeout(done, 1800);
         });
 
+        it('Should fail to start an anonymous session with a non existant "anonymous" playerId', function (done) {
+            var nonExistantAnonymousPlayerId = 'nonExistantPlayerId';
+            request.post('/api/collector/start/' + trackingCode)
+                .expect(404)
+                .expect('Content-Type', /json/)
+                .send({
+                    anonymous: nonExistantAnonymousPlayerId
+                })
+                .end(function (err, res) {
+
+                    should.deepEqual(res.body, {
+                        message: 'No anonymous player found with id ' + nonExistantAnonymousPlayerId +
+                        '. Start a new anonymous session without providing any body in this request.'
+                    });
+                    done();
+                });
+        });
 
         it('Testing the end collector', function (done) {
             request.post('/api/sessions/' + idSession + '/event/end')
