@@ -29,7 +29,9 @@ describe('Traces converter tests', function () {
         extensions: {
             versionId: 'testVersionId',
             gameplayId: 'testGameplayId',
-            session: 1
+            session: 1,
+            firstSessionStart: '2016-05-16T11:48:25Z',
+            currentSessionStart: '2016-05-16T11:48:25Z'
         }
     };
 
@@ -65,6 +67,8 @@ describe('Traces converter tests', function () {
             versionId: definitionObj.extensions.versionId,
             gameplayId: definitionObj.extensions.gameplayId,
             session: definitionObj.extensions.session,
+            firstSessionStarted: definitionObj.extensions.firstSessionStarted,
+            currentSessionStarted: definitionObj.extensions.currentSessionStarted,
             event: event,
             target: target,
             timestamp: timestamp,
@@ -107,6 +111,8 @@ describe('Traces converter tests', function () {
             versionId: definitionObj.extensions.versionId,
             gameplayId: definitionObj.extensions.gameplayId,
             session: definitionObj.extensions.session,
+            firstSessionStarted: definitionObj.extensions.firstSessionStarted,
+            currentSessionStarted: definitionObj.extensions.currentSessionStarted,
             event: event,
             target: target,
             timestamp: timestamp,
@@ -157,6 +163,8 @@ describe('Traces converter tests', function () {
             versionId: definitionObj.extensions.versionId,
             gameplayId: definitionObj.extensions.gameplayId,
             session: definitionObj.extensions.session,
+            firstSessionStarted: definitionObj.extensions.firstSessionStarted,
+            currentSessionStarted: definitionObj.extensions.currentSessionStarted,
             event: event,
             target: target,
             ext: {
@@ -211,6 +219,8 @@ describe('Traces converter tests', function () {
             versionId: definitionObj.extensions.versionId,
             gameplayId: definitionObj.extensions.gameplayId,
             session: definitionObj.extensions.session,
+            firstSessionStarted: definitionObj.extensions.firstSessionStarted,
+            currentSessionStarted: definitionObj.extensions.currentSessionStarted,
             event: event,
             target: target,
             response: response,
@@ -262,6 +272,8 @@ describe('Traces converter tests', function () {
             versionId: definitionObj.extensions.versionId,
             gameplayId: definitionObj.extensions.gameplayId,
             session: definitionObj.extensions.session,
+            firstSessionStarted: definitionObj.extensions.firstSessionStarted,
+            currentSessionStarted: definitionObj.extensions.currentSessionStarted,
             event: event,
             target: target,
             response: response,
@@ -312,6 +324,8 @@ describe('Traces converter tests', function () {
             versionId: definitionObj.extensions.versionId,
             gameplayId: definitionObj.extensions.gameplayId,
             session: definitionObj.extensions.session,
+            firstSessionStarted: definitionObj.extensions.firstSessionStarted,
+            currentSessionStarted: definitionObj.extensions.currentSessionStarted,
             event: event,
             target: target,
             type: type,
@@ -358,6 +372,8 @@ describe('Traces converter tests', function () {
             versionId: definitionObj.extensions.versionId,
             gameplayId: definitionObj.extensions.gameplayId,
             session: definitionObj.extensions.session,
+            firstSessionStarted: definitionObj.extensions.firstSessionStarted,
+            currentSessionStarted: definitionObj.extensions.currentSessionStarted,
             event: event,
             target: target,
             type: type,
@@ -413,6 +429,8 @@ describe('Traces converter tests', function () {
             versionId: definitionObj.extensions.versionId,
             gameplayId: definitionObj.extensions.gameplayId,
             session: definitionObj.extensions.session,
+            firstSessionStarted: definitionObj.extensions.firstSessionStarted,
+            currentSessionStarted: definitionObj.extensions.currentSessionStarted,
             event: event,
             target: target,
             type: type,
