@@ -54,14 +54,12 @@ var setupDefaultKibanaIndex = function () {
         if (!error) {
             if (response.hits) {
                 var hits = response.hits.hits;
-                if (hits.length !== 1) {
+                if (hits.length < 1) {
 
                     console.log('Did not configure kibana default index, continuing anyway!');
                     return process.exit(0);
                 }
 
-                var appData = hits[0];
-                appData._source.defaultIndex = defaultKibanaIndexValue;
 
                 esClient.index({
                     index: '.kibana',
@@ -74,7 +72,27 @@ var setupDefaultKibanaIndex = function () {
                     }
                 }, function (error, response) {
                     if (!error) {
-                        addDefaultIndex(appData);
+                        esClient.index({
+                            index: defaultKibanaIndexValue,
+                            type: 'empty',
+                            id: null,
+                            body: {timestamp: new Date()}
+                        }, function (error, response) {
+                            if (!error) {
+                                for(var i = 0; i < hits.length; ++i) {
+
+                                                var appData = hits[i];
+                                                if(!appData._source.defaultIndex) {
+                                                    appData._source.defaultIndex = defaultKibanaIndexValue;
+                                                    addDefaultIndex(appData);
+                                                }
+                                            }
+
+                            } else {
+                                return handleError(error);
+                            }
+                        });
+                        
                     } else {
                         return handleError(error);
                     }
@@ -95,7 +113,8 @@ var addDefaultIndex = function(appData) {
         body: appData._source
     }, function (error, response) {
         if (!error) {
-            console.log('Default Kibana Index setup complete.');
+
+            console.log('Default Kibana Index setup complete for', appData._id);
         } else {
             return handleError(error);
         }
