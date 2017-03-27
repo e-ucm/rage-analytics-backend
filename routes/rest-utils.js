@@ -3,7 +3,8 @@
 module.exports.processResponse = function (promise, res) {
     promise.then(function (result) {
         res.json(result);
-    }).fail(function (err) {
+    })
+    .fail(function (err) {
         if (err.stack) {
             console.error(err.stack);
         }

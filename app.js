@@ -109,6 +109,10 @@ app.use(app.config.apiPath + '/kibana', require('./routes/kibana'));
 app.use(app.config.apiPath + '/lti', require('./routes/lti'));
 
 var sessions = require('./lib/sessions');
+sessions.preRemove(function (_id, next) {
+    sessions.deleteAnalysisData(_id, app.esClient);
+    next();
+});
 
 sessions.startTasks.push(kafkaService.createTopic);
 sessions.endTasks.push(kafkaService.removeTopic);
