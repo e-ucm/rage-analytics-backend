@@ -897,23 +897,30 @@ router.post('/visualization/session/:gameId/:visualizationId/:sessionId', functi
                 // Replace template and save it
                 var m = re.exec(obj.kibanaSavedObjectMeta.searchSourceJSON);
 
-                obj.kibanaSavedObjectMeta.searchSourceJSON = obj.kibanaSavedObjectMeta.searchSourceJSON.replace(m[2], req.params.sessionId);
+                if(m && m.length > 1) {
+                    obj.kibanaSavedObjectMeta.searchSourceJSON = obj.kibanaSavedObjectMeta.searchSourceJSON.replace(m[2], req.params.sessionId);
+                }
                 // Replace template and save it
                 obj.title = response.hits.hits[0]._id + '_' + req.params.sessionId;
 
-                req.app.esClient.index({
-                    index: '.kibana',
-                    type: 'visualization',
-                    id: response.hits.hits[0]._id + '_' + req.params.sessionId,
-                    body: obj
-                }, function (error, result) {
-                    if (!error) {
-                        res.json(result);
-                    } else {
-                        res.status(error.status);
-                        res.json(error);
-                    }
-                });
+                updateKibanaPermission(req.app.config,
+                    req.headers['x-gleaner-user'],
+                    [obj.kibanaSavedObjectMeta.searchSourceJSON.index], function (err) {
+                        req.app.esClient.index({
+                            index: '.kibana',
+                            type: 'visualization',
+                            id: response.hits.hits[0]._id + '_' + req.params.sessionId,
+                            body: obj
+                        }, function (error, result) {
+                            if (!error) {
+                                res.json(result);
+                            } else {
+                                res.status(error.status);
+                                res.json(error);
+                            }
+                        });
+                    });
+                
             } else {
                 res.json(new Error('Template not found', 404));
             }
