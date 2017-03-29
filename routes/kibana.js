@@ -77,6 +77,7 @@ var buildKibanaResources = function (req, callback) {
             resources.push(req.app.config.kibana.defaultIndex);
             var indexName = req.params.indexName;
             resources.push(indexName);
+            resources.push('thomaskilmann-'+indexName);
             callback(null, resources);
         } else {
             callback(new Error('No Kibana version found!'));
@@ -833,25 +834,32 @@ router.post('/index/:indexTemplate/:indexName', function (req, res) {
                 type: 'index-pattern',
                 id: req.params.indexName,
                 body: response.hits.hits[0]._source
-            }, function (error, response) {
-                if (!error) {
-                    buildKibanaResources(req, function (err, resources) {
-                        if (err) {
-                            return res.json(err);
-                        }
-                        updateKibanaPermission(req.app.config,
-                            req.headers['x-gleaner-user'],
-                            resources, function (err) {
-                                if (err) {
-                                    return res.json(err);
-                                }
-                                res.json(response);
-                            });
-                    });
-                } else {
-                    res.status(error.status);
-                    res.json(error);
-                }
+            }, function () {
+                req.app.esClient.index({
+                    index: '.kibana',
+                    type: 'index-pattern',
+                    id: "thomaskilmann-"+req.params.indexName,
+                    body: response.hits.hits[0]._source
+                }, function (error, response) {
+                    if (!error) {
+                        buildKibanaResources(req, function (err, resources) {
+                            if (err) {
+                                return res.json(err);
+                            }
+                            updateKibanaPermission(req.app.config,
+                                req.headers['x-gleaner-user'],
+                                resources, function (err) {
+                                    if (err) {
+                                        return res.json(err);
+                                    }
+                                    res.json(response);
+                                });
+                        });
+                    } else {
+                        res.status(error.status);
+                        res.json(error);
+                    }
+                });
             });
         } else {
             res.json(new Error('Template not found', 404));
