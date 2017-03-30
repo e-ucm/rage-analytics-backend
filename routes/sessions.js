@@ -542,5 +542,45 @@ module.exports = function (kafkaService, stormService) {
             });
     });
 
+    /**
+     * @api {delete} /sessions/data/:versionId/:sessionId Remove the session analysis data with the id sessionId.
+     * @apiName deleteSessions
+     * @apiGroup Sessions
+     *
+     * @apiParam {String} versionId The versionId The session id.
+     * @apiParam {String} sessionId The sessionId The session id.
+     *
+     * @apiSuccess(200) Success.
+     *
+     * @apiSuccessExample Success-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *      }
+     *
+     */
+    router.delete('/data/:sessionId/', function (req, res) {
+        restUtils.processResponse(sessions.deleteAnalysisData(req.params.sessionId, req.app.esClient), res);
+    });
+
+    /**
+     * @api {delete} /sessions/data/:sessionId/:user Remove the user data from the analysis with analysisId.
+     * @apiName deleteSessions
+     * @apiGroup Sessions
+     *
+     * @apiParam {String} sessionId The sessionId The session id.
+     * @apiParam {String} user The user identifier.
+     *
+     * @apiSuccess(200) Success.
+     *
+     * @apiSuccessExample Success-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *      }
+     *
+     */
+    router.delete('/data/:sessionId/:user', function (req, res) {
+        restUtils.processResponse(sessions.deleteUserData(req.params.sessionId, req.params.user, req.app.esClient), res);
+    });
+
     return router;
 };

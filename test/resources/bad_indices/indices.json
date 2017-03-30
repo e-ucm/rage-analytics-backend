@@ -1,0 +1,4 @@
+{
+  "sessionKey": "{id}",
+  "indices": ["trazas_id", "{id}", "tk_{id}"]
+}

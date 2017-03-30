@@ -1,0 +1,3 @@
+{
+  "indices": ["trazas_id", "{id}", "tk_{id}"]
+}

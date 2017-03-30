@@ -150,6 +150,122 @@ module.exports = function (request, db) {
                     });
             });
 
+        it('should not POST an empty zip file with a missing indices.json',
+            function (done) {
+                // Creating archives
+                var zip = new AdmZip();
+
+                zip.addFile('flux.yml', fs.readFileSync('./test/resources/flux.yml'), '',
+                    parseInt('0644', 8) << 16);
+                zip.addFile('realtime.jar', fs.readFileSync('./test/resources/realtime.jar'), '',
+                    parseInt('0644', 8) << 16);
+
+                // Or write everything to disk
+                var zipPath = './realtime.zip';
+                zip.writeZip(zipPath);
+                request.post('/api/analysis/' + idVersion)
+                    .expect(400)
+                    .set('Accept', 'application/json')
+                    .set('X-Gleaner-User', 'username')
+                    .attach('analysis', zipPath)
+                    .expect('Content-Type', /json/)
+                    .end(function (err, res) {
+                        should.not.exist(err);
+                        fs.unlink(zipPath, function (err) {
+                            done(err);
+                        });
+                    });
+            });
+
+        it('should not POST an analysis with indices.json without key field',
+            function (done) {
+                // Creating archives
+                var zip = new AdmZip();
+
+                zip.addFile('flux.yml', fs.readFileSync('./test/resources/flux.yml'), '',
+                    parseInt('0644', 8) << 16);
+                zip.addFile('realtime.jar', fs.readFileSync('./test/resources/realtime.jar'), '',
+                    parseInt('0644', 8) << 16);
+                zip.addFile('indices.json', fs.readFileSync('./test/resources/no_key_indices/indices.json'), '',
+                    parseInt('0644', 8) << 16);
+
+                // Or write everything to disk
+                var zipPath = './realtime.zip';
+                zip.writeZip(zipPath);
+                request.post('/api/analysis/' + idVersion)
+                    .expect(400)
+                    .set('Accept', 'application/json')
+                    .set('X-Gleaner-User', 'username')
+                    .attach('analysis', zipPath)
+                    .expect('Content-Type', /json/)
+                    .end(function (err, res) {
+                        should.not.exist(err);
+                        fs.unlink(zipPath, function (err) {
+                            done(err);
+                        });
+                    });
+            });
+
+        it('should not POST an analysis if there are not necessary files',
+            function (done) {
+                // Creating archives
+                var zip = new AdmZip();
+
+                zip.addFile('flux.yml', fs.readFileSync('./test/resources/flux.yml'), '',
+                    parseInt('0644', 8) << 16);
+                zip.addFile('realtime.jar', fs.readFileSync('./test/resources/realtime.jar'), '',
+                    parseInt('0644', 8) << 16);
+                zip.addFile('indices.json', fs.readFileSync('./test/resources/no_key_indices/indices.json'), '',
+                    parseInt('0644', 8) << 16);
+                zip.addFile('extra_file', fs.readFileSync('./test/resources/extra_file'), '',
+                    parseInt('0644', 8) << 16);
+
+                // Or write everything to disk
+                var zipPath = './realtime.zip';
+                zip.writeZip(zipPath);
+                request.post('/api/analysis/' + idVersion)
+                    .expect(400)
+                    .set('Accept', 'application/json')
+                    .set('X-Gleaner-User', 'username')
+                    .attach('analysis', zipPath)
+                    .expect('Content-Type', /json/)
+                    .end(function (err, res) {
+                        should.not.exist(err);
+                        fs.unlink(zipPath, function (err) {
+                            done(err);
+                        });
+                    });
+            });
+
+        it('should not POST an analysis with indices.json that contains indices without the key ',
+            function (done) {
+                // Creating archives
+                var zip = new AdmZip();
+
+                zip.addFile('flux.yml', fs.readFileSync('./test/resources/flux.yml'), '',
+                    parseInt('0644', 8) << 16);
+                zip.addFile('realtime.jar', fs.readFileSync('./test/resources/realtime.jar'), '',
+                    parseInt('0644', 8) << 16);
+                zip.addFile('indices.json', fs.readFileSync('./test/resources/bad_indices/indices.json'), '',
+                    parseInt('0644', 8) << 16);
+
+                // Or write everything to disk
+                var zipPath = './realtime.zip';
+                zip.writeZip(zipPath);
+                request.post('/api/analysis/' + idVersion)
+                    .expect(400)
+                    .set('Accept', 'application/json')
+                    .set('X-Gleaner-User', 'username')
+                    .attach('analysis', zipPath)
+                    .expect('Content-Type', /json/)
+                    .end(function (err, res) {
+                        should.not.exist(err);
+                        fs.unlink(zipPath, function (err) {
+                            done(err);
+                        });
+                    });
+            });
+
         it('should POST a new analysis', function (done) {
             // Creating archives
             var zip = new AdmZip();
@@ -159,6 +275,8 @@ module.exports = function (request, db) {
             zip.addFile('flux.yml', fs.readFileSync('./test/resources/flux.yml'), '',
                 parseInt('0644', 8) << 16);
             zip.addFile('realtime.jar', fs.readFileSync('./test/resources/realtime.jar'), '',
+                parseInt('0644', 8) << 16);
+            zip.addFile('indices.json', fs.readFileSync('./test/resources/correct_indices/indices.json'), '',
                 parseInt('0644', 8) << 16);
 
             // Or write everything to disk
@@ -176,6 +294,7 @@ module.exports = function (request, db) {
                     should(res.body.created).be.String();
                     should(res.body.realtimePath).be.String();
                     should(res.body.fluxPath).be.String();
+                    should(res.body.indicesPath).be.String();
                     fs.unlink(zipPath, function (err) {
                         done(err);
                     });

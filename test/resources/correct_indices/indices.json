@@ -1,0 +1,8 @@
+{
+  "sessionKey": "{id}",
+  "indices": ["trazas_{id}", "{id}", "tk_{id}"],
+  "userKey": "userId",
+  "query": {
+    "term": { "user": "userId" }
+  }
+}
