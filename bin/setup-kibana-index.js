@@ -79,20 +79,20 @@ var setupDefaultKibanaIndex = function () {
                             body: {timestamp: new Date()}
                         }, function (error, response) {
                             if (!error) {
-                                for(var i = 0; i < hits.length; ++i) {
+                                for (var i = 0; i < hits.length; ++i) {
 
-                                                var appData = hits[i];
-                                                if(!appData._source.defaultIndex) {
-                                                    appData._source.defaultIndex = defaultKibanaIndexValue;
-                                                    addDefaultIndex(appData);
-                                                }
-                                            }
+                                    var appData = hits[i];
+                                    if (!appData._source.defaultIndex) {
+                                        appData._source.defaultIndex = defaultKibanaIndexValue;
+                                        addDefaultIndex(appData);
+                                    }
+                                }
 
                             } else {
                                 return handleError(error);
                             }
                         });
-                        
+
                     } else {
                         return handleError(error);
                     }

@@ -31,7 +31,6 @@ var updateKibanaPermission = function (config, user, resources, callback) {
             if (err) {
                 return callback(err);
             }
-
             request({
                 uri: baseUsersAPI + 'applications/look/kibana',
                 method: 'PUT',
@@ -72,12 +71,14 @@ var buildKibanaResources = function (req, callback) {
             return callback(error);
         }
         var resources = [];
-        if (response.hits && response.hits.hits.length === 1) {
-            resources.push(response.hits.hits[0]._id);
+        if (response.hits && response.hits.hits.length > 0) {
+            response.hits.hits.forEach(function (hit) {
+                resources.push(hit._id);
+            });
             resources.push(req.app.config.kibana.defaultIndex);
             var indexName = req.params.indexName;
             resources.push(indexName);
-            resources.push('thomaskilmann-'+indexName);
+            resources.push('thomaskilmann-' + indexName);
             callback(null, resources);
         } else {
             callback(new Error('No Kibana version found!'));
@@ -838,7 +839,7 @@ router.post('/index/:indexTemplate/:indexName', function (req, res) {
                 req.app.esClient.index({
                     index: '.kibana',
                     type: 'index-pattern',
-                    id: "thomaskilmann-"+req.params.indexName,
+                    id: 'thomaskilmann-' + req.params.indexName,
                     body: response.hits.hits[0]._source
                 }, function (error, response) {
                     if (!error) {
@@ -905,30 +906,26 @@ router.post('/visualization/session/:gameId/:visualizationId/:sessionId', functi
                 // Replace template and save it
                 var m = re.exec(obj.kibanaSavedObjectMeta.searchSourceJSON);
 
-                if(m && m.length > 1) {
+                if (m && m.length > 1) {
                     obj.kibanaSavedObjectMeta.searchSourceJSON = obj.kibanaSavedObjectMeta.searchSourceJSON.replace(m[2], req.params.sessionId);
                 }
                 // Replace template and save it
                 obj.title = response.hits.hits[0]._id + '_' + req.params.sessionId;
 
-                updateKibanaPermission(req.app.config,
-                    req.headers['x-gleaner-user'],
-                    [obj.kibanaSavedObjectMeta.searchSourceJSON.index], function (err) {
-                        req.app.esClient.index({
-                            index: '.kibana',
-                            type: 'visualization',
-                            id: response.hits.hits[0]._id + '_' + req.params.sessionId,
-                            body: obj
-                        }, function (error, result) {
-                            if (!error) {
-                                res.json(result);
-                            } else {
-                                res.status(error.status);
-                                res.json(error);
-                            }
-                        });
-                    });
-                
+                req.app.esClient.index({
+                    index: '.kibana',
+                    type: 'visualization',
+                    id: response.hits.hits[0]._id + '_' + req.params.sessionId,
+                    body: obj
+                }, function (error, result) {
+                    if (!error) {
+                        res.json(result);
+                    } else {
+                        res.status(error.status);
+                        res.json(error);
+                    }
+                });
+
             } else {
                 res.json(new Error('Template not found', 404));
             }
