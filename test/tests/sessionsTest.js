@@ -24,9 +24,10 @@ var should = require('should'),
 var idGame = new ObjectID('dummyGameId0'),
     idVersion = new ObjectID('dummyVersId0'),
     idSession = new ObjectID('dummySessId0'),
-    idClass = new ObjectID('dummyClasId0');
+    idClass = new ObjectID('dummyClasId0'),
+    dataSession = '64756d6d7944617461496430';
 
-module.exports = function (request, db) {
+module.exports = function (request, db, esClient) {
 
     /**-------------------------------------------------------------**/
     /**-------------------------------------------------------------**/
@@ -62,10 +63,20 @@ module.exports = function (request, db) {
                                             teachers: ['Teacher1'],
                                             students: ['Student1']
                                         }, {
+                                            _id: dataSession,
                                             gameId: idGame,
                                             versionId: idVersion,
                                             classId: idClass
-                                        }], done);
+                                        }], function () {
+                                            db.collection('analysis').insert(
+                                                {
+                                                    _id: idVersion,
+                                                    realtimePath: './test/resources/realtime.jar',
+                                                    fluxPath: './test/resources/flux.yml',
+                                                    indicesPath: './test/resources/correct_indices/indices.json',
+                                                    created: new Date()
+                                                }, done);
+                                        });
                                 });
                         });
                 });
@@ -75,10 +86,16 @@ module.exports = function (request, db) {
             db.collection('games').drop(function () {
                 db.collection('versions').drop(function () {
                     db.collection('classes').drop(function () {
-                        db.collection('sessions').drop(done);
+                        db.collection('sessions').drop(function() {
+                            db.collection('analysis').drop(done);
+                        });
                     });
                 });
             });
+        });
+
+        after(function (done) {
+            esClient.indices.delete({index: '*'}, done);
         });
 
         it('should POST a new session', function (done) {
@@ -132,6 +149,136 @@ module.exports = function (request, db) {
                     should.equal(res.body._id, idSession);
                     done();
                 });
+        });
+
+        it('should DELETE the session data', function (done) {
+            this.timeout(10000);
+            esClient.index({
+                id: 1,
+                index: 'trazas_' + dataSession,
+                type: 'data',
+                body: {
+                    title: 'mydata'
+                }
+            }, function () {
+                esClient.index({
+                    id: 1,
+                    index: dataSession,
+                    type: 'data',
+                    body: {
+                        title: 'mydata'
+                    }
+                }, function () {
+                    esClient.index({
+                        id: 1,
+                        index: 'tk_' + dataSession,
+                        type: 'data',
+                        body: {
+                            title: 'mydata'
+                        }
+                    }, function () {
+                        request.delete('/api/sessions/data/' + dataSession)
+                            .expect(200)
+                            .end(function (err, res) {
+                                should.not.exist(err);
+                                should(res).be.Object();
+                                esClient.exists({
+                                    index: 'trazas' + dataSession,
+                                    type: 'data',
+                                    id: 1
+                                }, function (err, res) {
+                                    should.not.exist(err);
+                                    should.equal(res, false);
+                                    esClient.exists({
+                                        index: dataSession,
+                                        type: 'data',
+                                        id: 1
+                                    }, function (err, res) {
+                                        should.not.exist(err);
+                                        should.equal(res, false);
+                                        esClient.exists({
+                                            index: 'tk_' + dataSession,
+                                            type: 'data',
+                                            id: 1
+                                        }, function (err, res) {
+                                            should.not.exist(err);
+                                            should.equal(res, false);
+                                            done();
+                                        });
+                                    });
+                                });
+                            });
+                    });
+                });
+            });
+        });
+
+        var username = 'userDummy';
+        it('should DELETE the user data from the session', function (done) {
+            this.timeout(10000);
+            esClient.index({
+                id: 1,
+                index: 'trazas_' + dataSession,
+                type: 'data',
+                body: {
+                    title: 'mydata',
+                    user: username
+                }
+            }, function () {
+                esClient.index({
+                        id: 2,
+                        index: 'trazas_' + dataSession,
+                        type: 'data',
+                        body: {
+                            title: 'mydata',
+                            user: 'noUserDummy'
+                        }
+                    }, function () {
+                        esClient.index({
+                            id: 1,
+                            index: dataSession,
+                            type: 'data',
+                            body: {
+                                title: 'mydata',
+                                user: username
+                            }
+                        }, function () {
+                            esClient.index({
+                                id: 2,
+                                index: 'tk_' + dataSession,
+                                type: 'data',
+                                body: {
+                                    title: 'mydata',
+                                    user: 'noUserDummy'
+                                }
+                            }, function () {
+                                request.delete('/api/sessions/data/' + dataSession + '/' + username)
+                                    .expect(200)
+                                    .end(function (err, res) {
+                                        should.not.exist(err);
+                                        should(res).be.Object();
+                                        esClient.exists({
+                                            index: 'trazas' + dataSession,
+                                            type: 'data',
+                                            id: 1
+                                        }, function (err, res) {
+                                            should.not.exist(err);
+                                            should.equal(res, false);
+                                            esClient.exists({
+                                                index: 'trazas_' + dataSession,
+                                                type: 'data',
+                                                id: 2
+                                            }, function (err, res) {
+                                                should.not.exist(err);
+                                                should.equal(res, true);
+                                                done();
+                                            });
+                                        });
+                                    });
+                            });
+                        });
+                    });
+            });
         });
 
         it('should PUT (add) a session', function (done) {
