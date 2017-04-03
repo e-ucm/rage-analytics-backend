@@ -543,7 +543,7 @@ module.exports = function (kafkaService, stormService) {
     });
 
     /**
-     * @api {delete} /sessions/data/:versionId/:sessionId Remove the session analysis data with the id sessionId.
+     * @api {delete} /sessions/data/:sessionId Remove the session analysis data with the id sessionId.
      * @apiName deleteSessions
      * @apiGroup Sessions
      *
@@ -559,7 +559,7 @@ module.exports = function (kafkaService, stormService) {
      *
      */
     router.delete('/data/:sessionId/', function (req, res) {
-        restUtils.processResponse(sessions.deleteAnalysisData(req.params.sessionId, req.app.esClient), res);
+        restUtils.processResponse(sessions.deleteAnalysisData(req.app.config.storm, req.params.sessionId, req.app.esClient), res);
     });
 
     /**
@@ -579,7 +579,7 @@ module.exports = function (kafkaService, stormService) {
      *
      */
     router.delete('/data/:sessionId/:user', function (req, res) {
-        restUtils.processResponse(sessions.deleteUserData(req.params.sessionId, req.params.user, req.app.esClient), res);
+        restUtils.processResponse(sessions.deleteUserData(req.app.config.storm, req.params.sessionId, req.params.user, req.app.esClient), res);
     });
 
     return router;

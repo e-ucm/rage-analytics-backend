@@ -61,6 +61,15 @@ exports.app = {
             allows: [
                 {
                     resources: [
+                        '/sessions/data/:sessionId',
+                        '/sessions/data/:sessionId/:user'
+                    ],
+                    permissions: [
+                        'delete'
+                    ]
+                },
+                {
+                    resources: [
                         '/analysis/:id',
                         '/games/public',
                         '/games/:gameId/versions',
