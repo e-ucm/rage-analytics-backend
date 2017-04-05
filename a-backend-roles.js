@@ -47,6 +47,7 @@ exports.app = {
                 },
                 {
                     resources: [
+                        '/classes/:classId',
                         '/sessions/:sessionId'
                     ],
                     permissions: [
