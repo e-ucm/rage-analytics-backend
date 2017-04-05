@@ -2,7 +2,10 @@
 
 var express = require('express'),
     router = express.Router(),
-    request = require('request');
+    request = require('request'),
+    db = require('../lib/db'),
+    Collection = require('easy-collections'),
+    sessions = new Collection(db, 'sessions');
 
 /**
  * Logs in as an admin and tries to set the permissions for the user that
@@ -797,7 +800,7 @@ router.delete('/visualization/list/:gameId/:list/:idToRemove', function (req, re
 });
 
 /**
- * @api {post} /api/kibana/index/:indexTemplate/:indexName/:sessionId Adds a new index using the template indexTemplate of ElasticSearch.
+ * @api {post} /api/kibana/index/:indexTemplate/:indexName Adds a new index using the template indexTemplate of ElasticSearch.
  * @apiName PostIndex
  * @apiGroup Kibana
  *
@@ -847,14 +850,24 @@ router.post('/index/:indexTemplate/:indexName', function (req, res) {
                             if (err) {
                                 return res.json(err);
                             }
-                            updateKibanaPermission(req.app.config,
-                                req.headers['x-gleaner-user'],
-                                resources, function (err) {
-                                    if (err) {
-                                        return res.json(err);
-                                    }
-                                    res.json(response);
-                                });
+                            sessions.findById(req.params.indexName).then(function(sessionObj) {
+                                if (sessionObj) {
+                                    sessionObj.students.forEach(function(stu) {
+                                        updateKibanaPermission(req.app.config,
+                                            stu, resources, function (err) {
+
+                                            });
+                                    });
+                                }
+                                updateKibanaPermission(req.app.config,
+                                    req.headers['x-gleaner-user'],
+                                    resources, function (err) {
+                                        if (err) {
+                                            return res.json(err);
+                                        }
+                                        res.json(response);
+                                    });
+                            });
                         });
                     } else {
                         res.status(error.status);
@@ -988,15 +1001,24 @@ router.post('/dashboard/session/:sessionId', function (req, res) {
             visualizations.forEach(function (visualization) {
                 resources.push(visualization.id);
             });
+            sessions.findById(req.params.sessionId).then(function(sessionObj) {
+                if (sessionObj) {
+                    sessionObj.students.forEach(function (stu) {
+                        updateKibanaPermission(req.app.config,
+                            stu, resources, function (err) {
 
-            updateKibanaPermission(req.app.config,
-                req.headers['x-gleaner-user'],
-                resources, function (err) {
-                    if (err) {
-                        return res.json(err);
-                    }
-                    res.json(response);
-                });
+                            });
+                    });
+                }
+                updateKibanaPermission(req.app.config,
+                    req.headers['x-gleaner-user'],
+                    resources, function (err) {
+                        if (err) {
+                            return res.json(err);
+                        }
+                        res.json(response);
+                    });
+            });
         } else {
             res.status(error.status);
             res.json(error);
