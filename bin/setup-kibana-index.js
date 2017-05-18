@@ -24,10 +24,43 @@
  */
 
 var Path = require('path');
+var request = require('request');
 var config = require(Path.resolve(__dirname, '../config.js'));
 var elasticsearch = require('elasticsearch');
 
 var defaultKibanaIndexValue = config.kibana.defaultIndex;
+
+request({
+    uri: config.elasticsearch.uri + '/_templates/geopoint',
+    method: 'PUT',
+    body: {
+      'order': 0,
+      'template': '*',
+      'settings': {},
+      'mappings': {
+        '_default_': {
+          'properties': {
+          	'ext': {
+          		'type': 'object',
+          		'properties': {
+		            'location': {
+		              'type': 'geo_point'
+		            }
+          		}
+          	}
+          }
+        }
+      }
+    },
+    json: true
+}, function (err, httpResponse, body) {
+    if (err) {
+        console.error(err);
+        console.log('Did not setup default Elasticsearch geopoint _template!');
+    }
+
+    console.log('Success setting up geopoint elasticsearch _template');
+});
 
 var esClient = new elasticsearch.Client({
     host: config.elasticsearch.uri,
