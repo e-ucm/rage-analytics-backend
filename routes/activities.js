@@ -4,17 +4,17 @@ var express = require('express'),
     router = express.Router(),
     restUtils = require('./rest-utils');
 
-var sessions = require('../lib/sessions'),
+var activities = require('../lib/activities'),
     getRealTimeData = require('../lib/tracesConverter');
 
 module.exports = function (kafkaService, stormService) {
 
     /**
-     * @api {get} /api/sessions/:id Returns the Session that has the given id.
-     * @apiName GetSessions
-     * @apiGroup Sessions
+     * @api {get} /api/activities/:id Returns the Activities.
+     * @apiName GetActivities
+     * @apiGroup Activities
      *
-     * @apiParam {String} id The Session id
+     * @apiParam {String} id The Activity id
      *
      * @apiSuccess(200) Success.
      *
@@ -28,25 +28,127 @@ module.exports = function (kafkaService, stormService) {
      *          "created": "2015-07-06T09:00:50.630Z",
      *          "start": "2015-07-06T09:00:52.630Z",
      *          "end": "2015-07-06T09:03:45.631Z",
-     *          "name": "Some Session Name",
+     *          "name": "Some Activity Name",
      *          "allowAnonymous": false,
      *          "teachers": ["Ben"],
      *          "students": ["Alice", "Dan"]
      *      }
      *
      */
-    router.get('/:id', restUtils.findById(sessions));
+    router.get('/', restUtils.find(activities));
 
     /**
-     * @api {put} /sessions/:sessionId Changes the name, students and/or teachers array of a session.
-     * @apiName putSessions
+     * @api {get} /api/activities/my Returns the Activities where the user participates.
+     * @apiName GetActivities
+     * @apiGroup Activities
+     *
+     * @apiParam {String} id The Activity id
+     *
+     * @apiSuccess(200) Success.
+     *
+     * @apiSuccessExample Success-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "_id": "559a447831b76cec185bf501"
+     *          "gameId": "559a447831b76cec185bf513",
+     *          "versionId": "559a447831b76cec185bf514",
+     *          "classId": "559a447831b76cec185bf515",
+     *          "created": "2015-07-06T09:00:50.630Z",
+     *          "start": "2015-07-06T09:00:52.630Z",
+     *          "end": "2015-07-06T09:03:45.631Z",
+     *          "name": "Some Activity Name",
+     *          "allowAnonymous": false,
+     *          "teachers": ["Ben"],
+     *          "students": ["Alice", "Dan"]
+     *      }
+     *
+     */
+    router.get('/my', function (req, res) {
+        var username = req.headers['x-gleaner-user'];
+        restUtils.processResponse(activities.getUserActivities(username), res);
+    });
+
+    /**
+     * @api {get} /api/activities/:id Returns the Activity that has the given id.
+     * @apiName GetActivities
+     * @apiGroup Activities
+     *
+     * @apiParam {String} id The Activity id
+     *
+     * @apiSuccess(200) Success.
+     *
+     * @apiSuccessExample Success-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "_id": "559a447831b76cec185bf501"
+     *          "gameId": "559a447831b76cec185bf513",
+     *          "versionId": "559a447831b76cec185bf514",
+     *          "classId": "559a447831b76cec185bf515",
+     *          "created": "2015-07-06T09:00:50.630Z",
+     *          "start": "2015-07-06T09:00:52.630Z",
+     *          "end": "2015-07-06T09:03:45.631Z",
+     *          "name": "Some Activity Name",
+     *          "allowAnonymous": false,
+     *          "teachers": ["Ben"],
+     *          "students": ["Alice", "Dan"]
+     *      }
+     *
+     */
+    router.get('/:id', restUtils.findById(activities));
+
+
+    /**
+     * @api {post} /activities Creates new Activity for a
+     * class in a given version of a game.
+     * @apiName PostSessions
      * @apiGroup Sessions
      *
-     * @apiParam {String} sessionId The id of the session.
-     * @apiParam {String} [name] The new name of the session
-     * @apiParam {Boolean} [allowAnonymous] Whether this session should process data from anonymous users or not.
-     * @apiParam {String[]} [students] Array with the username of the students that you want to add to the session. Also can be a String
-     * @apiParam {String[]} [teachers] Array with the username of the teachers that you want to add to the session. Also can be a String
+     * @apiParam {String} name The name for the Activity.
+     * @apiParam {String} gameId The Game id of the session.
+     * @apiParam {String} versionId The Version id of the session.
+     * @apiParam {String} classId The Class id of the session.
+     *
+     * @apiParamExample {json} Request-Example:
+     *      {
+     *          "name": "New name",
+     *          "gameId": "55e433c773415f105025d2d4",
+     *          "versionId": "55e433c773415f105025d2d5",
+     *          "classId": "55e433c773415f105025d2d3"
+     *      }
+     *
+     * @apiSuccess(200) Success.
+     *
+     * @apiSuccessExample Success-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "gameId": "55e433c773415f105025d2d4",
+     *          "versionId": "55e433c773415f105025d2d5",
+     *          "classId": "55e433c773415f105025d2d3",
+     *          "name": "New name",
+     *          "created": "2015-08-31T12:55:05.459Z",
+     *          "teachers": [
+     *              "user"
+     *          ],
+     *          "_id": "55e44ea9f1448e1067e64d6c"
+     *      }
+     *
+     */
+    router.post('/', function (req, res) {
+        var username = req.headers['x-gleaner-user'];
+        restUtils.processResponse(activities.createActivity(req.body.gameId, req.body.versionId, req.body.classId,
+            username, req.body.name), res);
+    });
+
+    /**
+     * @api {put} /activities/:activityId Changes the name, students and/or teachers array of a activity.
+     * @apiName putActivities
+     * @apiGroup Activities
+     *
+     * @apiParam {String} activityId The id of the activity.
+     * @apiParam {String} [name] The new name of the activity
+     * @apiParam {Boolean} [allowAnonymous] Whether this activity should process data from anonymous users or not.
+     * @apiParam {String[]} [students] Array with the username of the students that you want to add to the activity. Also can be a String
+     * @apiParam {String[]} [teachers] Array with the username of the teachers that you want to add to the activity. Also can be a String
      * @apiParamExample {json} Request-Example:
      *      {
      *          "name": "My New Name",
@@ -73,19 +175,19 @@ module.exports = function (kafkaService, stormService) {
      *          "students": ["Some Student"]
      *      }
      */
-    router.put('/:sessionId', function (req, res) {
+    router.put('/:activityId', function (req, res) {
         var username = req.headers['x-gleaner-user'];
-        restUtils.processResponse(sessions.modifySession(req.params.sessionId, username, req.body, true), res);
+        restUtils.processResponse(activities.modifyActivity(req.params.activityId, username, req.body, true), res);
     });
 
     /**
-     * @api {put} /sessions/:sessionId/remove Removes students and/or teachers from a session.
-     * @apiName putSessions
-     * @apiGroup Sessions
+     * @api {put} /activities/:activityId/remove Removes students and/or teachers from a activity.
+     * @apiName putActivities
+     * @apiGroup Activities
      *
-     * @apiParam {String} sessionId The id of the session.
-     * @apiParam {String[]} [students] Array with the username of the students that you want to remove from the session. Also can be a String
-     * @apiParam {String[]} [teachers] Array with the username of the teachers that you want to remove from the session. Also can be a String
+     * @apiParam {String} activityId The id of the activity.
+     * @apiParam {String[]} [students] Array with the username of the students that you want to remove from the activity. Also can be a String
+     * @apiParam {String[]} [teachers] Array with the username of the teachers that you want to remove from the activity. Also can be a String
      *
      * @apiParamExample {json} Request-Example:
      *      {
@@ -109,17 +211,17 @@ module.exports = function (kafkaService, stormService) {
      *          "students": []
      *      }
      */
-    router.put('/:sessionId/remove', function (req, res) {
+    router.put('/:activityId/remove', function (req, res) {
         var username = req.headers['x-gleaner-user'];
-        restUtils.processResponse(sessions.modifySession(req.params.sessionId, username, req.body, false), res);
+        restUtils.processResponse(activities.modifyActivity(req.params.activityId, username, req.body, false), res);
     });
 
     /**
-     * @api {delete} /sessions/:sessionId Deletes a session and all the results associated with it
-     * @apiName deleteSessions
-     * @apiGroup Sessions
+     * @api {delete} /activities/:activityId Deletes a activity and all the results associated with it
+     * @apiName deleteActivities
+     * @apiGroup Activities
      *
-     * @apiParam {String} sessionId The id of the session.
+     * @apiParam {String} activityId The id of the activity.
      *
      * @apiSuccess(200) Success.
      *
@@ -129,17 +231,17 @@ module.exports = function (kafkaService, stormService) {
      *         "message": "Success."
      *      }
      */
-    router.delete('/:sessionId', function (req, res) {
+    router.delete('/:activityId', function (req, res) {
         var username = req.headers['x-gleaner-user'];
-        restUtils.processResponse(sessions.removeSession(req.params.sessionId, username), res);
+        restUtils.processResponse(activities.removeActivity(req.params.activityId, username), res);
     });
 
     /**
-     * @api {get} /sessions/:sessionId/results Returns all the results of a session given a DSL query (body).
-     * @apiName GetSessionResults
-     * @apiGroup Sessions
+     * @api {get} /activities/:activityId/results Returns all the results of a activity given a DSL query (body).
+     * @apiName GetActivityResults
+     * @apiGroup Activities
      *
-     * @apiParam {String} sessionId The Session id.
+     * @apiParam {String} activityId The activity id.
      *
      * @apiSuccess(200) Success.
      *
@@ -171,17 +273,17 @@ module.exports = function (kafkaService, stormService) {
      *      ]
      *
      */
-    router.get('/:sessionId/results', function (req, res) {
+    router.get('/:activityId/results', function (req, res) {
         var username = req.headers['x-gleaner-user'];
-        restUtils.processResponse(sessions.results(req.params.sessionId, username, req.app.esClient), res);
+        restUtils.processResponse(activities.results(req.params.activityId, username, req.app.esClient), res);
     });
 
     /**
-     * @api {post} /sessions/:sessionId/results/:resultId Updates a specific result from a session.
-     * @apiName PostSessionResults
-     * @apiGroup Sessions
+     * @api {post} /activities/:activityId/results/:resultId Updates a specific result from a activity.
+     * @apiName PostActivityResults
+     * @apiGroup Activities
      *
-     * @apiParam {String} sessionId Game id.
+     * @apiParam {String} activityId Game id.
      * @apiParam {String} resultId The Result id.
      *
      * @apiParamExample {json} Request-Example:
@@ -245,20 +347,20 @@ module.exports = function (kafkaService, stormService) {
      *      ]
      *
      */
-    router.post('/:sessionId/results/:resultId', function (req, res) {
+    router.post('/:activityId/results/:resultId', function (req, res) {
         if (req.body && req.body._id) {
             delete req.body._id;
         }
         var username = req.headers['x-gleaner-user'];
-        restUtils.processResponse(sessions.updateResult(req.params.sessionId, req.params.resultId, req.body, username, req.app.esClient), res);
+        restUtils.processResponse(activities.updateResult(req.params.activityId, req.params.resultId, req.body, username, req.app.esClient), res);
     });
 
     /**
-     * @api {post} /sessions/:sessionId/:event Starts or ends a session depending on the event value.
-     * @apiName postSessions
-     * @apiGroup Sessions
+     * @api {post} /activities/:activityId/:event Starts or ends a activity depending on the event value.
+     * @apiName postActivities
+     * @apiGroup Activities
      *
-     * @apiParam {String} event Determines if we should start or end a session. Allowed values: start, end.
+     * @apiParam {String} event Determines if we should start or end a activity. Allowed values: start, end.
      *
      * @apiSuccess(200) Success.
      *
@@ -269,26 +371,26 @@ module.exports = function (kafkaService, stormService) {
      *          "gameId": "559a447831b76cec185bf513",
      *          "versionId": "559a447831b76cec185bf514",
      *          "classId": "559a447831b76cec185bf515",
-     *          "name": "The Session Name",
+     *          "name": "The Activity Name",
      *          "created": "2015-07-06T09:00:50.630Z",
      *          "start": "2015-07-06T09:01:52.636Z",
      *          "end": "2015-07-06T09:03:45.631Z",
-     *          "name": "Some Session Name",
+     *          "name": "Some Activity Name",
      *          "allowAnonymous": false,
      *          "teachers": ["Ben"],
      *          "students": ["Alice", "Dan"]
      *      }
      *
      */
-    router.post('/:sessionId/event/:event', function (req, res) {
+    router.post('/:activityId/event/:event', function (req, res) {
         var username = req.headers['x-gleaner-user'];
         switch (req.params.event) {
             case 'start': {
-                restUtils.processResponse(sessions.startSession(username, req.params.sessionId), res);
+                restUtils.processResponse(activities.startActivity(username, req.params.activityId), res);
                 break;
             }
             case 'end': {
-                restUtils.processResponse(sessions.endSession(username, req.params.sessionId), res);
+                restUtils.processResponse(activities.endActivity(username, req.params.activityId), res);
                 break;
             }
             default: {
@@ -299,9 +401,9 @@ module.exports = function (kafkaService, stormService) {
     });
 
 
-    var startTopology = function (sessionId, versionId, callback) {
+    var startTopology = function (activityId, versionId, callback) {
         var task = stormService.startTopology;
-        task.call(null, sessionId, versionId)
+        task.call(null, activityId, versionId)
             .then(function (result) {
                 callback(null, result);
             }).fail(function (err) {
@@ -310,7 +412,7 @@ module.exports = function (kafkaService, stormService) {
             });
     };
 
-    var processTraces = function (data, sessionId, res) {
+    var processTraces = function (data, activityId, res) {
         return function (topologyError, topologyResult) {
             if (topologyError) {
                 return res.status(400).json({
@@ -330,11 +432,11 @@ module.exports = function (kafkaService, stormService) {
                     traces.push(realtimeData.trace);
                 }
             }
-            kafkaService.send(sessionId, traces)
+            kafkaService.send(activityId, traces)
                 .then(function (topicResult) {
                     res.json({
                         message: 'Success',
-                        id: sessionId
+                        id: activityId
                     });
                 }).fail(function (error) {
                     if (error) {
@@ -345,16 +447,16 @@ module.exports = function (kafkaService, stormService) {
                     }
                     res.json({
                         message: 'Success',
-                        id: sessionId
+                        id: activityId
                     });
                 });
         };
     };
 
     /**
-     * @api {post} /sessions/test/:versionId Starts a TEST Kafka Topic and Storm Topology and sends the body data to the Kafka Topic.
-     * @apiName postSessionsTest
-     * @apiGroup Sessions
+     * @api {post} /activities/test/:versionId Starts a TEST Kafka Topic and Storm Topology and sends the body data to the Kafka Topic.
+     * @apiName postActivitiesTest
+     * @apiGroup Activities
      *
      * @apiParam {String} versionId Determines the name of the Kafka Topic and Storm Topology. Should be a unique string.
      *
@@ -521,15 +623,15 @@ module.exports = function (kafkaService, stormService) {
             });
         }
 
-        var sessionId = 'test-' + req.params.versionId.toLowerCase();
-        var testVersionId = sessionId;
+        var activityId = 'test-' + req.params.versionId.toLowerCase();
+        var testVersionId = activityId;
 
         // Create the Kafka Topic
         var task = kafkaService.createTopic;
 
-        task.call(null, sessionId)
+        task.call(null, activityId)
             .then(function (result) {
-                startTopology(sessionId, testVersionId, processTraces(analysisData, sessionId, res));
+                startTopology(activityId, testVersionId, processTraces(analysisData, activityId, res));
             })
             .fail(function (err) {
                 if (err) {
@@ -538,17 +640,17 @@ module.exports = function (kafkaService, stormService) {
                         JSON.stringify(err)
                     });
                 }
-                startTopology(sessionId, testVersionId, processTraces(analysisData, sessionId, res));
+                startTopology(activityId, testVersionId, processTraces(analysisData, activityId, res));
             });
     });
 
     /**
-     * @api {delete} /sessions/data/:sessionId Remove the session analysis data with the id sessionId.
-     * @apiName deleteSessions
-     * @apiGroup Sessions
+     * @api {delete} /activities/data/:activityId Remove the activity analysis data with the id activityId.
+     * @apiName deleteActivities
+     * @apiGroup Activities
      *
-     * @apiParam {String} versionId The versionId The session id.
-     * @apiParam {String} sessionId The sessionId The session id.
+     * @apiParam {String} versionId The versionId The activity id.
+     * @apiParam {String} activityId The activityId The activity id.
      *
      * @apiSuccess(200) Success.
      *
@@ -558,16 +660,16 @@ module.exports = function (kafkaService, stormService) {
      *      }
      *
      */
-    router.delete('/data/:sessionId/', function (req, res) {
-        restUtils.processResponse(sessions.deleteAnalysisData(req.app.config.storm, req.params.sessionId, req.app.esClient), res);
+    router.delete('/data/:activityId/', function (req, res) {
+        restUtils.processResponse(activities.deleteAnalysisData(req.app.config.storm, req.params.activityId, req.app.esClient), res);
     });
 
     /**
-     * @api {delete} /sessions/data/:sessionId/:user Remove the user data from the analysis with analysisId.
-     * @apiName deleteSessions
-     * @apiGroup Sessions
+     * @api {delete} /activities/data/:activityId/:user Remove the user data from the analysis with analysisId.
+     * @apiName deleteActivities
+     * @apiGroup Activities
      *
-     * @apiParam {String} sessionId The sessionId The session id.
+     * @apiParam {String} activityId The activity id.
      * @apiParam {String} user The user identifier.
      *
      * @apiSuccess(200) Success.
@@ -578,8 +680,8 @@ module.exports = function (kafkaService, stormService) {
      *      }
      *
      */
-    router.delete('/data/:sessionId/:user', function (req, res) {
-        restUtils.processResponse(sessions.deleteUserData(req.app.config.storm, req.params.sessionId, req.params.user, req.app.esClient), res);
+    router.delete('/data/:activityId/:user', function (req, res) {
+        restUtils.processResponse(activities.deleteUserData(req.app.config.storm, req.params.activityId, req.params.user, req.app.esClient), res);
     });
 
     return router;
