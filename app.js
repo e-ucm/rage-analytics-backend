@@ -101,14 +101,14 @@ var stormService = require('./lib/services/storm')(app.config.storm, app.config.
 
 app.use(app.config.apiPath + '/games', require('./routes/games'));
 app.use(app.config.apiPath + '/classes', require('./routes/classes'));
-app.use(app.config.apiPath + '/sessions', require('./routes/sessions')(kafkaService, stormService));
+app.use(app.config.apiPath + '/activities', require('./routes/activities')(kafkaService, stormService));
 app.use(app.config.apiPath + '/analysis', require('./routes/analysis'));
 app.use(app.config.apiPath + '/collector', require('./routes/collector'));
 app.use(app.config.apiPath + '/health', require('./routes/health'));
 app.use(app.config.apiPath + '/kibana', require('./routes/kibana'));
 app.use(app.config.apiPath + '/lti', require('./routes/lti'));
 
-var sessions = require('./lib/sessions');
+var sessions = require('./lib/activities');
 sessions.preRemove(function (_id, next) {
     sessions.deleteAnalysisData(_id, app.esClient);
     next();

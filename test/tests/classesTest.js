@@ -21,9 +21,7 @@
 var should = require('should'),
     ObjectID = require('mongodb').ObjectId;
 
-var idGame = new ObjectID('dummyGameId9'),
-    idVersion = new ObjectID('dummyVersId9'),
-    idClass = new ObjectID('dummyClasId9');
+var idClass = new ObjectID('dummyClasId9');
 
 module.exports = function (request, db) {
 
@@ -35,40 +33,22 @@ module.exports = function (request, db) {
     describe('Classes tests', function () {
 
         beforeEach(function (done) {
-            db.collection('games').insert(
-                {
-                    _id: idGame,
-                    title: 'Dummy'
-                }, function () {
-                    db.collection('versions').insert(
-                        {
-                            _id: idVersion,
-                            gameId: idGame
-                        }, function () {
-                            db.collection('classes').insert(
-                                {
-                                    _id: idClass,
-                                    versionId: idVersion,
-                                    gameId: idGame,
-                                    name: 'name',
-                                    authors: ['Teacher1'],
-                                    teachers: ['Teacher1'],
-                                    students: ['Student1']
-                                }, done);
-                        });
-                });
+            db.collection('classes').insert(
+            {
+                _id: idClass,
+                name: 'name',
+                authors: ['Teacher1'],
+                teachers: ['Teacher1'],
+                students: ['Student1']
+            }, done);
         });
 
         afterEach(function (done) {
-            db.collection('games').drop(function () {
-                db.collection('versions').drop(function () {
-                    db.collection('classes').drop(done);
-                });
-            });
+            db.collection('classes').drop(done);
         });
 
         it('should POST a new class', function (done) {
-            request.post('/api/games/' + idGame + '/versions/' + idVersion + '/classes')
+            request.post('/api/classes')
                 .expect(200)
                 .set('Accept', 'application/json')
                 .set('X-Gleaner-User', 'username')
@@ -77,16 +57,15 @@ module.exports = function (request, db) {
                     should.not.exist(err);
                     should(res.body).be.Object();
                     should.equal(res.body.teachers[0], 'username');
-                    should.equal(res.body.gameId, idGame);
-                    should.equal(res.body.versionId, idVersion);
                     should(res.body.created).be.String();
                     done();
                 });
         });
 
         it('should GET classes', function (done) {
-            request.get('/api/games/' + idGame + '/versions/' + idVersion + '/classes')
+            request.get('/api/classes')
                 .expect(200)
+                .set('X-Gleaner-User', 'Teacher1')
                 .end(function (err, res) {
                     should.not.exist(err);
                     should(res).be.Object();
@@ -96,12 +75,13 @@ module.exports = function (request, db) {
         });
 
         it('should GET my classes', function (done) {
-            request.get('/api/games/' + idGame + '/versions/' + idVersion + '/classes/my')
+            request.get('/api/classes/my')
                 .expect(200)
                 .set('X-Gleaner-User', 'Teacher1')
                 .end(function (err, res) {
                     should.not.exist(err);
                     should(res).be.Object();
+                    console.log(res.body);
                     should.equal(res.body.length, 1);
                     done();
                 });

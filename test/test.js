@@ -51,7 +51,7 @@ describe('API Test', function (done) {
         require('./tests/gamesTest')(request, db);
         require('./tests/versionsTest')(request, db);
         require('./tests/classesTest')(request, db);
-        require('./tests/sessionsTest')(request, db);
+        require('./tests/activitiesTest')(request, db);
         require('./tests/analysisTest')(request, db);
 
         // Test collector and track, also drop the database.
