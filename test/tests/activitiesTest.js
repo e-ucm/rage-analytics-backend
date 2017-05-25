@@ -238,5 +238,15 @@ module.exports = function (request, db) {
                         });
                 });
         });
+
+        it('should DELETE an activity', function (done) {
+            request.delete('/api/activities/' + idActivity)
+                .expect(200)
+                .set('X-Gleaner-User', 'Teacher1')
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    done();
+                });
+        });
     });
 };
