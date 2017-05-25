@@ -15,6 +15,8 @@
     "start": "node ./bin/www",
     "lint": "jshint --verbose . && npm run jscs-fix",
     "setup": "node ./bin/setup.js",
+    "elasticsearch-win": "tasklist /nh /fi \"WINDOWTITLE eq Elasticsearch 5.0.0-alpha5\" | find /i \"cmd.exe\" > nul ||(start elasticsearch)",
+    "kibana-win": "tasklist /nh /fi \"WINDOWTITLE eq Kibana Server\" | find /i \"cmd.exe\" > nul ||(start kibana)",
     "fast-setup": "NODE_ENV=test npm run setup",
     "fast-setup-win": "set NODE_ENV=test&& npm run setup",
     "roles-setup": "node ./bin/setup-roles.js",
