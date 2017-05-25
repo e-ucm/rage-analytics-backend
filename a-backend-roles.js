@@ -36,9 +36,11 @@ exports.app = {
                         '/games/public',
                         '/games/:gameId/versions',
                         '/games/:gameId/versions/:versionId',
-                        '/games/:gameId/versions/:versionId/classes/my',
-                        '/games/:gameId/versions/:versionId/classes/:classId/sessions/my',
-                        '/sessions/:sessionId/results',
+                        '/games/:gameId/versions/:versionId/activities/my',
+                        '/classes/my',
+                        '/classes/:classId/activities/my',
+                        '/activities/my',
+                        '/activities/:activityId/results',
                         '/lti/keyid/:gameId/:versionId/:classId'
                     ],
                     permissions: [
@@ -48,7 +50,7 @@ exports.app = {
                 {
                     resources: [
                         '/classes/:classId',
-                        '/sessions/:sessionId'
+                        '/activities/:activityId'
                     ],
                     permissions: [
                         'put',
@@ -62,8 +64,8 @@ exports.app = {
             allows: [
                 {
                     resources: [
-                        '/sessions/data/:sessionId',
-                        '/sessions/data/:sessionId/:user'
+                        '/activities/data/:activityId',
+                        '/activities/data/:activityId/:user'
                     ],
                     permissions: [
                         'delete'
@@ -75,9 +77,11 @@ exports.app = {
                         '/games/public',
                         '/games/:gameId/versions',
                         '/games/:gameId/versions/:versionId',
-                        '/games/:gameId/versions/:versionId/classes/my',
-                        '/games/:gameId/versions/:versionId/classes/:classId/sessions/my',
-                        '/sessions/:sessionId/results',
+                        '/games/:gameId/versions/:versionId/activities/my',
+                        '/classes/my',
+                        '/classes/:classId/activities/my',
+                        '/activities/my',
+                        '/activities/:activityId/results',
                         '/lti/keyid/:gameId/:versionId/:classId'
                     ],
                     permissions: [
@@ -88,9 +92,9 @@ exports.app = {
                     resources: [
                         '/classes/:classId',
                         '/classes/:classId/remove',
-                        '/sessions/:sessionId',
-                        '/sessions/:sessionId/remove',
-                        '/sessions/:sessionId/results/:resultsId',
+                        '/activities/:activityId',
+                        '/activities/:activityId/remove',
+                        '/activities/:activityId/results/:resultsId',
                         '/kibana/*'
                     ],
                     permissions: [
@@ -99,10 +103,10 @@ exports.app = {
                 },
                 {
                     resources: [
-                        '/games/:gameId/versions/:versionId/classes',
-                        '/games/:gameId/versions/:versionId/classes/:classId/sessions',
-                        '/sessions/:sessionId/event/:event',
-                        '/sessions/:sessionId/results',
+                        '/classes',
+                        '/activities',
+                        '/activities/:activityId/event/:event',
+                        '/activities/:activityId/results',
                         '/lti'
                     ],
                     permissions: [
@@ -145,9 +149,9 @@ exports.app = {
                 },
                 {
                     resources: [
-                        '/games/:gameId/versions/:versionId/classes',
+                        '/classes',
                         '/classes/:classId',
-                        '/games/:gameId/versions/:versionId/classes/:classId/sessions',
+                        '/activities',
                         '/sessions/:sessionId',
                         '/lti/keyid/:gameId/:versionId/:classId'
                     ],
