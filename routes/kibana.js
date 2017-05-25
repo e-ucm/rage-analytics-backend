@@ -5,7 +5,7 @@ var express = require('express'),
     request = require('request'),
     db = require('../lib/db'),
     Collection = require('easy-collections'),
-    sessions = new Collection(db, 'sessions');
+    activities = new Collection(db, 'activities');
 
 /**
  * Logs in as an admin and tries to set the permissions for the user that
@@ -806,7 +806,7 @@ router.delete('/visualization/list/:gameId/:list/:idToRemove', function (req, re
  *
  * @apiParam {String} indexTemplate The index template id
  * @apiParam {String} indexName The index name
- * @apiParam {String} sessionId The session id
+ * @apiParam {String} activityId The activity id
  *
  * @apiSuccess(200) Success.
  *
@@ -850,9 +850,9 @@ router.post('/index/:indexTemplate/:indexName', function (req, res) {
                             if (err) {
                                 return res.json(err);
                             }
-                            sessions.findById(req.params.indexName).then(function(sessionObj) {
-                                if (sessionObj) {
-                                    sessionObj.students.forEach(function(stu) {
+                            activities.findById(req.params.indexName).then(function(activityObj) {
+                                if (activityObj) {
+                                    activityObj.students.forEach(function(stu) {
                                         updateKibanaPermission(req.app.config,
                                             stu, resources, function (err) {
 
@@ -882,13 +882,13 @@ router.post('/index/:indexTemplate/:indexName', function (req, res) {
 });
 
 /**
- * @api {post} /api/kibana/visualization/session/:gameId/:visualizationId/:sessionId Adds new visualization using the template visualizationId.
+ * @api {post} /api/kibana/visualization/activity/:gameId/:visualizationId/:activityId Adds new visualization using the template visualizationId.
  * @apiName PostVisualization
  * @apiGroup Kibana
  *
  * @apiParam {String} gameId The game id
  * @apiParam {String} visualizationId The visualization id
- * @apiParam {String} sessionId The session id
+ * @apiParam {String} activityId The activity id
  *
  * @apiSuccess(200) Success.
  *
@@ -897,7 +897,7 @@ router.post('/index/:indexTemplate/:indexName', function (req, res) {
  *      {
  *          "_index": ".kibana",
  *          "_type": "visualization",
- *          "_id": "sessionId",
+ *          "_id": "activityId",
  *          "_version": 1,
  *          "_shards": {
  *              "total": 2,
@@ -907,7 +907,7 @@ router.post('/index/:indexTemplate/:indexName', function (req, res) {
  *          "created": true
  *      }
  */
-router.post('/visualization/session/:gameId/:visualizationId/:sessionId', function (req, res) {
+router.post('/visualization/activity/:gameId/:visualizationId/:activityId', function (req, res) {
     req.app.esClient.search({
         index: '.games' + req.params.gameId,
         q: '_id:' + req.params.visualizationId
@@ -920,15 +920,15 @@ router.post('/visualization/session/:gameId/:visualizationId/:sessionId', functi
                 var m = re.exec(obj.kibanaSavedObjectMeta.searchSourceJSON);
 
                 if (m && m.length > 1) {
-                    obj.kibanaSavedObjectMeta.searchSourceJSON = obj.kibanaSavedObjectMeta.searchSourceJSON.replace(m[2], req.params.sessionId);
+                    obj.kibanaSavedObjectMeta.searchSourceJSON = obj.kibanaSavedObjectMeta.searchSourceJSON.replace(m[2], req.params.activityId);
                 }
                 // Replace template and save it
-                obj.title = response.hits.hits[0]._id + '_' + req.params.sessionId;
+                obj.title = response.hits.hits[0]._id + '_' + req.params.activityId;
 
                 req.app.esClient.index({
                     index: '.kibana',
                     type: 'visualization',
-                    id: response.hits.hits[0]._id + '_' + req.params.sessionId,
+                    id: response.hits.hits[0]._id + '_' + req.params.activityId,
                     body: obj
                 }, function (error, result) {
                     if (!error) {
@@ -950,11 +950,11 @@ router.post('/visualization/session/:gameId/:visualizationId/:sessionId', functi
 });
 
 /**
- * @api {post} /api/kibana/dashboard/session/:sessionId Adds a new dashboard in .kibana index of ElasticSearch.
+ * @api {post} /api/kibana/dashboard/activity/:activityId Adds a new dashboard in .kibana index of ElasticSearch.
  * @apiName PostDashboard
  * @apiGroup Kibana
  *
- * @apiParam {String} id The session id
+ * @apiParam {String} id The activity id
  *
  * @apiParamExample {json} Request-Example:
  *      {
@@ -977,7 +977,7 @@ router.post('/visualization/session/:gameId/:visualizationId/:sessionId', functi
  *      {
  *          "_index": ".kibana",
  *          "_type": "visualization",
- *          "_id": "sessionId",
+ *          "_id": "activityId",
  *          "_version": 1,
  *          "_shards": {
  *              "total": 2,
@@ -987,23 +987,23 @@ router.post('/visualization/session/:gameId/:visualizationId/:sessionId', functi
  *          "created": true
  *      }
  */
-router.post('/dashboard/session/:sessionId', function (req, res) {
+router.post('/dashboard/activity/:activityId', function (req, res) {
     req.app.esClient.index({
         index: '.kibana',
         type: 'dashboard',
-        id: 'dashboard_' + req.params.sessionId,
+        id: 'dashboard_' + req.params.activityId,
         body: req.body
     }, function (error, response) {
         if (!error) {
 
             var visualizations = JSON.parse(req.body.panelsJSON);
-            var resources = ['dashboard_' + req.params.sessionId];
+            var resources = ['dashboard_' + req.params.activityId];
             visualizations.forEach(function (visualization) {
                 resources.push(visualization.id);
             });
-            sessions.findById(req.params.sessionId).then(function(sessionObj) {
-                if (sessionObj) {
-                    sessionObj.students.forEach(function (stu) {
+            activities.findById(req.params.activityId).then(function(activityObj) {
+                if (activityObj) {
+                    activityObj.students.forEach(function (stu) {
                         updateKibanaPermission(req.app.config,
                             stu, resources, function (err) {
 
