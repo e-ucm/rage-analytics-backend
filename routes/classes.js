@@ -112,7 +112,6 @@ router.get('/:id', restUtils.findById(classes));
  */
 router.post('/', function (req, res) {
     var username = req.headers['x-gleaner-user'];
-    // Var classname = req.body ? req.body.name : '';
     restUtils.processResponse(classes.createClass(username, req.body.name), res);
 });
 
