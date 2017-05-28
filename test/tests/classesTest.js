@@ -70,6 +70,7 @@ module.exports = function (request, db) {
                     should.not.exist(err);
                     should(res).be.Object();
                     should.equal(res.body.length, 1);
+                    should.equal(res.body[0]._id, idClass);
                     done();
                 });
         });
@@ -83,6 +84,7 @@ module.exports = function (request, db) {
                     should(res).be.Object();
                     console.log(res.body);
                     should.equal(res.body.length, 1);
+                    should.equal(res.body[0]._id, idClass);
                     done();
                 });
         });
