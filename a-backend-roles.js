@@ -34,6 +34,7 @@ exports.app = {
                 {
                     resources: [
                         '/games/public',
+                        '/games/:gameId',
                         '/games/:gameId/versions',
                         '/games/:gameId/versions/:versionId',
                         '/games/:gameId/versions/:versionId/activities/my',
@@ -75,6 +76,7 @@ exports.app = {
                     resources: [
                         '/analysis/:id',
                         '/games/public',
+                        '/games/:gameId',
                         '/games/:gameId/versions',
                         '/games/:gameId/versions/:versionId',
                         '/games/:gameId/versions/:versionId/activities/my',
