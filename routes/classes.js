@@ -43,10 +43,18 @@ router.get('/', restUtils.find(classes));
  *      HTTP/1.1 200 OK
  *      [
  *          {
- *              "_id": "559a447831b76cec185bf501"
+ *              "_id": "559a447831b76cec185bf501",
+ *              "name": 'first class',
+ *              "authors": [ 'someTeacher' ],
+ *              "teachers": [ 'someTeacher' ],
+ *              "students": [ 'someStudent' ] }
  *          },
  *          {
- *              "_id": "559a447831b76cec185bf511"
+ *              "_id": "559a447831b76cec185bf511",
+ *              "name": 'second class',
+ *              "authors": [ 'someTeacher' ],
+ *              "teachers": [ 'someTeacher', 'someTeacher_2' ],
+ *              "students": [ 'someStudent_2' ] }
  *          }
  *      ]
  *
