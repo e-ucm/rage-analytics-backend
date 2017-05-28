@@ -66,6 +66,32 @@ router.get('/public', restUtils.find(games, function (req, callback) {
 }));
 
 /**
+ * @api {get} /games/:gameId Returns a specific game.
+ * @apiName GetGames
+ * @apiGroup Games
+ *
+ * @apiParam {String} gameId Game id.
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "_id": "559a447831b7acec185bf513",
+ *          "title": "My Game",
+ *          "authors": ["someDeveloper"],
+ *          "developers": ["someDeveloper"],
+ *          "public": "true"
+ *      }
+ *
+ */
+router.get('/:gameId', function (req, res) {
+    var username = req.headers['x-gleaner-user'];
+    console.log(req.params.gameId + ' ' + username);
+    restUtils.processResponse(games.getGame(req.params.gameId, username), res);
+});
+
+/**
  * @api {post} /games Adds a new game.
  * @apiName PostGames
  * @apiGroup Games
