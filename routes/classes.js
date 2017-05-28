@@ -204,7 +204,7 @@ router.delete('/:classId', function (req, res) {
 
 
 /**
- * SESSIONS
+ * ACTIVITIES
  */
 
 /**
