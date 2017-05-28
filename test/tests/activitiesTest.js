@@ -146,6 +146,7 @@ module.exports = function (request, db) {
                     should.not.exist(err);
                     should(res).be.Object();
                     should.equal(res.body.length, 1);
+                    should.equal(res.body[0]._id, idActivity);
                     done();
                 });
         });
@@ -158,6 +159,7 @@ module.exports = function (request, db) {
                     should.not.exist(err);
                     should(res).be.Object();
                     should.equal(res.body.length, 1);
+                    should.equal(res.body[0]._id, idActivity);
                     done();
                 });
         });
@@ -170,6 +172,7 @@ module.exports = function (request, db) {
                     should.not.exist(err);
                     should(res).be.Object();
                     should.equal(res.body.length, 1);
+                    should.equal(res.body[0]._id, idActivity);
                     done();
                 });
         });
