@@ -119,6 +119,11 @@ var setupDefaultKibanaIndex = function () {
                                         appData._source.defaultIndex = defaultKibanaIndexValue;
                                         addDefaultIndex(appData);
                                     }
+				    if (!appData._source['visualization:tileMap:maxPrecision']) {
+					    appData._source['visualization:tileMap:maxPrecision'] = 
+ 						process.env.MAX_KIBANA_PRECISION || 12;
+                                        addDefaultIndex(appData);
+                                    }
                                 }
 
                             } else {
