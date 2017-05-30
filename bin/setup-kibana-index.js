@@ -117,6 +117,8 @@ var setupDefaultKibanaIndex = function () {
                                     var appData = hits[i];
                                     if (!appData._source.defaultIndex) {
                                         appData._source.defaultIndex = defaultKibanaIndexValue;
+                                        appData._source['visualization:tileMap:maxPrecision'] = 
+						process.env.MAX_KIBANA_PRECISION || 12;
                                         addDefaultIndex(appData);
                                     }
                                 }
