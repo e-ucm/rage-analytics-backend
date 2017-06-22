@@ -84,7 +84,7 @@ exports.app = {
                         '/classes/:classId/activities/my',
                         '/activities/my',
                         '/activities/:activityId/results',
-                        '/lti/keyid/:gameId/:versionId/:classId'
+                        '/lti/keyid/:classId'
                     ],
                     permissions: [
                         'get'
@@ -155,7 +155,7 @@ exports.app = {
                         '/classes/:classId',
                         '/activities',
                         '/sessions/:sessionId',
-                        '/lti/keyid/:gameId/:versionId/:classId'
+                        '/lti/keyid/:classId'
                     ],
                     permissions: [
                         'get'
