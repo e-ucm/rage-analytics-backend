@@ -108,7 +108,7 @@ function roll() {
             async.series(transforms,
                 function (err, status) {
                     // results is now equal to: {one: 1, two: 2}
-                    console.log('Finished transforms phase!', results);
+                    console.log('Finished transforms phase!', status);
                     if (err) {
                         return logError(err, status);
                     }

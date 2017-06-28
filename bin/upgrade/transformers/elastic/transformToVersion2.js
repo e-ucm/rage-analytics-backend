@@ -351,18 +351,14 @@ function scrollIndex(esClient, index, callback) {
     esClient.search({
         index: index.index,
         scroll: '30s', // keep the search results "scrollable" for 30 seconds
-        type: '*',
-        body: {
-            query: {
-                "match_all": {}
-            }
-        }
+        q: '*'
     }, function getMoreUntilDone(error, response) {
         // collect the title from each response
         if (error) {
             return callback(error);
         }
 
+        total += response.hits.hits.length;
         callback(null, false, response.hits, function () {
             if (response.hits.total > total) {
                 // ask elasticsearch for the next set of hits from this search
@@ -406,9 +402,12 @@ function checkNeedsUpdate(visualization) {
         }
 
         // TODO check it works?
+        if(visualization._source.visState.indexOf(extension) === -1){
+            continue;
+        }
         var newVisState = visualization._source.visState.replace(extension, 'ext.' + extension);
         visualization._source.visState = newVisState;
-        needsUpdate;
+        needsUpdate = true;
     }
     if (needsUpdate) {
         return visualization;
@@ -424,7 +423,7 @@ function setUpVisualization(esClient, visualization, index, callback) {
     }
 
     esClient.index({
-        index: 'upgrade_' + index,
+        index: 'upgrade_' + index.index,
         type: visualization._type,
         id: visualization._id,
         body: visualization._source
@@ -436,7 +435,7 @@ function setUpVisualization(esClient, visualization, index, callback) {
 }
 
 function setUpKibanaIndex(esClient, callback) {
-    if (indices.configs.kibana) {
+    if (!indices.configs.kibana) {
         return callback();
     }
     scrollIndex(esClient, indices.configs.kibana, function (err, finished, hits, finishedCallback) {
@@ -449,14 +448,26 @@ function setUpKibanaIndex(esClient, callback) {
             return callback();
         }
 
+        var count = 0;
         hits.hits.forEach(function (hit) {
             if (hit._type !== 'visualization') {
-                callback();
+                return;
+            }
+            count++;
+        });
+
+        if(count === 0) {
+            return finishedCallback();
+        }
+
+        var countCallback = finishedCountCallback(count, finishedCallback);
+        hits.hits.forEach(function (hit) {
+            if (hit._type !== 'visualization') {
                 return;
             }
 
             // TODO create kibana upgrade index :))
-            setUpVisualization(esClient, hit, indices.configs.kibana, callback);
+            setUpVisualization(esClient, hit, indices.configs.kibana, countCallback);
         });
     });
 }
@@ -472,12 +483,24 @@ function setUpGameIndex(esClient, gameIndex, callback) {
             return callback();
         }
 
+        var count = 0;
         hits.hits.forEach(function (hit) {
             if (hit._type !== 'visualization') {
-                callback();
                 return;
             }
-            setUpVisualization(esClient, hit, gameIndex, callback);
+            count++;
+        });
+
+        if(count === 0) {
+            return finishedCallback();
+        }
+
+        var countCallback = finishedCountCallback(count, finishedCallback);
+        hits.hits.forEach(function (hit) {
+            if (hit._type !== 'visualization') {
+                return;
+            }
+            setUpVisualization(esClient, hit, gameIndex, countCallback);
         });
     });
 }
@@ -488,7 +511,7 @@ function setUpVisualizations(esClient, callback) {
         if (indices.games.length === 0) {
             return callback();
         }
-        for (var i = 0; i < indices.games; i++) {
+        for (var i = 0; i < indices.games.length; i++) {
             var gameIndex = indices.games[i];
             setUpGameIndex(esClient, gameIndex, callback);
         }
@@ -503,7 +526,7 @@ function upgrade(config, callback) {
     // https://github.com/e-ucm/rage-analytics/wiki/Upgrading-RAGE-Analytics
     // #case-2---upgrading-rage-without-traces-data
     upgradeGamesIndices(esClient, finishedCountCallback(indices.games.length, function () {
-        console.log('Finished upgrading indices!');
+        console.log('Finished upgrading game indices!');
         identifyExtensions(esClient, indices.traces, finishedCountCallback(indices.traces.length, function () {
             console.log('Finished identifying traces extensions!', extensions);
             identifyExtensions(esClient, indices.versions, finishedCountCallback(indices.versions.length, function () {

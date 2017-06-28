@@ -66,7 +66,7 @@ function refresh(callback) {
     nextTransformer = null;
     var esClient = appConfig.elasticsearch.esClient;
 
-    esClient.search({
+    esClient.get({
         index: '.model',
         type: 'version',
         id: '1'
@@ -76,14 +76,8 @@ function refresh(callback) {
                 ' defaulting to initial version!', error);
             existingModelVersion = 1;
         } else {
-            if (response.hits) {
-                var hits = response.hits.hits;
-                if (hits.length < 1) {
-                    console.log('ElasticSearch Model Version not found, ' +
-                        'defaulting to initial version!');
-                    existingModelVersion = 1;
-                } else {
-                    var version = hits[0].version;
+            if (response && response._id === '1' && response._source) {
+                    var version = response._source.version;
                     if (!version) {
                         console.log('ElasticSearch Model Version attribute not found, ' +
                             'defaulting to initial version!');
@@ -91,7 +85,6 @@ function refresh(callback) {
                     } else {
                         existingModelVersion = version;
                     }
-                }
             } else {
                 console.log('ElasticSearch Model Version response (hits) not found, ' +
                     'defaulting to initial version!');
@@ -151,7 +144,7 @@ function transform(callback) {
             }
 
             var esClient = appConfig.elasticsearch.esClient;
-            esClient.indes({
+            esClient.index({
                 index: '.model',
                 type: 'version',
                 id: '1',
@@ -163,7 +156,7 @@ function transform(callback) {
                     return logError(error, response);
                 }
                 console.log('Finished transform elastic transformers phase!');
-                callback(null, appConfig);
+                callback(null, response);
             });
         });
 }
