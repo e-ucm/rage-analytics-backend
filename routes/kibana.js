@@ -34,6 +34,13 @@ var updateKibanaPermission = function (config, user, resources, callback) {
             if (err) {
                 return callback(err);
             }
+
+            if (!body.user || !body.user.token) {
+                var tokenErr = new Error('No user token (Wrong admin credentials)');
+                tokenErr.status = 403;
+                return callback(tokenErr);
+            }
+
             request({
                 uri: baseUsersAPI + 'applications/look/kibana',
                 method: 'PUT',
