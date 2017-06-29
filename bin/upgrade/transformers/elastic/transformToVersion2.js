@@ -31,22 +31,29 @@ var defaultTraceAttributes = [
 ];
 var extensions = [];
 
-var backUpIndex = function (esClient, index, callback) {
+var reindex = function (esClient, from, to, callback) {
     esClient.reindex({
         refresh: true,
         body: {
             source: {
-                index: index.index
+                index: from
             },
             dest: {
-                index: 'backup_' + index.index
+                index: to
             }
         }
     }, function (err, response) {
         if (err) {
-            console.error('Error reindexing index', index, err);
+            console.error('Error reindexing index', from, err);
+            return callback(err, from, response);
         }
-        callback(index, response);
+        callback(null, from, response);
+    });
+};
+
+var backUpIndex = function (esClient, index, callback) {
+    reindex(esClient, index.index, 'backup_' + index.index, function(err, from, response) {
+        callback(err, index, response);
     });
 };
 
@@ -78,7 +85,8 @@ var indices = {
     },
     others: [],
     backup: [],
-    upgrade: []
+    upgrade: [],
+    deleted: {}
 };
 
 function checkIsVersionsIndex(index, config, callback) {
@@ -168,7 +176,12 @@ function backup(config, callback) {
                     continue;
                 }
             }
-            backUpIndex(esClient, index, function (index, response) {
+            backUpIndex(esClient, index, function (err, index, response) {
+                if (err) {
+                    console.error('Backup error');
+                    return callback(err);
+                }
+
                 var indexName = index.index;
                 if (indexName === '.kibana') {
                     indices.configs.kibana = index;
@@ -402,7 +415,7 @@ function checkNeedsUpdate(visualization) {
         }
 
         // TODO check it works?
-        if(visualization._source.visState.indexOf(extension) === -1){
+        if (visualization._source.visState.indexOf(extension) === -1) {
             continue;
         }
         var newVisState = visualization._source.visState.replace(extension, 'ext.' + extension);
@@ -456,7 +469,7 @@ function setUpKibanaIndex(esClient, callback) {
             count++;
         });
 
-        if(count === 0) {
+        if (count === 0) {
             return finishedCallback();
         }
 
@@ -491,7 +504,7 @@ function setUpGameIndex(esClient, gameIndex, callback) {
             count++;
         });
 
-        if(count === 0) {
+        if (count === 0) {
             return finishedCallback();
         }
 
@@ -533,7 +546,22 @@ function upgrade(config, callback) {
                 console.log('Finished identifying versions extensions!', extensions);
                 setUpVisualizations(esClient, finishedCountCallback(indices.games.length, function () {
                     console.log('Finished setting up visualizations!', extensions);
-                    callback(null, config);
+
+                    var renameCount = finishedCountCallback(indices.upgrade.length, callback);
+                    for (var i = 0; i < indices.upgrade.length; i++) {
+                        var index = indices.upgrade[i];
+                        reindex(esClient, index.index, index.index.substr('upgrade_'.length), function(err, from, result) {
+                            if (err) {
+                                return callback(err);
+                            }
+                            esClient.indices.delete({index: from}, function(err, result) {
+                                if (!err) {
+                                    indices.deleted[from] = true;
+                                }
+                                renameCount();
+                            });
+                        });
+                    }
                 }));
             }));
         }));
@@ -542,20 +570,78 @@ function upgrade(config, callback) {
 
 
 function check(config, callback) {
-    callback(null, config);
+    callback('pre-programmed error', config);
+
+    // TODO
+    /*
+     callback(null, config); => clean
+     callback('error', config); => restore
+     */
 }
 
+function clean(config, callback) {
+    var esClient = config.elasticsearch.esClient;
+
+    var toRemove = [];
+    // Remove the backups
+    for (var i = 0; i < indices.backup.length; i++) {
+        var backupIndex = indices.backup[i];
+        toRemove.push(backupIndex.index);
+    }
+
+    // Remove the upgrades that werent removed before
+    for (var j = 0; j < indices.upgrade.length; j++) {
+        var upgradeIndex = indices.upgrade[j];
+        if (!indices.deleted[upgradeIndex.index]) {
+            toRemove.push(upgradeIndex.index);
+        }
+    }
+    if (toRemove.length === 0) {
+        return callback(null, config);
+    }
+    esClient.indices.delete({index: toRemove.join(',')}, callback);
+}
+
+function restore(config, callback) {
+    // TODO exceptions
+    var esClient = config.elasticsearch.esClient;
+
+    var operationsCount = finishedCountCallback(2, callback);
+    var renameCount = finishedCountCallback(indices.backup.length , operationsCount);
+    for (var i = 0; i < indices.backup.length; i++) {
+        var index = indices.backup[i];
+        reindex(esClient, index.index, index.index.substr('backup_'.length), function(err, from, result) {
+            if (err) {
+                return callback(err);
+            }
+            esClient.indices.delete({index: from}, renameCount);
+        });
+    }
+    var toRemove = [];
+    for (var i = 0; i < indices.upgrade.length; i++) {
+        var index = indices.upgrade[i];
+        if (!indices.deleted[index.index]) {
+            toRemove.push(index.index);
+        }
+    }
+    if (toRemove.length === 0) {
+        return operationsCount();
+    }
+    esClient.indices.delete({index: toRemove.join(',')}, operationsCount);
+}
 
 module.exports = {
     backup: backup,
     upgrade: upgrade,
     check: check,
+    clean: clean,
+    restore: restore,
     requires: {
-        mongo: 1
+        mongo: '1'
     },
     version: {
-        origin: 1,
-        destination: 2
+        origin: '1',
+        destination: '2'
     }
 };
 

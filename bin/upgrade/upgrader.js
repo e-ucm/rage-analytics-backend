@@ -85,7 +85,7 @@ function roll() {
             for (var key in controllers) {
                 var contrReqs = status[key].requirements;
                 for (var contrReq in contrReqs) {
-                    var contrReqVersion = contrReqs[contrReq];
+                    var contrReqVersion = contrReqs[contrReq].toString();
                     if (!requirements[contrReq])
                         requirements[contrReq] = {};
 
@@ -97,8 +97,11 @@ function roll() {
 
             var transforms = {};
             for (var key in controllers) {
+                if(status[key].status === 0) {
+                    continue;
+                }
                 var version = status[key].version;
-                if (!requirements[key] || !requirements[key][version.origin]) {
+                if (!requirements[key] || !requirements[key][version.origin.toString()]) {
                     // actualizamos
                     transforms[key] = controllers[key].transform;
                 }
@@ -108,11 +111,10 @@ function roll() {
             async.series(transforms,
                 function (err, status) {
                     // results is now equal to: {one: 1, two: 2}
-                    console.log('Finished transforms phase!', status);
                     if (err) {
                         return logError(err, status);
                     }
-
+                    console.log('Finished transforms phase!', status);
                     roll();
                 });
         });

@@ -24,12 +24,15 @@ var fs = require('fs');
 var async = require('async');
 var upgrader = require(Path.resolve(__dirname, '../upgrader.js'));
 
-var transformers = [require(Path.resolve(__dirname,
-    '../transformers/mongo/transformToVersion2.js'))];
+var transformers = [
+    require(Path.resolve(__dirname, '../transformers/mongo/transformToVersion2.js')),
+    require(Path.resolve(__dirname, '../transformers/mongo/transformToVersion3.js'))
+];
 
 var existingModelVersion;
 var nextTransformer;
 var appConfig;
+var modelId;
 
 // Set database
 var dbProvider = {
@@ -59,12 +62,6 @@ function connect(config, callback) {
     });
 }
 
-var logError = function (err, result) {
-    console.error('Unexpected error,', err);
-    console.error('Result,', result);
-    process.exit(1);
-};
-
 function refresh(callback) {
 
     nextTransformer = null;
@@ -74,9 +71,11 @@ function refresh(callback) {
     model.find({}, true).then(function (model) {
         if (!model) {
             console.log('MONGO DB Model Version not found, defaulting to initial version!');
-            existingModelVersion = 1;
+            existingModelVersion = '1';
+            modelId = null;
         } else {
-            existingModelVersion = model.version;
+            existingModelVersion = model.version.toString();
+            modelId = model._id;
         }
 
         // STATUS == 0 -> OK no transition required
@@ -84,11 +83,11 @@ function refresh(callback) {
         //        == 2 -> ERROR, an error has happened, no update
         var status = 0;
 
-        if (existingModelVersion !== appConfig.mongodb.modelVersion) {
+        if (existingModelVersion !== appConfig.mongodb.modelVersion.toString()) {
 
             for (var i = 0; i < transformers.length; ++i) {
                 var transformer = transformers[i];
-                if (existingModelVersion === transformer.version.origin) {
+                if (existingModelVersion === transformer.version.origin.toString()) {
                     nextTransformer = transformer;
                     break;
                 }
@@ -104,11 +103,12 @@ function refresh(callback) {
             // and are implemented
         }
 
-        if(!nextTransformer) {
+        if (!nextTransformer) {
             return callback(null, {
                 status: status
             });
         }
+
         callback(null, {
             status: status,
             requirements: nextTransformer.requires,
@@ -127,18 +127,59 @@ function transform(callback) {
             nextTransformer.check],
         function (err, result) {
             if (err) {
-                return logError(err, result);
-            }
-            var db = appConfig.mongodb.db;
-            var model = new Collection(db, 'model');
+                console.error('Check failed (upgrade error?)');
+                console.error(err);
+                console.log('Trying to restore...');
+                return nextTransformer.restore(appConfig, function (restoreError, result) {
+                    if (restoreError) {
+                        console.error('Error on while restoring the database... sorry :)')
+                        return callback(restoreError);
+                    }
 
-            model.findAndUpdate({
-                $set: {version: nextTransformer.version.destination}
-            }, true).then(function (model) {
-                console.log('Finished transform mongo phase!');
-                callback(null, appConfig);
+                    console.log('Restore OK.');
+                    return callback(err);
+                });
+            }
+
+            console.log('Cleaning...');
+            nextTransformer.clean(appConfig, function (cleanError, result) {
+                if (cleanError) {
+                    console.error('Clean failed (!)');
+                    console.error(err);
+                    console.log('Trying to restore...');
+                    return nextTransformer.restore(appConfig, function (restoreError, result) {
+                        if (restoreError) {
+                            console.error('Error on while restoring the database... sorry :)')
+                            return callback(restoreError);
+                        }
+
+                        console.log('Restore OK.');
+                        callback(err);
+                    });
+                }
+                console.log('Clean OK.');
+
+                var db = appConfig.mongodb.db;
+                var model = new Collection(db, 'model');
+
+                if (!modelId) {
+                    model.insert({
+                        version: nextTransformer.version.destination.toString()
+                    }).then(function (model) {
+                        console.log('Finished transform mongo phase!');
+                        callback(null, model);
+                    });
+                } else {
+                    model.findAndModify(modelId, {
+                        version: nextTransformer.version.destination.toString()
+                    }).then(function (model) {
+                        console.log('Finished transform mongo phase!');
+                        callback(null, model);
+                    });
+                }
             });
         });
+
 }
 
 upgrader.controller('mongo', {

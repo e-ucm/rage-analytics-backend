@@ -111,8 +111,8 @@ module.exports = {
     check: check,
     requires: {}, // Depends on nothing
     version: {
-        origin: 1,
-        destination: 2
+        origin: '1',
+        destination: '2'
     }
 };
 

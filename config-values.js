@@ -103,7 +103,7 @@ exports.defaultValues = {
     mongoHost: 'localhost',
     mongoPort: '27017',
     mongodbUrl: 'mongodb://localhost:27017/analytics-backend',
-    mongoModelVersion: 2, // Integer increment per version change
+    mongoModelVersion: '3', // Integer increment per version change
     elasticsearchURL: 'http://localhost:9200',
     apiPath: '/api',
     port: 3300,
@@ -133,7 +133,7 @@ exports.defaultValues = {
     analysisFolder: './analysis',
     elasticsearchHost: 'localhost',
     elasticsearchPort: 9200,
-    elasticsearchModelVersion: 2,
+    elasticsearchModelVersion: '2',
     defaultKibanaIndex: 'default-kibana-index',
     maxSizeRequest: '1mb'
 };
@@ -144,6 +144,7 @@ exports.testValues = {
     mongoHost: 'localhost',
     mongoPort: '27017',
     mongodbUrl: 'mongodb://localhost:27017/analytics-backend-test', // This must be different than 'exports.defaultValues.mongodbUrl'
+    mongoModelVersion: '3', // Integer increment per version change
     elasticsearchURL: 'http://localhost:9200',
     apiPath: '/api',
     port: 3330,
@@ -171,6 +172,7 @@ exports.testValues = {
     analysisFolder: './analysis',
     elasticsearchHost: 'localhost',
     elasticsearchPort: 9200,
+    elasticsearchModelVersion: '2',
     defaultKibanaIndex: 'default-kibana-index',
     maxSizeRequest: '1mb'
 };

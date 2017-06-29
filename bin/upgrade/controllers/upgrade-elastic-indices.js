@@ -56,12 +56,6 @@ function connect(config, callback) {
     });
 }
 
-var logError = function (err, result) {
-    console.error('Unexpected error,', err);
-    console.error('Result,', result);
-    process.exit(1);
-};
-
 function refresh(callback) {
     nextTransformer = null;
     var esClient = appConfig.elasticsearch.esClient;
@@ -74,21 +68,21 @@ function refresh(callback) {
         if (error) {
             console.log('Error while retrieving ElasticSearch Model Version not found,' +
                 ' defaulting to initial version!', error);
-            existingModelVersion = 1;
+            existingModelVersion = '1';
         } else {
             if (response && response._id === '1' && response._source) {
                     var version = response._source.version;
                     if (!version) {
                         console.log('ElasticSearch Model Version attribute not found, ' +
                             'defaulting to initial version!');
-                        existingModelVersion = 1;
+                        existingModelVersion = '1';
                     } else {
-                        existingModelVersion = version;
+                        existingModelVersion = version.toString();
                     }
             } else {
                 console.log('ElasticSearch Model Version response (hits) not found, ' +
                     'defaulting to initial version!');
-                existingModelVersion = 1;
+                existingModelVersion = '1';
 
             }
         }
@@ -98,11 +92,11 @@ function refresh(callback) {
         //        == 2 -> ERROR, an error has happened, no update
         var status = 0;
 
-        if (existingModelVersion !== appConfig.elasticsearch.modelVersion) {
+        if (existingModelVersion !== appConfig.elasticsearch.modelVersion.toString()) {
 
             for (var i = 0; i < transformers.length; ++i) {
                 var transformer = transformers[i];
-                if (existingModelVersion === transformer.version.origin) {
+                if (existingModelVersion === transformer.version.origin.toString()) {
                     nextTransformer = transformer;
                     break;
                 }
@@ -133,31 +127,48 @@ function refresh(callback) {
 
 function transform(callback) {
     async.waterfall([function (newCallback) {
-            console.log('Starting executing elastic transformer ' + nextTransformer.version);
+            console.log('Starting executing elastic transformer ' + JSON.stringify(nextTransformer.version, null, 4));
             newCallback(null, appConfig);
         }, nextTransformer.backup,
             nextTransformer.upgrade,
             nextTransformer.check],
         function (err, result) {
             if (err) {
-                return logError(err, result);
+                console.error('Check failed (upgrade error?)');
+                console.error(err);
+                console.log('Trying to restore...');
+                return nextTransformer.restore(appConfig, function(restoreError, result) {
+                    if (restoreError) {
+                        console.error('Error on while restoring the database... sorry :)')
+                        return callback(restoreError);
+                    }
+
+                    console.log('Restore OK.');
+                    return callback(err);
+                });
             }
 
-            var esClient = appConfig.elasticsearch.esClient;
-            esClient.index({
-                index: '.model',
-                type: 'version',
-                id: '1',
-                body: {
-                    version: nextTransformer.version.destination
-                }
-            }, function (error, response) {
-                if (error) {
-                    return logError(error, response);
-                }
-                console.log('Finished transform elastic transformers phase!');
-                callback(null, response);
+            console.log('Cleaning...');
+            nextTransformer.clean(appConfig, function(cleanError, result) {
+
+                console.log('Clean OK.');
+                var esClient = appConfig.elasticsearch.esClient;
+                esClient.index({
+                    index: '.model',
+                    type: 'version',
+                    id: '1',
+                    body: {
+                        version: nextTransformer.version.destination
+                    }
+                }, function (error, response) {
+                    if (error) {
+                        return callback(error, response);
+                    }
+                    console.log('Finished transform elastic transformers phase!');
+                    callback(null, response);
+                });
             });
+
         });
 }
 

@@ -33,7 +33,12 @@ function upgrade(config, callback) {
         { $unset: { gameId: '', versionId: ''} }
     ).then(function() {
         // Rename activities collection to activities
-        sessionscollection.renameCollection('activities');
+        sessionscollection.rename('activities', function(err, newColl) {
+            if(err) {
+                return callback(err);
+            }
+            callback(null, config);
+        });
     });
 
 }
@@ -41,7 +46,7 @@ function upgrade(config, callback) {
 
 function check(config, callback) {
 
-    config.mongodb.db.listCollections().toArray(function(err, collections) {
+    config.mongodb.db.db.listCollections().toArray(function(err, collections) {
         if (err) {
             console.log('Unexpected error while checking collections names!', err);
             return callback(err);
@@ -52,11 +57,13 @@ function check(config, callback) {
             var collection = collections[key];
             if (collection.name === 'activities') {
                 activitiesExists = true;
-                break;
+            }
+            if (collection.name === 'sessions') {
+                return callback(new Error('Sessions collection found!'));
             }
         }
 
-        if (activitiesExists) {
+        if (!activitiesExists) {
             return callback(new Error('Activities collection not found!'));
         }
 
@@ -75,14 +82,14 @@ function check(config, callback) {
 
         var activitiesCollection = config.mongodb.db.collection('activities');
         activitiesCollection.find().forEach(function(activity) {
-            if (activity.gameId) {
-                return callback(new Error('A class contains a gameId'));
+            if (!activity.gameId) {
+                return callback(new Error('An activity does not contain a gameId'));
             }
-            if (activity.versionId) {
-                return callback(new Error('A class contains a versionId'));
+            if (!activity.versionId) {
+                return callback(new Error('An activity does not contain a versionId'));
             }
         });
-
+        callback(null, config);
     });
 }
 
@@ -93,8 +100,8 @@ module.exports = {
     check: check,
     requires: {}, // Depends on nothing
     version: {
-        origin: 2,
-        destination: 3
+        origin: '2',
+        destination: '3'
     }
 };
 
