@@ -20,171 +20,85 @@
 
 var Path = require('path');
 var Collection = require('easy-collections');
-var fs = require('fs');
-var async = require('async');
 var upgrader = require(Path.resolve(__dirname, '../upgrader.js'));
 
-var transformers = [
-    require(Path.resolve(__dirname, '../transformers/mongo/transformToVersion2.js')),
-    require(Path.resolve(__dirname, '../transformers/mongo/transformToVersion3.js'))
-];
+var AbstractController = require(Path.resolve(__dirname, './abstract-controller.js'));
+var Class = require('es-class');
 
-var existingModelVersion;
-var nextTransformer;
-var appConfig;
-var modelId;
+var MongoController = Class({
+    extends: AbstractController,
 
-// Set database
-var dbProvider = {
-    db: function () {
-        return this.database;
-    }
-};
-
-var db = require('../../../lib/db');
-db.setDBProvider(dbProvider);
-
-
-function connect(config, callback) {
-    config.mongodb.db = db;
-    appConfig = config;
-    var MongoClient = require('mongodb').MongoClient;
-    var connectionString = config.mongodb.uri;
-    MongoClient.connect(connectionString, function (err, db) {
-        if (err) {
-            callback(new Error('Impossible to connect to MongoDB ', err));
-        } else {
-            console.log('Successfully connected to ' + connectionString);
-            dbProvider.database = db;
-
-            callback(null, config);
+    // Attributes
+    transformers: [
+        require(Path.resolve(__dirname, '../transformers/mongo/transformToVersion2.js')),
+        require(Path.resolve(__dirname, '../transformers/mongo/transformToVersion3.js'))
+    ],
+    modelId: null,
+    db: null,
+    dbProvider: {
+        db: function () {
+            return this.database;
         }
-    });
-}
+    },
 
-function refresh(callback) {
+    // Constructor
+    constructor: function() {
+        this.db = require('../../../lib/db');
+        this.db.setDBProvider(this.dbProvider);
+    },
 
-    nextTransformer = null;
-    var db = appConfig.mongodb.db;
-    var model = new Collection(db, 'model');
-
-    model.find({}, true).then(function (model) {
-        if (!model) {
-            console.log('MONGO DB Model Version not found, defaulting to initial version!');
-            existingModelVersion = '1';
-            modelId = null;
-        } else {
-            existingModelVersion = model.version.toString();
-            modelId = model._id;
-        }
-
-        // STATUS == 0 -> OK no transition required
-        //        == 1 -> PENDING, transform must be performed
-        //        == 2 -> ERROR, an error has happened, no update
-        var status = 0;
-
-        if (existingModelVersion !== appConfig.mongodb.modelVersion.toString()) {
-
-            for (var i = 0; i < transformers.length; ++i) {
-                var transformer = transformers[i];
-                if (existingModelVersion === transformer.version.origin.toString()) {
-                    nextTransformer = transformer;
-                    break;
-                }
-            }
-
-            if (!nextTransformer) {
-                status = 2;
-            } else {
-                status = 1;
-            }
-
-            // TODO check if all the transformers required exist
-            // and are implemented
-        }
-
-        if (!nextTransformer) {
-            return callback(null, {
-                status: status
-            });
-        }
-
-        callback(null, {
-            status: status,
-            requirements: nextTransformer.requires,
-            version: nextTransformer.version
-        });
-    });
-}
-
-
-function transform(callback) {
-    async.waterfall([function (newCallback) {
-            console.log('Starting executing mongo transformer ' + nextTransformer.version);
-            newCallback(null, appConfig);
-        }, nextTransformer.backup,
-            nextTransformer.upgrade,
-            nextTransformer.check],
-        function (err, result) {
+    // Methods
+    doConnect: function (config, callback) {
+        config.mongodb.db = this.db;
+        var MongoClient = require('mongodb').MongoClient;
+        var connectionString = config.mongodb.uri;
+        MongoClient.connect(connectionString, function (err, db) {
             if (err) {
-                console.error('Check failed (upgrade error?)');
-                console.error(err);
-                console.log('Trying to restore...');
-                return nextTransformer.restore(appConfig, function (restoreError, result) {
-                    if (restoreError) {
-                        console.error('Error on while restoring the database... sorry :)')
-                        return callback(restoreError);
-                    }
-
-                    console.log('Restore OK.');
-                    return callback(err);
-                });
+                callback(new Error('Impossible to connect to MongoDB ', err));
+            } else {
+                console.log('Successfully connected to ' + connectionString);
+                this.dbProvider.database = db;
+                callback(null, config);
             }
+        }.bind(this));
+    },
+    getModelVersion: function (config, callback) {
+        var db = this.appConfig.mongodb.db;
+        var model = new Collection(db, 'model');
+        var version = '0';
 
-            console.log('Cleaning...');
-            nextTransformer.clean(appConfig, function (cleanError, result) {
-                if (cleanError) {
-                    console.error('Clean failed (!)');
-                    console.error(err);
-                    console.log('Trying to restore...');
-                    return nextTransformer.restore(appConfig, function (restoreError, result) {
-                        if (restoreError) {
-                            console.error('Error on while restoring the database... sorry :)')
-                            return callback(restoreError);
-                        }
+        model.find({}, true).then(function (model) {
+            if (!model) {
+                console.log('MONGO DB Model Version not found, defaulting to initial version!');
+                version = '1';
+                this.modelId = null;
+            } else {
+                version = model._id;
+            }
+            callback(null, version);
+        }).bind(this);
+    },
+    setModelVersion: function (config, callback) {
+        var db = this.appConfig.mongodb.db;
+        var model = new Collection(db, 'model');
 
-                        console.log('Restore OK.');
-                        callback(err);
-                    });
-                }
-                console.log('Clean OK.');
-
-                var db = appConfig.mongodb.db;
-                var model = new Collection(db, 'model');
-
-                if (!modelId) {
-                    model.insert({
-                        version: nextTransformer.version.destination.toString()
-                    }).then(function (model) {
-                        console.log('Finished transform mongo phase!');
-                        callback(null, model);
-                    });
-                } else {
-                    model.findAndModify(modelId, {
-                        version: nextTransformer.version.destination.toString()
-                    }).then(function (model) {
-                        console.log('Finished transform mongo phase!');
-                        callback(null, model);
-                    });
-                }
+        if (!this.modelId) {
+            model.insert({
+                version: this.nextTransformer.version.destination.toString()
+            }).then(function (model) {
+                console.log('Finished transform mongo phase!');
+                callback(null, model);
             });
-        });
-
-}
-
-upgrader.controller('mongo', {
-    connect: connect,
-    refresh: refresh,
-    transform: transform
+        } else {
+            model.findAndModify(this.modelId, {
+                version: this.nextTransformer.version.destination.toString()
+            }).then(function (model) {
+                console.log('Finished transform mongo phase!');
+                callback(null, model);
+            });
+        }
+    }
 });
+
+upgrader.controller('mongo', new MongoController());
 
