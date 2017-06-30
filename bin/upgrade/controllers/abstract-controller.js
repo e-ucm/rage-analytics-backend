@@ -21,16 +21,26 @@
 var async = require('async');
 var Class = require('es-class');
 
+var Controller = {
+    connect: function(config, callback) {},
+    refresh: function(callback) {},
+    transform: function(callback) {}
+};
+
 /**
  *
  */
 var AbstractController = Class({
+    implements: [Controller],
+
     // Properties
     status: 1,
     appConfig: null,
     nextTransformer: null,
     transformers: [],
     existingModelVersion: null,
+
+    // Constructor
 
     // Methods
     connect: function (config, callback) {
