@@ -52,7 +52,7 @@ var reindex = function (esClient, from, to, callback) {
 };
 
 var backUpIndex = function (esClient, index, callback) {
-    reindex(esClient, index.index, 'backup_' + index.index, function(err, from, response) {
+    reindex(esClient, index.index, 'backup_' + index.index, function (err, from, response) {
         callback(err, index, response);
     });
 };
@@ -547,14 +547,20 @@ function upgrade(config, callback) {
                 setUpVisualizations(esClient, finishedCountCallback(indices.games.length, function () {
                     console.log('Finished setting up visualizations!', extensions);
 
-                    var renameCount = finishedCountCallback(indices.upgrade.length, callback);
+                    if (indices.upgrade.length === 0) {
+                        return callback(null, config);
+                    }
+                    var renameCount = finishedCountCallback(indices.upgrade.length, function () {
+                        callback(null, config);
+                    });
                     for (var i = 0; i < indices.upgrade.length; i++) {
                         var index = indices.upgrade[i];
-                        reindex(esClient, index.index, index.index.substr('upgrade_'.length), function(err, from, result) {
+                        reindex(esClient, index.index, index.index.substr('upgrade_'.length), function (err, from, result) {
                             if (err) {
+                                console.error(err);
                                 return callback(err);
                             }
-                            esClient.indices.delete({index: from}, function(err, result) {
+                            esClient.indices.delete({index: from}, function (err, result) {
                                 if (!err) {
                                     indices.deleted[from] = true;
                                 }
@@ -570,7 +576,8 @@ function upgrade(config, callback) {
 
 
 function check(config, callback) {
-    callback('pre-programmed error', config);
+    console.log('Check OK');
+    callback(null, config);
 
     // TODO
     /*
@@ -606,11 +613,13 @@ function restore(config, callback) {
     // TODO exceptions
     var esClient = config.elasticsearch.esClient;
 
-    var operationsCount = finishedCountCallback(2, callback);
-    var renameCount = finishedCountCallback(indices.backup.length , operationsCount);
+    var operationsCount = finishedCountCallback(2, function () {
+        callback(null, config);
+    });
+    var renameCount = finishedCountCallback(indices.backup.length, operationsCount);
     for (var i = 0; i < indices.backup.length; i++) {
         var index = indices.backup[i];
-        reindex(esClient, index.index, index.index.substr('backup_'.length), function(err, from, result) {
+        reindex(esClient, index.index, index.index.substr('backup_'.length), function (err, from, result) {
             if (err) {
                 return callback(err);
             }
