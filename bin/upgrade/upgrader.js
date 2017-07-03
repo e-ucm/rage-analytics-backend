@@ -40,7 +40,7 @@ function roll() {
     var refreshes = {};
     for (var key in controllers) {
         var controller = controllers[key];
-        refreshes[key] = controller.refresh;
+        refreshes[key] = controller.refresh.bind(controller);
     }
 
     console.log('Starting refresh phase!');
@@ -60,7 +60,7 @@ function roll() {
                 }
                 if (refresh.status === 2) {
                     return logError('Error, refresh returned 2!',
-                        result);
+                        refresh);
                 }
             }
 
@@ -103,7 +103,7 @@ function roll() {
                 var version = status[key].version;
                 if (!requirements[key] || !requirements[key][version.origin.toString()]) {
                     // actualizamos
-                    transforms[key] = controllers[key].transform;
+                    transforms[key] = controllers[key].transform.bind(controllers[key]);
                 }
             }
 
@@ -127,8 +127,9 @@ function upgrade() {
     }];
     for (var key in controllers) {
         var controller = controllers[key];
-        connects.push(controller.connect);
+        connects.push(controller.connect.bind(controller));
     }
+    console.log(JSON.stringify(controllers, null, 4));
     async.waterfall(connects,
         function (err, result) {
             console.log('Finished connect phase!');

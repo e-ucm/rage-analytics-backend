@@ -21,89 +21,88 @@
 var Path = require('path');
 var elasticsearch = require('elasticsearch');
 var upgrader = require(Path.resolve(__dirname, '../upgrader.js'));
+var inherits = require('util').inherits;
 var AbstractController = require(Path.resolve(__dirname, './abstract-controller.js'));
-var Class = require('es-class');
 
-var ElasticController = Class({
-    extends: AbstractController,
+function ElasticController(transformers) {
+    AbstractController.call(this, transformers);
+}
 
-    // Attributes
-    transformers: [require(Path.resolve(__dirname,
-        '../transformers/elastic/transformToVersion2.js'))],
+inherits(ElasticController, AbstractController);
 
-    // Methods
-    doConnect: function (config, callback) {
-        var baseUsersAPI = config.elasticsearch.uri;
+ElasticController.prototype.doConnect = function (config, callback) {
+    var baseUsersAPI = config.elasticsearch.uri;
 
-        var esClient = new elasticsearch.Client({
-            host: baseUsersAPI,
-            api: '5.0'
-        });
+    var esClient = new elasticsearch.Client({
+        host: baseUsersAPI,
+        api: '5.0'
+    });
 
-        esClient.ping({
-            // Ping usually has a 3000ms timeout
-            requestTimeout: 3000
-        }, function (error) {
-            if (error) {
-                callback(new Error('Elasticsearch cluster is down!', error));
-            } else {
-                console.log('Successfully connected to elasticsearch!', baseUsersAPI);
-                config.elasticsearch.esClient = esClient;
-                callback(null, config);
-            }
-        });
-    },
-    getModelVersion: function (config, callback) {
-        var esClient = this.appConfig.elasticsearch.esClient;
-        var version = 0;
+    esClient.ping({
+        // Ping usually has a 3000ms timeout
+        requestTimeout: 3000
+    }, function (error) {
+        if (error) {
+            callback(new Error('Elasticsearch cluster is down!' + error));
+        } else {
+            console.log('Successfully connected to elasticsearch!', baseUsersAPI);
+            config.elasticsearch.esClient = esClient;
+            callback(null, config);
+        }
+    });
+};
 
-        esClient.get({
-                index: '.model',
-                type: 'version',
-                id: '1'
-            }, function (error, response) {
-                if (error) {
-                    console.log('Error while retrieving ElasticSearch Model Version not found,' +
-                        ' defaulting to initial version!', error);
+ElasticController.prototype.getModelVersion = function (config, callback) {
+    var esClient = this.appConfig.elasticsearch.esClient;
+    var version = 0;
+
+    esClient.get({
+        index: '.model',
+        type: 'version',
+        id: '1'
+    }, function (error, response) {
+        if (error) {
+            console.log('Error while retrieving ElasticSearch Model Version not found,' +
+                ' defaulting to initial version!', error);
+            version = '1';
+        } else {
+            if (response && response._id === '1' && response._source) {
+                version = response._source.version;
+                if (!version) {
+                    console.log('ElasticSearch Model Version attribute not found, ' +
+                        'defaulting to initial version!');
                     version = '1';
                 } else {
-                    if (response && response._id === '1' && response._source) {
-                        version = response._source.version;
-                        if (!version) {
-                            console.log('ElasticSearch Model Version attribute not found, ' +
-                                'defaulting to initial version!');
-                            version = '1';
-                        } else {
-                            version = version.toString();
-                        }
-                    } else {
-                        console.log('ElasticSearch Model Version response (hits) not found, ' +
-                            'defaulting to initial version!');
-                        version = '1';
-                    }
+                    version = version.toString();
                 }
-
-                callback(null, version);
-            });
-    },
-    setModelVersion: function (config, callback) {
-        var esClient = this.appConfig.elasticsearch.esClient;
-        esClient.index({
-            index: '.model',
-            type: 'version',
-            id: '1',
-            body: {
-                version: this.nextTransformer.version.destination
+            } else {
+                console.log('ElasticSearch Model Version response (hits) not found, ' +
+                    'defaulting to initial version!');
+                version = '1';
             }
-        }, function (error, response) {
-            if (error) {
-                return callback(error, response);
-            }
-            console.log('Finished transform elastic transformers phase!');
-            callback(null, response);
-        });
-    }
-});
+        }
 
+        callback(null, version);
+    });
+}
 
-upgrader.controller('elastic', new ElasticController());
+ElasticController.prototype.setModelVersion = function (config, callback) {
+    var esClient = this.appConfig.elasticsearch.esClient;
+    esClient.index({
+        index: '.model',
+        type: 'version',
+        id: '1',
+        body: {
+            version: this.nextTransformer.version.destination
+        }
+    }, function (error, response) {
+        if (error) {
+            return callback(error, response);
+        }
+        console.log('Finished transform elastic transformers phase!');
+        callback(null, response);
+    });
+};
+
+upgrader.controller('elastic', new ElasticController([require(Path.resolve(__dirname,
+    '../transformers/elastic/transformToVersion2.js'))]));

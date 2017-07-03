@@ -17,7 +17,6 @@
  */
 
 'use strict';
-var Collection = require('easy-collections');
 
 function backup(config, callback) {
     callback(null, config);
@@ -93,11 +92,22 @@ function check(config, callback) {
     });
 }
 
+function clean(config, callback) {
+    // TODO exceptions
+    callback(null, config);
+}
+
+function restore(config, callback) {
+    // TODO exceptions
+    callback(null, config);
+}
 
 module.exports = {
     backup: backup,
     upgrade: upgrade,
     check: check,
+    clean: clean,
+    restore: restore,
     requires: {}, // Depends on nothing
     version: {
         origin: '2',

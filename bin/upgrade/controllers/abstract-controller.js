@@ -19,145 +19,132 @@
 'use strict';
 
 var async = require('async');
-var Class = require('es-class');
 
-var Controller = {
-    connect: function(config, callback) {},
-    refresh: function(callback) {},
-    transform: function(callback) {}
+
+function AbstractController(transformers) {
+    this.appConfig = null;
+    this.status = 1;
+    this.nextTransformer = null;
+    this.transformers = transformers;
+    this.nextTransformer = null;
+    this.existingModelVersion = 1;
+}
+
+AbstractController.prototype.connect = function (config, callback) {
+
+    this.appConfig = config;
+    var that = this;
+    this.doConnect(config, function (err, result) {
+        if (err) {
+            that.status = 1;
+            return callback(err, result);
+        }
+        callback(null, result);
+    });
 };
 
-/**
- *
- */
-var AbstractController = Class({
-    implements: [Controller],
+AbstractController.prototype.refresh = function (callback) {
+    var that = this;
+    this.getModelVersion(this.appConfig, function (err, modelVersion) {
+        if (err) {
+            console.log('Cannot retrieve the model version', err);
+            return callback(err);
+        }
 
-    // Properties
-    status: 1,
-    appConfig: null,
-    nextTransformer: null,
-    transformers: [],
-    existingModelVersion: null,
+        that.existingModelVersion = modelVersion;
 
-    // Constructor
+        // STATUS == 0 -> OK no transition required
+        //        == 1 -> PENDING, transform must be performed
+        //        == 2 -> ERROR, an error has happened, no update
+        that.status = 0;
 
-    // Methods
-    connect: function (config, callback) {
-        var self = this;
+        if (that.existingModelVersion !== that.appConfig.elasticsearch.modelVersion) {
 
-        self.appConfig = config;
-        self.doConnect(config, function (err, result) {
-            if (err) {
-                self.status = 1;
-                return callback(err, result);
-            }
-            callback(null, result);
-        });
-    },
-    refresh: function(callback) {
-        var self = this;
-        self.getModelVersion(self.appConfig, function(err, modelVersion) {
-            if (err) {
-                console.log('Cannot retrieve the model version', err);
-                return callback(err);
-            }
-
-            self.existingModelVersion = modelVersion;
-
-            // STATUS == 0 -> OK no transition required
-            //        == 1 -> PENDING, transform must be performed
-            //        == 2 -> ERROR, an error has happened, no update
-            self.status = 0;
-
-            if (self.existingModelVersion !== self.appConfig.elasticsearch.modelVersion) {
-
-                for (var i = 0; i < self.transformers.length; ++i) {
-                    var transformer = self.transformers[i];
-                    if (self.existingModelVersion === transformer.version.origin) {
-                        self.nextTransformer = transformer;
-                        break;
-                    }
+            for (var i = 0; i < that.transformers.length; ++i) {
+                var transformer = that.transformers[i];
+                if (that.existingModelVersion === transformer.version.origin) {
+                    that.nextTransformer = transformer;
+                    break;
                 }
+            }
 
-                if (!self.nextTransformer) {
-                    self.status = 2;
+            if (!that.nextTransformer) {
+                that.status = 2;
+            } else {
+                that.status = 1;
+            }
+
+            // TODO check if all the transformers required exist
+            // and are implemented
+        }
+
+        if (!that.nextTransformer) {
+            return callback(null, {
+                status: that.status
+            });
+        }
+        callback(null, {
+            status: that.status,
+            requirements: that.nextTransformer.requires,
+            version: that.nextTransformer.version
+        });
+
+    });
+};
+AbstractController.prototype.transform = function (callback) {
+    var that = this;
+    async.waterfall([function (newCallback) {
+            console.log('Starting executing transformer ' + JSON.stringify(that.nextTransformer.version, null, 4));
+            newCallback(null, that.appConfig);
+        },
+            that.nextTransformer.backup.bind(that.nextTransformer),
+            that.nextTransformer.upgrade.bind(that.nextTransformer),
+            that.nextTransformer.check.bind(that.nextTransformer)],
+        function (err, result) {
+            if (err) {
+                console.error('Check failed (upgrade error?)');
+                console.error(err);
+                console.log('Trying to restore...');
+                return that.nextTransformer.restore(that.appConfig, function (restoreError, result) {
+                    if (restoreError) {
+                        console.error('Error on while restoring the database... sorry :)');
+                        return callback(restoreError);
+                    }
+
+                    console.log('Restore OK.');
+                    return callback(err);
+                });
+            }
+
+            console.log('Cleaning...');
+            that.nextTransformer.clean(that.appConfig, function (cleanError, result) {
+
+                if (cleanError) {
+                    console.error('Cleaned failed: database might contain unused information...');
                 } else {
-                    self.status = 1;
+                    console.log('Clean OK.');
                 }
 
-                // TODO check if all the transformers required exist
-                // and are implemented
-            }
-
-            if (!self.nextTransformer) {
-                return callback(null, {
-                    status: self.status
-                });
-            }
-            callback(null, {
-                status: self.status,
-                requirements: self.nextTransformer.requires,
-                version: self.nextTransformer.version
-            });
-
-        });
-    },
-    transform: function(callback) {
-        var self = this;
-        async.waterfall([function (newCallback) {
-                console.log('Starting executing transformer ' + JSON.stringify(self.nextTransformer.version, null, 4));
-                newCallback(null, self.appConfig);
-            }, self.nextTransformer.backup,
-                self.nextTransformer.upgrade,
-                self.nextTransformer.check],
-            function (err, result) {
-                if (err) {
-                    console.error('Check failed (upgrade error?)');
-                    console.error(err);
-                    console.log('Trying to restore...');
-                    return self.nextTransformer.restore(self.appConfig, function(restoreError, result) {
-                        if (restoreError) {
-                            console.error('Error on while restoring the database... sorry :)');
-                            return callback(restoreError);
-                        }
-
-                        console.log('Restore OK.');
-                        return callback(err);
-                    });
-                }
-
-                console.log('Cleaning...');
-                self.nextTransformer.clean(self.appConfig, function(cleanError, result) {
-
-                    if (cleanError) {
-                        console.error('Cleaned failed: database might contain unused information...');
-                    } else {
-                        console.log('Clean OK.');
+                that.setModelVersion(that.appConfig, function (err, result) {
+                    if (err) {
+                        return callback(err, result);
                     }
-
-                    this.setModelVersion(self.appConfig, function(err, result) {
-                        if (err) {
-                            return callback(err, result);
-                        }
-                        console.log('Finished transform transformers phase!');
-                        callback(null, result);
-                    });
+                    console.log('Finished transform transformers phase!');
+                    callback(null, result);
                 });
             });
-    },
+        });
+};
 
-    // Abstract methods
 
-    doConnect: function (config, callback) {
-        throw new Error('Connect not implemented');
-    },
-    getModelVersion: function (config, callback) {
-        throw new Error('getModelVersion not implemented');
-    },
-    setModelVersion: function (config, callback) {
-        throw new Error('setModelVersion not implemented');
-    }
-});
+AbstractController.prototype.doConnect = function (config, callback) {
+    throw new Error('Connect not implemented');
+};
+AbstractController.prototype.getModelVersion = function (config, callback) {
+    throw new Error('getModelVersion not implemented');
+};
+AbstractController.prototype.setModelVersion = function (config, callback) {
+    throw new Error('setModelVersion not implemented');
+};
 
-exports.module = AbstractController;
+module.exports = AbstractController;

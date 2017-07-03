@@ -547,11 +547,14 @@ function upgrade(config, callback) {
                 setUpVisualizations(esClient, finishedCountCallback(indices.games.length, function () {
                     console.log('Finished setting up visualizations!', extensions);
 
-                    var renameCount = finishedCountCallback(indices.upgrade.length, callback);
+                    var renameCount = finishedCountCallback(indices.upgrade.length, function() {
+                        callback(null, config);
+                    });
                     for (var i = 0; i < indices.upgrade.length; i++) {
                         var index = indices.upgrade[i];
                         reindex(esClient, index.index, index.index.substr('upgrade_'.length), function(err, from, result) {
                             if (err) {
+                                console.error(err);
                                 return callback(err);
                             }
                             esClient.indices.delete({index: from}, function(err, result) {
@@ -570,7 +573,7 @@ function upgrade(config, callback) {
 
 
 function check(config, callback) {
-    callback('pre-programmed error', config);
+    callback(null, config);
 
     // TODO
     /*
@@ -606,7 +609,9 @@ function restore(config, callback) {
     // TODO exceptions
     var esClient = config.elasticsearch.esClient;
 
-    var operationsCount = finishedCountCallback(2, callback);
+    var operationsCount = finishedCountCallback(2, function() {
+        callback(null, count);
+    });
     var renameCount = finishedCountCallback(indices.backup.length , operationsCount);
     for (var i = 0; i < indices.backup.length; i++) {
         var index = indices.backup[i];

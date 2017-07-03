@@ -104,11 +104,22 @@ function check(config, callback) {
     });
 }
 
+function clean(config, callback) {
+    // TODO exceptions
+    callback(null, config);
+}
+
+function restore(config, callback) {
+    // TODO exceptions
+    callback(null, config);
+}
 
 module.exports = {
     backup: backup,
     upgrade: upgrade,
     check: check,
+    clean: clean,
+    restore: restore,
     requires: {}, // Depends on nothing
     version: {
         origin: '1',
