@@ -64,7 +64,7 @@ function roll() {
                 }
             }
 
-            if(finish) {
+            if (finish) {
                 return console.log('Finished upgrading!');
             }
 
@@ -102,7 +102,7 @@ function roll() {
                 }
                 var version = status[key].version;
                 if (!requirements[key] || !requirements[key][version.origin.toString()]) {
-                    // actualizamos
+                    // Update
                     transforms[key] = controllers[key].transform.bind(controllers[key]);
                 }
             }
@@ -110,7 +110,7 @@ function roll() {
             // TODO, is empty transforms -> double dependency?
             async.series(transforms,
                 function (err, status) {
-                    // results is now equal to: {one: 1, two: 2}
+                    // Results is now equal to: {one: 1, two: 2}
                     if (err) {
                         return logError(err, status);
                     }
