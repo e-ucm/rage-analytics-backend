@@ -42,14 +42,14 @@ function updateSessionClassId(sessionsColection, sessionItem, classes, config, c
         }
         sessionsColection.findAndModify(
             {"_id": sessionItem._id},
-            {"$set": {"classId": classRed._id}},
+            [],
+            {"$set": {"classId": classRes._id}},
+            {new: true, upsert: true}, 
             function (err, doc) {
                 if (err) {
                     return callback(new Error('Unexpected error while updating session\'s classId attribute', err));
                 }
-
                 callback(null, config);
-
             });
     });
 }
@@ -61,6 +61,18 @@ function upgrade(config, callback) {
     var sessionsCollection = config.mongodb.db.collection('sessions');
     var cursor = sessionsCollection.find();
 
+    var completed = 0;
+    var toComplete = 0;
+    var completeAll = function(err, result){
+        if(err)
+            callback(err, result);
+
+        completed++;
+        if(completed >= toComplete){
+            callback(err, result);
+        }
+    }
+
     // Execute the each command, triggers for each document
     cursor.each(function (err, item) {
         if (err) {
@@ -70,11 +82,12 @@ function upgrade(config, callback) {
 
         // If the item is null then the cursor is exhausted/empty and closed
         if (item == null) {
-            callback(null, config);
             return;
         }
 
-        updateSessionClassId(sessionsCollection, item, classes, config, callback);
+        toComplete++;
+
+        updateSessionClassId(sessionsCollection, item, classes, config, completeAll);
     });
 }
 
