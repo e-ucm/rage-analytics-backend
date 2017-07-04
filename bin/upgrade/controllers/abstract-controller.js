@@ -44,52 +44,52 @@ AbstractController.prototype.connect = function (config, callback) {
 };
 
 AbstractController.prototype.refresh = function (callback) {
-    var that = this;
     this.getModelVersion(this.appConfig, function (err, modelVersion) {
         if (err) {
             console.log('Cannot retrieve the model version', err);
             return callback(err);
         }
 
-        that.existingModelVersion = modelVersion;
+        this.existingModelVersion = modelVersion;
 
         // STATUS == 0 -> OK no transition required
         //        == 1 -> PENDING, transform must be performed
         //        == 2 -> ERROR, an error has happened, no update
-        that.status = 0;
+        this.status = 0;
+        this.nextTransformer = null;
 
-        if (that.existingModelVersion !== that.appConfig.elasticsearch.modelVersion) {
+        if (this.existingModelVersion !== this.appConfig.elasticsearch.modelVersion) {
 
-            for (var i = 0; i < that.transformers.length; ++i) {
-                var transformer = that.transformers[i];
-                if (that.existingModelVersion === transformer.version.origin) {
-                    that.nextTransformer = transformer;
+            for (var i = 0; i < this.transformers.length; ++i) {
+                var transformer = this.transformers[i];
+                if (this.existingModelVersion === transformer.version.origin) {
+                    this.nextTransformer = transformer;
                     break;
                 }
             }
 
-            if (!that.nextTransformer) {
-                that.status = 2;
+            if (!this.nextTransformer) {
+                this.status = 2;
             } else {
-                that.status = 1;
+                this.status = 1;
             }
 
             // TODO check if all the transformers required exist
             // and are implemented
         }
 
-        if (!that.nextTransformer) {
+        if (!this.nextTransformer) {
             return callback(null, {
-                status: that.status
+                status: this.status
             });
         }
         callback(null, {
-            status: that.status,
-            requirements: that.nextTransformer.requires,
-            version: that.nextTransformer.version
+            status: this.status,
+            requirements: this.nextTransformer.requires,
+            version: this.nextTransformer.version
         });
 
-    });
+    }.bind(this));
 };
 AbstractController.prototype.transform = function (callback) {
     var that = this;
