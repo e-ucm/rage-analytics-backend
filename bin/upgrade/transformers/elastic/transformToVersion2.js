@@ -528,7 +528,7 @@ function setUpVisualizations(esClient, callback) {
             var gameIndex = indices.games[i];
             setUpGameIndex(esClient, gameIndex, callback);
         }
-    })
+    });
 }
 
 function upgrade(config, callback) {
@@ -538,37 +538,66 @@ function upgrade(config, callback) {
     // Set up .games
     // https://github.com/e-ucm/rage-analytics/wiki/Upgrading-RAGE-Analytics
     // #case-2---upgrading-rage-without-traces-data
-    upgradeGamesIndices(esClient, finishedCountCallback(indices.games.length, function () {
-        console.log('Finished upgrading game indices!');
-        identifyExtensions(esClient, indices.traces, finishedCountCallback(indices.traces.length, function () {
-            console.log('Finished identifying traces extensions!', extensions);
-            identifyExtensions(esClient, indices.versions, finishedCountCallback(indices.versions.length, function () {
-                console.log('Finished identifying versions extensions!', extensions);
-                setUpVisualizations(esClient, finishedCountCallback(indices.games.length, function () {
-                    console.log('Finished setting up visualizations!', extensions);
 
-                    var renameCount = finishedCountCallback(indices.upgrade.length, function() {
-                        callback(null, config);
-                    });
-                    for (var i = 0; i < indices.upgrade.length; i++) {
-                        var index = indices.upgrade[i];
-                        reindex(esClient, index.index, index.index.substr('upgrade_'.length), function(err, from, result) {
-                            if (err) {
-                                console.error(err);
-                                return callback(err);
-                            }
-                            esClient.indices.delete({index: from}, function(err, result) {
-                                if (!err) {
-                                    indices.deleted[from] = true;
-                                }
-                                renameCount();
-                            });
-                        });
-                    }
-                }));
-            }));
-        }));
-    }));
+    var afterGames = function () {
+        console.log('Finished upgrading game indices!');
+        if (indices.traces.length === 0) {
+            console.log('No extensions to identify in the traces!');
+            return afterTraces();
+        }
+        identifyExtensions(esClient, indices.traces, finishedCountCallback(indices.traces.length, afterTraces));
+    };
+
+    var afterTraces = function() {
+        console.log('Finished identifying traces extensions!', extensions);
+        if (indices.versions.length === 0) {
+            console.log('No versions indices to get extensions from!');
+            return afterVersions();
+        }
+        identifyExtensions(esClient, indices.versions, finishedCountCallback(indices.versions.length, afterVersions));
+    };
+
+    var afterVersions = function() {
+        console.log('Finished identifying versions extensions!', extensions);
+        if (indices.games.length === 0) {
+            console.log('No games to upgrade visualizations from!');
+            return afterVisualizations();
+        }
+        setUpVisualizations(esClient, finishedCountCallback(indices.games.length, afterVisualizations));
+    };
+
+    var afterVisualizations = function() {
+        console.log('Finished setting up visualizations!', extensions);
+
+        if (indices.upgrade.length === 0) {
+            return callback(null, config);
+        }
+        var renameCount = finishedCountCallback(indices.upgrade.length, function() { callback(null, config); });
+        var afterReindex = function(err, from, result) {
+            if (err) {
+                console.error(err);
+                return callback(err);
+            }
+            esClient.indices.delete({index: from}, function(err, result) {
+                if (!err) {
+                    indices.deleted[from] = true;
+                }
+                renameCount();
+            });
+        };
+
+        for (var i = 0; i < indices.upgrade.length; i++) {
+            var index = indices.upgrade[i];
+            reindex(esClient, index.index, index.index.substr('upgrade_'.length), afterReindex);
+        }
+    };
+
+    if (indices.games.length === 0) {
+        console.log('No game indices to upgrade!');
+        afterGames();
+    } else {
+        upgradeGamesIndices(esClient, finishedCountCallback(indices.games.length, afterGames));
+    }
 }
 
 
@@ -610,7 +639,7 @@ function restore(config, callback) {
     var esClient = config.elasticsearch.esClient;
 
     var operationsCount = finishedCountCallback(2, function() {
-        callback(null, count);
+        callback(null, 'ok');
     });
     var renameCount = finishedCountCallback(indices.backup.length , operationsCount);
     for (var i = 0; i < indices.backup.length; i++) {
@@ -623,10 +652,10 @@ function restore(config, callback) {
         });
     }
     var toRemove = [];
-    for (var i = 0; i < indices.upgrade.length; i++) {
-        var index = indices.upgrade[i];
-        if (!indices.deleted[index.index]) {
-            toRemove.push(index.index);
+    for (var j = 0; j < indices.upgrade.length; j++) {
+        var upgradeIndex = indices.upgrade[j];
+        if (!indices.deleted[upgradeIndex.index]) {
+            toRemove.push(upgradeIndex.index);
         }
     }
     if (toRemove.length === 0) {
