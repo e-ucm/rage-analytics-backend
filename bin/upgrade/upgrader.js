@@ -46,16 +46,16 @@ function roll() {
     console.log('Starting refresh phase!');
     async.series(refreshes,
         function (err, status) {
-            // results is now equal to: {one: 1, two: 2}
+            // Results is now equal to: {one: 1, two: 2}
             console.log('Finished refresh phase!');
             if (err) {
                 return logError(err, status);
             }
 
             var finish = true;
-            for (var key in status) {
-                var refresh = status[key];
-                if(refresh.status !== 0) {
+            for (var s in status) {
+                var refresh = status[s];
+                if (refresh.status !== 0) {
                     finish = false;
                 }
                 if (refresh.status === 2) {
@@ -96,15 +96,19 @@ function roll() {
             }
 
             var transforms = {};
-            for (var key in controllers) {
-                if(status[key].status === 0) {
+            for (var c in controllers) {
+                if (status[c].status === 0) {
                     continue;
                 }
-                var version = status[key].version;
-                if (!requirements[key] || !requirements[key][version.origin.toString()]) {
+                var version = status[c].version;
+                if (!requirements[c] || !requirements[c][version.origin.toString()]) {
                     // Update
-                    transforms[key] = controllers[key].transform.bind(controllers[key]);
+                    transforms[c] = controllers[c].transform.bind(controllers[c]);
                 }
+            }
+
+            if (transforms.length === 0) {
+                return logError('Controllers are pending, but no transforms are possible (system locked)!', status);
             }
 
             // TODO, is empty transforms -> double dependency?
