@@ -21,12 +21,15 @@
 var Path = require('path');
 var Collection = require('easy-collections');
 var upgrader = require(Path.resolve(__dirname, '../upgrader.js'));
-var inherits = require('util').inherits;
 var AbstractController = require(Path.resolve(__dirname, './abstract-controller.js'));
+var transformToVersion2 = require(Path.resolve(__dirname,
+    '../transformers/mongo/transformToVersion2.js'));
+var transformToVersion3 = require(Path.resolve(__dirname,
+    '../transformers/mongo/transformToVersion3.js'));
 
 
-function MongoController(transformers) {
-    AbstractController.call(this, transformers);
+function MongoController() {
+    AbstractController.call(this, [transformToVersion2, transformToVersion3]);
     this.modelId = null;
     this.dbProvider = {
         db: function () {
@@ -37,7 +40,8 @@ function MongoController(transformers) {
     this.db.setDBProvider(this.dbProvider);
 }
 
-inherits(MongoController, AbstractController);
+MongoController.prototype = new AbstractController();
+MongoController.prototype.constructor = MongoController;
 
 MongoController.prototype.doConnect = function (config, callback) {
     config.mongodb.db = this.db;
@@ -102,8 +106,6 @@ MongoController.prototype.setModelVersion = function (config, callback) {
     }
 };
 
-upgrader.controller('mongo', new MongoController([require(Path.resolve(__dirname,
-    '../transformers/mongo/transformToVersion2.js')), require(Path.resolve(__dirname,
-    '../transformers/mongo/transformToVersion3.js'))]));
+upgrader.controller('mongo', new MongoController());
 
 

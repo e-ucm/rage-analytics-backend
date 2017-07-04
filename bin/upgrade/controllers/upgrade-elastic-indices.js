@@ -21,14 +21,16 @@
 var Path = require('path');
 var elasticsearch = require('elasticsearch');
 var upgrader = require(Path.resolve(__dirname, '../upgrader.js'));
-var inherits = require('util').inherits;
 var AbstractController = require(Path.resolve(__dirname, './abstract-controller.js'));
+var transformerToVersion2 = require(Path.resolve(__dirname,
+    '../transformers/elastic/transformToVersion2.js'));
 
-function ElasticController(transformers) {
-    AbstractController.call(this, transformers);
+function ElasticController() {
+    AbstractController.call(this, [transformerToVersion2]);
 }
 
-inherits(ElasticController, AbstractController);
+ElasticController.prototype = new AbstractController();
+ElasticController.prototype.constructor = ElasticController;
 
 ElasticController.prototype.doConnect = function (config, callback) {
     var baseUsersAPI = config.elasticsearch.uri;
@@ -84,7 +86,7 @@ ElasticController.prototype.getModelVersion = function (config, callback) {
 
         callback(null, version);
     });
-}
+};
 
 ElasticController.prototype.setModelVersion = function (config, callback) {
     var esClient = this.appConfig.elasticsearch.esClient;
@@ -104,5 +106,4 @@ ElasticController.prototype.setModelVersion = function (config, callback) {
     });
 };
 
-upgrader.controller('elastic', new ElasticController([require(Path.resolve(__dirname,
-    '../transformers/elastic/transformToVersion2.js'))]));
+upgrader.controller('elastic', new ElasticController());
