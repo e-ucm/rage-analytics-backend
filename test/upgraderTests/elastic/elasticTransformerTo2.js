@@ -32,7 +32,7 @@ module.exports = function (app, esClient, mongo) {
     /**-------------------------------------------------------------**/
     /**-------------------------------------------------------------**/
     describe('Elastic TransformTo2 test', function () {
-        this.timeout(5000);
+        this.timeout(25000);
         app.config.elasticsearch.esClient = esClient;
         app.config.mongodb.db = mongo;
         mongo.collection('sessions').insert(
@@ -53,7 +53,7 @@ module.exports = function (app, esClient, mongo) {
 
         it('should transform correctly traces extensions', function (done) {
             var fileIn = './upgradeInputs/tracesTo2IN.js';
-            var fileOut = './upgradeInputs/tracesTo2OUTtest.js'; //CHANGE TO OUT
+            var fileOut = './upgradeInputs/tracesTo2OUT.js'; //CHANGE TO OUT
             var searchObj = {
                 index: idSession.toString(),
                 type: 'traces'
@@ -74,7 +74,7 @@ module.exports = function (app, esClient, mongo) {
 
         it('should transform correctly .kibana index', function (done) {
             var fileIn = './upgradeInputs/kibanaIndexTo2IN.js';
-            var fileOut = './upgradeInputs/kibanaIndexTo2OUTtest.js'; //CHANGE TO OUT
+            var fileOut = './upgradeInputs/kibanaIndexTo2OUT.js'; //CHANGE TO OUT
             var searchObj = {
                 index: '.kibana'
             };
@@ -94,7 +94,7 @@ module.exports = function (app, esClient, mongo) {
 
         it('should transform correctly .game indices', function (done) {
             var fileIn = './upgradeInputs/gameIndexTo2IN.js';
-            var fileOut = './upgradeInputs/gameIndexTo2OUTtest.js'; //CHANGE TO OUT
+            var fileOut = './upgradeInputs/gameIndexTo2OUT.js'; //CHANGE TO OUT
             var searchObj = {
                 index: '.games1234'
             };
@@ -142,9 +142,9 @@ module.exports = function (app, esClient, mongo) {
         var t = require('../../../bin/upgrade/transformers/elastic/transformToVersion2.js');
         async.waterfall([function (newCallback) {
             newCallback(null, app.config);
-        } // t.backup,
-            // t.upgrade,
-            // t.check
+        },  t.backup,
+            t.upgrade,
+            t.check
         ], function (err, result) {
             if (err) {
                 return callback(err);

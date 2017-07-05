@@ -286,6 +286,9 @@ function finishedCountCallback(length, callback) {
 }
 
 function upgradeGamesIndices(esClient, callback) {
+    if(indices.games.length === 0) {
+        return callback();
+    }
     var i;
     for (i = 0; i < indices.games.length; i++) {
         var gameIndex = indices.games[i];
@@ -318,12 +321,11 @@ function identifyExtensionsFromIndex(esClient, traceIndex, callback) {
         index: traceIndex.index,
         scroll: '30s', // keep the search results "scrollable" for 30 seconds
         type: 'traces',
-        body: {
-            query: {
-                "match_all": {}
-            }
-        }
+        q: '*'
     }, function getMoreUntilDone(error, response) {
+        if(error) {
+            return callback(error);
+        }
         // collect the title from each response
         var bulkUpgradedTraces = [];
         var upgradeIndex = 'upgrade_' + traceIndex.index;
