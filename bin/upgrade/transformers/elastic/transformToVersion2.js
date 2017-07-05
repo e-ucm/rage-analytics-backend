@@ -31,6 +31,11 @@ var defaultTraceAttributes = [
 ];
 var extensions = [];
 
+String.prototype.replaceAll = function (search, replacement) {
+    var target = this;
+    return target.replace(new RegExp(search, 'g'), replacement);
+};
+
 var reindex = function (esClient, from, to, callback) {
     esClient.reindex({
         refresh: true,
@@ -351,6 +356,9 @@ function identifyExtensionsFromIndex(esClient, traceIndex, callback) {
 }
 
 function identifyExtensions(esClient, indexArray, callback) {
+    if(indexArray.length === 0) {
+        return callback();
+    }
     var i;
     for (i = 0; i < indexArray.length; i++) {
         var traceIndex = indexArray[i];
@@ -406,23 +414,110 @@ function checkNeedsUpdate(visualization) {
         return false;
     }
 
-    var needsUpdate = false;
 
-    for (var i = 0; i < extensions.length; ++i) {
-        var extension = extensions[i];
-        if (!extension) {
-            continue;
-        }
+    var visState = JSON.parse(visualization._source.visState.replaceAll("\\\"", "\""));
 
-        // TODO check it works?
-        if (visualization._source.visState.indexOf(extension) === -1) {
-            continue;
-        }
-        var newVisState = visualization._source.visState.replace(extension, 'ext.' + extension);
-        visualization._source.visState = newVisState;
-        needsUpdate = true;
+    if (!visState.aggs || visState.aggs.length === 0) {
+        return false;
     }
+
+    /*
+     * Example of visState:
+     * {
+     *   \"title\":\"Alternative Selected Correct Incorrect Per QuestionId\",
+     *   \"type\":\"histogram\",
+     *   \"params\":{
+     *       \"addLegend\":true,
+     *       \"addTimeMarker\":false,
+     *       \"addTooltip\":true,
+     *       \"defaultYExtents\":false,
+     *       \"mode\":\"stacked\",
+     *       \"scale\":\"linear\",
+     *       \"setYExtents\":false,
+     *       \"shareYAxis\":true,
+     *       \"times\":[],
+     *       \"yAxis\":{}
+     *   },
+     *   \"aggs\":[
+     *       {\"id\":\"1\",\"type\":\"count\",\"schema\":\"metric\",
+     *           \"params\":{}},
+     *       {\"id\":\"2\",\"type\":\"terms\",\"schema\":\"segment\",
+     *           \"params\":{
+     *               \"field\":\"target.keyword\",
+     *               \"include\":{\"pattern\":\"\"},
+     *               \"size\":100,
+     *               \"order\":\"asc\",
+     *               \"orderBy\":\"_term\",
+     *               \"customLabel\":\"Alternative\"
+     *               }
+     *           },
+     *       {\"id\":\"4\",\"type\":\"filters\",\"schema\":\"group\",
+     *           \"params\":{
+     *               \"filters\":[
+     *                   {
+     *                       \"input\":{
+     *                           \"query\":{
+     *                               \"query_string\":{
+     *                                   \"query\":\"success:true\",
+     *                                   \"analyze_wildcard\":true
+     *                                   }
+     *                               }
+     *                           },
+     *                       \"label\":\"\"
+     *                   },
+     *                   {
+     *                       \"input\":{
+     *                           \"query\":{
+     *                               \"query_string\":{
+     *                                   \"query\":\"success:false\",
+     *                                   \"analyze_wildcard\":true
+     *                               }
+     *                           }
+     *                       }
+     *                   }
+     *               ]
+     *           }
+     *       }
+     *   ],
+     *   \"listeners\":{}
+     * }
+     * */
+    var needsUpdate = false;
+    for (var i = 0; i < visState.aggs.length; ++i) {
+        var agg = visState.aggs[i];
+        if (!agg) {
+            continue;
+        }
+
+        if (!agg.params) {
+            continue;
+        }
+
+        if (!agg.params['field']) {
+            continue;
+        }
+
+        var field = agg.params['field'];
+
+        var isDefaultAttribute = false;
+        for (var j = 0; j < defaultTraceAttributes.length; ++j) {
+            var defaultAttribute = defaultTraceAttributes[j];
+
+            if (field === defaultAttribute ||
+                field === defaultAttribute + '.keyword') {
+                isDefaultAttribute = true;
+                break;
+            }
+        }
+
+        if(!isDefaultAttribute) {
+            agg.params['field'] = 'ext.' + field;
+            needsUpdate = true;
+        }
+    }
+
     if (needsUpdate) {
+        visualization._source.visState = JSON.stringify(visState);
         return visualization;
     } else {
         return false;
@@ -447,6 +542,113 @@ function setUpVisualization(esClient, visualization, index, callback) {
     });
 }
 
+function checkNeedsUpdateIndexPattern(indexPattern) {
+
+    if (!indexPattern) {
+        return false;
+    }
+
+    if (!indexPattern._source) {
+        return false;
+    }
+
+    if (!indexPattern._source.fields) {
+        return false;
+    }
+
+    var fields = JSON.parse(indexPattern._source.fields.replaceAll("\\\"", "\""));
+
+
+    /*Example fields:
+    * [
+    *   {
+    *       \"name\":\"type\",
+    *       \"type\":\"string\",
+    *       \"count\":0,
+    *       \"scripted\":false,
+    *       \"indexed\":true,
+    *       \"analyzed\":true,
+    *       \"doc_values\":false
+    *   },
+    *   {
+    *       \"name\":\"gameplayId\",
+    *       \"type\":\"string\",
+    *       \"count\":0,
+    *       \"scripted\":false,
+    *       \"indexed\":true,
+    *       \"analyzed\":true,
+    *       \"doc_values\":false
+    *   },
+    *   {
+    *       \"name\":\"Estimulado.keyword\",
+    *       \"type\":\"string\",
+    *       \"count\":0,
+    *       \"scripted\":false,
+    *       \"indexed\":true,
+    *       \"analyzed\":false,
+    *       \"doc_values\":true
+    *   }
+    * ]
+    *
+    * */
+    var needsUpdate = false;
+
+    for (var i = 0; i < fields.length; ++i) {
+        var field = fields[i];
+        if (!field) {
+            continue;
+        }
+
+        if (!field.name) {
+            continue;
+        }
+
+        var fieldName = field.name;
+
+        var isDefaultAttribute = false;
+        for (var j = 0; j < defaultTraceAttributes.length; ++j) {
+            var defaultAttribute = defaultTraceAttributes[j];
+
+            if (fieldName === defaultAttribute ||
+                fieldName === defaultAttribute + '.keyword') {
+                isDefaultAttribute = true;
+                break;
+            }
+        }
+
+        if(!isDefaultAttribute) {
+            field.name = 'ext.' + fieldName;
+            needsUpdate = true;
+        }
+    }
+
+    if (needsUpdate) {
+        var stringified = JSON.stringify(fields);
+        indexPattern._source.fields = stringified;
+        return indexPattern;
+    } else {
+        return false;
+    }
+}
+
+function setUpIndexPattern(esClient, indexPattern, index, callback) {
+    var update = checkNeedsUpdateIndexPattern(indexPattern);
+    if (!update) {
+        return callback();
+    }
+
+    esClient.index({
+        index: 'upgrade_' + index.index,
+        type: update._type,
+        id: update._id,
+        body: update._source
+    }, function (error, response) {
+        if (callback) {
+            callback();
+        }
+    });
+}
+
 function setUpKibanaIndex(esClient, callback) {
     if (!indices.configs.kibana) {
         return callback();
@@ -463,10 +665,10 @@ function setUpKibanaIndex(esClient, callback) {
 
         var count = 0;
         hits.hits.forEach(function (hit) {
-            if (hit._type !== 'visualization') {
-                return;
+            if (hit._type === 'visualization' ||
+                hit._type === 'index-pattern') {
+                count++;
             }
-            count++;
         });
 
         if (count === 0) {
@@ -475,12 +677,12 @@ function setUpKibanaIndex(esClient, callback) {
 
         var countCallback = finishedCountCallback(count, finishedCallback);
         hits.hits.forEach(function (hit) {
-            if (hit._type !== 'visualization') {
-                return;
+            if (hit._type === 'visualization') {
+                setUpVisualization(esClient, hit, indices.configs.kibana, countCallback);
+            } else if (hit._type === 'index-pattern') {
+                setUpIndexPattern(esClient, hit, indices.configs.kibana, countCallback);
             }
 
-            // TODO create kibana upgrade index :))
-            setUpVisualization(esClient, hit, indices.configs.kibana, countCallback);
         });
     });
 }
