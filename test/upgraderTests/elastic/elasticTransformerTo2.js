@@ -43,12 +43,13 @@ module.exports = function (app, esClient, mongo) {
                 
             });
 
-        afterEach(function (done) {
+        beforeEach(function (done) {
             app.esClient.indices.delete({
                 index: '_all'
             }, function (error, response){
                 done(error);
             });
+
         });
 
         it('should transform correctly traces extensions', function (done) {
@@ -71,6 +72,7 @@ module.exports = function (app, esClient, mongo) {
                 return done();
             });
         });
+
 
         it('should transform correctly .kibana index', function (done) {
             var fileIn = './upgradeInputs/kibanaIndexTo2IN.js';
@@ -111,6 +113,7 @@ module.exports = function (app, esClient, mongo) {
                 return done();
             });
         });
+
     });
 
     function bulkFunction(fileIn, fileOut, index, searchObj, callback){
@@ -133,7 +136,9 @@ module.exports = function (app, esClient, mongo) {
             if (error) {
                 return callback(error);
             }
-            callback(null, fileIn, fileOut, idSession, searchObj);
+            setTimeout(function() {
+                callback(null, fileIn, fileOut, idSession, searchObj);
+            }, 2000);
         });
     }
 
@@ -159,8 +164,8 @@ module.exports = function (app, esClient, mongo) {
         setTimeout(function() {
             app.esClient.search(searchObj, function (err, response) {
                 console.log("SEARCH RESPONSE: ", JSON.stringify(response));
-                if(error){
-                    return callback(error);
+                if(err){
+                    return callback(err);
                 }
                 if(response.hits.hits.length === bodyOut.length) {
                     var error = null;

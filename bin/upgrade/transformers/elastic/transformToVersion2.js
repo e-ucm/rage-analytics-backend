@@ -22,7 +22,7 @@ var ObjectID = require('mongodb').ObjectID;
 
 var defaultTraceAttributes = [
     'name', 'timestamp', 'event',
-    'target', 'type', 'ext',
+    'target', 'type',
     'gameplayId', 'versionId', 'session',
     'firstSessionStarted', 'currentSessionStarted',
     'score', 'success', 'completion', 'response',
@@ -40,11 +40,13 @@ var reindex = function (esClient, from, to, callback) {
     esClient.reindex({
         refresh: true,
         body: {
+            //   conflicts: 'proceed',
             source: {
                 index: from
             },
             dest: {
-                index: to
+                index: to,
+                version_type: 'internal'
             }
         }
     }, function (err, response) {
@@ -286,7 +288,7 @@ function finishedCountCallback(length, callback) {
 }
 
 function upgradeGamesIndices(esClient, callback) {
-    if(indices.games.length === 0) {
+    if (indices.games.length === 0) {
         return callback();
     }
     var i;
@@ -299,18 +301,21 @@ function upgradeGamesIndices(esClient, callback) {
 function checkTraceExtensions(trace) {
     var newTrace = {};
     Object.keys(trace).forEach(function (property) {
-        if (defaultTraceAttributes.indexOf(property) === -1) {
-            if (!newTrace.ext) {
-                newTrace.ext = {};
+            if (defaultTraceAttributes.indexOf(property) === -1) {
+                if (!newTrace.ext) {
+                    newTrace.ext = {};
+                }
+                newTrace.ext[property] = trace[property];
+
+                if (extensions.indexOf(property) === -1) {
+                    extensions.push(property);
+                }
+            } else {
+                newTrace[property] = trace[property];
             }
-            newTrace.ext[property] = trace[property];
-            if (extensions.indexOf(property) === -1) {
-                extensions.push(property);
-            }
-        } else {
-            newTrace[property] = trace[property];
         }
-    });
+    )
+    ;
     return newTrace;
 }
 
@@ -320,13 +325,18 @@ function identifyExtensionsFromIndex(esClient, traceIndex, callback) {
     esClient.search({
         index: traceIndex.index,
         scroll: '30s', // keep the search results "scrollable" for 30 seconds
-        type: 'traces',
-        q: '*'
+        type: 'traces'
     }, function getMoreUntilDone(error, response) {
-        if(error) {
+        if (error) {
             return callback(error);
         }
         // collect the title from each response
+        if (response.hits.hits.length === 0) {
+            console.log('Completed scrolling, 0 results', traceIndex);
+            if (callback) {
+                callback();
+            }
+        }
         var bulkUpgradedTraces = [];
         var upgradeIndex = 'upgrade_' + traceIndex.index;
         response.hits.hits.forEach(function (hit) {
@@ -341,6 +351,22 @@ function identifyExtensionsFromIndex(esClient, traceIndex, callback) {
         esClient.bulk({
             body: bulkUpgradedTraces
         }, function (err, resp) {
+            if (err) {
+                return callback(err);
+            }
+            var found = false;
+            for (var k = 0; k < indices.upgrade.length; ++k) {
+                var index = indices.upgrade[k];
+                if (index.index === upgradeIndex) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                var upgrade = Object.assign({}, traceIndex);
+                upgrade.index = upgradeIndex;
+                indices.upgrade.push(upgrade);
+            }
             if (response.hits.total > total) {
                 // ask elasticsearch for the next set of hits from this search
                 esClient.scroll({
@@ -358,7 +384,7 @@ function identifyExtensionsFromIndex(esClient, traceIndex, callback) {
 }
 
 function identifyExtensions(esClient, indexArray, callback) {
-    if(indexArray.length === 0) {
+    if (indexArray.length === 0) {
         return callback();
     }
     var i;
@@ -512,7 +538,7 @@ function checkNeedsUpdate(visualization) {
             }
         }
 
-        if(!isDefaultAttribute) {
+        if (!isDefaultAttribute) {
             agg.params['field'] = 'ext.' + field;
             needsUpdate = true;
         }
@@ -532,12 +558,26 @@ function setUpVisualization(esClient, visualization, index, callback) {
         return callback();
     }
 
+    var upgradedIndex = 'upgrade_' + index.index;
     esClient.index({
-        index: 'upgrade_' + index.index,
+        index: upgradedIndex,
         type: visualization._type,
         id: visualization._id,
         body: visualization._source
     }, function (error, response) {
+        var found = false;
+        for (var k = 0; k < indices.upgrade.length; ++k) {
+            var index = indices.upgrade[k];
+            if (index.index === upgradedIndex) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            var upgrade = Object.assign({}, index);
+            upgrade.index = upgradedIndex;
+            indices.upgrade.push(upgrade);
+        }
         if (callback) {
             callback();
         }
@@ -562,37 +602,37 @@ function checkNeedsUpdateIndexPattern(indexPattern) {
 
 
     /*Example fields:
-    * [
-    *   {
-    *       \"name\":\"type\",
-    *       \"type\":\"string\",
-    *       \"count\":0,
-    *       \"scripted\":false,
-    *       \"indexed\":true,
-    *       \"analyzed\":true,
-    *       \"doc_values\":false
-    *   },
-    *   {
-    *       \"name\":\"gameplayId\",
-    *       \"type\":\"string\",
-    *       \"count\":0,
-    *       \"scripted\":false,
-    *       \"indexed\":true,
-    *       \"analyzed\":true,
-    *       \"doc_values\":false
-    *   },
-    *   {
-    *       \"name\":\"Estimulado.keyword\",
-    *       \"type\":\"string\",
-    *       \"count\":0,
-    *       \"scripted\":false,
-    *       \"indexed\":true,
-    *       \"analyzed\":false,
-    *       \"doc_values\":true
-    *   }
-    * ]
-    *
-    * */
+     * [
+     *   {
+     *       \"name\":\"type\",
+     *       \"type\":\"string\",
+     *       \"count\":0,
+     *       \"scripted\":false,
+     *       \"indexed\":true,
+     *       \"analyzed\":true,
+     *       \"doc_values\":false
+     *   },
+     *   {
+     *       \"name\":\"gameplayId\",
+     *       \"type\":\"string\",
+     *       \"count\":0,
+     *       \"scripted\":false,
+     *       \"indexed\":true,
+     *       \"analyzed\":true,
+     *       \"doc_values\":false
+     *   },
+     *   {
+     *       \"name\":\"Estimulado.keyword\",
+     *       \"type\":\"string\",
+     *       \"count\":0,
+     *       \"scripted\":false,
+     *       \"indexed\":true,
+     *       \"analyzed\":false,
+     *       \"doc_values\":true
+     *   }
+     * ]
+     *
+     * */
     var needsUpdate = false;
 
     for (var i = 0; i < fields.length; ++i) {
@@ -618,7 +658,7 @@ function checkNeedsUpdateIndexPattern(indexPattern) {
             }
         }
 
-        if(!isDefaultAttribute) {
+        if (!isDefaultAttribute) {
             field.name = 'ext.' + fieldName;
             needsUpdate = true;
         }
@@ -639,12 +679,26 @@ function setUpIndexPattern(esClient, indexPattern, index, callback) {
         return callback();
     }
 
+    var upgradedIndex = 'upgrade_' + index.index;
     esClient.index({
-        index: 'upgrade_' + index.index,
+        index: upgradedIndex,
         type: update._type,
         id: update._id,
         body: update._source
     }, function (error, response) {
+        var found = false;
+        for (var k = 0; k < indices.upgrade.length; ++k) {
+            var index = indices.upgrade[k];
+            if (index.index === upgradedIndex) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            var upgrade = Object.assign({}, index);
+            upgrade.index = upgradedIndex;
+            indices.upgrade.push(upgrade);
+        }
         if (callback) {
             callback();
         }
@@ -725,6 +779,9 @@ function setUpGameIndex(esClient, gameIndex, callback) {
 
 function setUpVisualizations(esClient, callback) {
     setUpKibanaIndex(esClient, function (err) {
+        if (err) {
+            return callback(err);
+        }
         if (indices.games.length === 0) {
             return callback();
         }
@@ -759,18 +816,78 @@ function upgrade(config, callback) {
                     });
                     for (var i = 0; i < indices.upgrade.length; i++) {
                         var index = indices.upgrade[i];
-                        reindex(esClient, index.index, index.index.substr('upgrade_'.length), function (err, from, result) {
+                        if (!index.index) {
+                            renameCount();
+                            continue;
+                        }
+
+                        var newIndex = index.index.substr('upgrade_'.length);
+                        if (!newIndex) {
+                            renameCount();
+                            continue;
+                        }
+
+                        esClient.indices.exists({
+                            index: newIndex
+                        }, function (err, exists) {
                             if (err) {
-                                console.error(err);
-                                return callback(err);
+                                console.error('Error checking if index exists, going to reindex' + err);
                             }
-                            esClient.indices.delete({index: from}, function (err, result) {
-                                if (!err) {
-                                    indices.deleted[from] = true;
-                                }
-                                renameCount();
-                            });
+
+                            if (exists) {
+                                esClient.indices.delete({index: newIndex}, function (err, result) {
+                                    reindex(esClient, index.index, newIndex, function (err, from, result) {
+                                        if (err) {
+                                            console.error(err);
+                                            return callback(err);
+                                        }
+                                        renameCount();
+                                        /*
+                                         esClient.indices.delete({index: from}, function (err, result) {
+                                         if (!err) {
+                                         indices.deleted[from] = true;
+                                         }
+                                         renameCount();
+                                         });
+                                         */
+                                    });
+
+                                });
+                            } else {
+                                reindex(esClient, index.index, newIndex, function (err, from, result) {
+                                    if (err) {
+                                        console.error(err);
+                                        return callback(err);
+                                    }
+
+                                    esClient.indices.delete({index: from}, function (err, result) {
+                                        if (!err) {
+                                            indices.deleted[from] = true;
+                                        }
+                                        renameCount();
+                                    });
+
+                                });
+                            }
                         });
+                        /*
+                         reindex(esClient, index.index, newIndex, function (err, from, result) {
+                         if (err) {
+                         console.error(err);
+                         return callback(err);
+                         }
+
+                         renameCount();
+                         /*
+                         esClient.indices.delete({index: from}, function (err, result) {
+                         if (!err) {
+                         indices.deleted[from] = true;
+                         }
+                         renameCount();
+                         });
+
+                         });
+                         */
                     }
                 }));
             }));
