@@ -6,7 +6,7 @@ var traces = [
         type: "visualization",
         source:{
             title:"visualization_title",
-            visState:"{\"title\":\"visualization_title\",\"type\":\"histogram\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"scale\":\"linear\",\"mode\":\"stacked\",\"times\":[],\"addTimeMarker\":false,\"defaultYExtents\":false,\"setYExtents\":false,\"yAxis\":{}},\"aggs\":[{\"id\":\"1\",\"type\":\"count\",\"schema\":\"metric\",\"params\":{\"customLabel\":\"Activity Count\"}},{\"id\":\"2\",\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"ext.extension.keyword\",\"size\":15,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"extension test\"}}],\"listeners\":{}}",
+            visState:"{\"title\":\"visualization_title\",\"type\":\"histogram\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"scale\":\"linear\",\"mode\":\"stacked\",\"times\":[],\"addTimeMarker\":false,\"defaultYExtents\":false,\"setYExtents\":false,\"yAxis\":{}},\"aggs\":[{\"id\":\"1\",\"type\":\"count\",\"schema\":\"metric\",\"params\":{\"customLabel\":\"Activity Count\"}},{\"id\":\"2\",\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"extension.keyword\",\"size\":15,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"extension test\"}}],\"listeners\":{}}",
             uiStateJSON:"{}",
             description:"",
             version:1,
@@ -23,7 +23,7 @@ var traces = [
         type: "visualization",
         source:{
             title:"visualization_title",
-            visState:"{\"title\":\"visualization_title\",\"type\":\"histogram\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"scale\":\"linear\",\"mode\":\"stacked\",\"times\":[],\"addTimeMarker\":false,\"defaultYExtents\":false,\"setYExtents\":false,\"yAxis\":{}},\"aggs\":[{\"id\":\"1\",\"type\":\"count\",\"schema\":\"metric\",\"params\":{\"customLabel\":\"Activity Count\"}},{\"id\":\"2\",\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"ext.extension\",\"size\":1,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"estension test\"}}],\"listeners\":{}}",
+            visState:"{\"title\":\"visualization_title\",\"type\":\"histogram\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"scale\":\"linear\",\"mode\":\"stacked\",\"times\":[],\"addTimeMarker\":false,\"defaultYExtents\":false,\"setYExtents\":false,\"yAxis\":{}},\"aggs\":[{\"id\":\"1\",\"type\":\"count\",\"schema\":\"metric\",\"params\":{\"customLabel\":\"Activity Count\"}},{\"id\":\"2\",\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"extension\",\"size\":1,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"estension test\"}}],\"listeners\":{}}",
             uiStateJSON:"{}",
             description:"",
             version:1,
@@ -40,7 +40,7 @@ var traces = [
         type:"visualization",
         source:{
             title:"visualization_title",
-            visState:"{\"title\":\"visualization_title\",\"type\":\"histogram\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"scale\":\"linear\",\"mode\":\"grouped\",\"times\":[],\"addTimeMarker\":false,\"defaultYExtents\":false,\"setYExtents\":false,\"yAxis\":{}},\"aggs\":[{\"id\":\"2\",\"type\":\"min\",\"schema\":\"metric\",\"params\":{\"field\":\"ext.dt\",\"customLabel\":\"Min Time\"}},{\"id\":\"1\",\"type\":\"avg\",\"schema\":\"metric\",\"params\":{\"field\":\"ext.extension.objectKey.subkey.keyword\"}},{\"id\":\"3\",\"type\":\"max\",\"schema\":\"metric\",\"params\":{\"field\":\"event.keyword\",\"customLabel\":\"Max Time\"}},{\"id\":\"4\",\"type\":\"terms\",\"schema\":\"split\",\"params\":{\"field\":\"target.keyword\",\"size\":15,\"order\":\"desc\",\"orderBy\":\"_term\",\"customLabel\":\"Times\",\"row\":false}}],\"listeners\":{}}",
+            visState:"{\"title\":\"visualization_title\",\"type\":\"histogram\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"scale\":\"linear\",\"mode\":\"grouped\",\"times\":[],\"addTimeMarker\":false,\"defaultYExtents\":false,\"setYExtents\":false,\"yAxis\":{}},\"aggs\":[{\"id\":\"2\",\"type\":\"min\",\"schema\":\"metric\",\"params\":{\"field\":\"dt\",\"customLabel\":\"Min Time\"}},{\"id\":\"1\",\"type\":\"avg\",\"schema\":\"metric\",\"params\":{\"field\":\"extension.objectKey.subkey.keyword\"}},{\"id\":\"3\",\"type\":\"max\",\"schema\":\"metric\",\"params\":{\"field\":\"event.keyword\",\"customLabel\":\"Max Time\"}},{\"id\":\"4\",\"type\":\"terms\",\"schema\":\"split\",\"params\":{\"field\":\"target.keyword\",\"size\":15,\"order\":\"desc\",\"orderBy\":\"_term\",\"customLabel\":\"Times\",\"row\":false}}],\"listeners\":{}}",
             uiStateJSON:"{}",
             description:"",
             version:1,
