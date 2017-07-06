@@ -58,8 +58,58 @@ var reindex = function (esClient, from, to, callback) {
     });
 };
 
+
+var reindexManually = function (esClient, from, to, callback) {
+    scrollIndex(esClient, from, function (err, finished, hits, finishedCallback) {
+        if (err) {
+            console.error(err);
+            return callback(err);
+        }
+
+        if (finished) {
+            return callback(null, from.index);
+        }
+
+        if (hits.hits.length === 0) {
+            return callback(null, from.index);
+        }
+
+        var bulkUpgradedTraces = [];
+        hits.hits.forEach(function (hit) {
+            var trace = hit._source;
+            if (trace) {
+                bulkUpgradedTraces.push({index: {_index: to, _type: hit._type, _id: hit._id}});
+                bulkUpgradedTraces.push(trace);
+            }
+        });
+        esClient.bulk({
+            body: bulkUpgradedTraces
+        }, function (err, resp) {
+            if (err) {
+                return callback(err);
+            }
+            finishedCallback();
+        });
+    });
+};
+
+
 var backUpIndex = function (esClient, index, callback) {
-    reindex(esClient, index.index, 'backup_' + index.index, function (err, from, response) {
+    var backupedIndex = 'backup_' + index.index;
+    reindex(esClient, index.index, backupedIndex, function (err, from, response) {
+        var found = false;
+        for (var k = 0; k < indices.backup.length; ++k) {
+            var backIndex = indices.backup[k];
+            if (backIndex.index === backupedIndex) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            var upgrade = Object.assign({}, index);
+            upgrade.index = backupedIndex;
+            indices.backup.push(upgrade);
+        }
         callback(err, index, response);
     });
 };
@@ -396,33 +446,34 @@ function identifyExtensions(esClient, indexArray, callback) {
 
 function scrollIndex(esClient, index, callback) {
     // first we do a search, and specify a scroll timeout
-    var total = 0;
-    esClient.search({
-        index: index.index,
-        scroll: '30s', // keep the search results "scrollable" for 30 seconds
-        q: '*'
-    }, function getMoreUntilDone(error, response) {
-        // collect the title from each response
-        if (error) {
-            return callback(error);
-        }
-
-        total += response.hits.hits.length;
-        callback(null, false, response.hits, function () {
-            if (response.hits.total > total) {
-                // ask elasticsearch for the next set of hits from this search
-                esClient.scroll({
-                    scrollId: response._scroll_id,
-                    scroll: '30s'
-                }, getMoreUntilDone);
-            } else {
-                console.log('Completed scrolling', index);
-                if (callback) {
-                    callback(null, true);
-                }
+    setTimeout(function () {
+        var total = 0;
+        esClient.search({
+            index: index.index,
+            scroll: '30s' // keep the search results "scrollable" for 30 seconds
+        }, function getMoreUntilDone(error, response) {
+            // collect the title from each response
+            if (error) {
+                return callback(error);
             }
+
+            total += response.hits.hits.length;
+            callback(null, false, response.hits, function () {
+                if (response.hits.total > total) {
+                    // ask elasticsearch for the next set of hits from this search
+                    esClient.scroll({
+                        scrollId: response._scroll_id,
+                        scroll: '30s'
+                    }, getMoreUntilDone);
+                } else {
+                    console.log('Completed scrolling', index);
+                    if (callback) {
+                        callback(null, true);
+                    }
+                }
+            });
         });
-    });
+    }, 2000);
 }
 
 function checkNeedsUpdate(visualization) {
@@ -719,27 +770,127 @@ function setUpKibanaIndex(esClient, callback) {
             return callback();
         }
 
+
+        var to = 'upgrade_' + indices.configs.kibana.index;
+        var bulkUpgradedTraces = [];
         var count = 0;
         hits.hits.forEach(function (hit) {
             if (hit._type === 'visualization' ||
                 hit._type === 'index-pattern') {
                 count++;
+            } else {
+                bulkUpgradedTraces.push({index: {_index: to, _type: hit._type, _id: hit._id}});
+                bulkUpgradedTraces.push(hit._source);
+
+                var found = false;
+                for (var k = 0; k < indices.upgrade.length; ++k) {
+                    var index = indices.upgrade[k];
+                    if (index.index === to) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    var upgrade = Object.assign({}, indices.configs.kibana);
+                    upgrade.index = to;
+                    indices.upgrade.push(upgrade);
+                }
             }
         });
 
-        if (count === 0) {
+        if (count === 0 && bulkUpgradedTraces.length === 0) {
             return finishedCallback();
         }
 
-        var countCallback = finishedCountCallback(count, finishedCallback);
-        hits.hits.forEach(function (hit) {
-            if (hit._type === 'visualization') {
-                setUpVisualization(esClient, hit, indices.configs.kibana, countCallback);
-            } else if (hit._type === 'index-pattern') {
-                setUpIndexPattern(esClient, hit, indices.configs.kibana, countCallback);
-            }
+        var countCallback = finishedCountCallback(count + 1, finishedCallback);
 
+        if (count > 0) {
+            hits.hits.forEach(function (hit) {
+                if (hit._type === 'visualization') {
+                    setUpVisualization(esClient, hit, indices.configs.kibana, countCallback);
+                } else if (hit._type === 'index-pattern') {
+                    setUpIndexPattern(esClient, hit, indices.configs.kibana, countCallback);
+                }
+
+            });
+        }
+
+        if (bulkUpgradedTraces.length > 0) {
+            esClient.bulk({
+                body: bulkUpgradedTraces
+            }, function (err, resp) {
+                if (err) {
+                    return callback(err);
+                }
+                countCallback();
+            });
+        }
+    });
+}
+
+function setUpTemplateIndex(esClient, callback) {
+    if (!indices.configs.template) {
+        return callback();
+    }
+    scrollIndex(esClient, indices.configs.template, function (err, finished, hits, finishedCallback) {
+        if (err) {
+            console.error(err);
+            return callback(err);
+        }
+
+        if (finished) {
+            return callback();
+        }
+
+        var to = 'upgrade_' + indices.configs.template.index;
+        var bulkUpgradedTraces = [];
+        var count = 0;
+        hits.hits.forEach(function (hit) {
+            if (hit._type === 'index') {
+                count++;
+            } else {
+                bulkUpgradedTraces.push({index: {_index: to, _type: hit._type, _id: hit._id}});
+                bulkUpgradedTraces.push(hit._source);
+
+                var found = false;
+                for (var k = 0; k < indices.upgrade.length; ++k) {
+                    var index = indices.upgrade[k];
+                    if (index.index === to) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    var upgrade = Object.assign({}, indices.configs.template);
+                    upgrade.index = to;
+                    indices.upgrade.push(upgrade);
+                }
+            }
         });
+
+        if (count === 0 && bulkUpgradedTraces.length === 0) {
+            return finishedCallback();
+        }
+
+        var countCallback = finishedCountCallback(count + 1, finishedCallback);
+        if (count > 0) {
+            hits.hits.forEach(function (hit) {
+                if (hit._type === 'index') {
+                    setUpIndexPattern(esClient, hit, indices.configs.template, countCallback);
+                }
+            });
+        }
+
+        if (bulkUpgradedTraces.length > 0) {
+            esClient.bulk({
+                body: bulkUpgradedTraces
+            }, function (err, resp) {
+                if (err) {
+                    return callback(err);
+                }
+                countCallback();
+            });
+        }
     });
 }
 
@@ -754,25 +905,56 @@ function setUpGameIndex(esClient, gameIndex, callback) {
             return callback();
         }
 
+        var to = 'upgrade_' + gameIndex.index;
+        var bulkUpgradedTraces = [];
         var count = 0;
         hits.hits.forEach(function (hit) {
             if (hit._type !== 'visualization') {
-                return;
+                bulkUpgradedTraces.push({index: {_index: to, _type: hit._type, _id: hit._id}});
+                bulkUpgradedTraces.push(hit._source);
+
+                var found = false;
+                for (var k = 0; k < indices.upgrade.length; ++k) {
+                    var index = indices.upgrade[k];
+                    if (index.index === to) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    var upgrade = Object.assign({}, gameIndex);
+                    upgrade.index = to;
+                    indices.upgrade.push(upgrade);
+                }
+            } else {
+                count++;
             }
-            count++;
         });
 
-        if (count === 0) {
+        if (count === 0 && bulkUpgradedTraces.length === 0) {
             return finishedCallback();
         }
 
-        var countCallback = finishedCountCallback(count, finishedCallback);
-        hits.hits.forEach(function (hit) {
-            if (hit._type !== 'visualization') {
-                return;
-            }
-            setUpVisualization(esClient, hit, gameIndex, countCallback);
-        });
+        var countCallback = finishedCountCallback(count + 1, finishedCallback);
+        if (count > 0) {
+            hits.hits.forEach(function (hit) {
+                if (hit._type !== 'visualization') {
+                    return;
+                }
+                setUpVisualization(esClient, hit, gameIndex, countCallback);
+            });
+        }
+
+        if (bulkUpgradedTraces.length > 0) {
+            esClient.bulk({
+                body: bulkUpgradedTraces
+            }, function (err, resp) {
+                if (err) {
+                    return callback(err);
+                }
+                countCallback();
+            });
+        }
     });
 }
 
@@ -782,14 +964,20 @@ function setUpVisualizations(esClient, callback) {
         if (err) {
             return callback(err);
         }
-        if (indices.games.length === 0) {
-            return callback();
-        }
-        for (var i = 0; i < indices.games.length; i++) {
-            var gameIndex = indices.games[i];
-            setUpGameIndex(esClient, gameIndex, callback);
-        }
-    })
+        setUpTemplateIndex(esClient, function (err) {
+            if (err) {
+                return callback(err);
+            }
+            if (indices.games.length === 0) {
+                return callback();
+            }
+
+            for (var i = 0; i < indices.games.length; i++) {
+                var gameIndex = indices.games[i];
+                setUpGameIndex(esClient, gameIndex, callback);
+            }
+        });
+    });
 }
 
 function upgrade(config, callback) {
@@ -828,66 +1016,50 @@ function upgrade(config, callback) {
                         }
 
                         esClient.indices.exists({
-                            index: newIndex
-                        }, function (err, exists) {
-                            if (err) {
-                                console.error('Error checking if index exists, going to reindex' + err);
-                            }
+                                index: newIndex
+                            }, function (err, exists) {
+                                if (err) {
+                                    console.error('Error checking if index exists, going to reindex' + err);
+                                }
 
-                            if (exists) {
-                                esClient.indices.delete({index: newIndex}, function (err, result) {
-                                    reindex(esClient, index.index, newIndex, function (err, from, result) {
+                                if (exists) {
+                                    esClient.indices.delete({index: newIndex}, function (err, result) {
                                         if (err) {
                                             console.error(err);
                                             return callback(err);
                                         }
-                                        renameCount();
-                                        /*
-                                         esClient.indices.delete({index: from}, function (err, result) {
-                                         if (!err) {
-                                         indices.deleted[from] = true;
-                                         }
-                                         renameCount();
-                                         });
-                                         */
+                                        reindexManually(esClient, index, newIndex, function (err, from) {
+                                            if (err) {
+                                                console.error(err);
+                                                return callback(err);
+                                            }
+
+                                            esClient.indices.delete({index: from}, function (err, result) {
+                                                if (!err) {
+                                                    indices.deleted[from] = true;
+                                                }
+                                                renameCount();
+                                            });
+                                        });
                                     });
-
-                                });
-                            } else {
-                                reindex(esClient, index.index, newIndex, function (err, from, result) {
-                                    if (err) {
-                                        console.error(err);
-                                        return callback(err);
-                                    }
-
-                                    esClient.indices.delete({index: from}, function (err, result) {
-                                        if (!err) {
-                                            indices.deleted[from] = true;
+                                } else {
+                                    reindexManually(esClient, index, newIndex, function (err, from) {
+                                        if (err) {
+                                            console.error(err);
+                                            return callback(err);
                                         }
-                                        renameCount();
+
+                                        esClient.indices.delete({index: from}, function (err, result) {
+                                            if (!err) {
+                                                indices.deleted[from] = true;
+                                            }
+                                            renameCount();
+                                        });
+
                                     });
-
-                                });
+                                }
                             }
-                        });
-                        /*
-                         reindex(esClient, index.index, newIndex, function (err, from, result) {
-                         if (err) {
-                         console.error(err);
-                         return callback(err);
-                         }
-
-                         renameCount();
-                         /*
-                         esClient.indices.delete({index: from}, function (err, result) {
-                         if (!err) {
-                         indices.deleted[from] = true;
-                         }
-                         renameCount();
-                         });
-
-                         });
-                         */
+                        );
                     }
                 }));
             }));
@@ -923,6 +1095,22 @@ function clean(config, callback) {
         if (!indices.deleted[upgradeIndex.index]) {
             toRemove.push(upgradeIndex.index);
         }
+    }
+    indices = {
+        traces: [],
+        versions: [],
+        results: [],
+        opaqueValues: [],
+        games: [],
+        configs: {
+            template: null,
+            kibana: null,
+            defaultKibanaIndex: null
+        },
+        others: [],
+        backup: [],
+        upgrade: [],
+        deleted: {}
     }
     if (toRemove.length === 0) {
         return callback(null, config);
