@@ -30,13 +30,13 @@ module.exports = {
             }
         } else {
             Object.keys(doc1).forEach(function (key) {
-                if (equal == false) {
+                if (equal === false) {
                     return;
                 }
                 var val = doc1[key];
                 if (typeof(val) !== typeof({}) && typeof(val) !== typeof([])) {
                     if (typeof(val) === typeof('string')) {
-                        if (val == doc2[key]) {
+                        if (val === doc2[key]) {
                             equal = true;
                             return;
                         }
