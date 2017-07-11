@@ -1,7 +1,9 @@
-{
+var ObjectID = require('mongodb').ObjectID;
+
+module.exports = {
     games: [
         {
-            "_id": "59315d0d370740006dc1a7b6",
+            "_id": ObjectID("59315d0d370740006dc1a7b6"),
             "title": "g1",
             "created": "2017-06-02T12:41:49.631Z",
             "authors": [
@@ -13,7 +15,7 @@
             ]
         },
         {
-            "_id": "59289445370740006dc1a794",
+            "_id": ObjectID("59289445370740006dc1a794"),
             "title": "g2",
             "created": "2017-05-26T20:47:01.968Z",
             "authors": [
@@ -27,21 +29,21 @@
     ],
     versions: [
         {
-            "_id": "59315d0d370740006dc1a7b7",
-            "gameId": "59315d0d370740006dc1a7b6",
+            "_id": ObjectID("59315d0d370740006dc1a7b7"),
+            "gameId": ObjectID("59315d0d370740006dc1a7b6"),
             "trackingCode": "59315d0d370740006dc1a7b72g66zktn0khjjor"
         },
         {
-            "_id": "59289445370740006dc1a795",
-            "gameId": "59289445370740006dc1a794",
+            "_id": ObjectID("59289445370740006dc1a795"),
+            "gameId": ObjectID("59289445370740006dc1a794"),
             "trackingCode": "59289445370740006dc1a795lds5abfyul2nvcxr"
         }
     ],
     classes: [
         {
-            "_id": "595bacf1370740006dc1ab7f",
-            "gameId": "59315d0d370740006dc1a7b6",
-            "versionId": "59315d0d370740006dc1a7b7",
+            "_id": ObjectID("595bacf1370740006dc1ab7f"),
+            "gameId": ObjectID("59315d0d370740006dc1a7b6"),
+            "versionId": ObjectID("59315d0d370740006dc1a7b7"),
             "name": "g1c1",
             "created": "2017-07-04T14:57:53.048Z",
             "authors": [
@@ -61,9 +63,9 @@
             ]
         },
         {
-            "_id": "595bace0370740006dc1ab7e",
-            "gameId": "59315d0d370740006dc1a7b6",
-            "versionId": "59315d0d370740006dc1a7b7",
+            "_id": ObjectID("595bace0370740006dc1ab7e"),
+            "gameId": ObjectID("59315d0d370740006dc1a7b6"),
+            "versionId": ObjectID("59315d0d370740006dc1a7b7"),
             "name": "g1c2",
             "created": "2017-07-04T14:57:36.826Z",
             "authors": [
@@ -80,9 +82,9 @@
             ]
         },
         {
-            "_id": "5953c068370740006dc1ab7b",
-            "gameId": "59289445370740006dc1a794",
-            "versionId": "59289445370740006dc1a795",
+            "_id": ObjectID("5953c068370740006dc1ab7b"),
+            "gameId": ObjectID("59289445370740006dc1a794"),
+            "versionId": ObjectID("59289445370740006dc1a795"),
             "name": "g2c1",
             "created": "2017-06-28T14:42:48.426Z",
             "authors": [
@@ -97,13 +99,13 @@
                 "s4"
             ]
         }
-    ]
+    ],
     sessions: [
         {
-            "_id": "595badad370740006dc1ab80",
-            "gameId": "59315d0d370740006dc1a7b6",
-            "versionId": "59315d0d370740006dc1a7b7",
-            "classId": "595bacf1370740006dc1ab7f",
+            "_id": ObjectID("595badad370740006dc1ab80"),
+            "gameId": ObjectID("59315d0d370740006dc1a7b6"),
+            "versionId": ObjectID("59315d0d370740006dc1a7b7"),
+            "classId": ObjectID("595bacf1370740006dc1ab7f"),
             "name": "g1c1s1",
             "allowAnonymous": false,
             "created": "2017-07-04T15:01:01.878Z",
@@ -121,10 +123,10 @@
             ]
         },
         {
-            "_id": "595badbe370740006dc1ab81",
-            "gameId": "59315d0d370740006dc1a7b6",
-            "versionId": "59315d0d370740006dc1a7b7",
-            "classId": "595bacf1370740006dc1ab7f",
+            "_id": ObjectID("595badbe370740006dc1ab81"),
+            "gameId": ObjectID("59315d0d370740006dc1a7b6"),
+            "versionId": ObjectID("59315d0d370740006dc1a7b7"),
+            "classId": ObjectID("595bacf1370740006dc1ab7f"),
             "name": "g1c1s2",
             "allowAnonymous": true,
             "created": "2017-07-04T15:01:18.422Z",
@@ -142,10 +144,10 @@
             ]
         },
         {
-            "_id": "595bb031370740006dc1ab82"
-            "gameId": "59315d0d370740006dc1a7b6",
-            "versionId": "59315d0d370740006dc1a7b7",
-            "classId": "595bace0370740006dc1ab7e",
+            "_id": ObjectID("595bb031370740006dc1ab82"),
+            "gameId": ObjectID("59315d0d370740006dc1a7b6"),
+            "versionId": ObjectID("59315d0d370740006dc1a7b7"),
+            "classId": ObjectID("595bace0370740006dc1ab7e"),
             "name": "g1c2s1",
             "allowAnonymous": false,
             "created": "2017-07-04T15:11:45.126Z",
@@ -160,10 +162,10 @@
             ]
         },
         {
-            "_id": "59565c67370740006dc1ab7c",
-            "gameId": "59289445370740006dc1a794",
-            "versionId": "59289445370740006dc1a795",
-            "classId": "5953c068370740006dc1ab7b",
+            "_id": ObjectID("59565c67370740006dc1ab7c"),
+            "gameId": ObjectID("59289445370740006dc1a794"),
+            "versionId": ObjectID("59289445370740006dc1a795"),
+            "classId": ObjectID("5953c068370740006dc1ab7b"),
             "name": "g2c1s1",
             "allowAnonymous": true,
             "created": "2017-06-30T14:12:55.209Z",
@@ -177,10 +179,10 @@
             ]
         },
         {
-            "_id": "595bac18370740006dc1ab7d",
-            "gameId": "59289445370740006dc1a794",
-            "versionId": "59289445370740006dc1a795",
-            "classId": "5953c068370740006dc1ab7b",
+            "_id": ObjectID("595bac18370740006dc1ab7d"),
+            "gameId": ObjectID("59289445370740006dc1a794"),
+            "versionId": ObjectID("59289445370740006dc1a795"),
+            "classId": ObjectID("5953c068370740006dc1ab7b"),
             "name": "g2c1s2",
             "allowAnonymous": true,
             "created": "2017-07-04T14:54:16.859Z",
@@ -194,4 +196,4 @@
             ]
         }
     ]
-}
+};
