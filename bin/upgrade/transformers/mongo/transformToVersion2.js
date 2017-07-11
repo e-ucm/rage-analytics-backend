@@ -34,6 +34,7 @@ function updateSessionClassId(sessionsColection, sessionItem, classes, config, c
         name: 'Automatic Class (' + sessionItem.name + ')',
         allowAnonymous: false,
         created: new Date(),
+        authors: sessionItem.teachers,
         students: sessionItem.students,
         teachers: sessionItem.teachers
     }).then(function (classRes) {
