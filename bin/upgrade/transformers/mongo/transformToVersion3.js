@@ -26,20 +26,53 @@ function backup(config, callback) {
 function upgrade(config, callback) {
     // Transformers
     var classesCollection = config.mongodb.db.collection('classes');
-    var sessionscollection = config.mongodb.db.collection('sessions');
+    var sessionsCollection = config.mongodb.db.collection('sessions');
+    var activitiesCollection = config.mongodb.db.collection('activities');
 
-    // Remove the unnecesary fields from class
-    classesCollection.updateMany({},
-        { $unset: { gameId: '', versionId: ''} }
-    ).then(function() {
-        // Rename activities collection to activities
-        sessionscollection.rename('activities', function(err, newColl) {
-            if(err) {
-                return callback(err);
+    var cleanClasses = function(){
+        // Remove the unnecesary fields from class
+        classesCollection.updateMany({},
+            { $unset: { gameId: '', versionId: ''} }
+        ).then(function() {
+            // Rename activities collection to activities
+            sessionsCollection.rename('activities', function(err, newColl) {
+                if(err) {
+                    return callback(err);
+                }
+                callback(null, config);
+            });
+        });
+    }
+
+    activitiesCollection.find({}, function(err, iterator){
+        iterator.toArray(function(err, docs) {
+            if(docs.length > 0){
+                var ts = new Date().getTime();
+                console.log('WARNING MongoTransformerTo3: Activities collection already exists, creating backup in "activities_' + ts + '"');
+                activitiesCollection.rename('activities_' + ts, function(err, newColl) {
+                    if(err) {
+                        console.log('WARNING MongoTransformerTo3: Cant create backup, aborting');
+                        return callback(err);
+                    }
+                    console.log('MongoTransformerTo3: Activities collection backup created');
+
+                    cleanClasses();
+                });
+            }else{
+                console.log('MongoTransformerTo3: Activities collection may exist, but is empty. Trying to drop it.');
+                activitiesCollection.drop(function(err, result){
+                    if(err)
+                        console.log('MongoTransformerTo3: Cant drop it. Probably dont exists.');
+                    else
+                        console.log('MongoTransformerTo3: Activities collection successfully dropped');
+
+                    cleanClasses();
+                })
             }
-            callback(null, config);
         });
     });
+
+    
 
 }
 
