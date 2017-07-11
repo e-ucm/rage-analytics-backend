@@ -19,9 +19,11 @@
 'use strict';
 
 var should = require('should');
-fs = require('fs');
+var async = require('async');
+var Collection = require('easy-collections');
 
-module.exports = function (request, db) {
+module.exports = function (request, db, config) {
+    config.mongodb.db = db;
 
     /**-------------------------------------------------------------**/
     /**-------------------------------------------------------------**/
@@ -30,9 +32,9 @@ module.exports = function (request, db) {
     /**-------------------------------------------------------------**/
     describe('Mongo TransformTo3 test', function () {
 
-        var inData = "";
+        var inData = require('./upgradeInputs/exampleTo3IN');
 
-        before(function(done){
+        beforeEach(function(done){
             db.collection('games').remove({},function(err, removed){
                 should(err).be.null;
                 db.collection('versions').remove({},function(err, removed){
@@ -41,29 +43,22 @@ module.exports = function (request, db) {
                         should(err).be.null;
                         db.collection('sessions').remove({},function(err, removed){
                             should(err).be.null;
-                            fs.readFile('/upgradeInputs/exampleTo2IN', 'utf8', function (err,data) {
-                                if (err) {
-                                    should(err).be.null;
+                            db.collection('games').insert(inData.games, function(err,result){
+                                if(!err){
+                                    db.collection('versions').insert(inData.versions, function(err,result){
+                                        if(!err){
+                                            db.collection('classes').insert(inData.classes, function(err,result){
+                                                if(!err){
+                                                    db.collection('sessions').insert(inData.sessions, function(err,result){
+                                                        if(!err){
+                                                            done();
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                        }
+                                    });
                                 }
-                                inData = JSON.parse(data);
-
-                                db.collection('games').insert(inData.games, function(err,result){
-                                    if(!err){
-                                        db.collection('versions').insert(inData.versions, function(err,result){
-                                            if(!err){
-                                                db.collection('classes').insert(inData.classes, function(err,result){
-                                                    if(!err){
-                                                        db.collection('sessions').insert(inData.sessions, function(err,result){
-                                                            if(!err){
-                                                                done();
-                                                            }
-                                                        });
-                                                    }
-                                                });
-                                            }
-                                        });
-                                    }
-                                });
                             });
                         });
                     });
@@ -72,7 +67,19 @@ module.exports = function (request, db) {
         });
 
         afterEach(function (done) {
-            // delete all index
+            db.collection('games').remove({},function(err, removed){
+                should(err).be.null;
+                db.collection('versions').remove({},function(err, removed){
+                    should(err).be.null;
+                    db.collection('sessions').remove({},function(err, removed){
+                        should(err).be.null;
+                        db.collection('classes').remove({},function(err, removed){
+                            should(err).be.null;
+                            done();
+                        });
+                    });
+                });
+            });
         });
 
         it('should transform correctly mongo sessions', function (done) {
@@ -80,7 +87,7 @@ module.exports = function (request, db) {
             // apply transform
             var t = require('../../../bin/upgrade/transformers/mongo/transformToVersion3.js');
             async.waterfall([function (newCallback) {
-                    newCallback(null, request.app.config);
+                    newCallback(null, config);
                 },  t.backup,
                     t.upgrade,
                     t.check],
@@ -91,24 +98,39 @@ module.exports = function (request, db) {
 
                     should(db.collection('activities')).be.Object();
 
-                    fs.readFile('/upgradeInputs/exampleTo2IN', 'utf8', function (err,data) {
-                        if (err) {
-                            should(err).be.null;
+                    var ncom = 0;
+                    var tocom = inData.sessions.length;
+                    var completed = function(){
+                        ncom++
+                        if(ncom >= tocom){
+                            done();
                         }
-                        inData = JSON.parse(data);
+                    }
 
-                        var findActivityFor = function(session){
-                            db.collection('activities').findOne({_id: session._id}, function(err, activity){
-                                should.equal(session.name, activity.name);
-                            });
-                        }
+                    var findActivityFor = function(session){
+                        new Collection(db, 'activities').find(session._id, true)
+                        .then(function(activity){
+                            should.equal(session.name, activity.name);
+                            completed();
+                        }).fail(function(err){
+                            console.info(err);
+                        });
+                    }
 
-                        for(var s in inData.sessions){
-                            findActivityFor(s);
-                        }
+                    db.collection('sessions').find({}, function(err,sessions){
+                        sessions.forEach(function(s){
+                            if(s == null)
+                                return;
+
+                            tocom++;
+                            findClassFor(s);
+                        });
                     });
+
+                    for(var s of inData.sessions){
+                        findActivityFor(s);
+                    }
                 });
-            // compare DB with output
         });
     });
 };
