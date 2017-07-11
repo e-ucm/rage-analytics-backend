@@ -824,6 +824,8 @@ function setUpKibanaIndex(esClient, callback) {
                 }
                 countCallback();
             });
+        } else {
+            countCallback();
         }
     });
 }
@@ -846,7 +848,8 @@ function setUpTemplateIndex(esClient, callback) {
         var bulkUpgradedTraces = [];
         var count = 0;
         hits.hits.forEach(function (hit) {
-            if (hit._type === 'index') {
+            if (hit._type === 'index' ||
+                hit._type === 'index-pattern') {
                 count++;
             } else {
                 bulkUpgradedTraces.push({index: {_index: to, _type: hit._type, _id: hit._id}});
@@ -875,7 +878,8 @@ function setUpTemplateIndex(esClient, callback) {
         var countCallback = finishedCountCallback(count + 1, finishedCallback);
         if (count > 0) {
             hits.hits.forEach(function (hit) {
-                if (hit._type === 'index') {
+                if (hit._type === 'index' ||
+                    hit._type === 'index-pattern') {
                     setUpIndexPattern(esClient, hit, indices.configs.template, countCallback);
                 }
             });
@@ -890,6 +894,8 @@ function setUpTemplateIndex(esClient, callback) {
                 }
                 countCallback();
             });
+        } else {
+            countCallback();
         }
     });
 }
@@ -909,7 +915,9 @@ function setUpGameIndex(esClient, gameIndex, callback) {
         var bulkUpgradedTraces = [];
         var count = 0;
         hits.hits.forEach(function (hit) {
-            if (hit._type !== 'visualization') {
+            if (hit._type !== 'visualization' &&
+                hit._type !== 'index-pattern' &&
+                hit._type !== 'index') {
                 bulkUpgradedTraces.push({index: {_index: to, _type: hit._type, _id: hit._id}});
                 bulkUpgradedTraces.push(hit._source);
 
@@ -938,10 +946,12 @@ function setUpGameIndex(esClient, gameIndex, callback) {
         var countCallback = finishedCountCallback(count + 1, finishedCallback);
         if (count > 0) {
             hits.hits.forEach(function (hit) {
-                if (hit._type !== 'visualization') {
-                    return;
+                if (hit._type === 'visualization') {
+                    setUpVisualization(esClient, hit, gameIndex, countCallback);
+                } else if (hit._type === 'index' ||
+                    hit._type === 'index-pattern') {
+                    setUpIndexPattern(esClient, hit, gameIndex, countCallback);
                 }
-                setUpVisualization(esClient, hit, gameIndex, countCallback);
             });
         }
 
@@ -954,6 +964,8 @@ function setUpGameIndex(esClient, gameIndex, callback) {
                 }
                 countCallback();
             });
+        } else {
+            countCallback();
         }
     });
 }
