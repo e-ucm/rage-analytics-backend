@@ -22,7 +22,7 @@ var ObjectID = require('mongodb').ObjectID;
 
 var defaultTraceAttributes = [
     'name', 'timestamp', 'event',
-    'target', 'type', 'ext',
+    'target', 'type',
     'gameplayId', 'versionId', 'session',
     'firstSessionStarted', 'currentSessionStarted',
     'score', 'success', 'completion', 'response',
@@ -31,15 +31,22 @@ var defaultTraceAttributes = [
 ];
 var extensions = [];
 
+String.prototype.replaceAll = function (search, replacement) {
+    var target = this;
+    return target.replace(new RegExp(search, 'g'), replacement);
+};
+
 var reindex = function (esClient, from, to, callback) {
     esClient.reindex({
         refresh: true,
         body: {
+            //   conflicts: 'proceed',
             source: {
                 index: from
             },
             dest: {
-                index: to
+                index: to,
+                version_type: 'internal'
             }
         }
     }, function (err, response) {
@@ -51,8 +58,58 @@ var reindex = function (esClient, from, to, callback) {
     });
 };
 
+
+var reindexManually = function (esClient, from, to, callback) {
+    scrollIndex(esClient, from, function (err, finished, hits, finishedCallback) {
+        if (err) {
+            console.error(err);
+            return callback(err);
+        }
+
+        if (finished) {
+            return callback(null, from.index);
+        }
+
+        if (hits.hits.length === 0) {
+            return callback(null, from.index);
+        }
+
+        var bulkUpgradedTraces = [];
+        hits.hits.forEach(function (hit) {
+            var trace = hit._source;
+            if (trace) {
+                bulkUpgradedTraces.push({index: {_index: to, _type: hit._type, _id: hit._id}});
+                bulkUpgradedTraces.push(trace);
+            }
+        });
+        esClient.bulk({
+            body: bulkUpgradedTraces
+        }, function (err, resp) {
+            if (err) {
+                return callback(err);
+            }
+            finishedCallback();
+        });
+    });
+};
+
+
 var backUpIndex = function (esClient, index, callback) {
-    reindex(esClient, index.index, 'backup_' + index.index, function (err, from, response) {
+    var backupedIndex = 'backup_' + index.index;
+    reindex(esClient, index.index, backupedIndex, function (err, from, response) {
+        var found = false;
+        for (var k = 0; k < indices.backup.length; ++k) {
+            var backIndex = indices.backup[k];
+            if (backIndex.index === backupedIndex) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            var upgrade = Object.assign({}, index);
+            upgrade.index = backupedIndex;
+            indices.backup.push(upgrade);
+        }
         callback(err, index, response);
     });
 };
@@ -281,6 +338,9 @@ function finishedCountCallback(length, callback) {
 }
 
 function upgradeGamesIndices(esClient, callback) {
+    if (indices.games.length === 0) {
+        return callback();
+    }
     var i;
     for (i = 0; i < indices.games.length; i++) {
         var gameIndex = indices.games[i];
@@ -291,18 +351,21 @@ function upgradeGamesIndices(esClient, callback) {
 function checkTraceExtensions(trace) {
     var newTrace = {};
     Object.keys(trace).forEach(function (property) {
-        if (defaultTraceAttributes.indexOf(property) === -1) {
-            if (!newTrace.ext) {
-                newTrace.ext = {};
+            if (defaultTraceAttributes.indexOf(property) === -1) {
+                if (!newTrace.ext) {
+                    newTrace.ext = {};
+                }
+                newTrace.ext[property] = trace[property];
+
+                if (extensions.indexOf(property) === -1) {
+                    extensions.push(property);
+                }
+            } else {
+                newTrace[property] = trace[property];
             }
-            newTrace.ext[property] = trace[property];
-            if (extensions.indexOf(property) === -1) {
-                extensions.push(property);
-            }
-        } else {
-            newTrace[property] = trace[property];
         }
-    });
+    )
+    ;
     return newTrace;
 }
 
@@ -312,14 +375,18 @@ function identifyExtensionsFromIndex(esClient, traceIndex, callback) {
     esClient.search({
         index: traceIndex.index,
         scroll: '30s', // keep the search results "scrollable" for 30 seconds
-        type: 'traces',
-        body: {
-            query: {
-                "match_all": {}
+        type: 'traces'
+    }, function getMoreUntilDone(error, response) {
+        if (error) {
+            return callback(error);
+        }
+        // collect the title from each response
+        if (response.hits.hits.length === 0) {
+            console.log('Completed scrolling, 0 results', traceIndex);
+            if (callback) {
+                callback();
             }
         }
-    }, function getMoreUntilDone(error, response) {
-        // collect the title from each response
         var bulkUpgradedTraces = [];
         var upgradeIndex = 'upgrade_' + traceIndex.index;
         response.hits.hits.forEach(function (hit) {
@@ -334,6 +401,22 @@ function identifyExtensionsFromIndex(esClient, traceIndex, callback) {
         esClient.bulk({
             body: bulkUpgradedTraces
         }, function (err, resp) {
+            if (err) {
+                return callback(err);
+            }
+            var found = false;
+            for (var k = 0; k < indices.upgrade.length; ++k) {
+                var index = indices.upgrade[k];
+                if (index.index === upgradeIndex) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                var upgrade = Object.assign({}, traceIndex);
+                upgrade.index = upgradeIndex;
+                indices.upgrade.push(upgrade);
+            }
             if (response.hits.total > total) {
                 // ask elasticsearch for the next set of hits from this search
                 esClient.scroll({
@@ -351,6 +434,9 @@ function identifyExtensionsFromIndex(esClient, traceIndex, callback) {
 }
 
 function identifyExtensions(esClient, indexArray, callback) {
+    if (indexArray.length === 0) {
+        return callback();
+    }
     var i;
     for (i = 0; i < indexArray.length; i++) {
         var traceIndex = indexArray[i];
@@ -360,33 +446,34 @@ function identifyExtensions(esClient, indexArray, callback) {
 
 function scrollIndex(esClient, index, callback) {
     // first we do a search, and specify a scroll timeout
-    var total = 0;
-    esClient.search({
-        index: index.index,
-        scroll: '30s', // keep the search results "scrollable" for 30 seconds
-        q: '*'
-    }, function getMoreUntilDone(error, response) {
-        // collect the title from each response
-        if (error) {
-            return callback(error);
-        }
-
-        total += response.hits.hits.length;
-        callback(null, false, response.hits, function () {
-            if (response.hits.total > total) {
-                // ask elasticsearch for the next set of hits from this search
-                esClient.scroll({
-                    scrollId: response._scroll_id,
-                    scroll: '30s'
-                }, getMoreUntilDone);
-            } else {
-                console.log('Completed scrolling', index);
-                if (callback) {
-                    callback(null, true);
-                }
+    setTimeout(function () {
+        var total = 0;
+        esClient.search({
+            index: index.index,
+            scroll: '30s' // keep the search results "scrollable" for 30 seconds
+        }, function getMoreUntilDone(error, response) {
+            // collect the title from each response
+            if (error) {
+                return callback(error);
             }
+
+            total += response.hits.hits.length;
+            callback(null, false, response.hits, function () {
+                if (response.hits.total > total) {
+                    // ask elasticsearch for the next set of hits from this search
+                    esClient.scroll({
+                        scrollId: response._scroll_id,
+                        scroll: '30s'
+                    }, getMoreUntilDone);
+                } else {
+                    console.log('Completed scrolling', index);
+                    if (callback) {
+                        callback(null, true);
+                    }
+                }
+            });
         });
-    });
+    }, 2000);
 }
 
 function checkNeedsUpdate(visualization) {
@@ -406,23 +493,110 @@ function checkNeedsUpdate(visualization) {
         return false;
     }
 
-    var needsUpdate = false;
 
-    for (var i = 0; i < extensions.length; ++i) {
-        var extension = extensions[i];
-        if (!extension) {
-            continue;
-        }
+    var visState = JSON.parse(visualization._source.visState.replaceAll("\\\"", "\""));
 
-        // TODO check it works?
-        if (visualization._source.visState.indexOf(extension) === -1) {
-            continue;
-        }
-        var newVisState = visualization._source.visState.replace(extension, 'ext.' + extension);
-        visualization._source.visState = newVisState;
-        needsUpdate = true;
+    if (!visState.aggs || visState.aggs.length === 0) {
+        return false;
     }
+
+    /*
+     * Example of visState:
+     * {
+     *   \"title\":\"Alternative Selected Correct Incorrect Per QuestionId\",
+     *   \"type\":\"histogram\",
+     *   \"params\":{
+     *       \"addLegend\":true,
+     *       \"addTimeMarker\":false,
+     *       \"addTooltip\":true,
+     *       \"defaultYExtents\":false,
+     *       \"mode\":\"stacked\",
+     *       \"scale\":\"linear\",
+     *       \"setYExtents\":false,
+     *       \"shareYAxis\":true,
+     *       \"times\":[],
+     *       \"yAxis\":{}
+     *   },
+     *   \"aggs\":[
+     *       {\"id\":\"1\",\"type\":\"count\",\"schema\":\"metric\",
+     *           \"params\":{}},
+     *       {\"id\":\"2\",\"type\":\"terms\",\"schema\":\"segment\",
+     *           \"params\":{
+     *               \"field\":\"target.keyword\",
+     *               \"include\":{\"pattern\":\"\"},
+     *               \"size\":100,
+     *               \"order\":\"asc\",
+     *               \"orderBy\":\"_term\",
+     *               \"customLabel\":\"Alternative\"
+     *               }
+     *           },
+     *       {\"id\":\"4\",\"type\":\"filters\",\"schema\":\"group\",
+     *           \"params\":{
+     *               \"filters\":[
+     *                   {
+     *                       \"input\":{
+     *                           \"query\":{
+     *                               \"query_string\":{
+     *                                   \"query\":\"success:true\",
+     *                                   \"analyze_wildcard\":true
+     *                                   }
+     *                               }
+     *                           },
+     *                       \"label\":\"\"
+     *                   },
+     *                   {
+     *                       \"input\":{
+     *                           \"query\":{
+     *                               \"query_string\":{
+     *                                   \"query\":\"success:false\",
+     *                                   \"analyze_wildcard\":true
+     *                               }
+     *                           }
+     *                       }
+     *                   }
+     *               ]
+     *           }
+     *       }
+     *   ],
+     *   \"listeners\":{}
+     * }
+     * */
+    var needsUpdate = false;
+    for (var i = 0; i < visState.aggs.length; ++i) {
+        var agg = visState.aggs[i];
+        if (!agg) {
+            continue;
+        }
+
+        if (!agg.params) {
+            continue;
+        }
+
+        if (!agg.params['field']) {
+            continue;
+        }
+
+        var field = agg.params['field'];
+
+        var isDefaultAttribute = false;
+        for (var j = 0; j < defaultTraceAttributes.length; ++j) {
+            var defaultAttribute = defaultTraceAttributes[j];
+
+            if (field === defaultAttribute ||
+                field === defaultAttribute + '.keyword') {
+                isDefaultAttribute = true;
+                break;
+            }
+        }
+
+        if (!isDefaultAttribute) {
+            agg.params['field'] = 'ext.' + field;
+            needsUpdate = true;
+        }
+    }
+
     if (needsUpdate) {
+        visualization._source.visState = JSON.stringify(visState);
         return visualization;
     } else {
         return false;
@@ -435,12 +609,147 @@ function setUpVisualization(esClient, visualization, index, callback) {
         return callback();
     }
 
+    var upgradedIndex = 'upgrade_' + index.index;
     esClient.index({
-        index: 'upgrade_' + index.index,
+        index: upgradedIndex,
         type: visualization._type,
         id: visualization._id,
         body: visualization._source
     }, function (error, response) {
+        var found = false;
+        for (var k = 0; k < indices.upgrade.length; ++k) {
+            var index = indices.upgrade[k];
+            if (index.index === upgradedIndex) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            var upgrade = Object.assign({}, index);
+            upgrade.index = upgradedIndex;
+            indices.upgrade.push(upgrade);
+        }
+        if (callback) {
+            callback();
+        }
+    });
+}
+
+function checkNeedsUpdateIndexPattern(indexPattern) {
+
+    if (!indexPattern) {
+        return false;
+    }
+
+    if (!indexPattern._source) {
+        return false;
+    }
+
+    if (!indexPattern._source.fields) {
+        return false;
+    }
+
+    var fields = JSON.parse(indexPattern._source.fields.replaceAll("\\\"", "\""));
+
+
+    /*Example fields:
+     * [
+     *   {
+     *       \"name\":\"type\",
+     *       \"type\":\"string\",
+     *       \"count\":0,
+     *       \"scripted\":false,
+     *       \"indexed\":true,
+     *       \"analyzed\":true,
+     *       \"doc_values\":false
+     *   },
+     *   {
+     *       \"name\":\"gameplayId\",
+     *       \"type\":\"string\",
+     *       \"count\":0,
+     *       \"scripted\":false,
+     *       \"indexed\":true,
+     *       \"analyzed\":true,
+     *       \"doc_values\":false
+     *   },
+     *   {
+     *       \"name\":\"Estimulado.keyword\",
+     *       \"type\":\"string\",
+     *       \"count\":0,
+     *       \"scripted\":false,
+     *       \"indexed\":true,
+     *       \"analyzed\":false,
+     *       \"doc_values\":true
+     *   }
+     * ]
+     *
+     * */
+    var needsUpdate = false;
+
+    for (var i = 0; i < fields.length; ++i) {
+        var field = fields[i];
+        if (!field) {
+            continue;
+        }
+
+        if (!field.name) {
+            continue;
+        }
+
+        var fieldName = field.name;
+
+        var isDefaultAttribute = false;
+        for (var j = 0; j < defaultTraceAttributes.length; ++j) {
+            var defaultAttribute = defaultTraceAttributes[j];
+
+            if (fieldName === defaultAttribute ||
+                fieldName === defaultAttribute + '.keyword') {
+                isDefaultAttribute = true;
+                break;
+            }
+        }
+
+        if (!isDefaultAttribute) {
+            field.name = 'ext.' + fieldName;
+            needsUpdate = true;
+        }
+    }
+
+    if (needsUpdate) {
+        var stringified = JSON.stringify(fields);
+        indexPattern._source.fields = stringified;
+        return indexPattern;
+    } else {
+        return false;
+    }
+}
+
+function setUpIndexPattern(esClient, indexPattern, index, callback) {
+    var update = checkNeedsUpdateIndexPattern(indexPattern);
+    if (!update) {
+        return callback();
+    }
+
+    var upgradedIndex = 'upgrade_' + index.index;
+    esClient.index({
+        index: upgradedIndex,
+        type: update._type,
+        id: update._id,
+        body: update._source
+    }, function (error, response) {
+        var found = false;
+        for (var k = 0; k < indices.upgrade.length; ++k) {
+            var index = indices.upgrade[k];
+            if (index.index === upgradedIndex) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            var upgrade = Object.assign({}, index);
+            upgrade.index = upgradedIndex;
+            indices.upgrade.push(upgrade);
+        }
         if (callback) {
             callback();
         }
@@ -461,27 +770,133 @@ function setUpKibanaIndex(esClient, callback) {
             return callback();
         }
 
+
+        var to = 'upgrade_' + indices.configs.kibana.index;
+        var bulkUpgradedTraces = [];
         var count = 0;
         hits.hits.forEach(function (hit) {
-            if (hit._type !== 'visualization') {
-                return;
+            if (hit._type === 'visualization' ||
+                hit._type === 'index-pattern') {
+                count++;
+            } else {
+                bulkUpgradedTraces.push({index: {_index: to, _type: hit._type, _id: hit._id}});
+                bulkUpgradedTraces.push(hit._source);
+
+                var found = false;
+                for (var k = 0; k < indices.upgrade.length; ++k) {
+                    var index = indices.upgrade[k];
+                    if (index.index === to) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    var upgrade = Object.assign({}, indices.configs.kibana);
+                    upgrade.index = to;
+                    indices.upgrade.push(upgrade);
+                }
             }
-            count++;
         });
 
-        if (count === 0) {
+        if (count === 0 && bulkUpgradedTraces.length === 0) {
             return finishedCallback();
         }
 
-        var countCallback = finishedCountCallback(count, finishedCallback);
-        hits.hits.forEach(function (hit) {
-            if (hit._type !== 'visualization') {
-                return;
-            }
+        var countCallback = finishedCountCallback(count + 1, finishedCallback);
 
-            // TODO create kibana upgrade index :))
-            setUpVisualization(esClient, hit, indices.configs.kibana, countCallback);
+        if (count > 0) {
+            hits.hits.forEach(function (hit) {
+                if (hit._type === 'visualization') {
+                    setUpVisualization(esClient, hit, indices.configs.kibana, countCallback);
+                } else if (hit._type === 'index-pattern') {
+                    setUpIndexPattern(esClient, hit, indices.configs.kibana, countCallback);
+                }
+
+            });
+        }
+
+        if (bulkUpgradedTraces.length > 0) {
+            esClient.bulk({
+                body: bulkUpgradedTraces
+            }, function (err, resp) {
+                if (err) {
+                    return callback(err);
+                }
+                countCallback();
+            });
+        } else {
+            countCallback();
+        }
+    });
+}
+
+function setUpTemplateIndex(esClient, callback) {
+    if (!indices.configs.template) {
+        return callback();
+    }
+    scrollIndex(esClient, indices.configs.template, function (err, finished, hits, finishedCallback) {
+        if (err) {
+            console.error(err);
+            return callback(err);
+        }
+
+        if (finished) {
+            return callback();
+        }
+
+        var to = 'upgrade_' + indices.configs.template.index;
+        var bulkUpgradedTraces = [];
+        var count = 0;
+        hits.hits.forEach(function (hit) {
+            if (hit._type === 'index' ||
+                hit._type === 'index-pattern') {
+                count++;
+            } else {
+                bulkUpgradedTraces.push({index: {_index: to, _type: hit._type, _id: hit._id}});
+                bulkUpgradedTraces.push(hit._source);
+
+                var found = false;
+                for (var k = 0; k < indices.upgrade.length; ++k) {
+                    var index = indices.upgrade[k];
+                    if (index.index === to) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    var upgrade = Object.assign({}, indices.configs.template);
+                    upgrade.index = to;
+                    indices.upgrade.push(upgrade);
+                }
+            }
         });
+
+        if (count === 0 && bulkUpgradedTraces.length === 0) {
+            return finishedCallback();
+        }
+
+        var countCallback = finishedCountCallback(count + 1, finishedCallback);
+        if (count > 0) {
+            hits.hits.forEach(function (hit) {
+                if (hit._type === 'index' ||
+                    hit._type === 'index-pattern') {
+                    setUpIndexPattern(esClient, hit, indices.configs.template, countCallback);
+                }
+            });
+        }
+
+        if (bulkUpgradedTraces.length > 0) {
+            esClient.bulk({
+                body: bulkUpgradedTraces
+            }, function (err, resp) {
+                if (err) {
+                    return callback(err);
+                }
+                countCallback();
+            });
+        } else {
+            countCallback();
+        }
     });
 }
 
@@ -496,39 +911,85 @@ function setUpGameIndex(esClient, gameIndex, callback) {
             return callback();
         }
 
+        var to = 'upgrade_' + gameIndex.index;
+        var bulkUpgradedTraces = [];
         var count = 0;
         hits.hits.forEach(function (hit) {
-            if (hit._type !== 'visualization') {
-                return;
+            if (hit._type !== 'visualization' &&
+                hit._type !== 'index-pattern' &&
+                hit._type !== 'index') {
+                bulkUpgradedTraces.push({index: {_index: to, _type: hit._type, _id: hit._id}});
+                bulkUpgradedTraces.push(hit._source);
+
+                var found = false;
+                for (var k = 0; k < indices.upgrade.length; ++k) {
+                    var index = indices.upgrade[k];
+                    if (index.index === to) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    var upgrade = Object.assign({}, gameIndex);
+                    upgrade.index = to;
+                    indices.upgrade.push(upgrade);
+                }
+            } else {
+                count++;
             }
-            count++;
         });
 
-        if (count === 0) {
+        if (count === 0 && bulkUpgradedTraces.length === 0) {
             return finishedCallback();
         }
 
-        var countCallback = finishedCountCallback(count, finishedCallback);
-        hits.hits.forEach(function (hit) {
-            if (hit._type !== 'visualization') {
-                return;
-            }
-            setUpVisualization(esClient, hit, gameIndex, countCallback);
-        });
+        var countCallback = finishedCountCallback(count + 1, finishedCallback);
+        if (count > 0) {
+            hits.hits.forEach(function (hit) {
+                if (hit._type === 'visualization') {
+                    setUpVisualization(esClient, hit, gameIndex, countCallback);
+                } else if (hit._type === 'index' ||
+                    hit._type === 'index-pattern') {
+                    setUpIndexPattern(esClient, hit, gameIndex, countCallback);
+                }
+            });
+        }
+
+        if (bulkUpgradedTraces.length > 0) {
+            esClient.bulk({
+                body: bulkUpgradedTraces
+            }, function (err, resp) {
+                if (err) {
+                    return callback(err);
+                }
+                countCallback();
+            });
+        } else {
+            countCallback();
+        }
     });
 }
 
 
 function setUpVisualizations(esClient, callback) {
     setUpKibanaIndex(esClient, function (err) {
-        if (indices.games.length === 0) {
-            return callback();
+        if (err) {
+            return callback(err);
         }
-        for (var i = 0; i < indices.games.length; i++) {
-            var gameIndex = indices.games[i];
-            setUpGameIndex(esClient, gameIndex, callback);
-        }
-    })
+        setUpTemplateIndex(esClient, function (err) {
+            if (err) {
+                return callback(err);
+            }
+            if (indices.games.length === 0) {
+                return callback();
+            }
+
+            for (var i = 0; i < indices.games.length; i++) {
+                var gameIndex = indices.games[i];
+                setUpGameIndex(esClient, gameIndex, callback);
+            }
+        });
+    });
 }
 
 function upgrade(config, callback) {
@@ -555,18 +1016,62 @@ function upgrade(config, callback) {
                     });
                     for (var i = 0; i < indices.upgrade.length; i++) {
                         var index = indices.upgrade[i];
-                        reindex(esClient, index.index, index.index.substr('upgrade_'.length), function (err, from, result) {
-                            if (err) {
-                                console.error(err);
-                                return callback(err);
-                            }
-                            esClient.indices.delete({index: from}, function (err, result) {
-                                if (!err) {
-                                    indices.deleted[from] = true;
+                        if (!index.index) {
+                            renameCount();
+                            continue;
+                        }
+
+                        var newIndex = index.index.substr('upgrade_'.length);
+                        if (!newIndex) {
+                            renameCount();
+                            continue;
+                        }
+
+                        esClient.indices.exists({
+                                index: newIndex
+                            }, function (err, exists) {
+                                if (err) {
+                                    console.error('Error checking if index exists, going to reindex' + err);
                                 }
-                                renameCount();
-                            });
-                        });
+
+                                if (exists) {
+                                    esClient.indices.delete({index: newIndex}, function (err, result) {
+                                        if (err) {
+                                            console.error(err);
+                                            return callback(err);
+                                        }
+                                        reindexManually(esClient, index, newIndex, function (err, from) {
+                                            if (err) {
+                                                console.error(err);
+                                                return callback(err);
+                                            }
+
+                                            esClient.indices.delete({index: from}, function (err, result) {
+                                                if (!err) {
+                                                    indices.deleted[from] = true;
+                                                }
+                                                renameCount();
+                                            });
+                                        });
+                                    });
+                                } else {
+                                    reindexManually(esClient, index, newIndex, function (err, from) {
+                                        if (err) {
+                                            console.error(err);
+                                            return callback(err);
+                                        }
+
+                                        esClient.indices.delete({index: from}, function (err, result) {
+                                            if (!err) {
+                                                indices.deleted[from] = true;
+                                            }
+                                            renameCount();
+                                        });
+
+                                    });
+                                }
+                            }
+                        );
                     }
                 }));
             }));
@@ -602,6 +1107,22 @@ function clean(config, callback) {
         if (!indices.deleted[upgradeIndex.index]) {
             toRemove.push(upgradeIndex.index);
         }
+    }
+    indices = {
+        traces: [],
+        versions: [],
+        results: [],
+        opaqueValues: [],
+        games: [],
+        configs: {
+            template: null,
+            kibana: null,
+            defaultKibanaIndex: null
+        },
+        others: [],
+        backup: [],
+        upgrade: [],
+        deleted: {}
     }
     if (toRemove.length === 0) {
         return callback(null, config);

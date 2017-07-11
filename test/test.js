@@ -19,7 +19,8 @@
 'use strict';
 
 var request = require('supertest'),
-    db = require('../lib/db');
+    db = require('../lib/db'),
+    app = require('../app');
 
 var config;
 
@@ -27,7 +28,7 @@ describe('API Test', function (done) {
     this.timeout(20000);
     /**Initialize MongoDB**/
     before(function (done) {
-        var app = require('../app');
+        
         config = app.config;
         app.listen(config.port, function (err) {
             if (err) {
@@ -43,7 +44,7 @@ describe('API Test', function (done) {
     });
 
     it('Start tests', function (done) {
-
+/*
         require('./tests/configs');
         require('./tests/tracesConverterTest');
 
@@ -56,10 +57,10 @@ describe('API Test', function (done) {
 
         // Test collector and track, also drop the database.
         require('./tests/collectorTest')(request, db, config);
-
+*/
         // Test transformers
         if (process.env.TEST_ES) {
-            require('.upgraderTests/elastic/elasticTransformerTo2')(request, app.esClient);
+            require('./upgraderTests/elastic/elasticTransformerTo2')(app, app.esClient, db);
         }
         done();
     });

@@ -151,7 +151,13 @@ function transform(callback) {
             console.log('Cleaning...');
             nextTransformer.clean(appConfig, function(cleanError, result) {
 
-                console.log('Clean OK.');
+                if(cleanError){
+                    console.log('Error cleaning!');
+                    console.error(cleanError);
+                } else {
+                    console.log('Clean OK.');
+                }
+
                 var esClient = appConfig.elasticsearch.esClient;
                 esClient.index({
                     index: '.model',
