@@ -21,74 +21,7 @@
 var should = require('should');
 var async = require('async');
 var Collection = require('easy-collections');
-
-function CompletionChecker(max, callback){
-    this.ncom = 0;
-    this.tocom = max;
-    this.Completed = function(){
-        this.ncom++
-        if(this.ncom >= this.tocom){
-            callback();
-        }
-    }
-}
-
-var collectionComparer = function(db, name, data, callback, ignoredFields){
-    db.collection(name).find({}, function(err,result){
-        result.count().then(function(size){
-            var checker = new CompletionChecker(size,callback);
-            result.forEach(function(o1){
-                if(o1 == null)
-                    return;
-
-                var found = false;
-                for(var o2 of data[name]){
-                    if(o1._id.toString() === o2._id.toString()){
-                        found = true;
-                        should(compareDocuments(o1,o2, ignoredFields)).equal(true);
-                    }
-                }
-                should(found).equal(true);
-                checker.Completed();
-            });
-        });
-    });
-}
-
-function compareDocuments(doc1, doc2, ignoredFields){
-    if(ignoredFields === undefined || ignoredFields === null)
-        ignoredFields = [];
-
-    var equal = true;
-    if(doc1 === undefined && doc2 === undefined || doc1 === null &&  doc2 === null){
-        return true;
-    }
-    if(!doc1 || !doc2){
-        console.log("ERROR COMPARING VALUES (SOME VALUE IS NOT VALID): ", doc1, " AND ", doc2);
-        return false;
-    }
-    Object.keys(doc1).forEach(function(key) {
-        if(ignoredFields.includes(key)){
-            equal = true;
-            return;
-        }
-
-        var val = doc1[key];
-        if(typeof(val) !== typeof({})){
-            if(val !== doc2[key]){
-                console.log("ERROR COMPARING VALUES: ", val, " (",typeof(val),") AND ", doc2[key]," (",typeof(val),")");
-                equal = false;
-            }
-            if(typeof(val) !== typeof(doc2[key])){
-                console.log("ERROR COMPARING TYPES: ", val, " AND ", doc2[key])
-                equal = false;
-            }
-        } else {
-            equal = compareDocuments(val, doc2[key], ignoredFields);
-        }
-    });
-    return equal;
-}
+var utils = require('../upgraderTestUtils.js');
 
 module.exports = function (request, db, config) {
     config.mongodb.db = db;
@@ -103,6 +36,40 @@ module.exports = function (request, db, config) {
         var inData = require('./upgradeInputs/exampleTo2IN');
         var outData = require('./upgradeOutputs/exampleTo2OUT');
 
+        var insertAndUpgrade = function(data, callback){
+            var transform = function(){
+                var t = require('../../../bin/upgrade/transformers/mongo/transformToVersion2.js');
+                async.waterfall([function (newCallback) {
+                    newCallback(null, config);
+                },  t.backup,
+                    t.upgrade,
+                    t.check],
+                function (err, result) {
+                    if (err) {
+                        return logError(err, result);
+                    }
+                    callback();
+                });
+            };
+
+            if(Object.keys(data).length == 0){
+                transform();
+            }
+
+            var checker = new utils.CompletionChecker(Object.keys(data).length, transform);
+
+            Object.keys(data).forEach(function (key) {
+                if(key == null)
+                    return;
+
+                db.collection(key).insert(data[key], function(err,result){
+                    should(err).be.null;
+                    checker.Completed();
+                });
+            });
+        }
+
+
         beforeEach(function(done){
             db.collection('games').remove({},function(err, removed){
                 should(err).be.null;
@@ -110,19 +77,7 @@ module.exports = function (request, db, config) {
                     should(err).be.null;
                     db.collection('sessions').remove({},function(err, removed){
                         should(err).be.null;
-                        db.collection('games').insert(inData.games, function(err,result){
-                            if(!err){
-                                db.collection('versions').insert(inData.versions, function(err,result){
-                                    if(!err){
-                                        db.collection('sessions').insert(inData.sessions, function(err,result){
-                                            if(!err){
-                                                done();
-                                            }
-                                        });
-                                    }
-                                });
-                            }
-                        });
+                        done();
                     });
                 });
             });
@@ -145,95 +100,51 @@ module.exports = function (request, db, config) {
         });
 
         it('should create a class for each session and include classId into the sessions', function (done) {
-            // apply transform
-            var t = require('../../../bin/upgrade/transformers/mongo/transformToVersion2.js');
-            async.waterfall([function (newCallback) {
-                    newCallback(null, config);
-                },  t.backup,
-                    t.upgrade,
-                    t.check],
-                function (err, result) {
-                    if (err) {
-                        return logError(err, result);
-                    }
+            insertAndUpgrade(inData, function(){
+                should(db.collection('classes')).be.Object();
 
-                    should(db.collection('classes')).be.Object();
+                var checker = new utils.CompletionChecker(0,done);
 
-                    var checker = new CompletionChecker(0,done);
+                var findClassFor = function(session){
+                    new Collection(db, 'classes').find(session.classId, true)
+                    .then(function(classe){
+                        should(classe).be.Object();
+                        should.equal(classe.name, 'Automatic Class (' + session.name + ')');
+                        checker.Completed();
+                    }).fail(function(err){
+                        console.info(err);
+                    });
+                }
 
-                    var findClassFor = function(session){
-                        new Collection(db, 'classes').find(session.classId, true)
-                        .then(function(classe){
-                            should(classe).be.Object();
-                            should.equal(classe.name, 'Automatic Class (' + session.name + ')');
-                            checker.Completed();
-                        }).fail(function(err){
-                            console.info(err);
-                        });
-                    }
+                db.collection('sessions').find({}, function(err,sessions){
+                    sessions.forEach(function(s){
+                        if(s == null)
+                            return;
 
-                    db.collection('sessions').find({}, function(err,sessions){
-                        sessions.forEach(function(s){
-                            if(s == null)
-                                return;
-
-                            checker.tocom++;
-                            findClassFor(s);
-                        });
+                        checker.tocom++;
+                        findClassFor(s);
                     });
                 });
-            // compare DB with output
+            });
         });
 
         it('should Games collection be equal to exampleTo2OUT games array', function (done) {
-            // apply transform
-            var t = require('../../../bin/upgrade/transformers/mongo/transformToVersion2.js');
-            async.waterfall([function (newCallback) {
-                newCallback(null, config);
-            },  t.backup,
-                t.upgrade,
-                t.check],
-            function (err, result) {
-                if (err) {
-                    return logError(err, result);
-                }
-                collectionComparer(db, 'games', outData, done);
+            insertAndUpgrade(inData, function(){
+                utils.collectionComparer(db, 'games', outData, done);
             });
         });
 
         it('should versions collection be equal to exampleTo2OUT versions array', function (done) {
-            // apply transform
-            var t = require('../../../bin/upgrade/transformers/mongo/transformToVersion2.js');
-            async.waterfall([function (newCallback) {
-                newCallback(null, config);
-            },  t.backup,
-                t.upgrade,
-                t.check],
-            function (err, result) {
-                if (err) {
-                    return logError(err, result);
-                }
-
-                collectionComparer(db, 'versions', outData, done);
+            insertAndUpgrade(inData, function(){
+                utils.collectionComparer(db, 'versions', outData, done);
             });
         });
 
         it('should classes collection be equal to exampleTo2OUT classes array ignoring _id', function (done) {
-            // apply transform
-            var t = require('../../../bin/upgrade/transformers/mongo/transformToVersion2.js');
-            async.waterfall([function (newCallback) {
-                newCallback(null, config);
-            },  t.backup,
-                t.upgrade,
-                t.check],
-            function (err, result) {
-                if (err) {
-                    return logError(err, result);
-                }
-
+            insertAndUpgrade(inData, function(){
                 db.collection('classes').find({}, function(err,classes){
                     classes.count().then(function(size){
-                        var checker = new CompletionChecker(size,done);
+                        var checker = new utils.CompletionChecker(size,done);
                         classes.forEach(function(o1){
                             if(o1 == null)
                                 return;
@@ -242,7 +153,7 @@ module.exports = function (request, db, config) {
                             for(var o2 of outData.classes){
                                 if(o1.name.toString() === o2.name.toString()){
                                     found = true;
-                                    should(compareDocuments(o1,o2, ["_id"])).equal(true);
+                                    should(utils.compareDocuments(o1, o2, ["_id", "created"])).equal(true);
                                 }
                             }
                             should(found).equal(true);
@@ -254,19 +165,22 @@ module.exports = function (request, db, config) {
         });
 
         it('should sessions collection be equal to exampleTo2OUT sessions array ignoring classId (previously checked)', function (done) {
-            // apply transform
-            var t = require('../../../bin/upgrade/transformers/mongo/transformToVersion2.js');
-            async.waterfall([function (newCallback) {
-                newCallback(null, config);
-            },  t.backup,
-                t.upgrade,
-                t.check],
-            function (err, result) {
-                if (err) {
-                    return logError(err, result);
+            insertAndUpgrade(inData, function(){
+                utils.collectionComparer(db, 'sessions', outData, done, ["classId"]);
+            });
+        });
+
+        it('should do the upgrade even with empty collections', function (done) {
+            insertAndUpgrade([], function(){
+                var checker = new utils.CompletionChecker(4, done);
+                var comp = function(){
+                    checker.Completed();
                 }
 
-                collectionComparer(db, 'sessions', outData, done, ['classId']);
+                utils.collectionComparer(db, 'games', {'games': []}, comp);
+                utils.collectionComparer(db, 'versions', {'versions': []}, comp);
+                utils.collectionComparer(db, 'classes', {'classes': []}, comp);
+                utils.collectionComparer(db, 'sessions', {'sessions': []}, comp);
             });
         });
     });

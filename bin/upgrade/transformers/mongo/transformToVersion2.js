@@ -32,7 +32,6 @@ function updateSessionClassId(sessionsColection, sessionItem, classes, config, c
         gameId: sessionItem.gameId,
         versionId: sessionItem.versionId,
         name: 'Automatic Class (' + sessionItem.name + ')',
-        allowAnonymous: false,
         created: new Date(),
         authors: sessionItem.teachers,
         students: sessionItem.students,
@@ -83,6 +82,8 @@ function upgrade(config, callback) {
 
         // If the item is null then the cursor is exhausted/empty and closed
         if (item == null) {
+            if(toComplete == 0)
+                callback(null, config);
             return;
         }
 
