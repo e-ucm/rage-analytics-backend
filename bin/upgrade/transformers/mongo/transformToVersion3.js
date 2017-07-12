@@ -34,12 +34,24 @@ function upgrade(config, callback) {
         classesCollection.updateMany({},
             { $unset: { gameId: '', versionId: ''} }
         ).then(function() {
-            // Rename activities collection to activities
-            sessionsCollection.rename('activities', function(err, newColl) {
-                if(err) {
-                    return callback(err);
-                }
-                callback(null, config);
+            sessionsCollection.find({}, function(err, iterator){
+                iterator.toArray(function(err, docs) {
+                    if(docs.length > 0){
+                        // Rename activities collection to activities
+                        sessionsCollection.rename('activities', function(err, newColl) {
+                            if(err) {
+                                return callback(err);
+                            }
+                            callback(null, config);
+                        });
+                    }else{
+                        sessionsCollection.drop(function(err, result){
+                            config.mongodb.db.db.createCollection('activities', function(err, result){
+                                callback(null, config);
+                            })
+                        })
+                    }
+                });
             });
         });
     }
@@ -59,21 +71,12 @@ function upgrade(config, callback) {
                     cleanClasses();
                 });
             }else{
-                console.log('MongoTransformerTo3: Activities collection may exist, but is empty. Trying to drop it.');
                 activitiesCollection.drop(function(err, result){
-                    if(err)
-                        console.log('MongoTransformerTo3: Cant drop it. Probably dont exists.');
-                    else
-                        console.log('MongoTransformerTo3: Activities collection successfully dropped');
-
                     cleanClasses();
                 })
             }
         });
     });
-
-    
-
 }
 
 
@@ -86,6 +89,7 @@ function check(config, callback) {
         }
 
         var activitiesExists = false;
+
         for (var key in collections) {
             var collection = collections[key];
             if (collection.name === 'activities') {
