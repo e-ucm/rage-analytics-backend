@@ -56,7 +56,7 @@ module.exports = function (app, esClient, mongo) {
             });
 
         });
-
+/*
         it('should transform correctly traces extensions', function (done) {
             var fileIn = './upgradeInputs/tracesTo2IN.js';
             var fileOut = './upgradeOutputs/tracesTo2OUT.js';
@@ -130,6 +130,45 @@ module.exports = function (app, esClient, mongo) {
                 bulkFunction,
                 transformFunction,
                 compareFunction
+            ], function (err, result){
+                if (err) {
+                    return done(err);
+                }
+                return done();
+            });
+        });*/
+
+        it('should not be error transforming more than one index', function (done) {
+            var fileIn = './upgradeInputs/templateIndexTo2IN.js';
+            var fileOut = './upgradeOutputs/templateIndexTo2OUT.js';
+
+            var fileIn2 = './upgradeInputs/kibanaIndexTo2IN.js';
+            var fileOut2 = './upgradeOutputs/kibanaIndexTo2OUT.js';
+
+            var searchObj = {
+                index: '.template'
+            };
+
+            async.waterfall([function(callback){
+                callback(null, fileIn, fileOut, '.template', searchObj)},
+                bulkFunction,
+                function(fileIn, fileOut, index, searchObj, callback){
+                    callback(null, fileIn2, fileOut2, '.kibana', searchObj)},
+                bulkFunction,
+                transformFunction
+            ], function (err, result){
+                if (err) {
+                    return done(err);
+                }
+                return done();
+            });
+        });
+        
+        it('should not be error with a empty database', function (done) {
+            async.waterfall([ function(callback){
+                callback(null, null, null, null, null)},
+                transformFunction,
+                checkEmptyDB
             ], function (err, result){
                 if (err) {
                     return done(err);
@@ -210,6 +249,26 @@ module.exports = function (app, esClient, mongo) {
                     return callback(error);
                 }
                 return callback(new Error('The OUT expected ('+bodyOut.length+') and OUT transform('+response.hits.hits.length+') lenght  document are different'))
+            });
+        }, 2000);
+    }
+
+    function checkEmptyDB(fileIn, fileOut, idSession, searchObj, callback){
+
+        setTimeout(function() {
+            app.esClient.cat.indices(function (err, response) {
+                if(response === undefined){
+                    return callback();
+                }
+                var indices = response.split('\n');
+                if(indices.length === 1){
+                    var info = indices[0].split(' ');
+                    if(info[2] === '.model'){
+                        return callback();
+                    }
+                }
+                
+                callback(new Error('database is not empty'));
             });
         }, 2000);
     }
