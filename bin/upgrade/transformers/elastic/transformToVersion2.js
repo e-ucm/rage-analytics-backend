@@ -992,6 +992,54 @@ function setUpVisualizations(esClient, callback) {
     });
 }
 
+function processExistingUpgradeIndex(esClient, index, newIndex, renameCountCallback, callback) {
+    esClient.indices.exists({
+            index: newIndex
+        }, function (err, exists) {
+            if (err) {
+                console.error('Error checking if index exists, going to reindex' + err);
+            }
+
+            if (exists) {
+                esClient.indices.delete({index: newIndex}, function (err, result) {
+                    if (err) {
+                        console.error(err);
+                        return callback(err);
+                    }
+                    reindexManually(esClient, index, newIndex, function (err, from) {
+                        if (err) {
+                            console.error(err);
+                            return callback(err);
+                        }
+
+                        esClient.indices.delete({index: from}, function (err, result) {
+                            if (!err) {
+                                indices.deleted[from] = true;
+                            }
+                            renameCountCallback();
+                        });
+                    });
+                });
+            } else {
+                reindexManually(esClient, index, newIndex, function (err, from) {
+                    if (err) {
+                        console.error(err);
+                        return callback(err);
+                    }
+
+                    esClient.indices.delete({index: from}, function (err, result) {
+                        if (!err) {
+                            indices.deleted[from] = true;
+                        }
+                        renameCountCallback();
+                    });
+
+                });
+            }
+        }
+    );
+}
+
 function upgrade(config, callback) {
     console.log(JSON.stringify(indices, null, '    '));
 
@@ -1026,59 +1074,13 @@ function upgrade(config, callback) {
                             renameCount();
                             continue;
                         }
-
-                        esClient.indices.exists({
-                                index: newIndex
-                            }, function (err, exists) {
-                                if (err) {
-                                    console.error('Error checking if index exists, going to reindex' + err);
-                                }
-
-                                if (exists) {
-                                    esClient.indices.delete({index: newIndex}, function (err, result) {
-                                        if (err) {
-                                            console.error(err);
-                                            return callback(err);
-                                        }
-                                        reindexManually(esClient, index, newIndex, function (err, from) {
-                                            if (err) {
-                                                console.error(err);
-                                                return callback(err);
-                                            }
-
-                                            esClient.indices.delete({index: from}, function (err, result) {
-                                                if (!err) {
-                                                    indices.deleted[from] = true;
-                                                }
-                                                renameCount();
-                                            });
-                                        });
-                                    });
-                                } else {
-                                    reindexManually(esClient, index, newIndex, function (err, from) {
-                                        if (err) {
-                                            console.error(err);
-                                            return callback(err);
-                                        }
-
-                                        esClient.indices.delete({index: from}, function (err, result) {
-                                            if (!err) {
-                                                indices.deleted[from] = true;
-                                            }
-                                            renameCount();
-                                        });
-
-                                    });
-                                }
-                            }
-                        );
+                        processExistingUpgradeIndex(esClient, index, newIndex, renameCount, callback);
                     }
                 }));
             }));
         }));
     }));
 }
-
 
 function check(config, callback) {
     console.log('Check OK');

@@ -35,6 +35,10 @@ function controller(name, controller) {
     controllers[name] = controller;
 }
 
+function getController(name) {
+    return controllers[name];
+}
+
 function roll() {
 
     var refreshes = {};
@@ -140,6 +144,7 @@ function upgrade() {
 }
 
 module.exports = {
+    getController: getController,
     controller: controller,
     upgrade: upgrade
 };
