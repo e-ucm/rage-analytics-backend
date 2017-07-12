@@ -56,6 +56,110 @@ function connect(config, callback) {
     });
 }
 
+function guessModelVersion(esClient, callback) {
+    console.log('Trying to guess elasticsearch existing model version!');
+    var defaultIndex = require(Path.resolve(__dirname, '../../../lib/kibana/defaultIndex.js'));
+    var indexId = 'defaultIndex';
+
+    if(defaultIndex && defaultIndex.title) {
+        indexId = defaultIndex.title;
+    }
+    esClient.get({
+        index: '.template',
+        type: 'index',
+        id: indexId
+    }, function (error, response) {
+        var minVersion = '1';
+        if (error) {
+            console.log('Error while retrieving ElasticSearch .template (defaultIndex) not found,' +
+                ' defaulting to initial version!', error);
+            callback(minVersion);
+        } else {
+            if (response && response._id === indexId && response._source) {
+                var fieldStr = response._source.fields;
+                if (!fieldStr) {
+                    console.log('ElasticSearch Model Version attribute not found, ' +
+                        'defaulting to initial version!');
+                    callback(minVersion);
+                } else {
+                    try {
+                        var fields = JSON.parse(fieldStr);
+
+                        if(fields && fields.length > 0) {
+                            var isVersion2 = false;
+
+                            for(var i = 0; i < fields.length; ++i) {
+                                var field = fields[i];
+                                if(field && field.name && field.name.indexOf('ext.') === 0) {
+                                    isVersion2 = field;
+                                    break;
+                                }
+                            }
+
+                            if(isVersion2) {
+                                console.log('Fields parsed, found ext. def at field ' + JSON.stringify(isVersion2, null, 4));
+                                callback('2');
+                            } else {
+                                console.log('Fields parsed object has elements but no ext valued found, defaulting to minimum version');
+                                callback(minVersion);
+                            }
+                        } else {
+                            console.log('Fields parsed object is null or empty array, defaulting to minimum version');
+                            callback(minVersion);
+                        }
+                    } catch (ex) {
+                        console.log('Error parsing .template defaultIndex.fields', ex);
+                        callback(minVersion);
+                    }
+                }
+            } else {
+                callback(minVersion);
+
+            }
+        }
+
+    });
+}
+
+function refreshStatus(appConfig, callback) {
+
+    // STATUS == 0 -> OK no transition required
+    //        == 1 -> PENDING, transform must be performed
+    //        == 2 -> ERROR, an error has happened, no update
+    var status = 0;
+
+    if (existingModelVersion !== appConfig.elasticsearch.modelVersion.toString()) {
+
+        for (var i = 0; i < transformers.length; ++i) {
+            var transformer = transformers[i];
+            if (existingModelVersion === transformer.version.origin.toString()) {
+                nextTransformer = transformer;
+                break;
+            }
+        }
+
+        if (!nextTransformer) {
+            status = 2;
+        } else {
+            status = 1;
+        }
+
+        // TODO check if all the transformers required exist
+        // and are implemented
+    }
+
+    if(!nextTransformer) {
+        return callback(null, {
+            status: status
+        });
+    }
+    callback(null, {
+        status: status,
+        requirements: nextTransformer.requires,
+        version: nextTransformer.version
+    });
+}
+
 function refresh(callback) {
     nextTransformer = null;
     var esClient = appConfig.elasticsearch.esClient;
@@ -65,63 +169,36 @@ function refresh(callback) {
         type: 'version',
         id: '1'
     }, function (error, response) {
+        var needsVersionGuessing = false;
         if (error) {
             console.log('Error while retrieving ElasticSearch Model Version not found,' +
-                ' defaulting to initial version!', error);
-            existingModelVersion = '1';
+                ' will start guessing version!', error);
+            needsVersionGuessing = true;
         } else {
             if (response && response._id === '1' && response._source) {
                     var version = response._source.version;
                     if (!version) {
                         console.log('ElasticSearch Model Version attribute not found, ' +
-                            'defaulting to initial version!');
-                        existingModelVersion = '1';
+                            'will start guessing version!');
+                        needsVersionGuessing = true;
                     } else {
                         existingModelVersion = version.toString();
                     }
             } else {
                 console.log('ElasticSearch Model Version response (hits) not found, ' +
-                    'defaulting to initial version!');
-                existingModelVersion = '1';
-
+                    'will start guessing version!');
+                needsVersionGuessing = true;
             }
         }
 
-        // STATUS == 0 -> OK no transition required
-        //        == 1 -> PENDING, transform must be performed
-        //        == 2 -> ERROR, an error has happened, no update
-        var status = 0;
-
-        if (existingModelVersion !== appConfig.elasticsearch.modelVersion.toString()) {
-
-            for (var i = 0; i < transformers.length; ++i) {
-                var transformer = transformers[i];
-                if (existingModelVersion === transformer.version.origin.toString()) {
-                    nextTransformer = transformer;
-                    break;
-                }
-            }
-
-            if (!nextTransformer) {
-                status = 2;
-            } else {
-                status = 1;
-            }
-
-            // TODO check if all the transformers required exist
-            // and are implemented
-        }
-
-        if(!nextTransformer) {
-            return callback(null, {
-                status: status
+        if(needsVersionGuessing) {
+            guessModelVersion(esClient, function(newVersion) {
+                existingModelVersion = newVersion;
+                refreshStatus(appConfig, callback);
             });
+        } else {
+            refreshStatus(appConfig, callback);
         }
-        callback(null, {
-            status: status,
-            requirements: nextTransformer.requires,
-            version: nextTransformer.version
-        });
     });
 }
 
@@ -182,5 +259,8 @@ function transform(callback) {
 upgrader.controller('elastic', {
     connect: connect,
     transform: transform,
-    refresh: refresh
+    refresh: refresh,
+    existingModelVersion: function() {
+        return existingModelVersion;
+    }
 });
