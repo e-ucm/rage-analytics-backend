@@ -20,7 +20,6 @@
 
 var Path = require('path');
 var Collection = require('easy-collections');
-var fs = require('fs');
 var async = require('async');
 var upgrader = require(Path.resolve(__dirname, '../upgrader.js'));
 
@@ -132,7 +131,7 @@ function transform(callback) {
                 console.log('Trying to restore...');
                 return nextTransformer.restore(appConfig, function (restoreError, result) {
                     if (restoreError) {
-                        console.error('Error on while restoring the database... sorry :)')
+                        console.error('Error on while restoring the database... sorry :)');
                         return callback(restoreError);
                     }
 
@@ -149,7 +148,7 @@ function transform(callback) {
                     console.log('Trying to restore...');
                     return nextTransformer.restore(appConfig, function (restoreError, result) {
                         if (restoreError) {
-                            console.error('Error on while restoring the database... sorry :)')
+                            console.error('Error on while restoring the database... sorry :)');
                             return callback(restoreError);
                         }
 

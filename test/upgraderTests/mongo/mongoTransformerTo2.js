@@ -46,37 +46,37 @@ module.exports = function (request, db, config) {
                     t.check],
                 function (err, result) {
                     if (err) {
-                        return logError(err, result);
+                        return console.error(err, result);
                     }
                     callback();
                 });
             };
 
-            if(Object.keys(data).length == 0){
+            if(Object.keys(data).length === 0){
                 transform();
             }
 
             var checker = new utils.CompletionChecker(Object.keys(data).length, transform);
 
             Object.keys(data).forEach(function (key) {
-                if(key == null)
+                if(key === null)
                     return;
 
                 db.collection(key).insert(data[key], function(err,result){
-                    should(err).be.null;
+                    should.equal(err, null);
                     checker.Completed();
                 });
             });
-        }
+        };
 
 
         beforeEach(function(done){
             db.collection('games').remove({},function(err, removed){
-                should(err).be.null;
+                should.equal(err, null);
                 db.collection('versions').remove({},function(err, removed){
-                    should(err).be.null;
+                    should.equal(err, null);
                     db.collection('sessions').remove({},function(err, removed){
-                        should(err).be.null;
+                        should.equal(err, null);
                         done();
                     });
                 });
@@ -85,13 +85,13 @@ module.exports = function (request, db, config) {
 
         afterEach(function (done) {
             db.collection('games').remove({},function(err, removed){
-                should(err).be.null;
+                should.equal(err, null);
                 db.collection('versions').remove({},function(err, removed){
-                    should(err).be.null;
+                    should.equal(err, null);
                     db.collection('sessions').remove({},function(err, removed){
-                        should(err).be.null;
+                        should.equal(err, null);
                         db.collection('classes').remove({},function(err, removed){
-                            should(err).be.null;
+                            should.equal(err, null);
                             done();
                         });
                     });
@@ -114,11 +114,11 @@ module.exports = function (request, db, config) {
                     }).fail(function(err){
                         console.info(err);
                     });
-                }
+                };
 
                 db.collection('sessions').find({}, function(err,sessions){
                     sessions.forEach(function(s){
-                        if(s == null)
+                        if(s === null)
                             return;
 
                         checker.tocom++;
@@ -146,16 +146,16 @@ module.exports = function (request, db, config) {
                     classes.count().then(function(size){
                         var checker = new utils.CompletionChecker(size,done);
                         classes.forEach(function(o1){
-                            if(o1 == null)
+                            if(o1 === null)
                                 return;
 
                             var found = false;
-                            for(var o2 of outData.classes){
+                            outData.classes.forEach( function (o2){
                                 if(o1.name.toString() === o2.name.toString()){
                                     found = true;
                                     should(utils.compareDocuments(o1, o2, ["_id", "created"])).equal(true);
                                 }
-                            }
+                            });
                             should(found).equal(true);
                             checker.Completed();
                         });
@@ -175,7 +175,7 @@ module.exports = function (request, db, config) {
                 var checker = new utils.CompletionChecker(4, done);
                 var comp = function(){
                     checker.Completed();
-                }
+                };
 
                 utils.collectionComparer(db, 'games', {'games': []}, comp);
                 utils.collectionComparer(db, 'versions', {'versions': []}, comp);

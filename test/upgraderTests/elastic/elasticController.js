@@ -18,9 +18,7 @@
 
 'use strict';
 
-var should = require('should'),
-    utils = require('../upgraderTestUtils.js');
-
+var should = require('should');
 
 module.exports = function (app, esClient, mongo) {
 

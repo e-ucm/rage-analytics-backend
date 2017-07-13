@@ -6,12 +6,12 @@ var completionChecker = function(max, callback){
     this.ncom = 0;
     this.tocom = max;
     this.Completed = function(){
-        this.ncom++
+        this.ncom++;
         if(this.ncom >= this.tocom){
             callback();
         }
-    }
-}
+    };
+};
 
 var compareDocuments = function(doc1, doc2, ignoredFields){
     if(ignoredFields === undefined || ignoredFields === null)
@@ -99,7 +99,7 @@ var compareDocuments = function(doc1, doc2, ignoredFields){
         });
     }
     return equal;
-}
+};
 
 module.exports = {
     compareDocuments: compareDocuments,
@@ -117,16 +117,16 @@ module.exports = {
                 }
 
                 result.forEach(function(o1){
-                    if(o1 == null)
+                    if(o1 === null)
                         return;
 
                     var found = false;
-                    for(var o2 of data[name]){
+                    data[name].forEach(function(o2){
                         if(o1._id.toString() === o2._id.toString()){
                             found = true;
                             should(compareDocuments(o1,o2, ignoredFields)).equal(true);
                         }
-                    }
+                    });
                     should(found).equal(true);
                     checker.Completed();
                 });

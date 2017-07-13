@@ -20,7 +20,6 @@
 
 var Path = require('path');
 var async = require('async');
-var fs = require('fs');
 var config = require(Path.resolve(__dirname, '../../config.js'));
 
 function logError(err, result) {
@@ -64,7 +63,7 @@ function roll() {
                 }
                 if (refresh.status === 2) {
                     return logError('Error, refresh returned 2!',
-                        result);
+                        err);
                 }
             }
 
@@ -86,8 +85,8 @@ function roll() {
             /*
              Gathering requirements for all controllers to any version
              */
-            for (var key in controllers) {
-                var contrReqs = status[key].requirements;
+            for (var keyCtr in controllers) {
+                var contrReqs = status[keyCtr].requirements;
                 for (var contrReq in contrReqs) {
                     var contrReqVersion = contrReqs[contrReq].toString();
                     if (!requirements[contrReq])
@@ -100,8 +99,8 @@ function roll() {
             }
 
             var transforms = {};
-            for (var key in controllers) {
-                if(status[key].status === 0) {
+            for (var keyCtr2 in controllers) {
+                if(status[keyCtr2].status === 0) {
                     continue;
                 }
                 var version = status[key].version;

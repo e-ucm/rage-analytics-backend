@@ -47,38 +47,38 @@ module.exports = function (request, db, config) {
                 function (err, result) {
                     if (err) {
                         console.info(err);
-                        return logError(err, result);
+                        return console.error(err, result);
                     }
                     callback();
                 });
             };
 
-            if(Object.keys(data).length == 0){
+            if(Object.keys(data).length === 0){
                 transform();
             }
 
             var checker = new utils.CompletionChecker(Object.keys(data).length, transform);
 
             Object.keys(data).forEach(function (key) {
-                if(key == null)
+                if(key === null)
                     return;
 
                 db.collection(key).insert(data[key], function(err,result){
-                    should(err).be.null;
+                    should.equal(err, null);
                     checker.Completed();
                 });
             });
-        }
+        };
 
         beforeEach(function(done){
             db.collection('games').remove({},function(err, removed){
-                should(err).be.null;
+                should.equal(err, null);
                 db.collection('versions').remove({},function(err, removed){
-                    should(err).be.null;
+                    should.equal(err, null);
                     db.collection('classes').remove({},function(err, removed){
-                        should(err).be.null;
+                        should.equal(err, null);
                         db.collection('sessions').remove({},function(err, removed){
-                            should(err).be.null;
+                            should.equal(err, null);
                             done();
                         });
                     });
@@ -88,13 +88,13 @@ module.exports = function (request, db, config) {
 
         afterEach(function (done) {
             db.collection('games').remove({},function(err, removed){
-                should(err).be.null;
+                should.equal(err, null);
                 db.collection('versions').remove({},function(err, removed){
-                    should(err).be.null;
+                    should.equal(err, null);
                     db.collection('activities').remove({},function(err, removed){
-                        should(err).be.null;
+                        should.equal(err, null);
                         db.collection('classes').remove({},function(err, removed){
-                            should(err).be.null;
+                            should.equal(err, null);
                             done();
                         });
                     });
@@ -108,11 +108,11 @@ module.exports = function (request, db, config) {
                 var ncom = 0;
                 var tocom = inData.sessions.length;
                 var completed = function(){
-                    ncom++
+                    ncom++;
                     if(ncom >= tocom){
                         done();
                     }
-                }
+                };
 
                 var findActivityFor = function(session){
                     new Collection(db, 'activities').find(session._id, true)
@@ -122,21 +122,11 @@ module.exports = function (request, db, config) {
                     }).fail(function(err){
                         console.info(err);
                     });
-                }
+                };
 
-                db.collection('sessions').find({}, function(err,sessions){
-                    sessions.forEach(function(s){
-                        if(s == null)
-                            return;
-
-                        tocom++;
-                        findClassFor(s);
-                    });
-                });
-
-                for(var s of inData.sessions){
+                inData.sessions.forEach(function (s){
                     findActivityFor(s);
-                }
+                });
             });
         });
 
@@ -145,7 +135,7 @@ module.exports = function (request, db, config) {
                 utils.collectionComparer(db, 'games', outData, done);
             });
         });
-
+                            
         it('should Versions collection be equal to exampleTo3OUT versions array', function (done) {
             insertAndUpgrade(inData, function(){
                 utils.collectionComparer(db, 'versions', outData, done);
@@ -175,7 +165,7 @@ module.exports = function (request, db, config) {
                 var checker = new utils.CompletionChecker(5, done);
                 var comp = function(){
                     checker.Completed();
-                }
+                };
 
                 utils.collectionComparer(db, 'games', {'games': []}, comp);
                 utils.collectionComparer(db, 'versions', {'versions': []}, comp);

@@ -572,11 +572,11 @@ function checkNeedsUpdate(visualization) {
             continue;
         }
 
-        if (!agg.params['field']) {
+        if (!agg.params.field) {
             continue;
         }
 
-        var field = agg.params['field'];
+        var field = agg.params.field;
 
         var isDefaultAttribute = false;
         for (var j = 0; j < defaultTraceAttributes.length; ++j) {
@@ -590,7 +590,7 @@ function checkNeedsUpdate(visualization) {
         }
 
         if (!isDefaultAttribute) {
-            agg.params['field'] = 'ext.' + field;
+            agg.params.field = 'ext.' + field;
             needsUpdate = true;
         }
     }
@@ -617,9 +617,10 @@ function setUpVisualization(esClient, visualization, index, callback) {
         body: visualization._source
     }, function (error, response) {
         var found = false;
+        var ind;
         for (var k = 0; k < indices.upgrade.length; ++k) {
-            var index = indices.upgrade[k];
-            if (index.index === upgradedIndex) {
+            ind = indices.upgrade[k];
+            if (ind.index === upgradedIndex) {
                 found = true;
                 break;
             }
@@ -738,9 +739,10 @@ function setUpIndexPattern(esClient, indexPattern, index, callback) {
         body: update._source
     }, function (error, response) {
         var found = false;
+        var ind;
         for (var k = 0; k < indices.upgrade.length; ++k) {
-            var index = indices.upgrade[k];
-            if (index.index === upgradedIndex) {
+            ind = indices.upgrade[k];
+            if (ind.index === upgradedIndex) {
                 found = true;
                 break;
             }
@@ -1125,7 +1127,7 @@ function clean(config, callback) {
         backup: [],
         upgrade: [],
         deleted: {}
-    }
+    };
     if (toRemove.length === 0) {
         return callback(null, config);
     }
@@ -1150,10 +1152,10 @@ function restore(config, callback) {
         });
     }
     var toRemove = [];
-    for (var i = 0; i < indices.upgrade.length; i++) {
-        var index = indices.upgrade[i];
-        if (!indices.deleted[index.index]) {
-            toRemove.push(index.index);
+    for (var j = 0; j < indices.upgrade.length; j++) {
+        var indexj = indices.upgrade[i];
+        if (!indices.deleted[indexj.index]) {
+            toRemove.push(indexj.index);
         }
     }
     if (toRemove.length === 0) {

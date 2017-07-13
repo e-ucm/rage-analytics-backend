@@ -1,3 +1,5 @@
+'use strict';
+
 var ObjectID = require('mongodb').ObjectID;
 
 module.exports = {
@@ -243,4 +245,4 @@ module.exports = {
             ]
         }
     ]
-}
+};

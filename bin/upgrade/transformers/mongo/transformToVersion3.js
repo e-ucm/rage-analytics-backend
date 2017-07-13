@@ -17,7 +17,6 @@
  */
 
 'use strict';
-var Collection = require('easy-collections');
 
 function backup(config, callback) {
     callback(null, config);
@@ -48,13 +47,13 @@ function upgrade(config, callback) {
                         sessionsCollection.drop(function(err, result){
                             config.mongodb.db.db.createCollection('activities', function(err, result){
                                 callback(null, config);
-                            })
-                        })
+                            });
+                        });
                     }
                 });
             });
         });
-    }
+    };
 
     activitiesCollection.find({}, function(err, iterator){
         iterator.toArray(function(err, docs) {
@@ -73,7 +72,7 @@ function upgrade(config, callback) {
             }else{
                 activitiesCollection.drop(function(err, result){
                     cleanClasses();
-                })
+                });
             }
         });
     });

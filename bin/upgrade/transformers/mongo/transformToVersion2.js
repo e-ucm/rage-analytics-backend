@@ -19,9 +19,6 @@
 'use strict';
 var Collection = require('easy-collections');
 
-var fromVersion = 1;
-var toVersion = 2;
-
 function backup(config, callback) {
     callback(null, config);
 }
@@ -71,7 +68,7 @@ function upgrade(config, callback) {
         if(completed >= toComplete){
             callback(err, result);
         }
-    }
+    };
 
     // Execute the each command, triggers for each document
     cursor.each(function (err, item) {
@@ -81,8 +78,8 @@ function upgrade(config, callback) {
         }
 
         // If the item is null then the cursor is exhausted/empty and closed
-        if (item == null) {
-            if(toComplete == 0)
+        if (item === null) {
+            if(toComplete === 0)
                 callback(null, config);
             return;
         }
@@ -106,7 +103,7 @@ function check(config, callback) {
         }
 
         // If the item is null then the cursor is exhausted/empty and closed
-        if (item == null) {
+        if (item === null) {
             callback(null, config);
             return;
         }

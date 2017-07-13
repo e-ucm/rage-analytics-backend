@@ -18,8 +18,7 @@
 
 'use strict';
 
-var should = require('should'),
-    async = require('async'),
+var async = require('async'),
     ObjectID = require('mongodb').ObjectId,
     utils = require('../upgraderTestUtils.js');
 
@@ -56,7 +55,7 @@ module.exports = function (app, esClient, mongo) {
             });
 
         });
-/*
+
         it('should transform correctly traces extensions', function (done) {
             var fileIn = './upgradeInputs/tracesTo2IN.js';
             var fileOut = './upgradeOutputs/tracesTo2OUT.js';
@@ -66,7 +65,7 @@ module.exports = function (app, esClient, mongo) {
             };
             
             async.waterfall([function(callback){
-                callback(null, fileIn, fileOut, idSession.toString(), searchObj)},
+                callback(null, fileIn, fileOut, idSession.toString(), searchObj);},
                 bulkFunction,
                 transformFunction,
                 compareFunction
@@ -86,7 +85,7 @@ module.exports = function (app, esClient, mongo) {
             };
 
             async.waterfall([function(callback){
-                callback(null, fileIn, fileOut, '.kibana', searchObj)},
+                callback(null, fileIn, fileOut, '.kibana', searchObj);},
                 bulkFunction,
                 transformFunction,
                 compareFunction
@@ -106,7 +105,7 @@ module.exports = function (app, esClient, mongo) {
             };
 
             async.waterfall([function(callback){
-                callback(null, fileIn, fileOut, '.games1234', searchObj)},
+                callback(null, fileIn, fileOut, '.games1234', searchObj);},
                 bulkFunction,
                 transformFunction,
                 compareFunction
@@ -126,7 +125,7 @@ module.exports = function (app, esClient, mongo) {
             };
 
             async.waterfall([function(callback){
-                callback(null, fileIn, fileOut, '.template', searchObj)},
+                callback(null, fileIn, fileOut, '.template', searchObj);},
                 bulkFunction,
                 transformFunction,
                 compareFunction
@@ -136,7 +135,7 @@ module.exports = function (app, esClient, mongo) {
                 }
                 return done();
             });
-        });*/
+        });
 
         it('should not be error transforming more than one index', function (done) {
             var fileIn = './upgradeInputs/templateIndexTo2IN.js';
@@ -150,10 +149,10 @@ module.exports = function (app, esClient, mongo) {
             };
 
             async.waterfall([function(callback){
-                callback(null, fileIn, fileOut, '.template', searchObj)},
+                callback(null, fileIn, fileOut, '.template', searchObj);},
                 bulkFunction,
                 function(fileIn, fileOut, index, searchObj, callback){
-                    callback(null, fileIn2, fileOut2, '.kibana', searchObj)},
+                    callback(null, fileIn2, fileOut2, '.kibana', searchObj);},
                 bulkFunction,
                 transformFunction
             ], function (err, result){
@@ -166,7 +165,7 @@ module.exports = function (app, esClient, mongo) {
         
         it('should not be error with a empty database', function (done) {
             async.waterfall([ function(callback){
-                callback(null, null, null, null, null)},
+                callback(null, null, null, null, null);},
                 transformFunction,
                 checkEmptyDB
             ], function (err, result){
@@ -248,7 +247,7 @@ module.exports = function (app, esClient, mongo) {
                     });
                     return callback(error);
                 }
-                return callback(new Error('The OUT expected ('+bodyOut.length+') and OUT transform('+response.hits.hits.length+') lenght  document are different'))
+                return callback(new Error('The OUT expected ('+bodyOut.length+') and OUT transform('+response.hits.hits.length+') lenght  document are different'));
             });
         }, 2000);
     }
