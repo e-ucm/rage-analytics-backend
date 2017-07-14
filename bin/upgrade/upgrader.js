@@ -22,9 +22,12 @@ var Path = require('path');
 var async = require('async');
 var config = require(Path.resolve(__dirname, '../../config.js'));
 
-function logError(err, result) {
+function logError(err, result, callback) {
     console.error('Unexpected error,', err);
     console.error('Result,', result);
+    if (callback) {
+        return callback(err, result);
+    }
     process.exit(1);
 }
 
@@ -34,11 +37,15 @@ function controller(name, controller) {
     controllers[name] = controller;
 }
 
+function clearControllers() {
+    controllers = {};
+}
+
 function getController(name) {
     return controllers[name];
 }
 
-function roll() {
+function roll(callback) {
 
     var refreshes = {};
     for (var key in controllers) {
@@ -52,7 +59,7 @@ function roll() {
             // Results is now equal to: {one: 1, two: 2}
             console.log('Finished refresh phase!');
             if (err) {
-                return logError(err, status);
+                return logError(err, status, callback);
             }
 
             var finish = true;
@@ -63,12 +70,16 @@ function roll() {
                 }
                 if (refresh.status === 2) {
                     return logError('Error, refresh returned 2!',
-                        err);
+                        err, callback);
                 }
             }
 
             if (finish) {
-                return console.log('Finished upgrading!');
+                console.log('Finished upgrading!');
+                if (callback) {
+                    return callback(null, ':D');
+                }
+                return;
             }
 
             /*
@@ -116,15 +127,15 @@ function roll() {
                 function (err, status) {
                     // Results is now equal to: {one: 1, two: 2}
                     if (err) {
-                        return logError(err, status);
+                        return logError(err, status, callback);
                     }
                     console.log('Finished transforms phase!', status);
-                    roll();
+                    roll(callback);
                 });
         });
 }
 
-function upgrade() {
+function upgrade(done) {
     var connects = [function (callback) {
         console.log('Starting connect phase...');
         callback(null, config);
@@ -137,14 +148,15 @@ function upgrade() {
         function (err, result) {
             console.log('Finished connect phase!');
             if (err) {
-                return logError(err, result);
+                return logError(err, result, done);
             }
-            roll();
+            roll(done);
         });
 }
 
 module.exports = {
     getController: getController,
     controller: controller,
-    upgrade: upgrade
+    upgrade: upgrade,
+    clearControllers: clearControllers
 };
