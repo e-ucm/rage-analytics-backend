@@ -64,6 +64,8 @@ describe('API Test', function (done) {
             require('./upgraderTests/elastic/elasticController')(app, app.esClient, db);
             require('./upgraderTests/elastic/elasticTransformerTo2')(app, app.esClient, db);
         }
+
+        require('./upgraderTests/processController')(request, app, db);
         done();
     });
 
