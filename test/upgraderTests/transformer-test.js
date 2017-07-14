@@ -17,40 +17,103 @@
  */
 
 'use strict';
-
-
 var should = require('should');
 var state = 'NONE';
 
 function backup(config, callback) {
-    should(state).equal('NONE');
-    state = 'BACKUP';
-    callback(null, config);
+    console.log('[TEST TRANSFORMER] backup');
+    testCallbacks.called('backup');
+    should(state).be.equal('NONE');
+
+    if (testFlags.backup === false) {
+        state = 'RESTORE';
+        testCallbacks.state(state);
+        callback('Failed to backup', config);
+    } else {
+        state = 'UPGRADE';
+        testCallbacks.state(state);
+        callback(null, config);
+    }
+
 }
 
 function upgrade(config, callback) {
-    should(state).equal('BACKUP');
-    state = 'UPGRADE';
-    callback(null, config);
+    console.log('[TEST TRANSFORMER] upgrade');
+    testCallbacks.called('upgrade');
+    should(state).be.equal('UPGRADE');
+
+    if (testFlags.upgrade === false) {
+        state = 'RESTORE';
+        testCallbacks.state(state);
+        callback('Failed to upgrade', config);
+    } else {
+        state = 'CHECK';
+        testCallbacks.state(state);
+        callback(null, config);
+    }
 }
 
 function check(config, callback) {
-    should(state).equal('CHECK');
-    state = 'CLEAN';
-    callback(null, config);
+    console.log('[TEST TRANSFORMER] check');
+    testCallbacks.called('check');
+    should(state).be.equal('CHECK');
+
+    if (testFlags.check === false) {
+        state = 'RESTORE';
+        testCallbacks.state(state);
+        callback('Failed to check', config);
+    } else {
+        state = 'CLEAN';
+        testCallbacks.state(state);
+        callback(null, config);
+    }
 }
 
 function clean(config, callback) {
-    should(state).equal('CLEAN');
-    state = 'DONE';
-    callback(null, config);
+    console.log('[TEST TRANSFORMER] clean');
+    testCallbacks.called('clean');
+    should(state).be.equal('CLEAN');
+
+    if (testFlags.clean === false) {
+        state = 'DONE';
+        testCallbacks.state(state);
+        callback('Failed to clean', config);
+    } else {
+        state = 'DONE';
+        testCallbacks.state(state);
+        callback(null, config);
+    }
 }
 
 function restore(config, callback) {
+    console.log('[TEST TRANSFORMER] restore');
+    testCallbacks.called('restore');
     // TO DO test restore
-    state = 'NONE';
-    callback(null, config);
+    should(state).be.equal('RESTORE');
+
+    if (testFlags.restore === false) {
+        state = 'ERROR';
+        testCallbacks.state(state);
+        callback('Failed to restore', config);
+    } else {
+        state = 'DONE'; // Should it be ERROR?
+        testCallbacks.state(state);
+        callback(null, config);
+    }
 }
+
+var testCallbacks = {
+    called: function(method) {},
+    state: function(state) {}
+};
+
+var testFlags = {
+    backup: true,
+    upgrade: true,
+    check: true,
+    clean: true,
+    restore: true
+};
 
 module.exports = {
     backup: backup,
@@ -59,8 +122,14 @@ module.exports = {
     clean: clean,
     restore: restore,
     requires: {},
+    // Test vars
+    reset: function() {
+        state = 'NONE';
+    },
     version: {
         origin: '1',
         destination: '2'
-    }
+    },
+    testFlags: testFlags,
+    testCallbacks: testCallbacks
 };
