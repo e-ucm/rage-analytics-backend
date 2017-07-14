@@ -18,6 +18,8 @@
 
 'use strict';
 
+// For ES specific naming convention we need to do this
+// jscs:disable requireCamelCaseOrUpperCaseIdentifiers
 var ObjectID = require('mongodb').ObjectID;
 
 var defaultTraceAttributes = [
@@ -40,7 +42,7 @@ var reindex = function (esClient, from, to, callback) {
     esClient.reindex({
         refresh: true,
         body: {
-            //   conflicts: 'proceed',
+            //   Conflicts: 'proceed',
             source: {
                 index: from
             },
@@ -219,6 +221,35 @@ function backup(config, callback) {
             callback(null, config);
         });
 
+        var backedUpCallback = function (err, index, response) {
+            if (err) {
+                console.error('Backup error');
+                return callback(err);
+            }
+
+            var indexName = index.index;
+            if (indexName === '.kibana') {
+                indices.configs.kibana = index;
+                finishedCount();
+            } else if (indexName === '.template') {
+                indices.configs.template = index;
+                finishedCount();
+            } else if (indexName === 'default-kibana-index') {
+                indices.configs.defaultKibanaIndex = index;
+                finishedCount();
+            } else if (indexName.indexOf('.games') === 0) {
+                indices.games.push(index);
+                finishedCount();
+            } else if (indexName.indexOf('opaque-values-') === 0) {
+                indices.opaqueValues.push(index);
+                finishedCount();
+            } else if (indexName.indexOf('results-') === 0) {
+                indices.results.push(index);
+                finishedCount();
+            } else {
+                checkIsTracesIndex(index, config, finishedCount);
+            }
+        };
         for (var i = 0; i < response.length; i++) {
             var index = response[i];
             if (index.index) {
@@ -233,35 +264,7 @@ function backup(config, callback) {
                     continue;
                 }
             }
-            backUpIndex(esClient, index, function (err, index, response) {
-                if (err) {
-                    console.error('Backup error');
-                    return callback(err);
-                }
-
-                var indexName = index.index;
-                if (indexName === '.kibana') {
-                    indices.configs.kibana = index;
-                    finishedCount();
-                } else if (indexName === '.template') {
-                    indices.configs.template = index;
-                    finishedCount();
-                } else if (indexName === 'default-kibana-index') {
-                    indices.configs.defaultKibanaIndex = index;
-                    finishedCount();
-                } else if (indexName.indexOf('.games') === 0) {
-                    indices.games.push(index);
-                    finishedCount();
-                } else if (indexName.indexOf('opaque-values-') === 0) {
-                    indices.opaqueValues.push(index);
-                    finishedCount();
-                } else if (indexName.indexOf('results-') === 0) {
-                    indices.results.push(index);
-                    finishedCount();
-                } else {
-                    checkIsTracesIndex(index, config, finishedCount);
-                }
-            });
+            backUpIndex(esClient, index, backedUpCallback);
         }
     });
 }
@@ -272,23 +275,23 @@ function upgradeGameIndex(esClient, gameIndex, callback) {
         type: 'visualization',
         id: 'TotalSessionPlayers-Cmn',
         body: {
-            "title": "TotalSessionPlayers-Cmn",
-            "visState": "{\"title\":\"Total Session Players\"," +
-            "\"type\":\"metric\",\"params\":{\"handleNoResults\":true," +
-            "\"fontSize\":60},\"aggs\":[{\"id\":\"1\",\"type\":\"cardinality\"," +
-            "\"schema\":\"metric\",\"params\":{\"field\":\"name.keyword\"," +
-            "\"customLabel\":\"SessionPlayers\"}}],\"listeners\":{}}",
-            "uiStateJSON": "{}",
-            "description": "",
-            "version": 1,
-            "kibanaSavedObjectMeta": {
-                "searchSourceJSON": "{\"index\":\"57604f53f552624300d9caa6\"," +
-                "\"query\":{\"query_string\":{\"query\":\"*\",\"analyze_wildcard\":true}}," +
-                "\"filter\":[]}"
+            title: 'TotalSessionPlayers-Cmn',
+            visState: '{"title":"Total Session Players",' +
+            '"type":"metric","params":{"handleNoResults":true,' +
+            '"fontSize":60},"aggs":[{"id":"1","type":"cardinality",' +
+            '"schema":"metric","params":{"field":"name.keyword",' +
+            '"customLabel":"SessionPlayers"}}],"listeners":{}}',
+            uiStateJSON: '{}',
+            description: '',
+            version: 1,
+            kibanaSavedObjectMeta: {
+                searchSourceJSON: '{"index":"57604f53f552624300d9caa6",' +
+                '"query":{"query_string":{"query":"*","analyze_wildcard":true}},' +
+                '"filter":[]}'
             },
-            "author": "_default_",
-            "isTeacher": true,
-            "isDeveloper": true
+            author: '_default_',
+            isTeacher: true,
+            isDeveloper: true
         }
     }, function (error, response) {
         esClient.index({
@@ -296,28 +299,28 @@ function upgradeGameIndex(esClient, gameIndex, callback) {
             type: 'visualization',
             id: 'xAPIVerbsActivity',
             body: {
-                "title": "xAPIVerbsActivity",
-                "visState": "{\"title\":\"xAPI Verbs Activity\"," +
-                "\"type\":\"histogram\",\"params\":{\"shareYAxis\":true," +
-                "\"addTooltip\":true,\"addLegend\":true,\"scale\":\"linear\"," +
-                "\"mode\":\"stacked\",\"times\":[],\"addTimeMarker\":false," +
-                "\"defaultYExtents\":false,\"setYExtents\":false,\"yAxis\":{}}," +
-                "\"aggs\":[{\"id\":\"1\",\"type\":\"count\",\"schema\":\"metric\"," +
-                "\"params\":{\"customLabel\":\"Activity Count\"}},{\"id\":\"2\"," +
-                "\"type\":\"terms\",\"schema\":\"segment\",\"params\":{" +
-                "\"field\":\"event.keyword\",\"size\":15,\"order\":\"desc\"," +
-                "\"orderBy\":\"1\",\"customLabel\":\"xAPI Verb\"}}],\"listeners\":{}}",
-                "uiStateJSON": "{}",
-                "description": "",
-                "version": 1,
-                "kibanaSavedObjectMeta": {
-                    "searchSourceJSON": "{\"index\":\"57604f53f552624300d9caa6\"," +
-                    "\"query\":{\"query_string\":{\"query\":\"*\",\"analyze_wildcard\":true}}," +
-                    "\"filter\":[]}"
+                title: 'xAPIVerbsActivity',
+                visState: '{"title":"xAPI Verbs Activity",' +
+                '"type":"histogram","params":{"shareYAxis":true,' +
+                '"addTooltip":true,"addLegend":true,"scale":"linear",' +
+                '"mode":"stacked","times":[],"addTimeMarker":false,' +
+                '"defaultYExtents":false,"setYExtents":false,"yAxis":{}},' +
+                '"aggs":[{"id":"1","type":"count","schema":"metric",' +
+                '"params":{"customLabel":"Activity Count"}},{"id":"2",' +
+                '"type":"terms","schema":"segment","params":{' +
+                '"field":"event.keyword","size":15,"order":"desc",' +
+                '"orderBy":"1","customLabel":"xAPI Verb"}}],"listeners":{}}',
+                uiStateJSON: '{}',
+                description: '',
+                version: 1,
+                kibanaSavedObjectMeta: {
+                    searchSourceJSON: '{"index":"57604f53f552624300d9caa6",' +
+                    '"query":{"query_string":{"query":"*","analyze_wildcard":true}},' +
+                    '"filter":[]}'
                 },
-                "author": "_default_",
-                "isTeacher": false,
-                "isDeveloper": true
+                author: '_default_',
+                isTeacher: false,
+                isDeveloper: true
             }
         }, function (error, response) {
             if (callback) {
@@ -370,17 +373,17 @@ function checkTraceExtensions(trace) {
 }
 
 function identifyExtensionsFromIndex(esClient, traceIndex, callback) {
-    // first we do a search, and specify a scroll timeout
+    // First we do a search, and specify a scroll timeout
     var total = 0;
     esClient.search({
         index: traceIndex.index,
-        scroll: '30s', // keep the search results "scrollable" for 30 seconds
+        scroll: '30s', // Keep the search results "scrollable" for 30 seconds
         type: 'traces'
     }, function getMoreUntilDone(error, response) {
         if (error) {
             return callback(error);
         }
-        // collect the title from each response
+        // Collect the title from each response
         if (response.hits.hits.length === 0) {
             console.log('Completed scrolling, 0 results', traceIndex);
             if (callback) {
@@ -418,7 +421,7 @@ function identifyExtensionsFromIndex(esClient, traceIndex, callback) {
                 indices.upgrade.push(upgrade);
             }
             if (response.hits.total > total) {
-                // ask elasticsearch for the next set of hits from this search
+                // Ask elasticsearch for the next set of hits from this search
                 esClient.scroll({
                     scrollId: response._scroll_id,
                     scroll: '30s'
@@ -445,14 +448,14 @@ function identifyExtensions(esClient, indexArray, callback) {
 }
 
 function scrollIndex(esClient, index, callback) {
-    // first we do a search, and specify a scroll timeout
+    // First we do a search, and specify a scroll timeout
     setTimeout(function () {
         var total = 0;
         esClient.search({
             index: index.index,
-            scroll: '30s' // keep the search results "scrollable" for 30 seconds
+            scroll: '30s' // Keep the search results "scrollable" for 30 seconds
         }, function getMoreUntilDone(error, response) {
-            // collect the title from each response
+            // Collect the title from each response
             if (error) {
                 return callback(error);
             }
@@ -460,7 +463,7 @@ function scrollIndex(esClient, index, callback) {
             total += response.hits.hits.length;
             callback(null, false, response.hits, function () {
                 if (response.hits.total > total) {
-                    // ask elasticsearch for the next set of hits from this search
+                    // Ask elasticsearch for the next set of hits from this search
                     esClient.scroll({
                         scrollId: response._scroll_id,
                         scroll: '30s'
@@ -494,7 +497,7 @@ function checkNeedsUpdate(visualization) {
     }
 
 
-    var visState = JSON.parse(visualization._source.visState.replaceAll("\\\"", "\""));
+    var visState = JSON.parse(visualization._source.visState.replaceAll('\\\"', '"'));
 
     if (!visState.aggs || visState.aggs.length === 0) {
         return false;
@@ -650,7 +653,7 @@ function checkNeedsUpdateIndexPattern(indexPattern) {
         return false;
     }
 
-    var fields = JSON.parse(indexPattern._source.fields.replaceAll("\\\"", "\""));
+    var fields = JSON.parse(indexPattern._source.fields.replaceAll('\\\"', '"'));
 
 
     /*Example fields:
@@ -1090,7 +1093,7 @@ function check(config, callback) {
 
     // TODO
     /*
-     callback(null, config); => clean
+     Callback(null, config); => clean
      callback('error', config); => restore
      */
 }
@@ -1142,14 +1145,15 @@ function restore(config, callback) {
         callback(null, config);
     });
     var renameCount = finishedCountCallback(indices.backup.length, operationsCount);
+    var reindexedCallback = function (err, from, result) {
+        if (err) {
+            return callback(err);
+        }
+        esClient.indices.delete({index: from}, renameCount);
+    };
     for (var i = 0; i < indices.backup.length; i++) {
         var index = indices.backup[i];
-        reindex(esClient, index.index, index.index.substr('backup_'.length), function (err, from, result) {
-            if (err) {
-                return callback(err);
-            }
-            esClient.indices.delete({index: from}, renameCount);
-        });
+        reindex(esClient, index.index, index.index.substr('backup_'.length), reindexedCallback);
     }
     var toRemove = [];
     for (var j = 0; j < indices.upgrade.length; j++) {
@@ -1178,5 +1182,6 @@ module.exports = {
         destination: '2'
     }
 };
+// jscs:enable requireCamelCaseOrUpperCaseIdentifiers
 
 
