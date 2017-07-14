@@ -33,6 +33,7 @@ var nextTransformer;
 var appConfig;
 var modelId;
 
+var db = require('../../../lib/db');
 // Set database
 var dbProvider = {
     db: function () {
@@ -40,9 +41,7 @@ var dbProvider = {
     }
 };
 
-var db = require('../../../lib/db');
 db.setDBProvider(dbProvider);
-
 
 function connect(config, callback) {
     config.mongodb.db = db;
@@ -61,6 +60,106 @@ function connect(config, callback) {
     });
 }
 
+
+function guessModelVersion(db, callback) {
+
+    console.log('Starting to guess mongo model version!');
+    var minVersion = '1';
+    db.db.collections(function (error, collections) {
+        if (error) {
+            console.log('Failed to retrieve mongo collections, defaulting to min version!', error);
+            return callback(minVersion);
+        }
+
+        if (!collections) {
+            console.log('Mongo collections object does not exist, defaulting to min version!');
+            return callback(minVersion);
+        }
+
+        if (collections.length === 0) {
+            console.log('Mongo collections object has length 0, defaulting to min version!');
+            return callback(minVersion);
+        }
+
+        var targetVersion = '2';
+        for (var i = 0; i < collections.length; ++i) {
+            var collection = collections[i];
+
+            var collectionName = collection.name;
+            if (collectionName === 'classes') {
+                return callback(targetVersion);
+            }
+
+        }
+
+        var sessionsCollection = db.collection('sessions');
+        var cursor = sessionsCollection.find();
+
+        var found = false;
+        cursor.each(function (err, item) {
+            if(found) {
+                return;
+            }
+            if (err) {
+                console.log('Unexpected error while iterating sessions, defaulting min version!', err);
+                found = true;
+                return callback(minVersion);
+            }
+
+            if (!item) {
+                found = true;
+                return callback(minVersion);
+            }
+
+            // If the item is null then the cursor is exhausted/empty and closed
+            if (item && item.classId) {
+                found = true;
+                return callback(targetVersion);
+            }
+        });
+
+    });
+}
+
+function refreshStatus(appConfig, callback) {
+    // STATUS == 0 -> OK no transition required
+    //        == 1 -> PENDING, transform must be performed
+    //        == 2 -> ERROR, an error has happened, no update
+    var status = 0;
+
+    if (existingModelVersion !== appConfig.mongodb.modelVersion.toString()) {
+
+        for (var i = 0; i < transformers.length; ++i) {
+            var transformer = transformers[i];
+            if (existingModelVersion === transformer.version.origin.toString()) {
+                nextTransformer = transformer;
+                break;
+            }
+        }
+
+        if (!nextTransformer) {
+            status = 2;
+        } else {
+            status = 1;
+        }
+
+        // TODO check if all the transformers required exist
+        // and are implemented
+    }
+
+    if (!nextTransformer) {
+        return callback(null, {
+            status: status
+        });
+    }
+
+    callback(null, {
+        status: status,
+        requirements: nextTransformer.requires,
+        version: nextTransformer.version
+    });
+}
+
 function refresh(callback) {
 
     nextTransformer = null;
@@ -68,51 +167,24 @@ function refresh(callback) {
     var model = new Collection(db, 'model');
 
     model.find({}, true).then(function (model) {
+        var needsGuessing = false;
         if (!model) {
-            console.log('MONGO DB Model Version not found, defaulting to initial version!');
-            existingModelVersion = '1';
+            console.log('MONGO DB Model Version not found, starting to guess version!');
+            needsGuessing = true;
             modelId = null;
         } else {
             existingModelVersion = model.version.toString();
             modelId = model._id;
         }
 
-        // STATUS == 0 -> OK no transition required
-        //        == 1 -> PENDING, transform must be performed
-        //        == 2 -> ERROR, an error has happened, no update
-        var status = 0;
-
-        if (existingModelVersion !== appConfig.mongodb.modelVersion.toString()) {
-
-            for (var i = 0; i < transformers.length; ++i) {
-                var transformer = transformers[i];
-                if (existingModelVersion === transformer.version.origin.toString()) {
-                    nextTransformer = transformer;
-                    break;
-                }
-            }
-
-            if (!nextTransformer) {
-                status = 2;
-            } else {
-                status = 1;
-            }
-
-            // TODO check if all the transformers required exist
-            // and are implemented
-        }
-
-        if (!nextTransformer) {
-            return callback(null, {
-                status: status
+        if (needsGuessing) {
+            guessModelVersion(db, function (newVersion) {
+                existingModelVersion = newVersion;
+                refreshStatus(appConfig, callback);
             });
+        } else {
+            refreshStatus(appConfig, callback);
         }
-
-        callback(null, {
-            status: status,
-            requirements: nextTransformer.requires,
-            version: nextTransformer.version
-        });
     });
 }
 
@@ -184,6 +256,9 @@ function transform(callback) {
 upgrader.controller('mongo', {
     connect: connect,
     refresh: refresh,
-    transform: transform
+    transform: transform,
+    existingModelVersion: function () {
+        return existingModelVersion;
+    }
 });
 
