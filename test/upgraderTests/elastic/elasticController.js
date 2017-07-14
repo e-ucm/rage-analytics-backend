@@ -158,22 +158,22 @@ module.exports = function (app, esClient, mongo) {
     });
 
 
-    function bulkFunction(fileIn, index, callback){
+    function bulkFunction(fileIn, index, callback) {
         var bodyIn = require(fileIn);
 
         var bulkBody = { body: []};
 
-        bodyIn.forEach(function(doc){
-            // action description
+        bodyIn.forEach(function(doc) {
+            // Action description
             bulkBody.body.push({ index:  {
                 _index: index ? index : doc.index,
                 _type: doc.type,
-                _id : doc.id
+                _id: doc.id
             }});
-            // document to index
+            // Document to index
             bulkBody.body.push(doc.source);
         });
-        // fill DB
+        // Fill DB
         app.esClient.bulk(bulkBody, function (error, response) {
             if (error) {
                 return callback(error);

@@ -19,7 +19,6 @@
 'use strict';
 
 var should = require('should');
-var Collection = require('easy-collections');
 
 module.exports = function (request, app, db) {
 
@@ -57,8 +56,9 @@ module.exports = function (request, app, db) {
             }
 
             keys.forEach(function (key) {
-                if (!key)
+                if (!key) {
                     return finished();
+                }
 
                 db.collection(key).insert(data[key], function (err, result) {
                     should.not.exist(err);

@@ -97,7 +97,7 @@ function guessModelVersion(db, callback) {
 
         var found = false;
         cursor.each(function (err, item) {
-            if(found) {
+            if (found) {
                 return;
             }
             if (err) {

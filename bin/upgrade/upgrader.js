@@ -49,7 +49,7 @@ function roll() {
     console.log('Starting refresh phase!');
     async.series(refreshes,
         function (err, status) {
-            // results is now equal to: {one: 1, two: 2}
+            // Results is now equal to: {one: 1, two: 2}
             console.log('Finished refresh phase!');
             if (err) {
                 return logError(err, status);
@@ -58,7 +58,7 @@ function roll() {
             var finish = true;
             for (var key in status) {
                 var refresh = status[key];
-                if(refresh.status !== 0) {
+                if (refresh.status !== 0) {
                     finish = false;
                 }
                 if (refresh.status === 2) {
@@ -67,7 +67,7 @@ function roll() {
                 }
             }
 
-            if(finish) {
+            if (finish) {
                 return console.log('Finished upgrading!');
             }
 
@@ -89,8 +89,9 @@ function roll() {
                 var contrReqs = status[keyCtr].requirements;
                 for (var contrReq in contrReqs) {
                     var contrReqVersion = contrReqs[contrReq].toString();
-                    if (!requirements[contrReq])
+                    if (!requirements[contrReq]) {
                         requirements[contrReq] = {};
+                    }
 
                     if (!requirements[contrReq][contrReqVersion]) {
                         requirements[contrReq][contrReqVersion] = true;
@@ -100,12 +101,12 @@ function roll() {
 
             var transforms = {};
             for (var keyCtr2 in controllers) {
-                if(status[keyCtr2].status === 0) {
+                if (status[keyCtr2].status === 0) {
                     continue;
                 }
                 var version = status[key].version;
                 if (!requirements[key] || !requirements[key][version.origin.toString()]) {
-                    // actualizamos
+                    // Actualizamos
                     transforms[key] = controllers[key].transform;
                 }
             }
@@ -113,7 +114,7 @@ function roll() {
             // TODO, is empty transforms -> double dependency?
             async.series(transforms,
                 function (err, status) {
-                    // results is now equal to: {one: 1, two: 2}
+                    // Results is now equal to: {one: 1, two: 2}
                     if (err) {
                         return logError(err, status);
                     }

@@ -36,33 +36,35 @@ module.exports = function (request, db, config) {
         var inData = require('./upgradeInputs/exampleTo2IN');
         var outData = require('./upgradeOutputs/exampleTo2OUT');
 
-        var insertAndUpgrade = function(data, callback){
-            var transform = function(){
+        var insertAndUpgrade = function (data, callback) {
+            var transform = function () {
                 var t = require('../../../bin/upgrade/transformers/mongo/transformToVersion2.js');
                 async.waterfall([function (newCallback) {
-                    newCallback(null, config);
-                },  t.backup,
-                    t.upgrade,
-                    t.check],
-                function (err, result) {
-                    if (err) {
-                        return console.error(err, result);
-                    }
-                    callback();
-                });
+                        newCallback(null, config);
+                    }, t.backup,
+                        t.upgrade,
+                        t.check,
+                        t.clean],
+                    function (err, result) {
+                        if (err) {
+                            return console.error(err, result);
+                        }
+                        callback();
+                    });
             };
 
-            if(Object.keys(data).length === 0){
+            if (Object.keys(data).length === 0) {
                 transform();
             }
 
             var checker = new utils.CompletionChecker(Object.keys(data).length, transform);
 
             Object.keys(data).forEach(function (key) {
-                if(key === null)
+                if (key === null) {
                     return;
+                }
 
-                db.collection(key).insert(data[key], function(err,result){
+                db.collection(key).insert(data[key], function (err, result) {
                     should.equal(err, null);
                     checker.Completed();
                 });
@@ -70,12 +72,12 @@ module.exports = function (request, db, config) {
         };
 
 
-        beforeEach(function(done){
-            db.collection('games').remove({},function(err, removed){
+        beforeEach(function (done) {
+            db.collection('games').remove({}, function (err, removed) {
                 should.equal(err, null);
-                db.collection('versions').remove({},function(err, removed){
+                db.collection('versions').remove({}, function (err, removed) {
                     should.equal(err, null);
-                    db.collection('sessions').remove({},function(err, removed){
+                    db.collection('sessions').remove({}, function (err, removed) {
                         should.equal(err, null);
                         done();
                     });
@@ -84,13 +86,13 @@ module.exports = function (request, db, config) {
         });
 
         afterEach(function (done) {
-            db.collection('games').remove({},function(err, removed){
+            db.collection('games').remove({}, function (err, removed) {
                 should.equal(err, null);
-                db.collection('versions').remove({},function(err, removed){
+                db.collection('versions').remove({}, function (err, removed) {
                     should.equal(err, null);
-                    db.collection('sessions').remove({},function(err, removed){
+                    db.collection('sessions').remove({}, function (err, removed) {
                         should.equal(err, null);
-                        db.collection('classes').remove({},function(err, removed){
+                        db.collection('classes').remove({}, function (err, removed) {
                             should.equal(err, null);
                             done();
                         });
@@ -100,26 +102,27 @@ module.exports = function (request, db, config) {
         });
 
         it('should create a class for each session and include classId into the sessions', function (done) {
-            insertAndUpgrade(inData, function(){
+            insertAndUpgrade(inData, function () {
                 should(db.collection('classes')).be.Object();
 
-                var checker = new utils.CompletionChecker(0,done);
+                var checker = new utils.CompletionChecker(0, done);
 
-                var findClassFor = function(session){
+                var findClassFor = function (session) {
                     new Collection(db, 'classes').find(session.classId, true)
-                    .then(function(classe){
-                        should(classe).be.Object();
-                        should.equal(classe.name, 'Automatic Class (' + session.name + ')');
-                        checker.Completed();
-                    }).fail(function(err){
+                        .then(function (classe) {
+                            should(classe).be.Object();
+                            should.equal(classe.name, 'Automatic Class (' + session.name + ')');
+                            checker.Completed();
+                        }).fail(function (err) {
                         console.info(err);
                     });
                 };
 
-                db.collection('sessions').find({}, function(err,sessions){
-                    sessions.forEach(function(s){
-                        if(s === null)
+                db.collection('sessions').find({}, function (err, sessions) {
+                    sessions.forEach(function (s) {
+                        if (s === null) {
                             return;
+                        }
 
                         checker.tocom++;
                         findClassFor(s);
@@ -129,31 +132,32 @@ module.exports = function (request, db, config) {
         });
 
         it('should Games collection be equal to exampleTo2OUT games array', function (done) {
-            insertAndUpgrade(inData, function(){
+            insertAndUpgrade(inData, function () {
                 utils.collectionComparer(db, 'games', outData, done);
             });
         });
 
         it('should versions collection be equal to exampleTo2OUT versions array', function (done) {
-            insertAndUpgrade(inData, function(){
+            insertAndUpgrade(inData, function () {
                 utils.collectionComparer(db, 'versions', outData, done);
             });
         });
 
         it('should classes collection be equal to exampleTo2OUT classes array ignoring _id', function (done) {
-            insertAndUpgrade(inData, function(){
-                db.collection('classes').find({}, function(err,classes){
-                    classes.count().then(function(size){
-                        var checker = new utils.CompletionChecker(size,done);
-                        classes.forEach(function(o1){
-                            if(o1 === null)
+            insertAndUpgrade(inData, function () {
+                db.collection('classes').find({}, function (err, classes) {
+                    classes.count().then(function (size) {
+                        var checker = new utils.CompletionChecker(size, done);
+                        classes.forEach(function (o1) {
+                            if (o1 === null) {
                                 return;
+                            }
 
                             var found = false;
-                            outData.classes.forEach( function (o2){
-                                if(o1.name.toString() === o2.name.toString()){
+                            outData.classes.forEach(function (o2) {
+                                if (o1.name.toString() === o2.name.toString()) {
                                     found = true;
-                                    should(utils.compareDocuments(o1, o2, ["_id", "created"])).equal(true);
+                                    should(utils.compareDocuments(o1, o2, ['_id', 'created'])).equal(true);
                                 }
                             });
                             should(found).equal(true);
@@ -165,22 +169,22 @@ module.exports = function (request, db, config) {
         });
 
         it('should sessions collection be equal to exampleTo2OUT sessions array ignoring classId (previously checked)', function (done) {
-            insertAndUpgrade(inData, function(){
-                utils.collectionComparer(db, 'sessions', outData, done, ["classId"]);
+            insertAndUpgrade(inData, function () {
+                utils.collectionComparer(db, 'sessions', outData, done, ['classId']);
             });
         });
 
         it('should do the upgrade even with empty collections', function (done) {
-            insertAndUpgrade([], function(){
+            insertAndUpgrade([], function () {
                 var checker = new utils.CompletionChecker(4, done);
-                var comp = function(){
+                var comp = function () {
                     checker.Completed();
                 };
 
-                utils.collectionComparer(db, 'games', {'games': []}, comp);
-                utils.collectionComparer(db, 'versions', {'versions': []}, comp);
-                utils.collectionComparer(db, 'classes', {'classes': []}, comp);
-                utils.collectionComparer(db, 'sessions', {'sessions': []}, comp);
+                utils.collectionComparer(db, 'games', {games: []}, comp);
+                utils.collectionComparer(db, 'versions', {versions: []}, comp);
+                utils.collectionComparer(db, 'classes', {classes: []}, comp);
+                utils.collectionComparer(db, 'sessions', {sessions: []}, comp);
             });
         });
     });

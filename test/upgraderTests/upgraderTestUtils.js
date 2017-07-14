@@ -2,23 +2,24 @@
 
 var should = require('should');
 
-var completionChecker = function(max, callback){
+var CompletionChecker = function (max, callback) {
     this.ncom = 0;
     this.tocom = max;
-    this.Completed = function(){
+    this.Completed = function () {
         this.ncom++;
-        if(this.ncom >= this.tocom){
+        if (this.ncom >= this.tocom) {
             callback();
         }
     };
 };
 
-var compareDocuments = function(doc1, doc2, ignoredFields){
-    if(ignoredFields === undefined || ignoredFields === null)
+var compareDocuments = function (doc1, doc2, ignoredFields) {
+    if (ignoredFields === undefined || ignoredFields === null) {
         ignoredFields = [];
+    }
 
     var equal = true;
-    if (doc1 === undefined && doc2 === undefined || doc1 === null &&  doc2 === null) {
+    if (doc1 === undefined && doc2 === undefined || doc1 === null && doc2 === null) {
         return true;
     }
     if (!doc1 || !doc2) {
@@ -49,21 +50,21 @@ var compareDocuments = function(doc1, doc2, ignoredFields){
                 return;
             }
 
-            if(ignoredFields.includes(key)){
+            if (ignoredFields.indexOf(key) !== -1) {
                 equal = true;
                 return;
             }
             var val = doc1[key];
 
-            if(val instanceof Date){
+            if (val instanceof Date) {
                 val = val.toISOString();
             }
 
-            
+
             if (typeof (val) !== typeof ({}) && typeof (val) !== typeof ([])) {
                 if (typeof (val) === typeof ('string')) {
                     var val2 = doc2[key];
-                    if(val2 instanceof Date){
+                    if (val2 instanceof Date) {
                         val2 = val2.toISOString();
                     }
 
@@ -103,28 +104,29 @@ var compareDocuments = function(doc1, doc2, ignoredFields){
 
 module.exports = {
     compareDocuments: compareDocuments,
-    CompletionChecker: completionChecker,
-    collectionComparer: function(db, name, data, callback, ignoredFields){
-        db.collection(name).find({}, function(err,result){
-            result.count().then(function(size){
-                
-                var checker = new completionChecker(size,callback);
+    CompletionChecker: CompletionChecker,
+    collectionComparer: function (db, name, data, callback, ignoredFields) {
+        db.collection(name).find({}, function (err, result) {
+            result.count().then(function (size) {
+
+                var checker = new CompletionChecker(size, callback);
                 should(size).equal(data[name].length);
 
-                if(size === 0){
+                if (size === 0) {
                     callback();
                     return;
                 }
 
-                result.forEach(function(o1){
-                    if(o1 === null)
+                result.forEach(function (o1) {
+                    if (o1 === null) {
                         return;
+                    }
 
                     var found = false;
-                    data[name].forEach(function(o2){
-                        if(o1._id.toString() === o2._id.toString()){
+                    data[name].forEach(function (o2) {
+                        if (o1._id.toString() === o2._id.toString()) {
                             found = true;
-                            should(compareDocuments(o1,o2, ignoredFields)).equal(true);
+                            should(compareDocuments(o1, o2, ignoredFields)).equal(true);
                         }
                     });
                     should(found).equal(true);

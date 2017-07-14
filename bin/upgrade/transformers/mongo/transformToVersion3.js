@@ -28,24 +28,24 @@ function upgrade(config, callback) {
     var sessionsCollection = config.mongodb.db.collection('sessions');
     var activitiesCollection = config.mongodb.db.collection('activities');
 
-    var cleanClasses = function(){
+    var cleanClasses = function() {
         // Remove the unnecesary fields from class
         classesCollection.updateMany({},
             { $unset: { gameId: '', versionId: ''} }
         ).then(function() {
-            sessionsCollection.find({}, function(err, iterator){
+            sessionsCollection.find({}, function(err, iterator) {
                 iterator.toArray(function(err, docs) {
-                    if(docs.length > 0){
+                    if (docs.length > 0) {
                         // Rename activities collection to activities
                         sessionsCollection.rename('activities', function(err, newColl) {
-                            if(err) {
+                            if (err) {
                                 return callback(err);
                             }
                             callback(null, config);
                         });
-                    }else{
-                        sessionsCollection.drop(function(err, result){
-                            config.mongodb.db.db.createCollection('activities', function(err, result){
+                    }else {
+                        sessionsCollection.drop(function(err, result) {
+                            config.mongodb.db.db.createCollection('activities', function(err, result) {
                                 callback(null, config);
                             });
                         });
@@ -55,13 +55,13 @@ function upgrade(config, callback) {
         });
     };
 
-    activitiesCollection.find({}, function(err, iterator){
+    activitiesCollection.find({}, function(err, iterator) {
         iterator.toArray(function(err, docs) {
-            if(docs.length > 0){
+            if (docs.length > 0) {
                 var ts = new Date().getTime();
                 console.log('WARNING MongoTransformerTo3: Activities collection already exists, creating backup in "activities_' + ts + '"');
                 activitiesCollection.rename('activities_' + ts, function(err, newColl) {
-                    if(err) {
+                    if (err) {
                         console.log('WARNING MongoTransformerTo3: Cant create backup, aborting');
                         return callback(err);
                     }
@@ -69,8 +69,8 @@ function upgrade(config, callback) {
 
                     cleanClasses();
                 });
-            }else{
-                activitiesCollection.drop(function(err, result){
+            }else {
+                activitiesCollection.drop(function(err, result) {
                     cleanClasses();
                 });
             }

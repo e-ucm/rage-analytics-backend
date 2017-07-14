@@ -601,9 +601,8 @@ function checkNeedsUpdate(visualization) {
     if (needsUpdate) {
         visualization._source.visState = JSON.stringify(visState);
         return visualization;
-    } else {
-        return false;
     }
+    return false;
 }
 
 function setUpVisualization(esClient, visualization, index, callback) {
@@ -723,9 +722,8 @@ function checkNeedsUpdateIndexPattern(indexPattern) {
         var stringified = JSON.stringify(fields);
         indexPattern._source.fields = stringified;
         return indexPattern;
-    } else {
-        return false;
     }
+    return false;
 }
 
 function setUpIndexPattern(esClient, indexPattern, index, callback) {

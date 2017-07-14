@@ -26,7 +26,7 @@ var async = require('async'),
 var idSession = new ObjectID('dummyGameId0');
 
 module.exports = function (app, esClient, mongo) {
-    
+
     /**-------------------------------------------------------------**/
     /**-------------------------------------------------------------**/
     /**              Test Elastic Transformer To v2                 **/
@@ -36,8 +36,8 @@ module.exports = function (app, esClient, mongo) {
         this.timeout(25000);
         app.config.elasticsearch.esClient = esClient;
         app.config.mongodb.db = mongo;
-        
-        before(function(done){
+
+        before(function(done) {
             mongo.collection('sessions').insert(
                 {
                     _id: idSession,
@@ -50,7 +50,7 @@ module.exports = function (app, esClient, mongo) {
         beforeEach(function (done) {
             app.esClient.indices.delete({
                 index: '_all'
-            }, function (error, response){
+            }, function (error, response) {
                 done(error);
             });
 
@@ -63,13 +63,13 @@ module.exports = function (app, esClient, mongo) {
                 index: idSession.toString(),
                 type: 'traces'
             };
-            
-            async.waterfall([function(callback){
+
+            async.waterfall([function(callback) {
                 callback(null, fileIn, fileOut, idSession.toString(), searchObj);},
                 bulkFunction,
                 transformFunction,
                 compareFunction
-            ], function (err, result){
+            ], function (err, result) {
                 if (err) {
                     return done(err);
                 }
@@ -84,12 +84,12 @@ module.exports = function (app, esClient, mongo) {
                 index: '.kibana'
             };
 
-            async.waterfall([function(callback){
+            async.waterfall([function(callback) {
                 callback(null, fileIn, fileOut, '.kibana', searchObj);},
                 bulkFunction,
                 transformFunction,
                 compareFunction
-            ], function (err, result){
+            ], function (err, result) {
                 if (err) {
                     return done(err);
                 }
@@ -104,12 +104,12 @@ module.exports = function (app, esClient, mongo) {
                 index: '.games1234'
             };
 
-            async.waterfall([function(callback){
+            async.waterfall([function(callback) {
                 callback(null, fileIn, fileOut, '.games1234', searchObj);},
                 bulkFunction,
                 transformFunction,
                 compareFunction
-            ], function (err, result){
+            ], function (err, result) {
                 if (err) {
                     return done(err);
                 }
@@ -124,12 +124,12 @@ module.exports = function (app, esClient, mongo) {
                 index: '.template'
             };
 
-            async.waterfall([function(callback){
+            async.waterfall([function(callback) {
                 callback(null, fileIn, fileOut, '.template', searchObj);},
                 bulkFunction,
                 transformFunction,
                 compareFunction
-            ], function (err, result){
+            ], function (err, result) {
                 if (err) {
                     return done(err);
                 }
@@ -148,27 +148,27 @@ module.exports = function (app, esClient, mongo) {
                 index: '.template'
             };
 
-            async.waterfall([function(callback){
+            async.waterfall([function(callback) {
                 callback(null, fileIn, fileOut, '.template', searchObj);},
                 bulkFunction,
-                function(fileIn, fileOut, index, searchObj, callback){
+                function(fileIn, fileOut, index, searchObj, callback) {
                     callback(null, fileIn2, fileOut2, '.kibana', searchObj);},
                 bulkFunction,
                 transformFunction
-            ], function (err, result){
+            ], function (err, result) {
                 if (err) {
                     return done(err);
                 }
                 return done();
             });
         });
-        
+
         it('should not be error with a empty database', function (done) {
-            async.waterfall([ function(callback){
+            async.waterfall([ function(callback) {
                 callback(null, null, null, null, null);},
                 transformFunction,
                 checkEmptyDB
-            ], function (err, result){
+            ], function (err, result) {
                 if (err) {
                     return done(err);
                 }
@@ -177,22 +177,22 @@ module.exports = function (app, esClient, mongo) {
         });
     });
 
-    function bulkFunction(fileIn, fileOut, index, searchObj, callback){
+    function bulkFunction(fileIn, fileOut, index, searchObj, callback) {
         var bodyIn = require(fileIn);
 
         var bulkBody = { body: []};
 
-        bodyIn.forEach(function(doc){
-            // action description
+        bodyIn.forEach(function(doc) {
+            // Action description
             bulkBody.body.push({ index:  {
                 _index: index ? index : doc.index,
                 _type: doc.type,
-                _id : doc.id
+                _id: doc.id
             }});
-            // document to index
+            // Document to index
             bulkBody.body.push(doc.source);
         });
-        // fill DB
+        // Fill DB
         app.esClient.bulk(bulkBody, function (error, response) {
             if (error) {
                 return callback(error);
@@ -203,8 +203,8 @@ module.exports = function (app, esClient, mongo) {
         });
     }
 
-    function transformFunction(fileIn, fileOut, idSession, searchObj, callback){
-        // apply transform
+    function transformFunction(fileIn, fileOut, idSession, searchObj, callback) {
+        // Apply transform
         var t = require('../../../bin/upgrade/transformers/elastic/transformToVersion2.js');
         async.waterfall([function (newCallback) {
             newCallback(null, app.config);
@@ -220,53 +220,53 @@ module.exports = function (app, esClient, mongo) {
         });
     }
 
-    function compareFunction(fileIn, fileOut, idSession, searchObj, callback){
+    function compareFunction(fileIn, fileOut, idSession, searchObj, callback) {
         var bodyOut = require(fileOut);
 
         setTimeout(function() {
             app.esClient.search(searchObj, function (err, response) {
-                console.log("SEARCH RESPONSE: ", JSON.stringify(response));
-                if(err){
+                console.log('SEARCH RESPONSE: ', JSON.stringify(response));
+                if (err) {
                     return callback(err);
                 }
-                if(response.hits.hits.length === bodyOut.length) {
+                if (response.hits.hits.length === bodyOut.length) {
                     var error = null;
-                    bodyOut.forEach(function(doc1){
+                    bodyOut.forEach(function(doc1) {
                         var doc2;
-                        response.hits.hits.forEach(function (doc){
-                            if(doc._id.toString() === doc1.id.toString() && doc._type === doc1.type){
-                                if(utils.compareDocuments(doc._source, doc1.source)){
+                        response.hits.hits.forEach(function (doc) {
+                            if (doc._id.toString() === doc1.id.toString() && doc._type === doc1.type) {
+                                if (utils.compareDocuments(doc._source, doc1.source)) {
                                     doc2 = doc;
                                 }
                             }
                         });
-                        if(!doc2){
+                        if (!doc2) {
                             error = new Error('The result DB and the OUT expected documents are different');
-                            console.error("Document not FOUND: "+JSON.stringify(doc1));
+                            console.error('Document not FOUND: ' + JSON.stringify(doc1));
                         }
                     });
                     return callback(error);
                 }
-                return callback(new Error('The OUT expected ('+bodyOut.length+') and OUT transform('+response.hits.hits.length+') lenght  document are different'));
+                return callback(new Error('The OUT expected (' + bodyOut.length + ') and OUT transform(' + response.hits.hits.length + ') lenght  document are different'));
             });
         }, 2000);
     }
 
-    function checkEmptyDB(fileIn, fileOut, idSession, searchObj, callback){
+    function checkEmptyDB(fileIn, fileOut, idSession, searchObj, callback) {
 
         setTimeout(function() {
             app.esClient.cat.indices(function (err, response) {
-                if(response === undefined){
+                if (response === undefined) {
                     return callback();
                 }
                 var indices = response.split('\n');
-                if(indices.length === 1){
+                if (indices.length === 1) {
                     var info = indices[0].split(' ');
-                    if(info[2] === '.model'){
+                    if (info[2] === '.model') {
                         return callback();
                     }
                 }
-                
+
                 callback(new Error('database is not empty'));
             });
         }, 2000);

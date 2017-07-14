@@ -60,7 +60,7 @@ function guessModelVersion(esClient, callback) {
     var defaultIndex = require(Path.resolve(__dirname, '../../../lib/kibana/defaultIndex.js'));
     var indexId = 'defaultIndex';
 
-    if(defaultIndex && defaultIndex.title) {
+    if (defaultIndex && defaultIndex.title) {
         indexId = defaultIndex.title;
     }
     esClient.get({
@@ -84,18 +84,18 @@ function guessModelVersion(esClient, callback) {
                     try {
                         var fields = JSON.parse(fieldStr);
 
-                        if(fields && fields.length > 0) {
+                        if (fields && fields.length > 0) {
                             var isVersion2 = false;
 
-                            for(var i = 0; i < fields.length; ++i) {
+                            for (var i = 0; i < fields.length; ++i) {
                                 var field = fields[i];
-                                if(field && field.name && field.name.indexOf('ext.') === 0) {
+                                if (field && field.name && field.name.indexOf('ext.') === 0) {
                                     isVersion2 = field;
                                     break;
                                 }
                             }
 
-                            if(isVersion2) {
+                            if (isVersion2) {
                                 console.log('Fields parsed, found ext. def at field ' + JSON.stringify(isVersion2, null, 4));
                                 callback('2');
                             } else {
@@ -147,7 +147,7 @@ function refreshStatus(appConfig, callback) {
         // and are implemented
     }
 
-    if(!nextTransformer) {
+    if (!nextTransformer) {
         return callback(null, {
             status: status
         });
@@ -175,14 +175,14 @@ function refresh(callback) {
             needsVersionGuessing = true;
         } else {
             if (response && response._id === '1' && response._source) {
-                    var version = response._source.version;
-                    if (!version) {
-                        console.log('ElasticSearch Model Version attribute not found, ' +
-                            'will start guessing version!');
-                        needsVersionGuessing = true;
-                    } else {
-                        existingModelVersion = version.toString();
-                    }
+                var version = response._source.version;
+                if (!version) {
+                    console.log('ElasticSearch Model Version attribute not found, ' +
+                        'will start guessing version!');
+                    needsVersionGuessing = true;
+                } else {
+                    existingModelVersion = version.toString();
+                }
             } else {
                 console.log('ElasticSearch Model Version response (hits) not found, ' +
                     'will start guessing version!');
@@ -190,7 +190,7 @@ function refresh(callback) {
             }
         }
 
-        if(needsVersionGuessing) {
+        if (needsVersionGuessing) {
             guessModelVersion(esClient, function(newVersion) {
                 existingModelVersion = newVersion;
                 refreshStatus(appConfig, callback);
@@ -227,7 +227,7 @@ function transform(callback) {
             console.log('Cleaning...');
             nextTransformer.clean(appConfig, function(cleanError, result) {
 
-                if(cleanError){
+                if (cleanError) {
                     console.log('Error cleaning!');
                     console.error(cleanError);
                 } else {

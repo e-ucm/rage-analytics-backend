@@ -5,13 +5,13 @@ var traces = [
         id: 1000,
         type: 'traces',
         source: {
-            name: "name",
-            timestamp: "2017-01-26T16:01:13.225Z",
-            event: "event",
-            target: "target",
-            type: "type",
+            name: 'name',
+            timestamp: '2017-01-26T16:01:13.225Z',
+            event: 'event',
+            target: 'target',
+            type: 'type',
             ext: {
-                extension1: "extension1Value"
+                extension1: 'extension1Value'
             }
         }
     },
@@ -19,22 +19,22 @@ var traces = [
         id: 2000,
         type: 'traces',
         source: {
-            name: "name",
-            timestamp: "2017-01-26T16:01:13.225Z",
-            event: "event",
-            target: "target",
-            type: "type",
+            name: 'name',
+            timestamp: '2017-01-26T16:01:13.225Z',
+            event: 'event',
+            target: 'target',
+            type: 'type',
             ext: {
-                extension1: "extension1Value",
+                extension1: 'extension1Value',
                 extension2: 1,
                 extension3: true,
                 extension4: [
-                    "elem1",
-                    "elem2",
-                    "elem3"
+                    'elem1',
+                    'elem2',
+                    'elem3'
                 ],
                 extension5: {
-                    key: "value"
+                    key: 'value'
                 }
             }
         }
@@ -43,11 +43,11 @@ var traces = [
         id: 3000,
         type: 'traces',
         source: {
-            name: "name",
-            timestamp: "2017-01-26T16:01:13.225Z",
-            event: "event",
-            target: "target",
-            type: "type",
+            name: 'name',
+            timestamp: '2017-01-26T16:01:13.225Z',
+            event: 'event',
+            target: 'target',
+            type: 'type',
             ext: {
                 extension1: null
             }
@@ -57,11 +57,11 @@ var traces = [
         id: 4000,
         type: 'traces',
         source: {
-            name: "name",
-            timestamp: "2017-01-26T16:01:13.225Z",
-            event: "event",
-            target: "target",
-            type: "type",
+            name: 'name',
+            timestamp: '2017-01-26T16:01:13.225Z',
+            event: 'event',
+            target: 'target',
+            type: 'type',
             ext: {
                 ext: 2
             }

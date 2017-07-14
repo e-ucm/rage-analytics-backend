@@ -38,10 +38,10 @@ function updateSessionClassId(sessionsColection, sessionItem, classes, config, c
             return callback(new Error('Unexpected error while creating a class for session'));
         }
         sessionsColection.findAndModify(
-            {"_id": sessionItem._id},
+            {_id: sessionItem._id},
             [],
-            {"$set": {"classId": classRes._id}},
-            {new: true, upsert: true}, 
+            {$set: {classId: classRes._id}},
+            {new: true, upsert: true},
             function (err, doc) {
                 if (err) {
                     return callback(new Error('Unexpected error while updating session\'s classId attribute', err));
@@ -60,12 +60,13 @@ function upgrade(config, callback) {
 
     var completed = 0;
     var toComplete = 0;
-    var completeAll = function(err, result){
-        if(err)
-            callback(err, result);
+    var completeAll = function(err, result) {
+        if (err) {
+            return callback(err, result);
+        }
 
         completed++;
-        if(completed >= toComplete){
+        if (completed >= toComplete) {
             callback(err, result);
         }
     };
@@ -78,9 +79,10 @@ function upgrade(config, callback) {
         }
 
         // If the item is null then the cursor is exhausted/empty and closed
-        if (item === null) {
-            if(toComplete === 0)
+        if (!item) {
+            if (toComplete === 0) {
                 callback(null, config);
+            }
             return;
         }
 
@@ -103,7 +105,7 @@ function check(config, callback) {
         }
 
         // If the item is null then the cursor is exhausted/empty and closed
-        if (item === null) {
+        if (!item) {
             callback(null, config);
             return;
         }
