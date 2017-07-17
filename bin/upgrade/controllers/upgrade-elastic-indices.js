@@ -54,6 +54,10 @@ ElasticController.prototype.doConnect = function (config, callback) {
     });
 };
 
+ElasticController.prototype.getTargetVersion = function (config) {
+    return config.elasticsearch.modelVersion.toString();
+};
+
 ElasticController.prototype.getModelVersion = function (config, callback) {
     var esClient = config.elasticsearch.esClient;
     var modelVersion = null;

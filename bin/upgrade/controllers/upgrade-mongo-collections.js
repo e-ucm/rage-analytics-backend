@@ -84,6 +84,9 @@ MongoController.prototype.guessModelVersion = function(db, callback) {
             var collection = collections[i];
 
             var collectionName = collection.name;
+            if (!collectionName && collection.s) {
+                collectionName = collection.s.name;
+            }
             if (collectionName === 'classes') {
                 return callback(targetVersion);
             }
@@ -117,6 +120,10 @@ MongoController.prototype.guessModelVersion = function(db, callback) {
         });
 
     });
+};
+
+MongoController.prototype.getTargetVersion = function (config) {
+    return config.mongodb.modelVersion.toString();
 };
 
 MongoController.prototype.getModelVersion = function (config, callback) {

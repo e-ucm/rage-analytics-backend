@@ -46,6 +46,10 @@ TestController.prototype.doConnect = function (config, callback) {
     callback(null, config);
 };
 
+TestController.prototype.getTargetVersion = function (config) {
+    return this.testTransformer.version.destination;
+};
+
 TestController.prototype.getModelVersion = function (config, callback) {
     callback(null, this.existingModelVersion);
 };

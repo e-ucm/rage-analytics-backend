@@ -93,8 +93,10 @@ module.exports = function (request, app, db) {
                         origin: '1'
                     }
                 }).deepEqual(status);
-                should(mongoController.existingModelVersion()).equal('1');
-                done();
+                mongoController.getModelVersion(mongoController.appConfig, function(err, version) {
+                    should(version).equal('1');
+                    done();
+                });
             });
         });
 
@@ -113,8 +115,10 @@ module.exports = function (request, app, db) {
                             origin: '1'
                         }
                     }).deepEqual(status);
-                    should(mongoController.existingModelVersion()).equal('1');
-                    done();
+                    mongoController.getModelVersion(mongoController.appConfig, function(err, version) {
+                        should(version).equal('1');
+                        done();
+                    });
                 });
             });
         });
@@ -134,8 +138,10 @@ module.exports = function (request, app, db) {
                             origin: '2'
                         }
                     }).deepEqual(status);
-                    should(mongoController.existingModelVersion()).equal('2');
-                    done();
+                    mongoController.getModelVersion(mongoController.appConfig, function(err, version) {
+                        should(version).equal('2');
+                        done();
+                    });
                 });
             });
         });

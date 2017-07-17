@@ -147,7 +147,6 @@ function upgrade(done) {
         var controller = controllers[key];
         connects.push(controller.connect.bind(controller));
     }
-    console.log(JSON.stringify(controllers, null, 4));
     async.waterfall(connects,
         function (err, result) {
             console.log('Finished connect phase!');

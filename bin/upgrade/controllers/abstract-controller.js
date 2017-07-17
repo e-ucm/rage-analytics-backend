@@ -59,7 +59,7 @@ AbstractController.prototype.refresh = function (callback) {
         this.status = 0;
         this.nextTransformer = null;
 
-        if (this.existingModelVersion !== this.appConfig.elasticsearch.modelVersion.toString()) {
+        if (this.existingModelVersion !== this.getTargetVersion(this.appConfig).toString()) {
 
             for (var i = 0; i < this.transformers.length; ++i) {
                 var transformer = this.transformers[i];
@@ -142,6 +142,9 @@ AbstractController.prototype.transform = function (callback) {
 
 AbstractController.prototype.doConnect = function (config, callback) {
     throw new Error('Connect not implemented');
+};
+AbstractController.prototype.getTargetVersion = function (config) {
+    throw new Error('getTargetVersion not implemented');
 };
 AbstractController.prototype.getModelVersion = function (config, callback) {
     throw new Error('getModelVersion not implemented');
