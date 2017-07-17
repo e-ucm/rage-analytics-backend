@@ -119,10 +119,12 @@ function check(config, callback) {
 }
 
 function clean(config, callback) {
+    // TODO exceptions
     callback(null, config);
 }
 
 function restore(config, callback) {
+    // TODO exceptions
     callback(null, config);
 }
 

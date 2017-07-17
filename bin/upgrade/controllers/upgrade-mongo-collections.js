@@ -20,48 +20,46 @@
 
 var Path = require('path');
 var Collection = require('easy-collections');
-var async = require('async');
 var upgrader = require(Path.resolve(__dirname, '../upgrader.js'));
+var AbstractController = require(Path.resolve(__dirname, './abstract-controller.js'));
+var transformToVersion2 = require(Path.resolve(__dirname,
+    '../transformers/mongo/transformToVersion2.js'));
+var transformToVersion3 = require(Path.resolve(__dirname,
+    '../transformers/mongo/transformToVersion3.js'));
 
-var transformers = [
-    require(Path.resolve(__dirname, '../transformers/mongo/transformToVersion2.js')),
-    require(Path.resolve(__dirname, '../transformers/mongo/transformToVersion3.js'))
-];
 
-var existingModelVersion;
-var nextTransformer;
-var appConfig;
-var modelId;
+function MongoController() {
+    AbstractController.call(this, [transformToVersion2, transformToVersion3]);
+    this.modelId = null;
+    this.dbProvider = {
+        db: function () {
+            return this.database;
+        }
+    };
+    this.db = require('../../../lib/db');
+    this.db.setDBProvider(this.dbProvider);
+}
 
-var db = require('../../../lib/db');
-// Set database
-var dbProvider = {
-    db: function () {
-        return this.database;
-    }
-};
+MongoController.prototype = new AbstractController();
+MongoController.prototype.constructor = MongoController;
 
-db.setDBProvider(dbProvider);
-
-function connect(config, callback) {
-    config.mongodb.db = db;
-    appConfig = config;
+MongoController.prototype.doConnect = function (config, callback) {
+    config.mongodb.db = this.db;
     var MongoClient = require('mongodb').MongoClient;
     var connectionString = config.mongodb.uri;
+    var that = this;
     MongoClient.connect(connectionString, function (err, db) {
         if (err) {
             callback(new Error('Impossible to connect to MongoDB ', err));
         } else {
             console.log('Successfully connected to ' + connectionString);
-            dbProvider.database = db;
-
+            that.dbProvider.database = db;
             callback(null, config);
         }
     });
-}
+};
 
-
-function guessModelVersion(db, callback) {
+MongoController.prototype.guessModelVersion = function(db, callback) {
 
     console.log('Starting to guess mongo model version!');
     var minVersion = '1';
@@ -119,146 +117,55 @@ function guessModelVersion(db, callback) {
         });
 
     });
-}
+};
 
-function refreshStatus(appConfig, callback) {
-    // STATUS == 0 -> OK no transition required
-    //        == 1 -> PENDING, transform must be performed
-    //        == 2 -> ERROR, an error has happened, no update
-    var status = 0;
-
-    if (existingModelVersion !== appConfig.mongodb.modelVersion.toString()) {
-
-        for (var i = 0; i < transformers.length; ++i) {
-            var transformer = transformers[i];
-            if (existingModelVersion === transformer.version.origin.toString()) {
-                nextTransformer = transformer;
-                break;
-            }
-        }
-
-        if (!nextTransformer) {
-            status = 2;
-        } else {
-            status = 1;
-        }
-
-        // TODO check if all the transformers required exist
-        // and are implemented
-    }
-
-    if (!nextTransformer) {
-        return callback(null, {
-            status: status
-        });
-    }
-
-    callback(null, {
-        status: status,
-        requirements: nextTransformer.requires,
-        version: nextTransformer.version
-    });
-}
-
-function refresh(callback) {
-
-    nextTransformer = null;
-    var db = appConfig.mongodb.db;
+MongoController.prototype.getModelVersion = function (config, callback) {
+    var db = this.appConfig.mongodb.db;
     var model = new Collection(db, 'model');
+    var version = '0';
 
     model.find({}, true).then(function (model) {
-        var needsGuessing = false;
         if (!model) {
             console.log('MONGO DB Model Version not found, starting to guess version!');
-            needsGuessing = true;
-            modelId = null;
-        } else {
-            existingModelVersion = model.version.toString();
-            modelId = model._id;
-        }
-
-        if (needsGuessing) {
-            guessModelVersion(db, function (newVersion) {
-                existingModelVersion = newVersion;
-                refreshStatus(appConfig, callback);
+            this.modelId = null;
+            this.guessModelVersion(db, function (newVersion) {
+                callback(null, newVersion);
             });
         } else {
-            refreshStatus(appConfig, callback);
+            version = model.version.toString();
+            this.modelId = model._id;
+            callback(null, version);
         }
+    }.bind(this)).fail(function (err) {
+        callback(err);
     });
-}
+};
 
+MongoController.prototype.setModelVersion = function (config, callback) {
+    var db = this.appConfig.mongodb.db;
+    var model = new Collection(db, 'model');
 
-function transform(callback) {
-    async.waterfall([function (newCallback) {
-            console.log('Starting executing mongo transformer ' + nextTransformer.version);
-            newCallback(null, appConfig);
-        }, nextTransformer.backup,
-            nextTransformer.upgrade,
-            nextTransformer.check],
-        function (err, result) {
-            if (err) {
-                console.error('Check failed (upgrade error?)');
-                console.error(err);
-                console.log('Trying to restore...');
-                return nextTransformer.restore(appConfig, function (restoreError, result) {
-                    if (restoreError) {
-                        console.error('Error on while restoring the database... sorry :)');
-                        return callback(restoreError);
-                    }
-
-                    console.log('Restore OK.');
-                    return callback(err);
-                });
-            }
-
-            console.log('Cleaning...');
-            nextTransformer.clean(appConfig, function (cleanError, result) {
-                if (cleanError) {
-                    console.error('Clean failed (!)');
-                    console.error(err);
-                    console.log('Trying to restore...');
-                    return nextTransformer.restore(appConfig, function (restoreError, result) {
-                        if (restoreError) {
-                            console.error('Error on while restoring the database... sorry :)');
-                            return callback(restoreError);
-                        }
-
-                        console.log('Restore OK.');
-                        callback(err);
-                    });
-                }
-                console.log('Clean OK.');
-
-                var db = appConfig.mongodb.db;
-                var model = new Collection(db, 'model');
-
-                if (!modelId) {
-                    model.insert({
-                        version: nextTransformer.version.destination.toString()
-                    }).then(function (model) {
-                        console.log('Finished transform mongo phase!');
-                        callback(null, model);
-                    });
-                } else {
-                    model.findAndModify(modelId, {
-                        version: nextTransformer.version.destination.toString()
-                    }).then(function (model) {
-                        console.log('Finished transform mongo phase!');
-                        callback(null, model);
-                    });
-                }
-            });
+    var that = this;
+    if (!this.modelId) {
+        model.insert({
+            version: that.nextTransformer.version.destination.toString()
+        }).then(function (model) {
+            console.log('Finished transform mongo phase!');
+            callback(null, model);
+        }).fail(function (err) {
+            callback(err);
         });
-
-}
-
-upgrader.controller('mongo', {
-    connect: connect,
-    refresh: refresh,
-    transform: transform,
-    existingModelVersion: function () {
-        return existingModelVersion;
+    } else {
+        model.findAndModify(that.modelId, {
+            version: that.nextTransformer.version.destination.toString()
+        }).then(function (model) {
+            console.log('Finished transform mongo phase!');
+            callback(null, model);
+        }).fail(function (err) {
+            callback(err);
+        });
     }
-});
+};
+
+upgrader.controller('mongo', new MongoController());
 

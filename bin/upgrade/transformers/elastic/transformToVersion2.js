@@ -1182,4 +1182,3 @@ module.exports = {
 };
 // jscs:enable requireCamelCaseOrUpperCaseIdentifiers
 
-

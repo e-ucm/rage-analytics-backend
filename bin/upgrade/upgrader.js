@@ -50,7 +50,7 @@ function roll(callback) {
     var refreshes = {};
     for (var key in controllers) {
         var controller = controllers[key];
-        refreshes[key] = controller.refresh;
+        refreshes[key] = controller.refresh.bind(controller);
     }
 
     console.log('Starting refresh phase!');
@@ -63,14 +63,13 @@ function roll(callback) {
             }
 
             var finish = true;
-            for (var key in status) {
-                var refresh = status[key];
+            for (var s in status) {
+                var refresh = status[s];
                 if (refresh.status !== 0) {
                     finish = false;
                 }
                 if (refresh.status === 2) {
-                    return logError('Error, refresh returned 2!',
-                        err, callback);
+                    return logError('Error, refresh returned 2!',err, callback);
                 }
             }
 
@@ -111,15 +110,19 @@ function roll(callback) {
             }
 
             var transforms = {};
-            for (var keyCtr2 in controllers) {
-                if (status[keyCtr2].status === 0) {
+            for (var c in controllers) {
+                if (status[c].status === 0) {
                     continue;
                 }
-                var version = status[key].version;
-                if (!requirements[key] || !requirements[key][version.origin.toString()]) {
-                    // Actualizamos
-                    transforms[key] = controllers[key].transform;
+                var version = status[c].version;
+                if (!requirements[c] || !requirements[c][version.origin.toString()]) {
+                    // Update
+                    transforms[c] = controllers[c].transform.bind(controllers[c]);
                 }
+            }
+
+            if (transforms.length === 0) {
+                return logError('Controllers are pending, but no transforms are possible (system locked)!', status);
             }
 
             // TODO, is empty transforms -> double dependency?
@@ -142,8 +145,9 @@ function upgrade(done) {
     }];
     for (var key in controllers) {
         var controller = controllers[key];
-        connects.push(controller.connect);
+        connects.push(controller.connect.bind(controller));
     }
+    console.log(JSON.stringify(controllers, null, 4));
     async.waterfall(connects,
         function (err, result) {
             console.log('Finished connect phase!');

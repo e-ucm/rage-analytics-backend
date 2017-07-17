@@ -20,20 +20,19 @@
 
 var Path = require('path');
 var elasticsearch = require('elasticsearch');
-var async = require('async');
 var upgrader = require(Path.resolve(__dirname, '../upgrader.js'));
+var AbstractController = require(Path.resolve(__dirname, './abstract-controller.js'));
+var transformerToVersion2 = require(Path.resolve(__dirname,
+    '../transformers/elastic/transformToVersion2.js'));
 
+function ElasticController() {
+    AbstractController.call(this, [transformerToVersion2]);
+}
 
-var existingModelVersion;
+ElasticController.prototype = new AbstractController();
+ElasticController.prototype.constructor = ElasticController;
 
-var transformers = [require(Path.resolve(__dirname,
-    '../transformers/elastic/transformToVersion2.js'))];
-var nextTransformer;
-
-var appConfig;
-
-function connect(config, callback) {
-    appConfig = config;
+ElasticController.prototype.doConnect = function (config, callback) {
     var baseUsersAPI = config.elasticsearch.uri;
 
     var esClient = new elasticsearch.Client({
@@ -46,16 +45,57 @@ function connect(config, callback) {
         requestTimeout: 3000
     }, function (error) {
         if (error) {
-            callback(new Error('Elasticsearch cluster is down!', error));
+            callback(new Error('Elasticsearch cluster is down!' + error));
         } else {
             console.log('Successfully connected to elasticsearch!', baseUsersAPI);
             config.elasticsearch.esClient = esClient;
             callback(null, config);
         }
     });
-}
+};
 
-function guessModelVersion(esClient, callback) {
+ElasticController.prototype.getModelVersion = function (config, callback) {
+    var esClient = config.elasticsearch.esClient;
+    var modelVersion = null;
+
+    esClient.get({
+        index: '.model',
+        type: 'version',
+        id: '1'
+    }, function (error, response) {
+        var needsVersionGuessing = false;
+        if (error) {
+            console.log('Error while retrieving ElasticSearch Model Version not found,' +
+                ' will start guessing version!', error);
+            needsVersionGuessing = true;
+        } else {
+            if (response && response._id === '1' && response._source) {
+                var version = response._source.version;
+                if (!version) {
+                    console.log('ElasticSearch Model Version attribute not found, ' +
+                        'will start guessing version!');
+                    needsVersionGuessing = true;
+                } else {
+                    modelVersion = version.toString();
+                }
+            } else {
+                console.log('ElasticSearch Model Version response (hits) not found, ' +
+                    'will start guessing version!');
+                needsVersionGuessing = true;
+            }
+        }
+
+        if (needsVersionGuessing) {
+            this.guessModelVersion(esClient, function(newVersion) {
+                callback(null, newVersion);
+            });
+        } else {
+            callback(null, modelVersion);
+        }
+    });
+};
+
+ElasticController.prototype.guessModelVersion = function(esClient, callback) {
     console.log('Trying to guess elasticsearch existing model version!');
     var defaultIndex = require(Path.resolve(__dirname, '../../../lib/kibana/defaultIndex.js'));
     var indexId = 'defaultIndex';
@@ -118,148 +158,24 @@ function guessModelVersion(esClient, callback) {
         }
 
     });
-}
+};
 
-function refreshStatus(appConfig, callback) {
-
-    // STATUS == 0 -> OK no transition required
-    //        == 1 -> PENDING, transform must be performed
-    //        == 2 -> ERROR, an error has happened, no update
-    var status = 0;
-
-    if (existingModelVersion !== appConfig.elasticsearch.modelVersion.toString()) {
-
-        for (var i = 0; i < transformers.length; ++i) {
-            var transformer = transformers[i];
-            if (existingModelVersion === transformer.version.origin.toString()) {
-                nextTransformer = transformer;
-                break;
-            }
-        }
-
-        if (!nextTransformer) {
-            status = 2;
-        } else {
-            status = 1;
-        }
-
-        // TODO check if all the transformers required exist
-        // and are implemented
-    }
-
-    if (!nextTransformer) {
-        return callback(null, {
-            status: status
-        });
-    }
-    callback(null, {
-        status: status,
-        requirements: nextTransformer.requires,
-        version: nextTransformer.version
-    });
-}
-
-function refresh(callback) {
-    nextTransformer = null;
-    var esClient = appConfig.elasticsearch.esClient;
-
-    esClient.get({
+ElasticController.prototype.setModelVersion = function (config, callback) {
+    var esClient = this.appConfig.elasticsearch.esClient;
+    esClient.index({
         index: '.model',
         type: 'version',
-        id: '1'
+        id: '1',
+        body: {
+            version: this.nextTransformer.version.destination
+        }
     }, function (error, response) {
-        var needsVersionGuessing = false;
         if (error) {
-            console.log('Error while retrieving ElasticSearch Model Version not found,' +
-                ' will start guessing version!', error);
-            needsVersionGuessing = true;
-        } else {
-            if (response && response._id === '1' && response._source) {
-                var version = response._source.version;
-                if (!version) {
-                    console.log('ElasticSearch Model Version attribute not found, ' +
-                        'will start guessing version!');
-                    needsVersionGuessing = true;
-                } else {
-                    existingModelVersion = version.toString();
-                }
-            } else {
-                console.log('ElasticSearch Model Version response (hits) not found, ' +
-                    'will start guessing version!');
-                needsVersionGuessing = true;
-            }
+            return callback(error, response);
         }
-
-        if (needsVersionGuessing) {
-            guessModelVersion(esClient, function(newVersion) {
-                existingModelVersion = newVersion;
-                refreshStatus(appConfig, callback);
-            });
-        } else {
-            refreshStatus(appConfig, callback);
-        }
+        console.log('Finished transform elastic transformers phase!');
+        callback(null, response);
     });
-}
+};
 
-function transform(callback) {
-    async.waterfall([function (newCallback) {
-            console.log('Starting executing elastic transformer ' + JSON.stringify(nextTransformer.version, null, 4));
-            newCallback(null, appConfig);
-        }, nextTransformer.backup,
-            nextTransformer.upgrade,
-            nextTransformer.check],
-        function (err, result) {
-            if (err) {
-                console.error('Check failed (upgrade error?)');
-                console.error(err);
-                console.log('Trying to restore...');
-                return nextTransformer.restore(appConfig, function(restoreError, result) {
-                    if (restoreError) {
-                        console.error('Error on while restoring the database... sorry :)');
-                        return callback(restoreError);
-                    }
-
-                    console.log('Restore OK.');
-                    return callback(err);
-                });
-            }
-
-            console.log('Cleaning...');
-            nextTransformer.clean(appConfig, function(cleanError, result) {
-
-                if (cleanError) {
-                    console.log('Error cleaning!');
-                    console.error(cleanError);
-                } else {
-                    console.log('Clean OK.');
-                }
-
-                var esClient = appConfig.elasticsearch.esClient;
-                esClient.index({
-                    index: '.model',
-                    type: 'version',
-                    id: '1',
-                    body: {
-                        version: nextTransformer.version.destination
-                    }
-                }, function (error, response) {
-                    if (error) {
-                        return callback(error, response);
-                    }
-                    console.log('Finished transform elastic transformers phase!');
-                    callback(null, response);
-                });
-            });
-
-        });
-}
-
-
-upgrader.controller('elastic', {
-    connect: connect,
-    transform: transform,
-    refresh: refresh,
-    existingModelVersion: function() {
-        return existingModelVersion;
-    }
-});
+upgrader.controller('elastic', new ElasticController());
