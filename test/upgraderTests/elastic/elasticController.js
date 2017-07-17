@@ -63,8 +63,10 @@ module.exports = function (app, esClient, mongo) {
                         destination: '2'
                     }
                 }).deepEqual(status);
-                should(elasticController.existingModelVersion()).equal('1');
-                done();
+                elasticController.getModelVersion(elasticController.appConfig, function (err, version) {
+                    should(version).equal('1');
+                    done();
+                });
             });
         });
 
@@ -85,8 +87,10 @@ module.exports = function (app, esClient, mongo) {
                             destination: '2'
                         }
                     }).deepEqual(status);
-                    should(elasticController.existingModelVersion()).equal('1');
-                    done();
+                    elasticController.getModelVersion(elasticController.appConfig, function (err, version) {
+                        should(version).equal('1');
+                        done();
+                    });
                 });
             });
         });
@@ -108,8 +112,10 @@ module.exports = function (app, esClient, mongo) {
                             destination: '2'
                         }
                     }).deepEqual(status);
-                    should(elasticController.existingModelVersion()).equal('1');
-                    done();
+                    elasticController.getModelVersion(elasticController.appConfig, function (err, version) {
+                        should(version).equal('1');
+                        done();
+                    });
                 });
             });
         });
@@ -131,8 +137,10 @@ module.exports = function (app, esClient, mongo) {
                             destination: '2'
                         }
                     }).deepEqual(status);
-                    should(elasticController.existingModelVersion()).equal('1');
-                    done();
+                    elasticController.getModelVersion(elasticController.appConfig, function (err, version) {
+                        should(version).equal('1');
+                        done();
+                    });
                 });
             });
         });
@@ -149,9 +157,10 @@ module.exports = function (app, esClient, mongo) {
                         status: 0
                     }).deepEqual(status);
 
-                    var existingVersion = elasticController.existingModelVersion();
-                    should(existingVersion).equal('2');
-                    done();
+                    elasticController.getModelVersion(elasticController.appConfig, function (err, version) {
+                        should(version).equal('2');
+                        done();
+                    });
                 });
             });
         });

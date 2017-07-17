@@ -96,7 +96,7 @@ ElasticController.prototype.getModelVersion = function (config, callback) {
         } else {
             callback(null, modelVersion);
         }
-    });
+    }.bind(this));
 };
 
 ElasticController.prototype.guessModelVersion = function(esClient, callback) {
@@ -161,7 +161,7 @@ ElasticController.prototype.guessModelVersion = function(esClient, callback) {
             }
         }
 
-    });
+    }.bind(this));
 };
 
 ElasticController.prototype.setModelVersion = function (version, config, callback) {
