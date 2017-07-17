@@ -63,183 +63,187 @@ module.exports = function (request, app, db) {
         });
 
         it('should not upgrade anything', function (done) {
-            controllerTest.setModelVersion('2');
+            controllerTest.setModelVersion('2', null, function(err, result) {
+                var counts = {
+                    controllerStates: [0]
+                };
 
-            var counts = {
-                controllerStates: [0]
-            };
-
-            var nothingStates = ['READY', 'OK'];
-            var nothingVerifier = stateVerifier(nothingStates, counts.controllerStates);
-            controllerTest.testCallbacks.onStateChange = nothingVerifier;
-            upgrader.upgrade(function(err, result) {
-                assert.equal(err, null, 'Error happened!');
-                should(counts.controllerStates[0]).be.equal(nothingStates.length);
-                done();
+                var nothingStates = ['READY', 'OK'];
+                var nothingVerifier = stateVerifier(nothingStates, counts.controllerStates);
+                controllerTest.testCallbacks.onStateChange = nothingVerifier;
+                upgrader.upgrade(function(err, result) {
+                    assert.equal(err, null, 'Error happened!');
+                    should(counts.controllerStates[0]).be.equal(nothingStates.length);
+                    done();
+                });
             });
         });
 
         it('should do a normal upgrade and stop', function (done) {
-            controllerTest.setModelVersion('1');
+            controllerTest.setModelVersion('1', null, function(err, result) {
+                var counts = {
+                    controllerStates: [0],
+                    transformerStates: [0],
+                    transformerCalls: [0]
+                };
 
-            var counts = {
-                controllerStates: [0],
-                transformerStates: [0],
-                transformerCalls: [0]
-            };
+                // Controller cycle
+                var normalStates = ['READY', 'TRANSFORM', 'READY', 'OK'];
+                var normalVerifier = stateVerifier(normalStates, counts.controllerStates);
+                controllerTest.testCallbacks.onStateChange = normalVerifier;
 
-            // Controller cycle
-            var normalStates = ['READY', 'TRANSFORM', 'READY', 'OK'];
-            var normalVerifier = stateVerifier(normalStates, counts.controllerStates);
-            controllerTest.testCallbacks.onStateChange = normalVerifier;
+                // Transformer cycle
+                var transformerStates = ['UPGRADE', 'CHECK', 'CLEAN', 'DONE'];
+                var statesVerifier = stateVerifier(transformerStates, counts.transformerStates);
+                transformerTest.testCallbacks.state = statesVerifier;
+                var transformerCalls = ['backup', 'upgrade', 'check', 'clean'];
+                var callsVerifier = stateVerifier(transformerCalls, counts.transformerCalls);
+                transformerTest.testCallbacks.called = callsVerifier;
 
-            // Transformer cycle
-            var transformerStates = ['UPGRADE', 'CHECK', 'CLEAN', 'DONE'];
-            var statesVerifier = stateVerifier(transformerStates, counts.transformerStates);
-            transformerTest.testCallbacks.state = statesVerifier;
-            var transformerCalls = ['backup', 'upgrade', 'check', 'clean'];
-            var callsVerifier = stateVerifier(transformerCalls, counts.transformerCalls);
-            transformerTest.testCallbacks.called = callsVerifier;
+                upgrader.upgrade(function(err, result) {
+                    assert.equal(err, null, 'Error happened!');
 
-            upgrader.upgrade(function(err, result) {
-                assert.equal(err, null, 'Error happened!');
-
-                should(counts.controllerStates[0]).be.equal(normalStates.length);
-                should(counts.transformerStates[0]).be.equal(transformerStates.length);
-                should(counts.transformerCalls[0]).be.equal(transformerCalls.length);
-                done();
+                    should(counts.controllerStates[0]).be.equal(normalStates.length);
+                    should(counts.transformerStates[0]).be.equal(transformerStates.length);
+                    should(counts.transformerCalls[0]).be.equal(transformerCalls.length);
+                    done();
+                });
             });
         });
 
         it('should restore after backup failed and end with error', function (done) {
-            controllerTest.setModelVersion('1');
-            transformerTest.testFlags.backup = false;
+            controllerTest.setModelVersion('1', null, function(err, result) {
+                transformerTest.testFlags.backup = false;
 
-            var counts = {
-                controllerStates: [0],
-                transformerStates: [0],
-                transformerCalls: [0]
-            };
+                var counts = {
+                    controllerStates: [0],
+                    transformerStates: [0],
+                    transformerCalls: [0]
+                };
 
-            // Controller cycle
-            var normalStates = ['READY', 'TRANSFORM', 'ERROR'];
-            var normalVerifier = stateVerifier(normalStates, counts.controllerStates);
-            controllerTest.testCallbacks.onStateChange = normalVerifier;
+                // Controller cycle
+                var normalStates = ['READY', 'TRANSFORM', 'ERROR'];
+                var normalVerifier = stateVerifier(normalStates, counts.controllerStates);
+                controllerTest.testCallbacks.onStateChange = normalVerifier;
 
-            // Transformer cycle
-            var transformerStates = ['RESTORE', 'DONE'];
-            var statesVerifier = stateVerifier(transformerStates, counts.transformerStates);
-            transformerTest.testCallbacks.state = statesVerifier;
-            var transformerCalls = ['backup', 'restore'];
-            var callsVerifier = stateVerifier(transformerCalls, counts.transformerCalls);
-            transformerTest.testCallbacks.called = callsVerifier;
+                // Transformer cycle
+                var transformerStates = ['RESTORE', 'DONE'];
+                var statesVerifier = stateVerifier(transformerStates, counts.transformerStates);
+                transformerTest.testCallbacks.state = statesVerifier;
+                var transformerCalls = ['backup', 'restore'];
+                var callsVerifier = stateVerifier(transformerCalls, counts.transformerCalls);
+                transformerTest.testCallbacks.called = callsVerifier;
 
-            upgrader.upgrade(function(err, result) {
-                assert.notEqual(err, null, 'Error is null');
+                upgrader.upgrade(function(err, result) {
+                    assert.notEqual(err, null, 'Error is null');
 
-                should(counts.controllerStates[0]).be.equal(normalStates.length);
-                should(counts.transformerStates[0]).be.equal(transformerStates.length);
-                should(counts.transformerCalls[0]).be.equal(transformerCalls.length);
-                done();
+                    should(counts.controllerStates[0]).be.equal(normalStates.length);
+                    should(counts.transformerStates[0]).be.equal(transformerStates.length);
+                    should(counts.transformerCalls[0]).be.equal(transformerCalls.length);
+                    done();
+                });
             });
         });
 
         it('should restore after upgrade failed and end with error', function (done) {
-            controllerTest.setModelVersion('1');
-            transformerTest.testFlags.upgrade = false;
+            controllerTest.setModelVersion('1', null, function(err, result) {
+                transformerTest.testFlags.upgrade = false;
 
-            var counts = {
-                controllerStates: [0],
-                transformerStates: [0],
-                transformerCalls: [0]
-            };
+                var counts = {
+                    controllerStates: [0],
+                    transformerStates: [0],
+                    transformerCalls: [0]
+                };
 
-            // Controller cycle
-            var normalStates = ['READY', 'TRANSFORM', 'ERROR'];
-            var normalVerifier = stateVerifier(normalStates, counts.controllerStates);
-            controllerTest.testCallbacks.onStateChange = normalVerifier;
+                // Controller cycle
+                var normalStates = ['READY', 'TRANSFORM', 'ERROR'];
+                var normalVerifier = stateVerifier(normalStates, counts.controllerStates);
+                controllerTest.testCallbacks.onStateChange = normalVerifier;
 
-            // Transformer cycle
-            var transformerStates = ['UPGRADE', 'RESTORE', 'DONE'];
-            var statesVerifier = stateVerifier(transformerStates, counts.transformerStates);
-            transformerTest.testCallbacks.state = statesVerifier;
-            var transformerCalls = ['backup', 'upgrade', 'restore'];
-            var callsVerifier = stateVerifier(transformerCalls, counts.transformerCalls);
-            transformerTest.testCallbacks.called = callsVerifier;
+                // Transformer cycle
+                var transformerStates = ['UPGRADE', 'RESTORE', 'DONE'];
+                var statesVerifier = stateVerifier(transformerStates, counts.transformerStates);
+                transformerTest.testCallbacks.state = statesVerifier;
+                var transformerCalls = ['backup', 'upgrade', 'restore'];
+                var callsVerifier = stateVerifier(transformerCalls, counts.transformerCalls);
+                transformerTest.testCallbacks.called = callsVerifier;
 
-            upgrader.upgrade(function(err, result) {
-                assert.notEqual(err, null, 'Error is null');
+                upgrader.upgrade(function(err, result) {
+                    assert.notEqual(err, null, 'Error is null');
 
-                should(counts.controllerStates[0]).be.equal(normalStates.length);
-                should(counts.transformerStates[0]).be.equal(transformerStates.length);
-                should(counts.transformerCalls[0]).be.equal(transformerCalls.length);
-                done();
+                    should(counts.controllerStates[0]).be.equal(normalStates.length);
+                    should(counts.transformerStates[0]).be.equal(transformerStates.length);
+                    should(counts.transformerCalls[0]).be.equal(transformerCalls.length);
+                    done();
+                });
             });
         });
 
         it('should restore after check failed and end with error', function (done) {
-            controllerTest.setModelVersion('1');
-            transformerTest.testFlags.check = false;
+            controllerTest.setModelVersion('1', null, function(err, result) {
+                transformerTest.testFlags.check = false;
 
-            var counts = {
-                controllerStates: [0],
-                transformerStates: [0],
-                transformerCalls: [0]
-            };
+                var counts = {
+                    controllerStates: [0],
+                    transformerStates: [0],
+                    transformerCalls: [0]
+                };
 
-            // Controller cycle
-            var normalStates = ['READY', 'TRANSFORM', 'ERROR'];
-            var normalVerifier = stateVerifier(normalStates, counts.controllerStates);
-            controllerTest.testCallbacks.onStateChange = normalVerifier;
+                // Controller cycle
+                var normalStates = ['READY', 'TRANSFORM', 'ERROR'];
+                var normalVerifier = stateVerifier(normalStates, counts.controllerStates);
+                controllerTest.testCallbacks.onStateChange = normalVerifier;
 
-            // Transformer cycle
-            var transformerStates = ['UPGRADE', 'CHECK', 'RESTORE', 'DONE'];
-            var statesVerifier = stateVerifier(transformerStates, counts.transformerStates);
-            transformerTest.testCallbacks.state = statesVerifier;
-            var transformerCalls = ['backup', 'upgrade', 'check', 'restore'];
-            var callsVerifier = stateVerifier(transformerCalls, counts.transformerCalls);
-            transformerTest.testCallbacks.called = callsVerifier;
+                // Transformer cycle
+                var transformerStates = ['UPGRADE', 'CHECK', 'RESTORE', 'DONE'];
+                var statesVerifier = stateVerifier(transformerStates, counts.transformerStates);
+                transformerTest.testCallbacks.state = statesVerifier;
+                var transformerCalls = ['backup', 'upgrade', 'check', 'restore'];
+                var callsVerifier = stateVerifier(transformerCalls, counts.transformerCalls);
+                transformerTest.testCallbacks.called = callsVerifier;
 
-            upgrader.upgrade(function(err, result) {
-                assert.notEqual(err, null, 'Error is null');
+                upgrader.upgrade(function(err, result) {
+                    assert.notEqual(err, null, 'Error is null');
 
-                should(counts.controllerStates[0]).be.equal(normalStates.length);
-                should(counts.transformerStates[0]).be.equal(transformerStates.length);
-                should(counts.transformerCalls[0]).be.equal(transformerCalls.length);
-                done();
+                    should(counts.controllerStates[0]).be.equal(normalStates.length);
+                    should(counts.transformerStates[0]).be.equal(transformerStates.length);
+                    should(counts.transformerCalls[0]).be.equal(transformerCalls.length);
+                    done();
+                });
             });
         });
 
         it('should not stop on cleaning error', function (done) {
-            controllerTest.setModelVersion('1');
-            transformerTest.testFlags.clean = false;
+            controllerTest.setModelVersion('1', null, function(err, result) {
+                transformerTest.testFlags.clean = false;
 
-            var counts = {
-                controllerStates: [0],
-                transformerStates: [0],
-                transformerCalls: [0]
-            };
+                var counts = {
+                    controllerStates: [0],
+                    transformerStates: [0],
+                    transformerCalls: [0]
+                };
 
-            // Controller cycle
-            var normalStates = ['READY', 'TRANSFORM', 'READY', 'OK'];
-            var normalVerifier = stateVerifier(normalStates, counts.controllerStates);
-            controllerTest.testCallbacks.onStateChange = normalVerifier;
+                // Controller cycle
+                var normalStates = ['READY', 'TRANSFORM', 'READY', 'OK'];
+                var normalVerifier = stateVerifier(normalStates, counts.controllerStates);
+                controllerTest.testCallbacks.onStateChange = normalVerifier;
 
-            // Transformer cycle
-            var transformerStates = ['UPGRADE', 'CHECK', 'CLEAN', 'DONE'];
-            var statesVerifier = stateVerifier(transformerStates, counts.transformerStates);
-            transformerTest.testCallbacks.state = statesVerifier;
-            var transformerCalls = ['backup', 'upgrade', 'check', 'clean'];
-            var callsVerifier = stateVerifier(transformerCalls, counts.transformerCalls);
-            transformerTest.testCallbacks.called = callsVerifier;
+                // Transformer cycle
+                var transformerStates = ['UPGRADE', 'CHECK', 'CLEAN', 'DONE'];
+                var statesVerifier = stateVerifier(transformerStates, counts.transformerStates);
+                transformerTest.testCallbacks.state = statesVerifier;
+                var transformerCalls = ['backup', 'upgrade', 'check', 'clean'];
+                var callsVerifier = stateVerifier(transformerCalls, counts.transformerCalls);
+                transformerTest.testCallbacks.called = callsVerifier;
 
-            upgrader.upgrade(function(err, result) {
-                assert.equal(err, null, 'Error is not null!');
+                upgrader.upgrade(function(err, result) {
+                    assert.equal(err, null, 'Error is not null!');
 
-                should(counts.controllerStates[0]).be.equal(normalStates.length);
-                should(counts.transformerStates[0]).be.equal(transformerStates.length);
-                should(counts.transformerCalls[0]).be.equal(transformerCalls.length);
-                done();
+                    should(counts.controllerStates[0]).be.equal(normalStates.length);
+                    should(counts.transformerStates[0]).be.equal(transformerStates.length);
+                    should(counts.transformerCalls[0]).be.equal(transformerCalls.length);
+                    done();
+                });
             });
         });
     });

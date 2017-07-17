@@ -128,7 +128,7 @@ AbstractController.prototype.transform = function (callback) {
                     console.log('Clean OK.');
                 }
 
-                that.setModelVersion(that.appConfig, function (err, result) {
+                that.setModelVersion(that.nextTransformer.version.destination, that.appConfig, function (err, result) {
                     if (err) {
                         return callback(err, result);
                     }
@@ -146,7 +146,7 @@ AbstractController.prototype.doConnect = function (config, callback) {
 AbstractController.prototype.getModelVersion = function (config, callback) {
     throw new Error('getModelVersion not implemented');
 };
-AbstractController.prototype.setModelVersion = function (config, callback) {
+AbstractController.prototype.setModelVersion = function (version, config, callback) {
     throw new Error('setModelVersion not implemented');
 };
 

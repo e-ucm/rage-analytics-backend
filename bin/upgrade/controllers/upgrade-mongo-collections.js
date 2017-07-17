@@ -141,14 +141,14 @@ MongoController.prototype.getModelVersion = function (config, callback) {
     });
 };
 
-MongoController.prototype.setModelVersion = function (config, callback) {
+MongoController.prototype.setModelVersion = function (version, config, callback) {
     var db = this.appConfig.mongodb.db;
     var model = new Collection(db, 'model');
 
     var that = this;
     if (!this.modelId) {
         model.insert({
-            version: that.nextTransformer.version.destination.toString()
+            version: version.toString()
         }).then(function (model) {
             console.log('Finished transform mongo phase!');
             callback(null, model);
@@ -157,7 +157,7 @@ MongoController.prototype.setModelVersion = function (config, callback) {
         });
     } else {
         model.findAndModify(that.modelId, {
-            version: that.nextTransformer.version.destination.toString()
+            version: version.toString()
         }).then(function (model) {
             console.log('Finished transform mongo phase!');
             callback(null, model);

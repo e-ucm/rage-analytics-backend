@@ -19,122 +19,80 @@
 'use strict';
 
 var should = require('should');
-var async = require('async');
 
-var testTransformer = require('./transformer-test.js');
 var upgrader = require('../../bin/upgrade/upgrader');
+var AbstractController = require('../../bin/upgrade/controllers/abstract-controller');
+var testTransformer = require('./transformer-test.js');
 
-var existingModelVersion = '1';
+function TestController() {
+    AbstractController.call(this, [testTransformer]);
+    this.state = 'DISCONNECTED';
+    this.existingModelVersion = '1';
 
-var state = 'DISCONNECTED';
-var appConfig;
+    this.testTransformer = testTransformer;
+    this.testCallbacks = {
+        onStateChange: function(state) {}
+    };
+}
 
-function connect(config, callback) {
+TestController.prototype = new AbstractController();
+TestController.prototype.constructor = TestController;
 
-    appConfig = config;
-    should(state).equal('DISCONNECTED');
+TestController.prototype.doConnect = function (config, callback) {
+    should(this.state).equal('DISCONNECTED');
     console.log('[TEST CONTROLLER] connecting');
-    state = 'READY';
-    testCallbacks.onStateChange(state);
-
-    callback();
-}
-
-function refresh(callback) {
-
-    should(state).equal('READY');
-    console.log('[TEST CONTROLLER] refreshing');
-
-    // STATUS == 0 -> OK no transition required
-    //        == 1 -> PENDING, transform must be performed
-    //        == 2 -> ERROR, an error has happened, no update
-
-    var status = existingModelVersion === '1' ? 1 : 0;
-
-    if (status === 0) {
-        state = 'OK';
-        testCallbacks.onStateChange(state);
-        callback(null, {
-            status: status
-        });
-    } else {
-        state = 'TRANSFORM';
-        testCallbacks.onStateChange(state);
-        callback(null, {
-            status: status,
-            requirements: testTransformer.requirements,
-            version: testTransformer.version
-        });
-    }
-}
-
-
-function transform(callback) {
-
-    should(state).equal('TRANSFORM');
-    console.log('[TEST CONTROLLER] transforming');
-
-    async.waterfall([function (newCallback) {
-            console.log('Starting executing test transformer ' + JSON.stringify(testTransformer.version, null, 4));
-            newCallback(null, appConfig);
-        }, testTransformer.backup,
-            testTransformer.upgrade,
-            testTransformer.check],
-        function (err, result) {
-            if (err) {
-                console.error('Transformer failed');
-                console.error(err);
-                state = 'ERROR';
-                testCallbacks.onStateChange(state);
-                console.log('Trying to restore...');
-                return testTransformer.restore(appConfig, function(restoreError, result) {
-                    if (restoreError) {
-                        console.error('Error on while restoring the database... sorry :)');
-                        return callback(restoreError);
-                    }
-
-                    console.log('Restore OK.');
-                    return callback(err);
-                });
-            }
-
-            console.log('Cleaning...');
-            testTransformer.clean({}, function(cleanError, result) {
-
-                if (cleanError) {
-                    console.log('Error cleaning!');
-                    console.error(cleanError);
-                } else {
-                    console.log('Clean OK.');
-                }
-
-                state = 'READY';
-                testCallbacks.onStateChange(state);
-                existingModelVersion = testTransformer.version.destination;
-
-                callback(null, testTransformer.version.destination);
-            });
-        });
-}
-
-var testCallbacks = {
-    onStateChange: function(state) {}
+    this.state = 'READY';
+    this.testCallbacks.onStateChange(this.state);
+    callback(null, config);
 };
 
-upgrader.controller('test', {
-    connect: connect,
-    refresh: refresh,
-    transform: transform,
-    existingModelVersion: function () {
-        return existingModelVersion;
-    },
-    // Testing purposes variables
-    testTransformer: testTransformer,
-    setModelVersion: function(version) {
-        existingModelVersion = version;
-    },
-    reset: function() {
-        state = 'DISCONNECTED';
-    },
-    testCallbacks: testCallbacks
-});
+TestController.prototype.getModelVersion = function (config, callback) {
+    callback(null, this.existingModelVersion);
+};
+
+
+TestController.prototype.setModelVersion = function (version, config, callback) {
+    this.existingModelVersion = version.toString();
+    callback(null, config);
+};
+
+TestController.prototype.refresh = function (callback) {
+    should(this.state).equal('READY');
+    console.log('[TEST CONTROLLER] refreshing');
+
+    AbstractController.prototype.refresh.call(this, function (err, status) {
+        if (status.status === 0) {
+            this.state = 'OK';
+            this.testCallbacks.onStateChange(this.state);
+        } else {
+            this.state = 'TRANSFORM';
+            this.testCallbacks.onStateChange(this.state);
+        }
+        return callback(err, status);
+    }.bind(this));
+};
+
+TestController.prototype.transform = function (callback) {
+
+    should(this.state).equal('TRANSFORM');
+    console.log('[TEST CONTROLLER] transforming');
+
+    AbstractController.prototype.transform.call(this, function(err, result) {
+        if (err) {
+            this.state = 'ERROR';
+            this.testCallbacks.onStateChange(this.state);
+        } else {
+            this.state = 'READY';
+            this.testCallbacks.onStateChange(this.state);
+        }
+        return callback(err, result);
+    }.bind(this));
+};
+
+TestController.prototype.reset = function (callback) {
+    this.nextTransformer = null;
+    this.state = 'DISCONNECTED';
+    this.existingModelVersion = '1';
+};
+
+upgrader.controller('test', new TestController());

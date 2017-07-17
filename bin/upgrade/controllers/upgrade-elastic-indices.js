@@ -160,14 +160,14 @@ ElasticController.prototype.guessModelVersion = function(esClient, callback) {
     });
 };
 
-ElasticController.prototype.setModelVersion = function (config, callback) {
+ElasticController.prototype.setModelVersion = function (version, config, callback) {
     var esClient = this.appConfig.elasticsearch.esClient;
     esClient.index({
         index: '.model',
         type: 'version',
         id: '1',
         body: {
-            version: this.nextTransformer.version.destination
+            version: version
         }
     }, function (error, response) {
         if (error) {
