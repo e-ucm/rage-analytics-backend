@@ -28,7 +28,6 @@ function logError(err, result, callback) {
     if (callback) {
         return callback(err, result);
     }
-    process.exit(1);
 }
 
 var controllers = {};
@@ -69,14 +68,14 @@ function roll(callback) {
                     finish = false;
                 }
                 if (refresh.status === 2) {
-                    return logError('Error, refresh returned 2!',err, callback);
+                    return logError('Error, refresh returned 2!', err, callback);
                 }
             }
 
             if (finish) {
                 console.log('Finished upgrading!');
                 if (callback) {
-                    return callback(null, ':D');
+                    return callback(null, 'Success!');
                 }
                 return;
             }
@@ -122,7 +121,8 @@ function roll(callback) {
             }
 
             if (transforms.length === 0) {
-                return logError('Controllers are pending, but no transforms are possible (system locked)!', status);
+                return logError('Controllers are pending, but no transforms are possible (system locked)!',
+                    status, callback);
             }
 
             // TODO, is empty transforms -> double dependency?

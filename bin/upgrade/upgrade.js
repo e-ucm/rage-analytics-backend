@@ -19,10 +19,20 @@
 
 'use strict';
 
+if (process.env.IGNORE_UPGRADE) {
+    process.exit(0);
+}
+
 var Path = require('path');
 
 var upgrader = require(Path.resolve(__dirname, './upgrader.js'));
 require(Path.resolve(__dirname,'./controllers/upgrade-elastic-indices.js'));
 require(Path.resolve(__dirname,'./controllers/upgrade-mongo-collections.js'));
 
-upgrader.upgrade();
+upgrader.upgrade(function(err, result) {
+    console.log('Finished Upgrading, result:', JSON.stringify(result, null, 4));
+    if (err) {
+        return process.exit(1);
+    }
+    process.exit(0);
+});
