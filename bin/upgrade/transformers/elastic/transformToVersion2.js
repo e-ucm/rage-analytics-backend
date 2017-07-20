@@ -33,33 +33,12 @@ var defaultTraceAttributes = [
 ];
 var extensions = [];
 
+var defaultTimeout = '5m';
+
 String.prototype.replaceAll = function (search, replacement) {
     var target = this;
     return target.replace(new RegExp(search, 'g'), replacement);
 };
-
-var reindex = function (esClient, from, to, callback) {
-    esClient.reindex({
-        refresh: true,
-        body: {
-            //   Conflicts: 'proceed',
-            source: {
-                index: from
-            },
-            dest: {
-                index: to,
-                version_type: 'internal'
-            }
-        }
-    }, function (err, response) {
-        if (err) {
-            console.error('Error reindexing index', from, err);
-            return callback(err, from, response);
-        }
-        callback(null, from, response);
-    });
-};
-
 
 var reindexManually = function (esClient, from, to, callback) {
     scrollIndex(esClient, from, function (err, finished, hits, finishedCallback) {
@@ -98,7 +77,7 @@ var reindexManually = function (esClient, from, to, callback) {
 
 var backUpIndex = function (esClient, index, callback) {
     var backupedIndex = 'backup_' + index.index;
-    reindex(esClient, index.index, backupedIndex, function (err, from, response) {
+    reindexManually(esClient, index, backupedIndex, function (err) {
         var found = false;
         for (var k = 0; k < indices.backup.length; ++k) {
             var backIndex = indices.backup[k];
@@ -112,7 +91,7 @@ var backUpIndex = function (esClient, index, callback) {
             upgrade.index = backupedIndex;
             indices.backup.push(upgrade);
         }
-        callback(err, index, response);
+        callback(err, index);
     });
 };
 
@@ -377,7 +356,7 @@ function identifyExtensionsFromIndex(esClient, traceIndex, callback) {
     var total = 0;
     esClient.search({
         index: traceIndex.index,
-        scroll: '30s', // Keep the search results "scrollable" for 30 seconds
+        scroll: defaultTimeout, // Keep the search results "scrollable" for 30 seconds
         type: 'traces'
     }, function getMoreUntilDone(error, response) {
         if (error) {
@@ -424,7 +403,7 @@ function identifyExtensionsFromIndex(esClient, traceIndex, callback) {
                 // Ask elasticsearch for the next set of hits from this search
                 esClient.scroll({
                     scrollId: response._scroll_id,
-                    scroll: '30s'
+                    scroll: defaultTimeout
                 }, getMoreUntilDone);
             } else {
                 console.log('Completed scrolling', traceIndex);
@@ -453,10 +432,11 @@ function scrollIndex(esClient, index, callback) {
         var total = 0;
         esClient.search({
             index: index.index,
-            scroll: '30s' // Keep the search results "scrollable" for 30 seconds
+            scroll: defaultTimeout // Keep the search results "scrollable" for 30 seconds
         }, function getMoreUntilDone(error, response) {
             // Collect the title from each response
             if (error) {
+                console.error('Unexpected error while scrolling!', JSON.stringify(index, null ,4));
                 return callback(error);
             }
 
@@ -464,10 +444,14 @@ function scrollIndex(esClient, index, callback) {
             callback(null, false, response.hits, function () {
                 if (response.hits.total > total) {
                     // Ask elasticsearch for the next set of hits from this search
-                    esClient.scroll({
-                        scrollId: response._scroll_id,
-                        scroll: '30s'
-                    }, getMoreUntilDone);
+                    if (response._scroll_id) {
+                        esClient.scroll({
+                            scrollId: response._scroll_id,
+                            scroll: defaultTimeout
+                        }, getMoreUntilDone);
+                    } else if (callback) {
+                        callback(null, true);
+                    }
                 } else {
                     console.log('Completed scrolling', index);
                     if (callback) {
@@ -1143,7 +1127,7 @@ function restore(config, callback) {
         callback(null, config);
     });
     var renameCount = finishedCountCallback(indices.backup.length, operationsCount);
-    var reindexedCallback = function (err, from, result) {
+    var reindexedCallback = function (err, from) {
         if (err) {
             return callback(err);
         }
@@ -1151,7 +1135,7 @@ function restore(config, callback) {
     };
     for (var i = 0; i < indices.backup.length; i++) {
         var index = indices.backup[i];
-        reindex(esClient, index.index, index.index.substr('backup_'.length), reindexedCallback);
+        reindexManually(esClient, index, index.index.substr('backup_'.length), reindexedCallback);
     }
     var toRemove = [];
     for (var j = 0; j < indices.upgrade.length; j++) {
