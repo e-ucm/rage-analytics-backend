@@ -436,7 +436,8 @@ function scrollIndex(esClient, index, callback) {
         }, function getMoreUntilDone(error, response) {
             // Collect the title from each response
             if (error) {
-                console.error('Unexpected error while scrolling!', JSON.stringify(index, null ,4));
+                console.error('Unexpected error while scrolling!', JSON.stringify(index, null, 4));
+                console.error(error);
                 return callback(error);
             }
 
@@ -1069,6 +1070,111 @@ function upgrade(config, callback) {
     }));
 }
 
+function sourcesEquals(x, y) {
+    if (x === null || x === undefined || y === null || y === undefined) {
+        return x === y;
+    }
+    // After this just checking type of one would be enough
+    if (x.constructor !== y.constructor) {
+        return false;
+    }
+    // If they are functions, they should exactly refer to same one (because of closures)
+    if (x instanceof Function) {
+        return x === y;
+    }
+    // If they are regexps, they should exactly refer to same one (it is hard to better equality check on current ES)
+    if (x instanceof RegExp) {
+        return x === y;
+    }
+    if (x === y || x.valueOf() === y.valueOf()) {
+        return true;
+    }
+    if (Array.isArray(x) && x.length !== y.length) {
+        return false;
+    }
+
+    // If they are dates, they must had equal valueOf
+    if (x instanceof Date) {
+        return false;
+    }
+
+    // If they are strictly equal, they both need to be object at least
+    if (!(x instanceof Object)) {
+        return false;
+    }
+    if (!(y instanceof Object)) {
+        return false;
+    }
+
+    // Recursive object equality check
+    var p = Object.keys(x);
+    return Object.keys(y).every(function (i) {
+            return p.indexOf(i) !== -1;
+        }) &&
+        p.every(function (i) {
+
+            if (i === 'fields' || i === 'visState') {
+                return true;
+            }
+
+            return sourcesEquals(x[i], y[i]);
+        });
+}
+
+function checkHit(esClient, hit, index, callback) {
+    esClient.get({
+        index: index.index,
+        type: hit._type,
+        id: hit._id
+    }, function (error, response) {
+        if (error) {
+            return callback(error);
+        }
+
+        // Compare sources
+        if (sourcesEquals(hit._source, response._source)) {
+            return callback(null, true);
+        }
+
+        return callback(null, false);
+    });
+}
+
+function checkIndices(esClient, backedUpIndex, index, callback) {
+    scrollIndex(esClient, backedUpIndex, function (err, finished, hits, finishedCallback) {
+        if (err) {
+            console.error('There was an error scrolling the index ' + JSON.stringify(backedUpIndex, null, 4));
+            return callback(err);
+        }
+
+        if (finished) {
+            return callback(null);
+        }
+
+        if (hits.hits.length === 0) {
+            return callback(null);
+        }
+
+        var countCallbak = finishedCountCallback(hits.hits.length, function () {
+            finishedCallback();
+        });
+
+        hits.hits.forEach(function (hit) {
+            checkHit(esClient, hit, index, function (err, same) {
+                if (err) {
+                    return callback(err);
+                }
+
+                if (!same) {
+                    return callback(new Error('Failed comparing hit ' + JSON.stringify(hit, null, 4)));
+                }
+
+                countCallbak();
+            });
+        });
+    });
+}
+
 function check(config, callback) {
     var esClient = config.elasticsearch.esClient;
 
@@ -1080,6 +1186,15 @@ function check(config, callback) {
         if (!response || response.length === 0) {
             return callback(null, config);
         }
+
+        var countCallback = finishedCountCallback(response.length / 2, callback);
+
+        var finishedCheckingIndicesCallback = function (err) {
+            if (err) {
+                return callback(err, config);
+            }
+            countCallback();
+        };
 
         for (var i = 0; i < response.length; i++) {
             var index = response[i];
@@ -1098,8 +1213,13 @@ function check(config, callback) {
                                         JSON.stringify(index, null, 4) + ' and ' +
                                         JSON.stringify(retIndex, null, 4)), config);
                                 }
+
+                                checkIndices(esClient, index, retIndex, finishedCheckingIndicesCallback);
                             }
                         }
+                    } else {
+                        return callback(new Error('Not found correct index for backed index: ' +
+                            JSON.stringify(index, null, 4)));
                     }
                 }
             }
@@ -1167,8 +1287,8 @@ function restore(config, callback) {
     }
     var toRemove = [];
     for (var j = 0; j < indices.upgrade.length; j++) {
-        var indexj = indices.upgrade[i];
-        if (!indices.deleted[indexj.index]) {
+        var indexj = indices.upgrade[j];
+        if (indexj && indexj.index && !indices.deleted[indexj.index]) {
             toRemove.push(indexj.index);
         }
     }
