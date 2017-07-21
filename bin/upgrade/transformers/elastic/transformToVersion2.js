@@ -1070,14 +1070,42 @@ function upgrade(config, callback) {
 }
 
 function check(config, callback) {
-    console.log('Check OK');
-    callback(null, config);
+    var esClient = config.elasticsearch.esClient;
 
-    // TODO
-    /*
-     Callback(null, config); => clean
-     callback('error', config); => restore
-     */
+    esClient.cat.indices({format: 'json'}, function (error, response) {
+        if (error) {
+            return callback(error);
+        }
+
+        if (!response || response.length === 0) {
+            return callback(null, config);
+        }
+
+        for (var i = 0; i < response.length; i++) {
+            var index = response[i];
+            if (index.index) {
+                if (index.index.indexOf('backup_') === 0) {
+
+                    var normalIndex = index.index.substr('backup_'.length);
+
+                    if (normalIndex) {
+                        for (var j = 0; j < response.length; ++j) {
+                            var retIndex = response[j];
+
+                            if (retIndex.index && retIndex.index === normalIndex) {
+                                if (index['docs.count'] !== retIndex['docs.count']) {
+                                    return callback(new Error('DIFFERENT document count ' +
+                                        JSON.stringify(index, null, 4) + ' and ' +
+                                        JSON.stringify(retIndex, null, 4)), config);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return callback(null, config);
+    });
 }
 
 function clean(config, callback) {
