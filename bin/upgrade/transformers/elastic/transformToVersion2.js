@@ -69,6 +69,9 @@ var reindexManually = function (esClient, from, to, callback) {
             if (err) {
                 return callback(err);
             }
+            if (resp.errors) {
+                return callback(new Error('Fail in bulk API, ' + JSON.stringify(resp, null, 4)));
+            }
             finishedCallback();
         });
     });
@@ -385,6 +388,9 @@ function identifyExtensionsFromIndex(esClient, traceIndex, callback) {
         }, function (err, resp) {
             if (err) {
                 return callback(err);
+            }
+            if (resp.errors) {
+                return callback(new Error('Fail in bulk API, ' + JSON.stringify(resp, null, 4)));
             }
             var found = false;
             for (var k = 0; k < indices.upgrade.length; ++k) {
@@ -810,6 +816,9 @@ function setUpKibanaIndex(esClient, callback) {
                 if (err) {
                     return callback(err);
                 }
+                if (resp.errors) {
+                    return callback(new Error('Fail in bulk API, ' + JSON.stringify(resp, null, 4)));
+                }
                 countCallback();
             });
         } else {
@@ -880,6 +889,9 @@ function setUpTemplateIndex(esClient, callback) {
                 if (err) {
                     return callback(err);
                 }
+                if (resp.errors) {
+                    return callback(new Error('Fail in bulk API, ' + JSON.stringify(resp, null, 4)));
+                }
                 countCallback();
             });
         } else {
@@ -949,6 +961,9 @@ function setUpGameIndex(esClient, gameIndex, callback) {
             }, function (err, resp) {
                 if (err) {
                     return callback(err);
+                }
+                if (resp.errors) {
+                    return callback(new Error('Fail in bulk API, ' + JSON.stringify(resp, null, 4)));
                 }
                 countCallback();
             });
@@ -1109,11 +1124,17 @@ function sourcesEquals(x, y) {
     // Recursive object equality check
     var p = Object.keys(x);
     return Object.keys(y).every(function (i) {
+            if (extensions.indexOf(i) !== -1) {
+                return true;
+            }
             return p.indexOf(i) !== -1;
         }) &&
         p.every(function (i) {
 
             if (i === 'fields' || i === 'visState') {
+                return true;
+            }
+            if (extensions.indexOf(i) !== -1) {
                 return true;
             }
 
@@ -1136,7 +1157,7 @@ function checkHit(esClient, hit, index, callback) {
             return callback(null, true);
         }
 
-        return callback(null, false);
+        return callback(null, false, hit, response);
     });
 }
 
@@ -1160,13 +1181,14 @@ function checkIndices(esClient, backedUpIndex, index, callback) {
         });
 
         hits.hits.forEach(function (hit) {
-            checkHit(esClient, hit, index, function (err, same) {
+            checkHit(esClient, hit, index, function (err, same, hit, ret) {
                 if (err) {
                     return callback(err);
                 }
 
                 if (!same) {
-                    return callback(new Error('Failed comparing hit ' + JSON.stringify(hit, null, 4)));
+                    return callback(new Error('Failed comparing hit ' + JSON.stringify(hit, null, 4) +
+                        ' ' + JSON.stringify(ret, null, 4)));
                 }
 
                 countCallbak();
@@ -1187,7 +1209,9 @@ function check(config, callback) {
             return callback(null, config);
         }
 
-        var countCallback = finishedCountCallback(response.length / 2, callback);
+        var countCallback = finishedCountCallback(response.length / 2, function() {
+            callback(null, config);
+        });
 
         var finishedCheckingIndicesCallback = function (err) {
             if (err) {
@@ -1224,7 +1248,6 @@ function check(config, callback) {
                 }
             }
         }
-        return callback(null, config);
     });
 }
 
