@@ -21,6 +21,84 @@
 // For ES specific naming convention we need to do this
 // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
 var ObjectID = require('mongodb').ObjectID;
+var backoff = require('backoff');
+
+function processBulkErrors(esClient, to, response, hits, fibonacciBackoff, callback) {
+    if (!hits || hits.length === 0) {
+        return callback();
+    }
+
+    if (!response.items || response.items.length === 0) {
+        return callback();
+    }
+
+    var bulk = [];
+    for (var i = 0; i < response.items.length; ++i) {
+        var item = response.items[i];
+        if (!item) {
+            continue;
+        }
+
+        var index = item.index;
+        if (index && index.status === 429 &&
+            index.error && index.error.type === 'es_rejected_execution_exception') {
+
+            var source;
+            for (var j = 0; j < hits.length; ++j) {
+                var hit = hits[j];
+                if (hit &&
+                    hit._type === index._type &&
+                    hit._id === index._id) {
+                    source = hit._source;
+                    break;
+                }
+            }
+
+            if (source) {
+                bulk.push({index: {_index: to, _type: index._type, _id: index._id}});
+                bulk.push(source);
+            } else {
+                return callback(new Error('Fail in backoff trying API, not found hit for ' +
+                    JSON.stringify(index, null, 4) + ' ' +
+                    JSON.stringify(response, null, 4)));
+            }
+        }
+    }
+
+    if (bulk.length === 0) {
+        return callback(new Error('Fail in bulk API, ' + JSON.stringify(response, null, 4)));
+    }
+
+    fibonacciBackoff.on('backoff', function (number, delay) {
+        // Do something when backoff starts, e.g. show to the
+        // user the delay before next reconnection attempt.
+        console.log('Backoff ' + number + ' ' + delay + 'ms');
+        esClient.bulk({
+            body: bulk
+        }, function (err, resp) {
+            if (err) {
+                return callback(err);
+            }
+            if (resp.errors) {
+                return processBulkErrors(esClient, to, response, hits, fibonacciBackoff, callback);
+            }
+            callback();
+        });
+    });
+
+    fibonacciBackoff.on('fail', function () {
+        // Do something when the maximum number of backoffs is
+        // reached, e.g. ask the user to check its connection.
+        console.log('fail');
+        return callback(new Error('Fail in backoff API, maximum number of backoffs reached' +
+            ', to ' + JSON.stringify(to, null, 4) +
+            ', response ' + JSON.stringify(response, null, 4) +
+            ', hits ' + JSON.stringify(hits, null, 4)));
+    });
+
+    fibonacciBackoff.backoff();
+}
+
 
 var defaultTraceAttributes = [
     'name', 'timestamp', 'event',
@@ -70,7 +148,20 @@ var reindexManually = function (esClient, from, to, callback) {
                 return callback(err);
             }
             if (resp.errors) {
-                return callback(new Error('Fail in bulk API, ' + JSON.stringify(resp, null, 4)));
+
+                var fibonacciBackoff = backoff.fibonacci({
+                    randomisationFactor: 0.1,
+                    initialDelay: 5000,
+                    maxDelay: 300000
+                });
+
+                fibonacciBackoff.failAfter(15);
+                return processBulkErrors(esClient, to, resp, hits.hits, fibonacciBackoff, function (err) {
+                    if (err) {
+                        return callback(err);
+                    }
+                    finishedCallback();
+                });
             }
             finishedCallback();
         });
@@ -390,7 +481,15 @@ function identifyExtensionsFromIndex(esClient, traceIndex, callback) {
                 return callback(err);
             }
             if (resp.errors) {
-                return callback(new Error('Fail in bulk API, ' + JSON.stringify(resp, null, 4)));
+
+                var fibonacciBackoff = backoff.fibonacci({
+                    randomisationFactor: 0.1,
+                    initialDelay: 5000,
+                    maxDelay: 300000
+                });
+
+                fibonacciBackoff.failAfter(15);
+                return processBulkErrors(esClient, upgradeIndex, resp, response.hits.hits, fibonacciBackoff, callback);
             }
             var found = false;
             for (var k = 0; k < indices.upgrade.length; ++k) {
@@ -817,7 +916,20 @@ function setUpKibanaIndex(esClient, callback) {
                     return callback(err);
                 }
                 if (resp.errors) {
-                    return callback(new Error('Fail in bulk API, ' + JSON.stringify(resp, null, 4)));
+
+                    var fibonacciBackoff = backoff.fibonacci({
+                        randomisationFactor: 0.1,
+                        initialDelay: 5000,
+                        maxDelay: 300000
+                    });
+
+                    fibonacciBackoff.failAfter(15);
+                    return processBulkErrors(esClient, to, resp, hits.hits, fibonacciBackoff, function (err) {
+                        if (err) {
+                            return callback(err);
+                        }
+                        countCallback();
+                    });
                 }
                 countCallback();
             });
@@ -890,7 +1002,19 @@ function setUpTemplateIndex(esClient, callback) {
                     return callback(err);
                 }
                 if (resp.errors) {
-                    return callback(new Error('Fail in bulk API, ' + JSON.stringify(resp, null, 4)));
+                    var fibonacciBackoff = backoff.fibonacci({
+                        randomisationFactor: 0.1,
+                        initialDelay: 5000,
+                        maxDelay: 300000
+                    });
+
+                    fibonacciBackoff.failAfter(15);
+                    return processBulkErrors(esClient, to, resp, hits.hits, fibonacciBackoff, function (err) {
+                        if (err) {
+                            return callback(err);
+                        }
+                        countCallback();
+                    });
                 }
                 countCallback();
             });
@@ -963,7 +1087,19 @@ function setUpGameIndex(esClient, gameIndex, callback) {
                     return callback(err);
                 }
                 if (resp.errors) {
-                    return callback(new Error('Fail in bulk API, ' + JSON.stringify(resp, null, 4)));
+                    var fibonacciBackoff = backoff.fibonacci({
+                        randomisationFactor: 0.1,
+                        initialDelay: 5000,
+                        maxDelay: 300000
+                    });
+
+                    fibonacciBackoff.failAfter(15);
+                    return processBulkErrors(esClient, to, resp, hits.hits, fibonacciBackoff, function (err) {
+                        if (err) {
+                            return callback(err);
+                        }
+                        countCallback();
+                    });
                 }
                 countCallback();
             });
@@ -1209,7 +1345,7 @@ function check(config, callback) {
             return callback(null, config);
         }
 
-        var countCallback = finishedCountCallback(response.length / 2, function() {
+        var countCallback = finishedCountCallback(response.length / 2, function () {
             callback(null, config);
         });
 
