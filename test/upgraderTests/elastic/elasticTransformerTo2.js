@@ -33,7 +33,7 @@ module.exports = function (app, esClient, mongo) {
     /**-------------------------------------------------------------**/
     /**-------------------------------------------------------------**/
     describe('Elastic TransformTo2 test', function () {
-        this.timeout(25000);
+        this.timeout(1000000);
         app.config.elasticsearch.esClient = esClient;
         app.config.mongodb.db = mongo;
 
@@ -175,6 +175,19 @@ module.exports = function (app, esClient, mongo) {
                 return done();
             });
         });
+
+        it('should transform correctly all traces extensions', function (done) {
+            async.waterfall([function(callback) {
+                callback(null, null, null, idSession.toString(), null);},
+                generateTracesAndBulk,
+                transformFunction
+            ], function (err, result) {
+                if (err) {
+                    return done(err);
+                }
+                return done();
+            });
+        });
     });
 
     function bulkFunction(fileIn, fileOut, index, searchObj, callback) {
@@ -270,5 +283,58 @@ module.exports = function (app, esClient, mongo) {
                 callback(new Error('database is not empty'));
             });
         }, 2000);
+    }
+
+    function generateTracesAndBulk(fileIn, fileOut, index, searchObj, callback) {
+        var times = [];
+        for(var t = 0; t < 100; t++){
+            times.push(t);
+        }
+        var nTraces = 5000;
+
+      
+        async.eachSeries(times, function(elem, done){
+            var bulkBody = { body: []};
+            for (var i = 0; i < nTraces; i++) {
+                // Action description
+                bulkBody.body.push({
+                    index: {
+                        _index: index,
+                        _type: 'traces'
+                    }
+                });
+                // Document to index
+                var doc = {
+                    name: (Math.random() + 1).toString(36).substring(7),
+                    timestamp: '2017-01-26T16:01:13.225Z',
+                    event: 'event',
+                    target: (Math.random() + 1).toString(36).substring(4),
+                    type: 'type'
+                };
+    
+                var r = Math.floor(Math.random() * 10);
+                if (r < 3) {
+                    doc['extension' + r] = Math.random() < 0.5;
+                } else if (r < 7) {
+                    doc['extension' + r] = (Math.random() + 1).toString(36).substring(r);
+                } else {
+                    doc['extension' + r] = Math.floor(Math.random() * 100);
+                }
+                bulkBody.body.push(doc);
+            }
+            
+            
+            // Fill DB
+            app.esClient.bulk(bulkBody, function (error, response) {
+                if (error) {
+                    return done(error);
+                }
+                setTimeout(function() {
+                    done();
+                }, 2000);
+            });
+        }, function(err){
+            callback(err, fileIn, fileOut, index, searchObj);
+        });
     }
 };
