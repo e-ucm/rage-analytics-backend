@@ -33,11 +33,11 @@ module.exports = function (app, esClient, mongo) {
     /**-------------------------------------------------------------**/
     /**-------------------------------------------------------------**/
     describe('Elastic TransformTo2 test', function () {
-        this.timeout(1000000);
+        this.timeout(10000000);
         app.config.elasticsearch.esClient = esClient;
         app.config.mongodb.db = mongo;
 
-        before(function(done) {
+        before(function (done) {
             mongo.collection('sessions').insert(
                 {
                     _id: idSession,
@@ -64,8 +64,9 @@ module.exports = function (app, esClient, mongo) {
                 type: 'traces'
             };
 
-            async.waterfall([function(callback) {
-                callback(null, fileIn, fileOut, idSession.toString(), searchObj);},
+            async.waterfall([function (callback) {
+                callback(null, fileIn, fileOut, idSession.toString(), searchObj);
+            },
                 bulkFunction,
                 transformFunction,
                 compareFunction
@@ -84,8 +85,9 @@ module.exports = function (app, esClient, mongo) {
                 index: '.kibana'
             };
 
-            async.waterfall([function(callback) {
-                callback(null, fileIn, fileOut, '.kibana', searchObj);},
+            async.waterfall([function (callback) {
+                callback(null, fileIn, fileOut, '.kibana', searchObj);
+            },
                 bulkFunction,
                 transformFunction,
                 compareFunction
@@ -104,8 +106,9 @@ module.exports = function (app, esClient, mongo) {
                 index: '.games1234'
             };
 
-            async.waterfall([function(callback) {
-                callback(null, fileIn, fileOut, '.games1234', searchObj);},
+            async.waterfall([function (callback) {
+                callback(null, fileIn, fileOut, '.games1234', searchObj);
+            },
                 bulkFunction,
                 transformFunction,
                 compareFunction
@@ -124,8 +127,9 @@ module.exports = function (app, esClient, mongo) {
                 index: '.template'
             };
 
-            async.waterfall([function(callback) {
-                callback(null, fileIn, fileOut, '.template', searchObj);},
+            async.waterfall([function (callback) {
+                callback(null, fileIn, fileOut, '.template', searchObj);
+            },
                 bulkFunction,
                 transformFunction,
                 compareFunction
@@ -148,11 +152,13 @@ module.exports = function (app, esClient, mongo) {
                 index: '.template'
             };
 
-            async.waterfall([function(callback) {
-                callback(null, fileIn, fileOut, '.template', searchObj);},
+            async.waterfall([function (callback) {
+                callback(null, fileIn, fileOut, '.template', searchObj);
+            },
                 bulkFunction,
-                function(fileIn, fileOut, index, searchObj, callback) {
-                    callback(null, fileIn2, fileOut2, '.kibana', searchObj);},
+                function (fileIn, fileOut, index, searchObj, callback) {
+                    callback(null, fileIn2, fileOut2, '.kibana', searchObj);
+                },
                 bulkFunction,
                 transformFunction
             ], function (err, result) {
@@ -164,8 +170,9 @@ module.exports = function (app, esClient, mongo) {
         });
 
         it('should not be error with a empty database', function (done) {
-            async.waterfall([ function(callback) {
-                callback(null, null, null, null, null);},
+            async.waterfall([function (callback) {
+                callback(null, null, null, null, null);
+            },
                 transformFunction,
                 checkEmptyDB
             ], function (err, result) {
@@ -177,8 +184,9 @@ module.exports = function (app, esClient, mongo) {
         });
 
         it('should transform correctly all traces extensions', function (done) {
-            async.waterfall([function(callback) {
-                callback(null, null, null, idSession.toString(), null);},
+            async.waterfall([function (callback) {
+                callback(null, null, null, idSession.toString(), null);
+            },
                 generateTracesAndBulk,
                 transformFunction
             ], function (err, result) {
@@ -193,15 +201,17 @@ module.exports = function (app, esClient, mongo) {
     function bulkFunction(fileIn, fileOut, index, searchObj, callback) {
         var bodyIn = require(fileIn);
 
-        var bulkBody = { body: []};
+        var bulkBody = {body: []};
 
-        bodyIn.forEach(function(doc) {
+        bodyIn.forEach(function (doc) {
             // Action description
-            bulkBody.body.push({ index:  {
-                _index: index ? index : doc.index,
-                _type: doc.type,
-                _id: doc.id
-            }});
+            bulkBody.body.push({
+                index: {
+                    _index: index ? index : doc.index,
+                    _type: doc.type,
+                    _id: doc.id
+                }
+            });
             // Document to index
             bulkBody.body.push(doc.source);
         });
@@ -210,7 +220,7 @@ module.exports = function (app, esClient, mongo) {
             if (error) {
                 return callback(error);
             }
-            setTimeout(function() {
+            setTimeout(function () {
                 callback(null, fileIn, fileOut, idSession, searchObj);
             }, 2000);
         });
@@ -221,7 +231,7 @@ module.exports = function (app, esClient, mongo) {
         var t = require('../../../bin/upgrade/transformers/elastic/transformToVersion2.js');
         async.waterfall([function (newCallback) {
             newCallback(null, app.config);
-        },  t.backup,
+        }, t.backup,
             t.upgrade,
             t.check,
             t.clean
@@ -236,7 +246,7 @@ module.exports = function (app, esClient, mongo) {
     function compareFunction(fileIn, fileOut, idSession, searchObj, callback) {
         var bodyOut = require(fileOut);
 
-        setTimeout(function() {
+        setTimeout(function () {
             app.esClient.search(searchObj, function (err, response) {
                 console.log('SEARCH RESPONSE: ', JSON.stringify(response));
                 if (err) {
@@ -244,7 +254,7 @@ module.exports = function (app, esClient, mongo) {
                 }
                 if (response.hits.hits.length === bodyOut.length) {
                     var error = null;
-                    bodyOut.forEach(function(doc1) {
+                    bodyOut.forEach(function (doc1) {
                         var doc2;
                         response.hits.hits.forEach(function (doc) {
                             if (doc._id.toString() === doc1.id.toString() && doc._type === doc1.type) {
@@ -267,7 +277,7 @@ module.exports = function (app, esClient, mongo) {
 
     function checkEmptyDB(fileIn, fileOut, idSession, searchObj, callback) {
 
-        setTimeout(function() {
+        setTimeout(function () {
             app.esClient.cat.indices(function (err, response) {
                 if (response === undefined) {
                     return callback();
@@ -287,14 +297,14 @@ module.exports = function (app, esClient, mongo) {
 
     function generateTracesAndBulk(fileIn, fileOut, index, searchObj, callback) {
         var times = [];
-        for(var t = 0; t < 100; t++){
+        for (var t = 0; t < 100; t++) {
             times.push(t);
         }
         var nTraces = 5000;
 
-      
-        async.eachSeries(times, function(elem, done){
-            var bulkBody = { body: []};
+
+        async.eachSeries(times, function (elem, done) {
+            var bulkBody = {body: []};
             for (var i = 0; i < nTraces; i++) {
                 // Action description
                 bulkBody.body.push({
@@ -311,7 +321,7 @@ module.exports = function (app, esClient, mongo) {
                     target: (Math.random() + 1).toString(36).substring(4),
                     type: 'type'
                 };
-    
+
                 var r = Math.floor(Math.random() * 10);
                 if (r < 3) {
                     doc['extension' + r] = Math.random() < 0.5;
@@ -322,18 +332,18 @@ module.exports = function (app, esClient, mongo) {
                 }
                 bulkBody.body.push(doc);
             }
-            
-            
+
+
             // Fill DB
             app.esClient.bulk(bulkBody, function (error, response) {
                 if (error) {
                     return done(error);
                 }
-                setTimeout(function() {
+                setTimeout(function () {
                     done();
                 }, 2000);
             });
-        }, function(err){
+        }, function (err) {
             callback(err, fileIn, fileOut, index, searchObj);
         });
     }

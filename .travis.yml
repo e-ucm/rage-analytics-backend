@@ -19,7 +19,7 @@ before_script:
   - curl -v http://localhost:9200/
 
 script:
-  - npm run-script test-travis
+  - travis_wait 70 npm run-script test-travis
   - npm run gen-apidoc
 
 after_success:
