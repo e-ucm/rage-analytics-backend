@@ -32,7 +32,6 @@
     "adjective-adjective-animal": "*",
     "adm-zip": "*",
     "async": "^1.3.x",
-    "backoff": "^2.5.0",
     "body-parser": "^1.13.x",
     "easy-collections": "e-ucm/easy-collections",
     "elasticsearch": "*",
@@ -44,6 +43,7 @@
     "morgan": "^1.6.x",
     "multer": "^1.1.x",
     "request": "^2.60.x",
+    "retry": "^0.10.1",
     "shelljs": "^0.5.x",
     "underscore": "*"
   },

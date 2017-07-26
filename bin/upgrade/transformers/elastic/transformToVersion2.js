@@ -21,9 +21,9 @@
 // For ES specific naming convention we need to do this
 // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
 var ObjectID = require('mongodb').ObjectID;
-var backoff = require('backoff');
+var retry = require('retry');
 
-function processBulkErrors(esClient, to, response, hits, fibonacciBackoff, callback) {
+function processBulkErrors(esClient, to, response, hits, operation, callback) {
     if (!hits || hits.length === 0) {
         return callback();
     }
@@ -69,21 +69,29 @@ function processBulkErrors(esClient, to, response, hits, fibonacciBackoff, callb
         return callback(new Error('Fail in bulk API, ' + JSON.stringify(response, null, 4)));
     }
 
-    fibonacciBackoff.on('backoff', function (number, delay) {
+    operation.attempt(function (currAttempt) {
         // Do something when backoff starts, e.g. show to the
         // user the delay before next reconnection attempt.
-        console.log('Backoff ' + number + ' ' + delay + 'ms');
+        console.log('attempt ' + currAttempt);
         esClient.bulk({
             body: bulk
         }, function (err, resp) {
+            if (operation.retry(resp.errors)) {
+                return;
+            }
             if (err) {
                 return callback(err);
             }
-            if (resp.errors) {
-                return processBulkErrors(esClient, to, response, hits, fibonacciBackoff, callback);
-            }
-            callback();
+            callback(err ? operation.mainError() : null);
         });
+    });
+    /*
+
+    FibonacciBackoff.on('ready', function (number, delay) {
+        // Do something when backoff starts, e.g. show to the
+        // user the delay before next reconnection attempt.
+        console.log('Backoff ready! ' + number + ' ' + delay + 'ms');
+        fibonacciBackoff.backoff();
     });
 
     fibonacciBackoff.on('fail', function () {
@@ -95,8 +103,7 @@ function processBulkErrors(esClient, to, response, hits, fibonacciBackoff, callb
             ', response ' + JSON.stringify(response, null, 4) +
             ', hits ' + JSON.stringify(hits, null, 4)));
     });
-
-    fibonacciBackoff.backoff();
+*/
 }
 
 
@@ -149,14 +156,14 @@ var reindexManually = function (esClient, from, to, callback) {
             }
             if (resp.errors) {
 
-                var fibonacciBackoff = backoff.fibonacci({
-                    randomisationFactor: 0.1,
-                    initialDelay: 5000,
-                    maxDelay: 300000
+                var operation = retry.operation({
+                    retries: 5,
+                    factor: 3,
+                    minTimeout: 1000,
+                    maxTimeout: 60 * 1000,
+                    randomize: true
                 });
-
-                fibonacciBackoff.failAfter(15);
-                return processBulkErrors(esClient, to, resp, hits.hits, fibonacciBackoff, function (err) {
+                return processBulkErrors(esClient, to, resp, hits.hits, operation, function (err) {
                     if (err) {
                         return callback(err);
                     }
@@ -482,14 +489,15 @@ function identifyExtensionsFromIndex(esClient, traceIndex, callback) {
             }
             if (resp.errors) {
 
-                var fibonacciBackoff = backoff.fibonacci({
-                    randomisationFactor: 0.1,
-                    initialDelay: 5000,
-                    maxDelay: 300000
-                });
 
-                fibonacciBackoff.failAfter(15);
-                return processBulkErrors(esClient, upgradeIndex, resp, response.hits.hits, fibonacciBackoff, callback);
+                var operation = retry.operation({
+                    retries: 5,
+                    factor: 3,
+                    minTimeout: 1000,
+                    maxTimeout: 60 * 1000,
+                    randomize: true
+                });
+                return processBulkErrors(esClient, upgradeIndex, resp, response.hits.hits, operation, callback);
             }
             var found = false;
             for (var k = 0; k < indices.upgrade.length; ++k) {
@@ -917,14 +925,15 @@ function setUpKibanaIndex(esClient, callback) {
                 }
                 if (resp.errors) {
 
-                    var fibonacciBackoff = backoff.fibonacci({
-                        randomisationFactor: 0.1,
-                        initialDelay: 5000,
-                        maxDelay: 300000
-                    });
 
-                    fibonacciBackoff.failAfter(15);
-                    return processBulkErrors(esClient, to, resp, hits.hits, fibonacciBackoff, function (err) {
+                    var operation = retry.operation({
+                        retries: 5,
+                        factor: 3,
+                        minTimeout: 1000,
+                        maxTimeout: 60 * 1000,
+                        randomize: true
+                    });
+                    return processBulkErrors(esClient, to, resp, hits.hits, operation, function (err) {
                         if (err) {
                             return callback(err);
                         }
@@ -1002,14 +1011,15 @@ function setUpTemplateIndex(esClient, callback) {
                     return callback(err);
                 }
                 if (resp.errors) {
-                    var fibonacciBackoff = backoff.fibonacci({
-                        randomisationFactor: 0.1,
-                        initialDelay: 5000,
-                        maxDelay: 300000
-                    });
 
-                    fibonacciBackoff.failAfter(15);
-                    return processBulkErrors(esClient, to, resp, hits.hits, fibonacciBackoff, function (err) {
+                    var operation = retry.operation({
+                        retries: 5,
+                        factor: 3,
+                        minTimeout: 1000,
+                        maxTimeout: 60 * 1000,
+                        randomize: true
+                    });
+                    return processBulkErrors(esClient, to, resp, hits.hits, operation, function (err) {
                         if (err) {
                             return callback(err);
                         }
@@ -1087,14 +1097,15 @@ function setUpGameIndex(esClient, gameIndex, callback) {
                     return callback(err);
                 }
                 if (resp.errors) {
-                    var fibonacciBackoff = backoff.fibonacci({
-                        randomisationFactor: 0.1,
-                        initialDelay: 5000,
-                        maxDelay: 300000
-                    });
 
-                    fibonacciBackoff.failAfter(15);
-                    return processBulkErrors(esClient, to, resp, hits.hits, fibonacciBackoff, function (err) {
+                    var operation = retry.operation({
+                        retries: 5,
+                        factor: 3,
+                        minTimeout: 1000,
+                        maxTimeout: 60 * 1000,
+                        randomize: true
+                    });
+                    return processBulkErrors(esClient, to, resp, hits.hits, operation, function (err) {
                         if (err) {
                             return callback(err);
                         }
@@ -1345,7 +1356,19 @@ function check(config, callback) {
             return callback(null, config);
         }
 
-        var countCallback = finishedCountCallback(response.length / 2, function () {
+        var backupCount = 0;
+        var i;
+        var index;
+        for (i = 0; i < response.length; i++) {
+            index = response[i];
+            if (index.index) {
+                if (index.index.indexOf('backup_') === 0) {
+                    backupCount++;
+                }
+            }
+        }
+
+        var countCallback = finishedCountCallback(backupCount, function () {
             callback(null, config);
         });
 
@@ -1356,18 +1379,20 @@ function check(config, callback) {
             countCallback();
         };
 
-        for (var i = 0; i < response.length; i++) {
-            var index = response[i];
+        for (i = 0; i < response.length; i++) {
+            index = response[i];
             if (index.index) {
                 if (index.index.indexOf('backup_') === 0) {
 
                     var normalIndex = index.index.substr('backup_'.length);
 
                     if (normalIndex) {
+                        var foundIndex = false;
                         for (var j = 0; j < response.length; ++j) {
                             var retIndex = response[j];
 
                             if (retIndex.index && retIndex.index === normalIndex) {
+                                foundIndex = true;
                                 if (index['docs.count'] !== retIndex['docs.count']) {
                                     return callback(new Error('DIFFERENT document count ' +
                                         JSON.stringify(index, null, 4) + ' and ' +
@@ -1376,6 +1401,11 @@ function check(config, callback) {
 
                                 checkIndices(esClient, index, retIndex, finishedCheckingIndicesCallback);
                             }
+                        }
+                        if (!foundIndex) {
+                            return callback(new Error('Not found normal index for backed index for ' +
+                                '(should not happen): ' +
+                                JSON.stringify(index, null, 4)));
                         }
                     } else {
                         return callback(new Error('Not found correct index for backed index: ' +

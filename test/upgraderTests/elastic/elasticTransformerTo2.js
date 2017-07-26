@@ -297,10 +297,10 @@ module.exports = function (app, esClient, mongo) {
 
     function generateTracesAndBulk(fileIn, fileOut, index, searchObj, callback) {
         var times = [];
-        for (var t = 0; t < 100; t++) {
+        for (var t = 0; t < 50; t++) {
             times.push(t);
         }
-        var nTraces = 5000;
+        var nTraces = 10000;
 
 
         async.eachSeries(times, function (elem, done) {
@@ -333,7 +333,6 @@ module.exports = function (app, esClient, mongo) {
                 bulkBody.body.push(doc);
             }
 
-
             // Fill DB
             app.esClient.bulk(bulkBody, function (error, response) {
                 if (error) {
@@ -341,7 +340,7 @@ module.exports = function (app, esClient, mongo) {
                 }
                 setTimeout(function () {
                     done();
-                }, 2000);
+                }, 1000);
             });
         }, function (err) {
             callback(err, fileIn, fileOut, index, searchObj);
