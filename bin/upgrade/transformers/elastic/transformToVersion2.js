@@ -24,10 +24,10 @@ var ObjectID = require('mongodb').ObjectID;
 var retry = require('retry');
 
 var opOpts = {
-    retries: 5,
+    retries: 10,
     factor: 2,
-    minTimeout: 1000,
-    maxTimeout: 60 * 1000,
+    minTimeout: 5000,
+    maxTimeout: 60 * 5000,
     randomize: true
 };
 
@@ -98,40 +98,17 @@ var reindexManually = function (esClient, from, to, callback) {
         esClient.bulk({
             body: bulkUpgradedTraces
         }, function (err, resp) {
-            if (err) {
-                return callback(err);
-            }
-            if (resp.errors) {
-
+            if (err || resp.errors) {
                 var operation = retry.operation(opOpts);
                 return processBulkErrors(esClient, bulkUpgradedTraces, operation, function (err) {
                     if (err) {
+                        console.error(err);
                         return callback(err);
                     }
                     finishedCallback();
                 });
             }
             finishedCallback();
-        });
-    });
-};
-
-var attemptsBulk = function (esClient, results, cb) {
-    var operation = retry.operation();
-
-    operation.attempt(function (currentAttempt) {
-        // Do something when backoff starts
-        console.log('attempt ' + currentAttempt);
-        esClient.bulk({
-            body: bulk
-        }, function (err, resp) {
-            if (operation.retry(resp.errors)) {
-                return;
-            }
-            if (err) {
-                return callback(err);
-            }
-            callback(err ? operation.mainError() : null);
         });
     });
 };
@@ -310,46 +287,30 @@ function backup(config, callback) {
 }
 
 function upgradeGameIndex(esClient, gameIndex, callback) {
-    esClient.index({
+    esClient.get({
         index: gameIndex.index,
         type: 'visualization',
-        id: 'TotalSessionPlayers-Cmn',
-        body: {
-            title: 'TotalSessionPlayers-Cmn',
-            visState: '{"title":"Total Session Players",' +
-            '"type":"metric","params":{"handleNoResults":true,' +
-            '"fontSize":60},"aggs":[{"id":"1","type":"cardinality",' +
-            '"schema":"metric","params":{"field":"name.keyword",' +
-            '"customLabel":"SessionPlayers"}}],"listeners":{}}',
-            uiStateJSON: '{}',
-            description: '',
-            version: 1,
-            kibanaSavedObjectMeta: {
-                searchSourceJSON: '{"index":"57604f53f552624300d9caa6",' +
-                '"query":{"query_string":{"query":"*","analyze_wildcard":true}},' +
-                '"filter":[]}'
-            },
-            author: '_default_',
-            isTeacher: true,
-            isDeveloper: true
-        }
+        id: 'TotalSessionPlayers-Cmn'
     }, function (error, response) {
+        if (error) {
+            return callback(error);
+        }
+
+        if (!response || !response._source) {
+            return callback();
+        }
+
         esClient.index({
             index: gameIndex.index,
             type: 'visualization',
-            id: 'xAPIVerbsActivity',
+            id: 'TotalSessionPlayers-Cmn',
             body: {
-                title: 'xAPIVerbsActivity',
-                visState: '{"title":"xAPI Verbs Activity",' +
-                '"type":"histogram","params":{"shareYAxis":true,' +
-                '"addTooltip":true,"addLegend":true,"scale":"linear",' +
-                '"mode":"stacked","times":[],"addTimeMarker":false,' +
-                '"defaultYExtents":false,"setYExtents":false,"yAxis":{}},' +
-                '"aggs":[{"id":"1","type":"count","schema":"metric",' +
-                '"params":{"customLabel":"Activity Count"}},{"id":"2",' +
-                '"type":"terms","schema":"segment","params":{' +
-                '"field":"event.keyword","size":15,"order":"desc",' +
-                '"orderBy":"1","customLabel":"xAPI Verb"}}],"listeners":{}}',
+                title: 'TotalSessionPlayers-Cmn',
+                visState: '{"title":"Total Session Players",' +
+                '"type":"metric","params":{"handleNoResults":true,' +
+                '"fontSize":60},"aggs":[{"id":"1","type":"cardinality",' +
+                '"schema":"metric","params":{"field":"name.keyword",' +
+                '"customLabel":"SessionPlayers"}}],"listeners":{}}',
                 uiStateJSON: '{}',
                 description: '',
                 version: 1,
@@ -359,13 +320,60 @@ function upgradeGameIndex(esClient, gameIndex, callback) {
                     '"filter":[]}'
                 },
                 author: '_default_',
-                isTeacher: false,
+                isTeacher: true,
                 isDeveloper: true
             }
         }, function (error, response) {
-            if (callback) {
-                callback();
+            if (error) {
+                return callback(error);
             }
+            esClient.get({
+                index: gameIndex.index,
+                type: 'visualization',
+                id: 'xAPIVerbsActivity'
+            }, function (errr, res) {
+                if (errr) {
+                    return callback(errr);
+                }
+
+                if (!res || !res._source) {
+                    return callback();
+                }
+
+                esClient.index({
+                    index: gameIndex.index,
+                    type: 'visualization',
+                    id: 'xAPIVerbsActivity',
+                    body: {
+                        title: 'xAPIVerbsActivity',
+                        visState: '{"title":"xAPI Verbs Activity",' +
+                        '"type":"histogram","params":{"shareYAxis":true,' +
+                        '"addTooltip":true,"addLegend":true,"scale":"linear",' +
+                        '"mode":"stacked","times":[],"addTimeMarker":false,' +
+                        '"defaultYExtents":false,"setYExtents":false,"yAxis":{}},' +
+                        '"aggs":[{"id":"1","type":"count","schema":"metric",' +
+                        '"params":{"customLabel":"Activity Count"}},{"id":"2",' +
+                        '"type":"terms","schema":"segment","params":{' +
+                        '"field":"event.keyword","size":15,"order":"desc",' +
+                        '"orderBy":"1","customLabel":"xAPI Verb"}}],"listeners":{}}',
+                        uiStateJSON: '{}',
+                        description: '',
+                        version: 1,
+                        kibanaSavedObjectMeta: {
+                            searchSourceJSON: '{"index":"57604f53f552624300d9caa6",' +
+                            '"query":{"query_string":{"query":"*","analyze_wildcard":true}},' +
+                            '"filter":[]}'
+                        },
+                        author: '_default_',
+                        isTeacher: false,
+                        isDeveloper: true
+                    }
+                }, function (error, response) {
+                    if (callback) {
+                        callback(error);
+                    }
+                });
+            });
         });
     });
 }
@@ -441,18 +449,8 @@ function identifyExtensionsFromIndex(esClient, traceIndex, callback) {
                 ++total;
             }
         });
-        esClient.bulk({
-            body: bulkUpgradedTraces
-        }, function (err, resp) {
-            if (err) {
-                return callback(err);
-            }
-            if (resp.errors) {
 
-
-                var operation = retry.operation(opOpts);
-                return processBulkErrors(esClient, bulkUpgradedTraces, operation, callback);
-            }
+        var finishBulk = function () {
             var found = false;
             for (var k = 0; k < indices.upgrade.length; ++k) {
                 var index = indices.upgrade[k];
@@ -478,6 +476,20 @@ function identifyExtensionsFromIndex(esClient, traceIndex, callback) {
                     callback();
                 }
             }
+        };
+        esClient.bulk({
+            body: bulkUpgradedTraces
+        }, function (err, resp) {
+            if (err || resp.errors) {
+                var operation = retry.operation(opOpts);
+                return processBulkErrors(esClient, bulkUpgradedTraces, operation, function (err) {
+                    if (err) {
+                        return callback(err);
+                    }
+                    finishBulk();
+                });
+            }
+            finishBulk();
         });
     });
 }
@@ -532,28 +544,8 @@ function scrollIndex(esClient, index, callback) {
 }
 
 function checkNeedsUpdate(visualization) {
-    if (extensions.length === 0) {
-        return false;
-    }
-
-    if (!visualization) {
-        return false;
-    }
-
-    if (!visualization._source) {
-        return false;
-    }
-
-    if (!visualization._source.visState) {
-        return false;
-    }
-
 
     var visState = JSON.parse(visualization._source.visState.replaceAll('\\\"', '"'));
-
-    if (!visState.aggs || visState.aggs.length === 0) {
-        return false;
-    }
 
     /*
      * Example of visState:
@@ -652,16 +644,11 @@ function checkNeedsUpdate(visualization) {
 
     if (needsUpdate) {
         visualization._source.visState = JSON.stringify(visState);
-        return visualization;
     }
-    return false;
 }
 
 function setUpVisualization(esClient, visualization, index, callback) {
-    var update = checkNeedsUpdate(visualization);
-    if (!update) {
-        return callback();
-    }
+    checkNeedsUpdate(visualization);
 
     var upgradedIndex = 'upgrade_' + index.index;
     esClient.index({
@@ -670,6 +657,9 @@ function setUpVisualization(esClient, visualization, index, callback) {
         id: visualization._id,
         body: visualization._source
     }, function (error, response) {
+        if (error) {
+            return callback(error);
+        }
         var found = false;
         var ind;
         for (var k = 0; k < indices.upgrade.length; ++k) {
@@ -691,18 +681,6 @@ function setUpVisualization(esClient, visualization, index, callback) {
 }
 
 function checkNeedsUpdateIndexPattern(indexPattern) {
-
-    if (!indexPattern) {
-        return false;
-    }
-
-    if (!indexPattern._source) {
-        return false;
-    }
-
-    if (!indexPattern._source.fields) {
-        return false;
-    }
 
     var fields = JSON.parse(indexPattern._source.fields.replaceAll('\\\"', '"'));
 
@@ -773,24 +751,22 @@ function checkNeedsUpdateIndexPattern(indexPattern) {
     if (needsUpdate) {
         var stringified = JSON.stringify(fields);
         indexPattern._source.fields = stringified;
-        return indexPattern;
     }
-    return false;
 }
 
 function setUpIndexPattern(esClient, indexPattern, index, callback) {
-    var update = checkNeedsUpdateIndexPattern(indexPattern);
-    if (!update) {
-        return callback();
-    }
+    checkNeedsUpdateIndexPattern(indexPattern);
 
     var upgradedIndex = 'upgrade_' + index.index;
     esClient.index({
         index: upgradedIndex,
-        type: update._type,
-        id: update._id,
-        body: update._source
+        type: indexPattern._type,
+        id: indexPattern._id,
+        body: indexPattern._source
     }, function (error, response) {
+        if (error) {
+            return callback(error);
+        }
         var found = false;
         var ind;
         for (var k = 0; k < indices.upgrade.length; ++k) {
@@ -866,7 +842,6 @@ function setUpKibanaIndex(esClient, callback) {
                 } else if (hit._type === 'index-pattern') {
                     setUpIndexPattern(esClient, hit, indices.configs.kibana, countCallback);
                 }
-
             });
         }
 
@@ -874,10 +849,7 @@ function setUpKibanaIndex(esClient, callback) {
             esClient.bulk({
                 body: bulkUpgradedTraces
             }, function (err, resp) {
-                if (err) {
-                    return callback(err);
-                }
-                if (resp.errors) {
+                if (err || resp.errors) {
 
                     var operation = retry.operation(opOpts);
                     return processBulkErrors(esClient, bulkUpgradedTraces, operation, function (err) {
@@ -954,10 +926,7 @@ function setUpTemplateIndex(esClient, callback) {
             esClient.bulk({
                 body: bulkUpgradedTraces
             }, function (err, resp) {
-                if (err) {
-                    return callback(err);
-                }
-                if (resp.errors) {
+                if (err || resp.errors) {
 
                     var operation = retry.operation(opOpts);
                     return processBulkErrors(esClient, bulkUpgradedTraces, operation, function (err) {
@@ -1034,10 +1003,7 @@ function setUpGameIndex(esClient, gameIndex, callback) {
             esClient.bulk({
                 body: bulkUpgradedTraces
             }, function (err, resp) {
-                if (err) {
-                    return callback(err);
-                }
-                if (resp.errors) {
+                if (err || resp.errors) {
 
                     var operation = retry.operation(opOpts);
                     return processBulkErrors(esClient, bulkUpgradedTraces, operation, function (err) {
@@ -1168,60 +1134,39 @@ function upgrade(config, callback) {
 }
 
 function sourcesEquals(x, y) {
-    if (x === null || x === undefined || y === null || y === undefined) {
-        return x === y;
-    }
-    // After this just checking type of one would be enough
-    if (x.constructor !== y.constructor) {
-        return false;
-    }
-    // If they are functions, they should exactly refer to same one (because of closures)
-    if (x instanceof Function) {
-        return x === y;
-    }
-    // If they are regexps, they should exactly refer to same one (it is hard to better equality check on current ES)
-    if (x instanceof RegExp) {
-        return x === y;
-    }
-    if (x === y || x.valueOf() === y.valueOf()) {
-        return true;
-    }
-    if (Array.isArray(x) && x.length !== y.length) {
-        return false;
-    }
-
-    // If they are dates, they must had equal valueOf
-    if (x instanceof Date) {
-        return false;
-    }
-
-    // If they are strictly equal, they both need to be object at least
-    if (!(x instanceof Object)) {
-        return false;
-    }
-    if (!(y instanceof Object)) {
-        return false;
-    }
-
     // Recursive object equality check
     var p = Object.keys(x);
     return Object.keys(y).every(function (i) {
-            if (extensions.indexOf(i) !== -1) {
-                return true;
-            }
-            return p.indexOf(i) !== -1;
-        }) &&
-        p.every(function (i) {
+        if (i === 'ext') {
+            var exts = y.ext;
+            if (exts) {
+                Object.keys(exts).every(function (extKey) {
+                    if (extensions.indexOf(extKey) === -1) {
+                        return false;
+                    }
 
-            if (i === 'fields' || i === 'visState') {
-                return true;
-            }
-            if (extensions.indexOf(i) !== -1) {
-                return true;
+                    return p.indexOf(extKey) !== -1 && exts[extKey] === x[extKey];
+                });
+            } else {
+                for (var j = 0; j < extensions.length; ++i) {
+                    var identifiedExt = extensions[j];
+                    if (p.indexOf(identifiedExt) !== -1) {
+                        return false;
+                    }
+                }
             }
 
-            return sourcesEquals(x[i], y[i]);
-        });
+            return true;
+        }
+
+        if (i === 'fields' || i === 'visState') {
+            return true;
+        }
+        if (extensions.indexOf(i) !== -1) {
+            return false;
+        }
+        return p.indexOf(i) !== -1;
+    });
 }
 
 function checkHit(esClient, hit, index, callback) {
@@ -1315,6 +1260,9 @@ function check(config, callback) {
             countCallback();
         };
 
+        function recursiveCheck() {
+            check(config, callback);
+        }
         for (i = 0; i < response.length; i++) {
             index = response[i];
             if (index.index) {
@@ -1336,9 +1284,7 @@ function check(config, callback) {
                                             JSON.stringify(retIndex, null, 4)), config);
                                     }
                                     checked = true;
-                                    return setTimeout(function () {
-                                        check(config, callback);
-                                    }, 5000);
+                                    return setTimeout(recursiveCheck, 5000);
                                 }
 
                                 checkIndices(esClient, index, retIndex, finishedCheckingIndicesCallback);
@@ -1392,10 +1338,13 @@ function clean(config, callback) {
         upgrade: [],
         deleted: {}
     };
+    extensions = [];
     if (toRemove.length === 0) {
         return callback(null, config);
     }
-    esClient.indices.delete({index: toRemove.join(',')}, callback);
+    esClient.indices.delete({index: toRemove.join(',')}, function (err) {
+        callback(err, config);
+    });
 }
 
 function restore(config, callback) {
