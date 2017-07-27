@@ -184,7 +184,7 @@ module.exports = function (app, esClient, mongo) {
 
         it('should transform correctly all traces extensions', function (done) {
             async.waterfall([function (callback) {
-                callback(null, 10, 500, idSession.toString(),true);
+                callback(null, 10, 500, idSession.toString(), true);
             },
                 generateTracesAndBulk,
                 transformFunction
@@ -198,7 +198,7 @@ module.exports = function (app, esClient, mongo) {
 
         it('should transform correctly all indices', function (done) {
             async.waterfall([function (callback) {
-                callback(null, 10, 5000, idSession.toString(), false);
+                callback(null, 20, 40, idSession.toString(), false);
             },
                 generateTracesAndBulk,
                 transformFunction
@@ -235,7 +235,7 @@ module.exports = function (app, esClient, mongo) {
             }
             setTimeout(function () {
                 callback(null, fileIn, fileOut, idSession, searchObj);
-            }, 2000);
+            }, 1000);
         });
     }
 
@@ -317,12 +317,19 @@ module.exports = function (app, esClient, mongo) {
 
         async.eachSeries(times, function (elem, done) {
             if (!sameIndex) {
-                index = index.substring(0,index.length - num.toString().length);
+                index = index.substring(0, index.length - num.toString().length);
                 for (var z = 0; z < num.toString().length - count.toString().length; z++) {
                     index += '0';
                 }
                 index += count.toString();
                 count++;
+
+                mongo.collection('sessions').insert(
+                    {
+                        _id: new ObjectID(index),
+                        title: 'Dummy ' + index
+                    }, function () {
+                    });
             }
             var bulkBody = {body: []};
             for (var i = 0; i < nTraces; i++) {
@@ -360,7 +367,7 @@ module.exports = function (app, esClient, mongo) {
                 }
                 setTimeout(function () {
                     done();
-                }, 1000);
+                }, 100);
             });
         }, function (err) {
             callback(err, null, null, null, null);
