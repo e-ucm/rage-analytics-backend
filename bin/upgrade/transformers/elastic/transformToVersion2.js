@@ -23,50 +23,18 @@
 var ObjectID = require('mongodb').ObjectID;
 var retry = require('retry');
 
-function processBulkErrors(esClient, to, response, hits, operation, callback) {
-    if (!hits || hits.length === 0) {
-        return callback();
-    }
+var opOpts = {
+    retries: 5,
+    factor: 2,
+    minTimeout: 1000,
+    maxTimeout: 60 * 1000,
+    randomize: true
+};
 
-    if (!response.items || response.items.length === 0) {
-        return callback();
-    }
-
-    var bulk = [];
-    for (var i = 0; i < response.items.length; ++i) {
-        var item = response.items[i];
-        if (!item) {
-            continue;
-        }
-
-        var index = item.index;
-        if (index && index.status === 429 &&
-            index.error && index.error.type === 'es_rejected_execution_exception') {
-
-            var source;
-            for (var j = 0; j < hits.length; ++j) {
-                var hit = hits[j];
-                if (hit &&
-                    hit._type === index._type &&
-                    hit._id === index._id) {
-                    source = hit._source;
-                    break;
-                }
-            }
-
-            if (source) {
-                bulk.push({index: {_index: to, _type: index._type, _id: index._id}});
-                bulk.push(source);
-            } else {
-                return callback(new Error('Fail in backoff trying API, not found hit for ' +
-                    JSON.stringify(index, null, 4) + ' ' +
-                    JSON.stringify(response, null, 4)));
-            }
-        }
-    }
+function processBulkErrors(esClient, bulk, operation, callback) {
 
     if (bulk.length === 0) {
-        return callback(new Error('Fail in bulk API, ' + JSON.stringify(response, null, 4)));
+        return callback(new Error('Fail in bulk API, bulk is empty!' + JSON.stringify(bulk, null, 4)));
     }
 
     operation.attempt(function (currAttempt) {
@@ -76,34 +44,13 @@ function processBulkErrors(esClient, to, response, hits, operation, callback) {
         esClient.bulk({
             body: bulk
         }, function (err, resp) {
-            if (operation.retry(resp.errors)) {
+            err = resp.errors || err;
+            if (operation.retry(err)) {
                 return;
-            }
-            if (err) {
-                return callback(err);
             }
             callback(err ? operation.mainError() : null);
         });
     });
-    /*
-
-    FibonacciBackoff.on('ready', function (number, delay) {
-        // Do something when backoff starts, e.g. show to the
-        // user the delay before next reconnection attempt.
-        console.log('Backoff ready! ' + number + ' ' + delay + 'ms');
-        fibonacciBackoff.backoff();
-    });
-
-    fibonacciBackoff.on('fail', function () {
-        // Do something when the maximum number of backoffs is
-        // reached, e.g. ask the user to check its connection.
-        console.log('fail');
-        return callback(new Error('Fail in backoff API, maximum number of backoffs reached' +
-            ', to ' + JSON.stringify(to, null, 4) +
-            ', response ' + JSON.stringify(response, null, 4) +
-            ', hits ' + JSON.stringify(hits, null, 4)));
-    });
-*/
 }
 
 
@@ -144,8 +91,8 @@ var reindexManually = function (esClient, from, to, callback) {
         hits.hits.forEach(function (hit) {
             var trace = hit._source;
             if (trace) {
-                bulkUpgradedTraces.push({index: {_index: to, _type: hit._type, _id: hit._id}});
-                bulkUpgradedTraces.push(trace);
+                bulkUpgradedTraces.push({update: {_index: to, _type: hit._type, _id: hit._id}});
+                bulkUpgradedTraces.push({doc: trace, doc_as_upsert: true});
             }
         });
         esClient.bulk({
@@ -156,14 +103,8 @@ var reindexManually = function (esClient, from, to, callback) {
             }
             if (resp.errors) {
 
-                var operation = retry.operation({
-                    retries: 5,
-                    factor: 3,
-                    minTimeout: 1000,
-                    maxTimeout: 60 * 1000,
-                    randomize: true
-                });
-                return processBulkErrors(esClient, to, resp, hits.hits, operation, function (err) {
+                var operation = retry.operation(opOpts);
+                return processBulkErrors(esClient, bulkUpgradedTraces, operation, function (err) {
                     if (err) {
                         return callback(err);
                     }
@@ -175,6 +116,25 @@ var reindexManually = function (esClient, from, to, callback) {
     });
 };
 
+var attemptsBulk = function (esClient, results, cb) {
+    var operation = retry.operation();
+
+    operation.attempt(function (currentAttempt) {
+        // Do something when backoff starts
+        console.log('attempt ' + currentAttempt);
+        esClient.bulk({
+            body: bulk
+        }, function (err, resp) {
+            if (operation.retry(resp.errors)) {
+                return;
+            }
+            if (err) {
+                return callback(err);
+            }
+            callback(err ? operation.mainError() : null);
+        });
+    });
+};
 
 var backUpIndex = function (esClient, index, callback) {
     var backupedIndex = 'backup_' + index.index;
@@ -476,8 +436,8 @@ function identifyExtensionsFromIndex(esClient, traceIndex, callback) {
             var trace = hit._source;
             if (trace) {
                 var newTrace = checkTraceExtensions(trace);
-                bulkUpgradedTraces.push({index: {_index: upgradeIndex, _type: hit._type, _id: hit._id}});
-                bulkUpgradedTraces.push(newTrace);
+                bulkUpgradedTraces.push({update: {_index: upgradeIndex, _type: hit._type, _id: hit._id}});
+                bulkUpgradedTraces.push({doc: newTrace, doc_as_upsert: true});
                 ++total;
             }
         });
@@ -490,14 +450,8 @@ function identifyExtensionsFromIndex(esClient, traceIndex, callback) {
             if (resp.errors) {
 
 
-                var operation = retry.operation({
-                    retries: 5,
-                    factor: 3,
-                    minTimeout: 1000,
-                    maxTimeout: 60 * 1000,
-                    randomize: true
-                });
-                return processBulkErrors(esClient, upgradeIndex, resp, response.hits.hits, operation, callback);
+                var operation = retry.operation(opOpts);
+                return processBulkErrors(esClient, bulkUpgradedTraces, operation, callback);
             }
             var found = false;
             for (var k = 0; k < indices.upgrade.length; ++k) {
@@ -880,8 +834,8 @@ function setUpKibanaIndex(esClient, callback) {
                 hit._type === 'index-pattern') {
                 count++;
             } else {
-                bulkUpgradedTraces.push({index: {_index: to, _type: hit._type, _id: hit._id}});
-                bulkUpgradedTraces.push(hit._source);
+                bulkUpgradedTraces.push({update: {_index: to, _type: hit._type, _id: hit._id}});
+                bulkUpgradedTraces.push({doc: hit._source, doc_as_upsert: true});
 
                 var found = false;
                 for (var k = 0; k < indices.upgrade.length; ++k) {
@@ -925,15 +879,8 @@ function setUpKibanaIndex(esClient, callback) {
                 }
                 if (resp.errors) {
 
-
-                    var operation = retry.operation({
-                        retries: 5,
-                        factor: 3,
-                        minTimeout: 1000,
-                        maxTimeout: 60 * 1000,
-                        randomize: true
-                    });
-                    return processBulkErrors(esClient, to, resp, hits.hits, operation, function (err) {
+                    var operation = retry.operation(opOpts);
+                    return processBulkErrors(esClient, bulkUpgradedTraces, operation, function (err) {
                         if (err) {
                             return callback(err);
                         }
@@ -970,8 +917,8 @@ function setUpTemplateIndex(esClient, callback) {
                 hit._type === 'index-pattern') {
                 count++;
             } else {
-                bulkUpgradedTraces.push({index: {_index: to, _type: hit._type, _id: hit._id}});
-                bulkUpgradedTraces.push(hit._source);
+                bulkUpgradedTraces.push({update: {_index: to, _type: hit._type, _id: hit._id}});
+                bulkUpgradedTraces.push({doc: hit._source, doc_as_upsert: true});
 
                 var found = false;
                 for (var k = 0; k < indices.upgrade.length; ++k) {
@@ -1012,14 +959,8 @@ function setUpTemplateIndex(esClient, callback) {
                 }
                 if (resp.errors) {
 
-                    var operation = retry.operation({
-                        retries: 5,
-                        factor: 3,
-                        minTimeout: 1000,
-                        maxTimeout: 60 * 1000,
-                        randomize: true
-                    });
-                    return processBulkErrors(esClient, to, resp, hits.hits, operation, function (err) {
+                    var operation = retry.operation(opOpts);
+                    return processBulkErrors(esClient, bulkUpgradedTraces, operation, function (err) {
                         if (err) {
                             return callback(err);
                         }
@@ -1052,8 +993,8 @@ function setUpGameIndex(esClient, gameIndex, callback) {
             if (hit._type !== 'visualization' &&
                 hit._type !== 'index-pattern' &&
                 hit._type !== 'index') {
-                bulkUpgradedTraces.push({index: {_index: to, _type: hit._type, _id: hit._id}});
-                bulkUpgradedTraces.push(hit._source);
+                bulkUpgradedTraces.push({update: {_index: to, _type: hit._type, _id: hit._id}});
+                bulkUpgradedTraces.push({doc: hit._source, doc_as_upsert: true});
 
                 var found = false;
                 for (var k = 0; k < indices.upgrade.length; ++k) {
@@ -1098,14 +1039,8 @@ function setUpGameIndex(esClient, gameIndex, callback) {
                 }
                 if (resp.errors) {
 
-                    var operation = retry.operation({
-                        retries: 5,
-                        factor: 3,
-                        minTimeout: 1000,
-                        maxTimeout: 60 * 1000,
-                        randomize: true
-                    });
-                    return processBulkErrors(esClient, to, resp, hits.hits, operation, function (err) {
+                    var operation = retry.operation(opOpts);
+                    return processBulkErrors(esClient, bulkUpgradedTraces, operation, function (err) {
                         if (err) {
                             return callback(err);
                         }
@@ -1344,6 +1279,7 @@ function checkIndices(esClient, backedUpIndex, index, callback) {
     });
 }
 
+var checked = false;
 function check(config, callback) {
     var esClient = config.elasticsearch.esClient;
 
@@ -1394,9 +1330,15 @@ function check(config, callback) {
                             if (retIndex.index && retIndex.index === normalIndex) {
                                 foundIndex = true;
                                 if (index['docs.count'] !== retIndex['docs.count']) {
-                                    return callback(new Error('DIFFERENT document count ' +
-                                        JSON.stringify(index, null, 4) + ' and ' +
-                                        JSON.stringify(retIndex, null, 4)), config);
+                                    if (checked) {
+                                        return callback(new Error('DIFFERENT document count ' +
+                                            JSON.stringify(index, null, 4) + ' and ' +
+                                            JSON.stringify(retIndex, null, 4)), config);
+                                    }
+                                    checked = true;
+                                    return setTimeout(function () {
+                                        check(config, callback);
+                                    }, 5000);
                                 }
 
                                 checkIndices(esClient, index, retIndex, finishedCheckingIndicesCallback);
@@ -1457,7 +1399,6 @@ function clean(config, callback) {
 }
 
 function restore(config, callback) {
-    // TODO exceptions
     var esClient = config.elasticsearch.esClient;
 
     var operationsCount = finishedCountCallback(2, function () {
