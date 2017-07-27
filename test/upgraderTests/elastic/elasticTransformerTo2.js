@@ -22,7 +22,6 @@ var async = require('async'),
     ObjectID = require('mongodb').ObjectId,
     utils = require('../upgraderTestUtils.js');
 
-
 var idSession = new ObjectID('dummyGameId0');
 
 module.exports = function (app, esClient, mongo) {
@@ -185,7 +184,21 @@ module.exports = function (app, esClient, mongo) {
 
         it('should transform correctly all traces extensions', function (done) {
             async.waterfall([function (callback) {
-                callback(null, null, null, idSession.toString(), null);
+                callback(null, 10, 500, idSession.toString(),true);
+            },
+                generateTracesAndBulk,
+                transformFunction
+            ], function (err, result) {
+                if (err) {
+                    return done(err);
+                }
+                return done();
+            });
+        });
+
+        it('should transform correctly all indices', function (done) {
+            async.waterfall([function (callback) {
+                callback(null, 10, 5000, idSession.toString(), false);
             },
                 generateTracesAndBulk,
                 transformFunction
@@ -295,15 +308,22 @@ module.exports = function (app, esClient, mongo) {
         }, 2000);
     }
 
-    function generateTracesAndBulk(fileIn, fileOut, index, searchObj, callback) {
+    function generateTracesAndBulk(num, nTraces, index, sameIndex, callback) {
         var times = [];
-        for (var t = 0; t < 50; t++) {
+        var count = 0;
+        for (var t = 0; t < num; t++) {
             times.push(t);
         }
-        var nTraces = 10000;
-
 
         async.eachSeries(times, function (elem, done) {
+            if (!sameIndex) {
+                index = index.substring(0,index.length - num.toString().length);
+                for (var z = 0; z < num.toString().length - count.toString().length; z++) {
+                    index += '0';
+                }
+                index += count.toString();
+                count++;
+            }
             var bulkBody = {body: []};
             for (var i = 0; i < nTraces; i++) {
                 // Action description
@@ -343,7 +363,7 @@ module.exports = function (app, esClient, mongo) {
                 }, 1000);
             });
         }, function (err) {
-            callback(err, fileIn, fileOut, index, searchObj);
+            callback(err, null, null, null, null);
         });
     }
 };
