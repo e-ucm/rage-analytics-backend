@@ -1057,19 +1057,24 @@ function processExistingUpgradeIndex(esClient, index, newIndex, renameCountCallb
                         console.error(err);
                         return callback(err);
                     }
-                    reindexManually(esClient, index, newIndex, function (err, from) {
-                        if (err) {
-                            console.error(err);
-                            return callback(err);
-                        }
 
-                        esClient.indices.delete({index: from}, function (err, result) {
-                            if (!err) {
-                                indices.deleted[from] = true;
+                    console.log('Index ' + newIndex + ' deleted successfully, result ' +
+                        JSON.stringify(result, null, 4));
+                    setTimeout(function () {
+                        reindexManually(esClient, index, newIndex, function (err, from) {
+                            if (err) {
+                                console.error(err);
+                                return callback(err);
                             }
-                            renameCountCallback();
+
+                            esClient.indices.delete({index: from}, function (err, result) {
+                                if (!err) {
+                                    indices.deleted[from] = true;
+                                }
+                                renameCountCallback();
+                            });
                         });
-                    });
+                    }, 5000);
                 });
             } else {
                 reindexManually(esClient, index, newIndex, function (err, from) {
@@ -1084,7 +1089,6 @@ function processExistingUpgradeIndex(esClient, index, newIndex, renameCountCallb
                         }
                         renameCountCallback();
                     });
-
                 });
             }
         }
@@ -1263,6 +1267,7 @@ function check(config, callback) {
         function recursiveCheck() {
             check(config, callback);
         }
+
         for (i = 0; i < response.length; i++) {
             index = response[i];
             if (index.index) {
@@ -1347,6 +1352,36 @@ function clean(config, callback) {
     });
 }
 
+function restoreIndex(esClient, backedUpIndex, newIndex, callbackToDelete) {
+    esClient.indices.exists({
+            index: newIndex
+        }, function (err, exists) {
+            if (err) {
+                console.error('Error checking if index exists (probably does not exist)' +
+                    ', going to reindex' + err);
+            }
+
+            if (exists) {
+                esClient.indices.delete({index: newIndex}, function (err, result) {
+                    if (err) {
+                        console.error('Could not delete existing index (should not happen)!');
+                        console.error(err);
+                        return callbackToDelete(err);
+                    }
+
+                    console.log('Index ' + newIndex + ' deleted successfully, result ' +
+                        JSON.stringify(result, null, 4));
+                    setTimeout(function () {
+                        reindexManually(esClient, backedUpIndex, newIndex, callbackToDelete);
+                    }, 5000);
+                });
+            } else {
+                reindexManually(esClient, backedUpIndex, newIndex, callbackToDelete);
+            }
+        }
+    );
+}
+
 function restore(config, callback) {
     var esClient = config.elasticsearch.esClient;
 
@@ -1362,7 +1397,7 @@ function restore(config, callback) {
     };
     for (var i = 0; i < indices.backup.length; i++) {
         var index = indices.backup[i];
-        reindexManually(esClient, index, index.index.substr('backup_'.length), reindexedCallback);
+        restoreIndex(esClient, index, index.index.substr('backup_'.length), reindexedCallback);
     }
     var toRemove = [];
     for (var j = 0; j < indices.upgrade.length; j++) {
