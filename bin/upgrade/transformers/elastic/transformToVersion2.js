@@ -40,7 +40,7 @@ function processBulkErrors(esClient, bulk, operation, callback) {
     operation.attempt(function (currAttempt) {
         // Do something when backoff starts, e.g. show to the
         // user the delay before next reconnection attempt.
-        console.log('attempt ' + currAttempt);
+        console.log('processBulkErrors attempt ' + currAttempt);
         esClient.bulk({
             body: bulk
         }, function (err, resp) {
@@ -221,11 +221,27 @@ function checkIsTracesIndex(index, config, callback) {
         });
 }
 
+function attemptCatIndexErrors(esClient, callback) {
+    var operation = retry.operation(opOpts);
+    operation.attempt(function (currAttempt) {
+        // Do something when backoff starts, e.g. show to the
+        // user the delay before next reconnection attempt.
+        console.log('attemptCatIndexErrors attempt ' + currAttempt);
+        esClient.cat.indices({format: 'json'}, function (err, resp) {
+            err = resp.errors || err;
+            if (operation.retry(err)) {
+                return;
+            }
+            callback(err ? operation.mainError() : null, resp);
+        });
+    });
+}
+
 function backup(config, callback) {
 
     var esClient = config.elasticsearch.esClient;
 
-    esClient.cat.indices({format: 'json'}, function (error, response) {
+    attemptCatIndexErrors(esClient, function (error, response) {
         if (error) {
             return callback(error);
         }
@@ -286,8 +302,45 @@ function backup(config, callback) {
     });
 }
 
+function attemptGetIndexErrors(esClient, options, callback) {
+    var operation = retry.operation(opOpts);
+    operation.attempt(function (currAttempt) {
+        // Do something when backoff starts, e.g. show to the
+        // user the delay before next reconnection attempt.
+        console.log('attemptGetIndexErrors attempt, ' + currAttempt + ' options, ' + JSON.stringify(options, null, 4));
+        esClient.get(options, function (err, resp) {
+            err = resp.errors || err;
+            console.error(err);
+            if (err && err.status === 404) {
+                return callback();
+            }
+            if (operation.retry(err)) {
+                return;
+            }
+            callback(err ? operation.mainError() : null, resp);
+        });
+    });
+}
+
+
+function attemptIndexErrors(esClient, options, callback) {
+    var operation = retry.operation(opOpts);
+    operation.attempt(function (currAttempt) {
+        // Do something when backoff starts, e.g. show to the
+        // user the delay before next reconnection attempt.
+        console.log('attemptIndexErrors attempt, ' + currAttempt + ' options, ' + JSON.stringify(options, null, 4));
+        esClient.index(options, function (err, resp) {
+            err = resp.errors || err;
+            if (operation.retry(err)) {
+                return;
+            }
+            callback(err ? operation.mainError() : null, resp);
+        });
+    });
+}
+
 function upgradeGameIndex(esClient, gameIndex, callback) {
-    esClient.get({
+    attemptGetIndexErrors(esClient, {
         index: gameIndex.index,
         type: 'visualization',
         id: 'TotalSessionPlayers-Cmn'
@@ -300,7 +353,7 @@ function upgradeGameIndex(esClient, gameIndex, callback) {
             return callback();
         }
 
-        esClient.index({
+        attemptIndexErrors(esClient, {
             index: gameIndex.index,
             type: 'visualization',
             id: 'TotalSessionPlayers-Cmn',
@@ -327,7 +380,7 @@ function upgradeGameIndex(esClient, gameIndex, callback) {
             if (error) {
                 return callback(error);
             }
-            esClient.get({
+            attemptGetIndexErrors(esClient, {
                 index: gameIndex.index,
                 type: 'visualization',
                 id: 'xAPIVerbsActivity'
@@ -340,7 +393,7 @@ function upgradeGameIndex(esClient, gameIndex, callback) {
                     return callback();
                 }
 
-                esClient.index({
+                attemptIndexErrors(esClient, {
                     index: gameIndex.index,
                     type: 'visualization',
                     id: 'xAPIVerbsActivity',
@@ -415,8 +468,7 @@ function checkTraceExtensions(trace) {
                 newTrace[property] = trace[property];
             }
         }
-    )
-    ;
+    );
     return newTrace;
 }
 
@@ -651,7 +703,7 @@ function setUpVisualization(esClient, visualization, index, callback) {
     checkNeedsUpdate(visualization);
 
     var upgradedIndex = 'upgrade_' + index.index;
-    esClient.index({
+    attemptIndexErrors(esClient, {
         index: upgradedIndex,
         type: visualization._type,
         id: visualization._id,
@@ -758,7 +810,7 @@ function setUpIndexPattern(esClient, indexPattern, index, callback) {
     checkNeedsUpdateIndexPattern(indexPattern);
 
     var upgradedIndex = 'upgrade_' + index.index;
-    esClient.index({
+    attemptIndexErrors(esClient, {
         index: upgradedIndex,
         type: indexPattern._type,
         id: indexPattern._id,
@@ -1043,8 +1095,42 @@ function setUpVisualizations(esClient, callback) {
     });
 }
 
+function attemptIndexExistsErrors(esClient, options, callback) {
+    var operation = retry.operation(opOpts);
+    operation.attempt(function (currAttempt) {
+        // Do something when backoff starts, e.g. show to the
+        // user the delay before next reconnection attempt.
+        console.log('attemptIndexExistsErrors attempt, ' + currAttempt + ' options, ' + JSON.stringify(options, null, 4));
+        esClient.indices.exists(options, function (err, resp) {
+            err = resp.errors || err;
+            if (operation.retry(err)) {
+                return;
+            }
+            callback(err ? operation.mainError() : null, resp);
+        });
+    });
+}
+
+
+function attemptIndexDeleteErrors(esClient, options, callback) {
+    var operation = retry.operation(opOpts);
+    operation.attempt(function (currAttempt) {
+        // Do something when backoff starts, e.g. show to the
+        // user the delay before next reconnection attempt.
+        console.log('attemptIndexDeleteErrors attempt, ' + currAttempt + ' options, ' + JSON.stringify(options, null, 4));
+        esClient.indices.delete(options, function (err, resp) {
+            err = resp.errors || err;
+            if (operation.retry(err)) {
+                return;
+            }
+            callback(err ? operation.mainError() : null, resp);
+        });
+    });
+}
+
+
 function processExistingUpgradeIndex(esClient, index, newIndex, renameCountCallback, callback) {
-    esClient.indices.exists({
+    attemptIndexExistsErrors(esClient, {
             index: newIndex
         }, function (err, exists) {
             if (err) {
@@ -1052,7 +1138,7 @@ function processExistingUpgradeIndex(esClient, index, newIndex, renameCountCallb
             }
 
             if (exists) {
-                esClient.indices.delete({index: newIndex}, function (err, result) {
+                attemptIndexDeleteErrors(esClient, {index: newIndex}, function (err, result) {
                     if (err) {
                         console.error(err);
                         return callback(err);
@@ -1067,7 +1153,7 @@ function processExistingUpgradeIndex(esClient, index, newIndex, renameCountCallb
                                 return callback(err);
                             }
 
-                            esClient.indices.delete({index: from}, function (err, result) {
+                            attemptIndexDeleteErrors(esClient, {index: from}, function (err, result) {
                                 if (!err) {
                                     indices.deleted[from] = true;
                                 }
@@ -1083,7 +1169,7 @@ function processExistingUpgradeIndex(esClient, index, newIndex, renameCountCallb
                         return callback(err);
                     }
 
-                    esClient.indices.delete({index: from}, function (err, result) {
+                    attemptIndexDeleteErrors(esClient, {index: from}, function (err, result) {
                         if (!err) {
                             indices.deleted[from] = true;
                         }
@@ -1174,13 +1260,17 @@ function sourcesEquals(x, y) {
 }
 
 function checkHit(esClient, hit, index, callback) {
-    esClient.get({
+    attemptGetIndexErrors(esClient, {
         index: index.index,
         type: hit._type,
         id: hit._id
     }, function (error, response) {
         if (error) {
             return callback(error);
+        }
+
+        if(!response || !response._source) {
+            return callback(null, false, hit, response);
         }
 
         // Compare sources
@@ -1232,7 +1322,7 @@ var checked = false;
 function check(config, callback) {
     var esClient = config.elasticsearch.esClient;
 
-    esClient.cat.indices({format: 'json'}, function (error, response) {
+    attemptCatIndexErrors(esClient, function (error, response) {
         if (error) {
             return callback(error);
         }
@@ -1327,33 +1417,33 @@ function clean(config, callback) {
             toRemove.push(upgradeIndex.index);
         }
     }
-    indices = {
-        traces: [],
-        versions: [],
-        results: [],
-        opaqueValues: [],
-        games: [],
-        configs: {
-            template: null,
-            kibana: null,
-            defaultKibanaIndex: null
-        },
-        others: [],
-        backup: [],
-        upgrade: [],
-        deleted: {}
-    };
-    extensions = [];
     if (toRemove.length === 0) {
         return callback(null, config);
     }
-    esClient.indices.delete({index: toRemove.join(',')}, function (err) {
+    attemptIndexDeleteErrors(esClient, {index: toRemove.join(',')}, function (err) {
+        indices = {
+            traces: [],
+            versions: [],
+            results: [],
+            opaqueValues: [],
+            games: [],
+            configs: {
+                template: null,
+                kibana: null,
+                defaultKibanaIndex: null
+            },
+            others: [],
+            backup: [],
+            upgrade: [],
+            deleted: {}
+        };
+        extensions = [];
         callback(err, config);
     });
 }
 
 function restoreIndex(esClient, backedUpIndex, newIndex, callbackToDelete) {
-    esClient.indices.exists({
+    attemptIndexExistsErrors(esClient, {
             index: newIndex
         }, function (err, exists) {
             if (err) {
@@ -1362,7 +1452,7 @@ function restoreIndex(esClient, backedUpIndex, newIndex, callbackToDelete) {
             }
 
             if (exists) {
-                esClient.indices.delete({index: newIndex}, function (err, result) {
+                attemptIndexDeleteErrors(esClient, {index: newIndex}, function (err, result) {
                     if (err) {
                         console.error('Could not delete existing index (should not happen)!');
                         console.error(err);
@@ -1393,7 +1483,7 @@ function restore(config, callback) {
         if (err) {
             return callback(err);
         }
-        esClient.indices.delete({index: from}, renameCount);
+        attemptIndexDeleteErrors(esClient, {index: from}, renameCount);
     };
     for (var i = 0; i < indices.backup.length; i++) {
         var index = indices.backup[i];
@@ -1409,7 +1499,7 @@ function restore(config, callback) {
     if (toRemove.length === 0) {
         return operationsCount();
     }
-    esClient.indices.delete({index: toRemove.join(',')}, operationsCount);
+    attemptIndexDeleteErrors(esClient, {index: toRemove.join(',')}, operationsCount);
 }
 
 module.exports = {
