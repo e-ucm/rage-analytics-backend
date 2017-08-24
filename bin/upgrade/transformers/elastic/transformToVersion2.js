@@ -75,7 +75,7 @@ String.prototype.replaceAll = function (search, replacement) {
 var reindexManually = function (esClient, from, to, callback) {
     scrollIndex(esClient, from, function (err, finished, hits, finishedCallback) {
         if (err) {
-            console.error(err);
+            console.error('reindexManually - scrollIndex ' + from + ' ' + err);
             return callback(err);
         }
 
@@ -102,7 +102,7 @@ var reindexManually = function (esClient, from, to, callback) {
                 var operation = retry.operation(opOpts);
                 return processBulkErrors(esClient, bulkUpgradedTraces, operation, function (err) {
                     if (err) {
-                        console.error(err);
+                        console.error('reindexManually - scrollIndex - processBulkErrors ' + from + ' ' + err);
                         return callback(err);
                     }
                     finishedCallback();
@@ -256,7 +256,7 @@ function backup(config, callback) {
 
         var backedUpCallback = function (err, index, response) {
             if (err) {
-                console.error('Backup error');
+                console.error('Backup error ' + err);
                 return callback(err);
             }
 
@@ -310,7 +310,7 @@ function attemptGetIndexErrors(esClient, options, callback) {
         console.log('attemptGetIndexErrors attempt, ' + currAttempt + ' options, ' + JSON.stringify(options, null, 4));
         esClient.get(options, function (err, resp) {
             err = resp.errors || err;
-            console.error(err);
+            console.error('attemptGetIndexErrors ' + err);
             if (err && err.status === 404) {
                 return callback();
             }
@@ -845,7 +845,7 @@ function setUpKibanaIndex(esClient, callback) {
     }
     scrollIndex(esClient, indices.configs.kibana, function (err, finished, hits, finishedCallback) {
         if (err) {
-            console.error(err);
+            console.error('setUpKibanaIndex - scrollIndex ' + err);
             return callback(err);
         }
 
@@ -925,7 +925,7 @@ function setUpTemplateIndex(esClient, callback) {
     }
     scrollIndex(esClient, indices.configs.template, function (err, finished, hits, finishedCallback) {
         if (err) {
-            console.error(err);
+            console.error('setUpTemplateIndex - scrollIndex ' + err);
             return callback(err);
         }
 
@@ -999,7 +999,7 @@ function setUpTemplateIndex(esClient, callback) {
 function setUpGameIndex(esClient, gameIndex, callback) {
     scrollIndex(esClient, gameIndex, function (err, finished, hits, finishedCallback) {
         if (err) {
-            console.error(err);
+            console.error('setUpGameIndex - scrollIndex ' + gameIndex + ' ' + err);
             return callback(err);
         }
 
@@ -1134,13 +1134,13 @@ function processExistingUpgradeIndex(esClient, index, newIndex, renameCountCallb
             index: newIndex
         }, function (err, exists) {
             if (err) {
-                console.error('Error checking if index exists, going to reindex' + err);
+                console.error('Error checking if index exists, going to reindex ' + err);
             }
 
             if (exists) {
                 attemptIndexDeleteErrors(esClient, {index: newIndex}, function (err, result) {
                     if (err) {
-                        console.error(err);
+                        console.error('attemptIndexDeleteErrors ' + newIndex + ' ' + err);
                         return callback(err);
                     }
 
@@ -1149,7 +1149,9 @@ function processExistingUpgradeIndex(esClient, index, newIndex, renameCountCallb
                     setTimeout(function () {
                         reindexManually(esClient, index, newIndex, function (err, from) {
                             if (err) {
-                                console.error(err);
+                                console.error('processExistingUpgradeIndex - attemptIndexExistsErrors - ' +
+                                    'attemptIndexDeleteErrors - ' +
+                                    'reindexManually ' + index + '  ' + err);
                                 return callback(err);
                             }
 
@@ -1163,10 +1165,11 @@ function processExistingUpgradeIndex(esClient, index, newIndex, renameCountCallb
                     }, 5000);
                 });
             } else {
-                reindexManually(esClient, index, newIndex, function (err, from) {
+                reindexManually(esClient, index, newIndex, function (errr, from) {
                     if (err) {
-                        console.error(err);
-                        return callback(err);
+                        console.error('processExistingUpgradeIndex - attemptIndexExistsErrors - ' +
+                            'reindexManually ' + index + '  ' + errr);
+                        return callback(errr);
                     }
 
                     attemptIndexDeleteErrors(esClient, {index: from}, function (err, result) {
@@ -1252,10 +1255,12 @@ function sourcesEquals(x, y) {
         if (i === 'fields' || i === 'visState') {
             return true;
         }
-        if (extensions.indexOf(i) !== -1) {
-            return false;
+
+        if (p.indexOf(i) !== -1) {
+            return true;
         }
-        return p.indexOf(i) !== -1;
+
+        return extensions.indexOf(i) !== -1;
     });
 }
 
@@ -1269,7 +1274,7 @@ function checkHit(esClient, hit, index, callback) {
             return callback(error);
         }
 
-        if(!response || !response._source) {
+        if (!response || !response._source) {
             return callback(null, false, hit, response);
         }
 
