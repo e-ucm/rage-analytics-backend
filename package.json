@@ -26,7 +26,8 @@
     "test-win": "npm run lint && set NODE_ENV=test&& mocha -R spec",
     "test-travis": "npm run lint && npm run fast-setup && NODE_ENV=test TEST_ES=true ./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- -R spec",
     "gen-apidoc": "apidoc -i ./routes -o ./public/apidoc",
-    "upgrade": "node ./bin/upgrade/upgrade.js"
+    "upgrade": "node ./bin/upgrade/upgrade.js",
+    "recover": "node ./bin/permissions-recover.js"
   },
   "dependencies": {
     "adjective-adjective-animal": "*",
