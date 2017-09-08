@@ -99,6 +99,10 @@ describe('Config files  validations', function () {
         should(config.port).be.a.String();
         should(config.mongodb).be.an.Object();
         should(config.mongodb.uri).be.a.String();
+        should(config.mongodb.modelVersion).be.a.String();
+        should(config.elasticsearch).be.an.Object();
+        should(config.elasticsearch.uri).be.a.String();
+        should(config.elasticsearch.modelVersion).be.a.String();
         should(config.apiPath).be.a.String();
         should(config.companyName).be.a.String();
         should(config.projectName).be.a.String();
@@ -125,6 +129,10 @@ describe('Config files  validations', function () {
         should(testConfig.port).be.a.String();
         should(testConfig.mongodb).be.an.Object();
         should(testConfig.mongodb.uri).be.a.String();
+        should(testConfig.mongodb.modelVersion).be.a.String();
+        should(testConfig.elasticsearch).be.an.Object();
+        should(testConfig.elasticsearch.uri).be.a.String();
+        should(testConfig.elasticsearch.modelVersion).be.a.String();
         should(testConfig.apiPath).be.a.String();
         should(testConfig.companyName).be.a.String();
         should(testConfig.projectName).be.a.String();

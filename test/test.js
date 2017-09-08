@@ -19,7 +19,8 @@
 'use strict';
 
 var request = require('supertest'),
-    db = require('../lib/db');
+    db = require('../lib/db'),
+    app = require('../app');
 
 var config;
 
@@ -27,7 +28,7 @@ describe('API Test', function (done) {
     this.timeout(20000);
     /**Initialize MongoDB**/
     before(function (done) {
-        var app = require('../app');
+
         config = app.config;
         app.listen(config.port, function (err) {
             if (err) {
@@ -37,7 +38,7 @@ describe('API Test', function (done) {
                 // Give it 200ms so that the connection with MongoDB is established.
                 setTimeout(function () {
                     done();
-                }, 200);
+                }, 2000);
             }
         });
     });
@@ -55,7 +56,16 @@ describe('API Test', function (done) {
 
         // Test collector and track, also drop the database.
         require('./tests/collectorTest')(request, db, config);
+        require('./upgraderTests/mongo/mongoController')(request, app, db);
+        require('./upgraderTests/mongo/mongoTransformerTo2')(app, db, config);
+        require('./upgraderTests/mongo/mongoTransformerTo3')(app, db, config);
+        // Test transformers
+        if (process.env.TEST_ES) {
+            require('./upgraderTests/elastic/elasticController')(app, app.esClient, db);
+            require('./upgraderTests/elastic/elasticTransformerTo2')(app, app.esClient, db);
+        }
 
+        require('./upgraderTests/processController')(request, app, db);
         done();
     });
 

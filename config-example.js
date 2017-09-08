@@ -21,10 +21,12 @@
 exports.port = process.env.PORT || '{{port}}';
 exports.myHost = '{{myHost}}';
 exports.mongodb = {
-    uri: process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || '{{mongodbUrl}}'
+    uri: process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || '{{mongodbUrl}}',
+    modelVersion: '{{mongoModelVersion}}'
 };
 exports.elasticsearch = {
-    uri: process.env.ELASTIC_HOST || '{{elasticsearchURL}}'
+    uri: process.env.ELASTIC_HOST || '{{elasticsearchURL}}',
+    modelVersion: '{{elasticsearchModelVersion}}'
 };
 exports.apiPath = '{{apiPath}}';
 exports.companyName = '{{companyName}}';

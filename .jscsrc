@@ -6,7 +6,7 @@
 
     "requireSemicolons": true,
     "requireParenthesesAroundIIFE": true,
-    "maximumLineLength": 160,
+    "maximumLineLength": 16000,
     "validateLineBreaks": null,
     "validateIndentation": 4,
     "disallowTrailingComma": true,
@@ -17,6 +17,7 @@
     "disallowImplicitTypeConversion": ["string"],
     "disallowSpacesInFunction": null,
     "excludeFiles": [
-        "public/apidoc/**"
+        "public/apidoc/**",
+        "node_modules/**"
     ]
 }

@@ -1,13 +1,22 @@
+sudo: true
 language: node_js
 node_js:
   - "4.1"
 
+addons:
+  apt:
+    packages:
+      - oracle-java8-set-default
+
 services:
   - mongodb
-  - elasticsearch
+
+before_install:
+  - curl -O https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/5.0.0-alpha5/elasticsearch-5.0.0-alpha5.deb && sudo dpkg -i --force-confnew elasticsearch-5.0.0-alpha5.deb && sudo service elasticsearch start
 
 before_script:
-  - sleep 5
+  - sleep 15
+  - curl -v http://localhost:9200/
 
 script:
   - npm run-script test-travis
