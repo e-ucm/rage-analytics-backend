@@ -21,11 +21,11 @@
 var should = require('should'),
     ObjectID = require('mongodb').ObjectId,
     Q = require('q'),
-    sessions = require('../../lib/sessions');
+    sessions = require('../../lib/activities');
 
 var idGame = new ObjectID('dummyGameId0'),
     idVersion = new ObjectID('dummyVersId0'),
-    idSession = new ObjectID('dummySessId0'),
+    idActivity = new ObjectID('dummyActsId0'),
     trackingCode = '123';
 
 module.exports = function (request, db, config) {
@@ -50,9 +50,9 @@ module.exports = function (request, db, config) {
                             gameId: idGame,
                             trackingCode: trackingCode
                         }, function () {
-                            db.collection('sessions').insert(
+                            db.collection('activities').insert(
                                 {
-                                    _id: idSession,
+                                    _id: idActivity,
                                     gameId: idGame,
                                     versionId: idVersion,
                                     name: 'name',
@@ -78,7 +78,7 @@ module.exports = function (request, db, config) {
         var ends = 0;
 
 
-        it('Testing session start', function (done) {
+        it('Testing activity start', function (done) {
             sessions.startTasks = [];
             sessions.endTasks = [];
             sessions.startTasks.push(function () {
@@ -94,7 +94,7 @@ module.exports = function (request, db, config) {
                     return true;
                 });
             });
-            request.post('/api/sessions/' + idSession + '/event/start')
+            request.post('/api/activities/' + idActivity + '/event/start')
                 .expect(200)
                 .expect('Content-Type', /json/)
                 .set('X-Gleaner-User', 'Teacher1')
@@ -798,7 +798,7 @@ module.exports = function (request, db, config) {
         });
 
         it('Testing the end collector', function (done) {
-            request.post('/api/sessions/' + idSession + '/event/end')
+            request.post('/api/activities/' + idActivity + '/event/end')
                 .expect(200)
                 .set('X-Gleaner-User', 'Teacher1')
                 .end(function (err, res) {
