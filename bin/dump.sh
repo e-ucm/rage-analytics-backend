@@ -5,8 +5,9 @@ usage () {
 	echo "Usage: `basename $0` [-h] [-b] [-d] [-r] [-i] [-s] [http://es-ESname:9200]"
 	echo ""
 	echo "where:   "
-	echo "      -h   Show this help text "
-	echo "      -b   Backup the elasticsearch indices to .json files "
+	echo "      -h   Show this help text. "
+	echo "      -b   Backup the elasticsearch indices to .json files. "
+	echo "      -d   Directory of output of dump or input in case we are restoring (-r). "
 	echo "      -r   Restore the indices back on the same ES using the .json files created."
 	echo "      -s   Elasticsearch server name with port"
 	echo ""
@@ -31,7 +32,8 @@ info () {
 BACKUP=0
 RESTORE=0
 ES=""
-while getopts ":hbdris:" option; do 
+DIR=""
+while getopts ":hbrid:s:" option; do 
 	case $option in 
 		b) 
 			BACKUP=1 ;;
@@ -41,6 +43,8 @@ while getopts ":hbdris:" option; do
 			BACKUP=1
 			DELETE=1
 			RESTORE=1 ;;
+		d)
+			DIR=$OPTARG ;;
 		s)
 			ES=$OPTARG ;;
 		:) 
@@ -60,6 +64,12 @@ done
 
 # Check if the ES name is provided
 if [ "$ES" == "" ]; then
+	usage
+	exit 0
+fi 
+
+# Check if the DIR name is provided
+if [ "$DIR" == "" ]; then
 	usage
 	exit 0
 fi 
@@ -101,12 +111,8 @@ backup() {
 	
 	read -p "You can modify the indices to reduce the subset of data being backed up and deleted, the script will not proceed till you hit any key"
 
-	for INDEX in $(cat indices) 
-	do 
-		echo "Backing up " $INDEX 
-		elasticdump --input=$ES/$INDEX --output=$INDEX.json 
-		echo "-----------------" 
-	done 
+    echo "Backing up " $ES
+    multielasticdump --direction=dump --input=$ES --output=$DIR
 
 	echo "BACKUP COMPLETE!!"
 }
@@ -114,15 +120,11 @@ backup() {
 # Recreate all the indices backed up as part of the backup process 
 restore() {
 	echo "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* R E S T O R E  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*"
-	echo "REINDEXING..."
+	echo "REINDEXING INTO..." $ES
 	
-	FILES=*.json
-	for f in $FILES
-	do
-	        echo "Processing $f ..."
-	        elasticdump --bulk=true --input=$f --output=$ES
-	done
+    multielasticdump --direction=load --input=$DIR --output=$ES
 	
+	echo "LOAD COMPLETE!!"
 }
 
 if [ $BACKUP == 1 ]; then
