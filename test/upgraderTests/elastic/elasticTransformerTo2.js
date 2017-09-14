@@ -198,7 +198,7 @@ module.exports = function (app, esClient, mongo) {
 
         it('should transform correctly all indices', function (done) {
             async.waterfall([function (callback) {
-                callback(null, 20, 40, idSession.toString(), false);
+                callback(null, 20, 400, idSession.toString(), false);
             },
                 generateTracesAndBulk,
                 transformFunction
