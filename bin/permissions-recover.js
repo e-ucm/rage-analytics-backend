@@ -103,7 +103,7 @@ var resolvePermissions = function () {
         async.eachSeries(response.hits.hits, function (doc, callback) {
             // 'dasboard_ID'
             var visID = doc._source.title.substring(10, doc._source.title.length); // Get _ID
-            console.log("ID -- ", visID);
+            console.log('ID -- ', visID);
             documentObj[visID] = [doc._source.title, visID];
             var docJSON = JSON.parse(doc._source.panelsJSON);
             // Get visualizations that compose the dashboards
@@ -117,7 +117,7 @@ var resolvePermissions = function () {
                         if (err || !session || session.length === 0) {
                             return callback();
                         }
-                        console.log("session = ",session[0]._id);
+                        console.log('session = ',session[0]._id);
                         session[0].teachers.forEach(function (tea) {
                             if (!mgetObj.permissions[tea]) {
                                 mgetObj.permissions[tea] = ['5.0.0', 'default-kibana-index'];
@@ -129,7 +129,7 @@ var resolvePermissions = function () {
                         return callback();
                     });
                 } else {
-                    console.log("version = ",version[0]._id);
+                    console.log('version = ',version[0]._id);
                     var gameID = version[0].gameId;
                     // Get the username and create the object with the resources (dashboards, index and visualizations)
                     dbBackend.collection('games').find({_id: ObjectId(gameID)}).toArray(function (err, game) {
@@ -138,7 +138,7 @@ var resolvePermissions = function () {
                                 if (err || !session || session.length === 0) {
                                     return callback();
                                 }
-                                console.log("session = ",session[0]);
+                                console.log('session = ',session[0]);
                                 session[0].teachers.forEach(function (tea) {
                                     if (!mgetObj.permissions[tea]) {
                                         mgetObj.permissions[tea] = ['5.0.0', 'default-kibana-index'];
@@ -150,7 +150,7 @@ var resolvePermissions = function () {
                                 return callback();
                             });
                         } else {
-                            console.log("games = ",game[0]._id);
+                            console.log('games = ',game[0]._id);
                             game[0].developers.forEach(function (dev) {
                                 if (!mgetObj.permissions[dev]) {
                                     mgetObj.permissions[dev] = ['5.0.0', 'default-kibana-index'];
