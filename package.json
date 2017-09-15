@@ -34,7 +34,7 @@
     "adm-zip": "*",
     "async": "^1.3.x",
     "body-parser": "^1.13.x",
-    "co": "*",
+    "co": "4.6.x",
     "easy-collections": "e-ucm/easy-collections",
     "elasticsearch": "*",
     "express": "~4.13.x",
