@@ -123,7 +123,7 @@ exports.defaultValues = {
     lrsUsername: 'openlrs',     // Used for 'basic' authentication
     lrsPassword: 'openlrs',
     realtimeJar: '/home/eucm/hlocal/rage2/rage-analytics-realtime/target/realtime-jar-with-dependencies.jar',
-    stormPath: '/home/eucm/hlocal/rage/gleaner/storm/apache-storm-1.0.2/bin',
+    stormPath: '/home/eucm/hlocal/rage/gleaner/storm/apache-storm-1.1.1/bin',
     nimbusHost: 'localhost',
     nimbusPort: '6627',
     kzkHost: 'localhost',
@@ -163,7 +163,7 @@ exports.testValues = {
     lrsUsername: 'openlrs',
     lrsPassword: 'openlrs',
     realtimeJar: '/home/eucm/hlocal/rage/gleaner/gleaner-realtime/target/realtime-jar-with-dependencies.jar',
-    stormPath: '/home/eucm/hlocal/rage/gleaner/storm/apache-storm-1.0.2/bin',
+    stormPath: '/home/eucm/hlocal/rage/gleaner/storm/apache-storm-1.1.1/bin',
     nimbusHost: 'localhost',
     nimbusPort: '6627',
     kzkHost: 'localhost',
