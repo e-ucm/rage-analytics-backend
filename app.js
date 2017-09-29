@@ -123,8 +123,12 @@ activities.endTasks.push(stormService.endTopology);
 
 var dataSource = require('./lib/traces');
 dataSource.addConsumer(require('./lib/consumers/kafka')(app.config.kafka));
-dataSource.addConsumer(require('./lib/consumers/openlrs')(app.config.lrs));
 dataSource.addConsumer(require('./lib/consumers/elasticsearch')(app.esClient));
+
+if (app.config.lrs.useLrs) {
+    dataSource.addConsumer(require('./lib/consumers/openlrs')(app.config.lrs));
+}
+
 
 // Catch 404 and forward to error handler
 app.use(function (req, res, next) {
