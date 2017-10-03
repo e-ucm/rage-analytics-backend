@@ -50,6 +50,114 @@ let defaultTimeout = '8m';
 
 let defaultSize = 500;
 
+let defaultBaseMapping = {
+    'mappings': {
+        'traces': {
+            'properties': {
+                'event': {
+                    'type': 'text',
+                    'fields': {
+                        'keyword': {
+                            'type': 'keyword',
+                            'ignore_above': 256
+                        }
+                    }
+                },
+                'event_hashCode': {
+                    'type': 'long'
+                },
+                'name': {
+                    'type': 'text',
+                    'fields': {
+                        'keyword': {
+                            'type': 'keyword',
+                            'ignore_above': 256
+                        }
+                    }
+                },
+                'gameplayId': {
+                    'type': 'text',
+                    'fields': {
+                        'keyword': {
+                            'type': 'keyword',
+                            'ignore_above': 256
+                        }
+                    }
+                },
+                'gameplayId_hashCode': {
+                    'type': 'long'
+                },
+                'versionId': {
+                    'type': 'text',
+                    'fields': {
+                        'keyword': {
+                            'type': 'keyword',
+                            'ignore_above': 256
+                        }
+                    }
+                },
+                'target': {
+                    'type': 'text',
+                    'fields': {
+                        'keyword': {
+                            'type': 'keyword',
+                            'ignore_above': 256
+                        }
+                    }
+                },
+                'target_hashCode': {
+                    'type': 'long'
+                },
+                'timestamp': {
+                    'type': 'date'
+                },
+                'stored': {
+                    'type': 'date'
+                },
+                'firstSessionStarted': {
+                    'type': 'date'
+                },
+                'currentSessionStarted': {
+                    'type': 'date'
+                },
+                'type': {
+                    'type': 'text',
+                    'fields': {
+                        'keyword': {
+                            'type': 'keyword',
+                            'ignore_above': 256
+                        }
+                    }
+                },
+                'type_hashCode': {
+                    'type': 'long'
+                },
+                'score': {
+                    'type': 'float'
+                },
+                'session': {
+                    'type': 'float'
+                },
+                'success': {
+                    'type': 'boolean'
+                },
+                'completion': {
+                    'type': 'boolean'
+                },
+                'response': {
+                    'type': 'text',
+                    'fields': {
+                        'keyword': {
+                            'type': 'keyword',
+                            'ignore_above': 256
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+
 String.prototype.replaceAll = function (search, replacement) {
     let target = this;
     return target.replace(new RegExp(search, 'g'), replacement);
@@ -103,7 +211,7 @@ let at = function (promise) {
             if (resp && resp.errors) {
                 console.error('Error on BULK errores, retrying ' + number +
                     ' for promise ' + promise.name + ' logs: ' +
-                    JSON.stringify(resp.errors, null, 4));
+                    JSON.stringify(resp, null, 4));
                 return retry(resp.errors);
             }
             return resp;
@@ -129,9 +237,7 @@ function* scrollIndex(esClient, index, callback) {
 
         result = yield at(esClient.scroll({
             scrollId: result._scroll_id,
-            scroll: defaultTimeout,
-            size: defaultSize,
-            sort: ['_doc']
+            scroll: defaultTimeout
         }));
         total += result.hits.hits.length;
 
@@ -140,6 +246,25 @@ function* scrollIndex(esClient, index, callback) {
 }
 
 let reindexManually = function* (esClient, from, to) {
+    let mapping = yield at(esClient.indices.getMapping({index: from}));
+
+    if (!(yield at(esClient.indices.exists({index: to})))) {
+        yield at(esClient.indices.create({index: to}));
+    }
+
+    for (let key in mapping) {
+        let indexMapping = mapping[key].mappings;
+        for (let type in indexMapping) {
+            yield at(esClient.indices.putMapping({
+                index: to,
+                type: type,
+                body: indexMapping[type]
+            }));
+
+        }
+
+    }
+
     function* windowed(hits) {
 
         let bulkUpgradedTraces = [];
@@ -190,7 +315,7 @@ function* belongsToCollection(mongodb, index, collection) {
         return false;
     }
 
-    return (yield at(mongodb.collection(collection)
+    return true || (yield at(mongodb.collection(collection)
         .find({_id: objectIdIndex})
         .limit(1)
         .count())) > 0;
@@ -217,26 +342,32 @@ function backup(config, callback) {
                 }
             }
 
-            yield backUpIndex(esClient, index);
 
             let indexName = index.index;
             if (indexName === '.kibana') {
+                yield backUpIndex(esClient, index);
                 indices.configs.kibana = index;
             } else if (indexName === '.template') {
+                yield backUpIndex(esClient, index);
                 indices.configs.template = index;
             } else if (indexName === 'default-kibana-index') {
+                yield backUpIndex(esClient, index);
                 indices.configs.defaultKibanaIndex = index;
             } else if (indexName.indexOf('.games') === 0) {
+                yield backUpIndex(esClient, index);
                 indices.games.push(index);
             } else if (indexName.indexOf('opaque-values-') === 0) {
+                yield backUpIndex(esClient, index);
                 indices.opaqueValues.push(index);
             } else if (indexName.indexOf('results-') === 0) {
                 indices.results.push(index);
             } else if (yield belongsToCollection(config.mongodb.db,
                     index.index, 'sessions')) {
+                yield backUpIndex(esClient, index);
                 indices.traces.push(index);
             } else if (yield belongsToCollection(config.mongodb.db,
                     index.index, 'versions')) {
+                yield backUpIndex(esClient, index);
                 indices.versions.push(index);
             } else {
                 indices.others.push(index);
@@ -357,7 +488,11 @@ function checkTraceExtensions(trace) {
                 if (!newTrace.ext) {
                     newTrace.ext = {};
                 }
-                newTrace.ext[property] = trace[property];
+                if (trace[property]) {
+                    newTrace.ext[property] = trace[property].toString();
+                } else {
+                    newTrace.ext[property] = trace[property];
+                }
 
                 if (extensions.indexOf(property) === -1) {
                     extensions.push(property);
@@ -372,8 +507,72 @@ function checkTraceExtensions(trace) {
 
 function* identifyExtensionsFromIndex(esClient, index) {
 
-    let upgraded = false;
+    let oldMapping = yield at(esClient.indices.getMapping({index: index.index}));
     let upgradeIndex = 'upgrade_' + index.index;
+    let mapping = {};
+    mapping[upgradeIndex] = Object.assign({}, defaultBaseMapping);
+
+    for (let key in oldMapping) {
+        let currentType = oldMapping[key].mappings;
+        for (let type in currentType) {
+            let currentProperties = currentType[type];
+            if (currentProperties && currentProperties.properties) {
+                if (!mapping[upgradeIndex].mappings[type]) {
+                    mapping[upgradeIndex].mappings[type] = {
+                        properties: {}
+                    }
+                }
+
+                let props = currentProperties.properties;
+                let newProperties = mapping[upgradeIndex].mappings[type].properties;
+                for (let property in props) {
+                    if (defaultTraceAttributes.indexOf(property) === -1) {
+                        if (!newProperties.ext) {
+                            newProperties.ext = {
+                                properties: {}
+                            };
+                        }
+                        newProperties.ext.properties[property] = {
+                            type: 'text',
+                            fields: {
+                                keyword: {
+                                    type: 'keyword',
+                                    ignore_above: 256
+                                }
+                            }
+                        }
+                    } else if (!newProperties[property]) {
+                        newProperties.properties[property] = {
+                            type: 'text',
+                            fields: {
+                                keyword: {
+                                    type: 'keyword',
+                                    ignore_above: 256
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    let upgraded = false;
+
+    if (!(yield at(esClient.indices.exists({index: upgradeIndex})))) {
+        yield at(esClient.indices.create({index: upgradeIndex}));
+    }
+
+    let indexMapping = mapping.mappings;
+    yield at(esClient.indices.close({index: upgradeIndex}));
+    for (let type in indexMapping) {
+        yield at(esClient.indices.putMapping({
+            index: upgradeIndex,
+            type: type,
+            body: indexMapping[type]
+        }));
+    }
+    yield at(esClient.indices.open({index: upgradeIndex}));
 
     function* windowed(hits) {
         let bulkUpgradedTraces = [];
@@ -385,6 +584,29 @@ function* identifyExtensionsFromIndex(esClient, index) {
 
         if (bulkUpgradedTraces.length > 0) {
             yield at(esClient.bulk({body: bulkUpgradedTraces}));
+            /*
+                .then(function (resp) {
+                    if (resp.errors) {
+                        for (let i = 0; i < resp.items.length; ++i) {
+                            let hit = resp.items[i];
+                            if (hit.status === 400) {
+                                console.log(JSON.stringify(hit, null, 4));
+
+                            }
+
+                            if (hit &&
+                                hit.status === 400 &&
+                                hit.error &&
+                                hit.error.type === 'illegal_argument_exception' &&
+                                hit.error.reason.indexOf('mapper') === 0 &&
+                                hit.error.reason.indexOf('current_type') > 0 &&
+                                hit.error.reason.indexOf('merged_type') > 0) {
+                                console.log('proved!');
+                            }
+                        }
+                    }
+                }));
+                */
             upgraded = true;
         }
     }
@@ -715,6 +937,7 @@ function* processExistingUpgradeIndex(esClient, index, newIndex) {
 function upgrade(config, callback) {
     co(function* () {
 
+
         let esClient = config.elasticsearch.esClient;
         yield at(esClient.indices.refresh({index: '_all'}));
 
@@ -835,6 +1058,7 @@ function check(config, callback) {
     co(function* () {
 
             let esClient = config.elasticsearch.esClient;
+            yield at(esClient.indices.refresh({index: '_all'}));
 
             const indicesResponse = yield at(esClient.cat.indices({format: 'json'}));
 
