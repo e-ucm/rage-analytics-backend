@@ -221,8 +221,7 @@ co(function*() {
 
             result = yield at(esClient.scroll({
                 scrollId: result._scroll_id,
-                scroll: defaultScrollTimeout,
-                size: defaultScrollSize
+                scroll: defaultScrollTimeout
             }));
             total += result.hits.hits.length;
 
