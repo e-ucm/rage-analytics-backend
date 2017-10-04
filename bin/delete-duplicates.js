@@ -34,7 +34,7 @@ let baseUsersAPI = config.elasticsearch.uri;
 
 let esClient = new elasticsearch.Client({
     host: baseUsersAPI,
-    api: '5.0'
+    api: '5.6'
 });
 
 // Used for attempting

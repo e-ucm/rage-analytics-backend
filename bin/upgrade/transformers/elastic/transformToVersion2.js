@@ -51,105 +51,105 @@ let defaultTimeout = '8m';
 let defaultSize = 500;
 
 let defaultBaseMapping = {
-    'mappings': {
-        'traces': {
-            'properties': {
-                'event': {
-                    'type': 'text',
-                    'fields': {
-                        'keyword': {
-                            'type': 'keyword',
-                            'ignore_above': 256
+    mappings: {
+        traces: {
+            properties: {
+                event: {
+                    type: 'text',
+                    fields: {
+                        keyword: {
+                            type: 'keyword',
+                            ignore_above: 256
                         }
                     }
                 },
-                'event_hashCode': {
-                    'type': 'long'
+                event_hashCode: {
+                    type: 'long'
                 },
-                'name': {
-                    'type': 'text',
-                    'fields': {
-                        'keyword': {
-                            'type': 'keyword',
-                            'ignore_above': 256
+                name: {
+                    type: 'text',
+                    fields: {
+                        keyword: {
+                            type: 'keyword',
+                            ignore_above: 256
                         }
                     }
                 },
-                'gameplayId': {
-                    'type': 'text',
-                    'fields': {
-                        'keyword': {
-                            'type': 'keyword',
-                            'ignore_above': 256
+                gameplayId: {
+                    type: 'text',
+                    fields: {
+                        keyword: {
+                            type: 'keyword',
+                            ignore_above: 256
                         }
                     }
                 },
-                'gameplayId_hashCode': {
-                    'type': 'long'
+                gameplayId_hashCode: {
+                    type: 'long'
                 },
-                'versionId': {
-                    'type': 'text',
-                    'fields': {
-                        'keyword': {
-                            'type': 'keyword',
-                            'ignore_above': 256
+                versionId: {
+                    type: 'text',
+                    fields: {
+                        keyword: {
+                            type: 'keyword',
+                            ignore_above: 256
                         }
                     }
                 },
-                'target': {
-                    'type': 'text',
-                    'fields': {
-                        'keyword': {
-                            'type': 'keyword',
-                            'ignore_above': 256
+                target: {
+                    type: 'text',
+                    fields: {
+                        keyword: {
+                            type: 'keyword',
+                            ignore_above: 256
                         }
                     }
                 },
-                'target_hashCode': {
-                    'type': 'long'
+                target_hashCode: {
+                    type: 'long'
                 },
-                'timestamp': {
-                    'type': 'date'
+                timestamp: {
+                    type: 'date'
                 },
-                'stored': {
-                    'type': 'date'
+                stored: {
+                    type: 'date'
                 },
-                'firstSessionStarted': {
-                    'type': 'date'
+                firstSessionStarted: {
+                    type: 'date'
                 },
-                'currentSessionStarted': {
-                    'type': 'date'
+                currentSessionStarted: {
+                    type: 'date'
                 },
-                'type': {
-                    'type': 'text',
-                    'fields': {
-                        'keyword': {
-                            'type': 'keyword',
-                            'ignore_above': 256
+                type: {
+                    type: 'text',
+                    fields: {
+                        keyword: {
+                            type: 'keyword',
+                            ignore_above: 256
                         }
                     }
                 },
-                'type_hashCode': {
-                    'type': 'long'
+                type_hashCode: {
+                    type: 'long'
                 },
-                'score': {
-                    'type': 'float'
+                score: {
+                    type: 'float'
                 },
-                'session': {
-                    'type': 'float'
+                session: {
+                    type: 'float'
                 },
-                'success': {
-                    'type': 'boolean'
+                success: {
+                    type: 'boolean'
                 },
-                'completion': {
-                    'type': 'boolean'
+                completion: {
+                    type: 'boolean'
                 },
-                'response': {
-                    'type': 'text',
-                    'fields': {
-                        'keyword': {
-                            'type': 'keyword',
-                            'ignore_above': 256
+                response: {
+                    type: 'text',
+                    fields: {
+                        keyword: {
+                            type: 'keyword',
+                            ignore_above: 256
                         }
                     }
                 }
@@ -315,7 +315,7 @@ function* belongsToCollection(mongodb, index, collection) {
         return false;
     }
 
-    return true || (yield at(mongodb.collection(collection)
+    return (yield at(mongodb.collection(collection)
         .find({_id: objectIdIndex})
         .limit(1)
         .count())) > 0;
@@ -488,11 +488,7 @@ function checkTraceExtensions(trace) {
                 if (!newTrace.ext) {
                     newTrace.ext = {};
                 }
-                if (trace[property]) {
-                    newTrace.ext[property] = trace[property].toString();
-                } else {
-                    newTrace.ext[property] = trace[property];
-                }
+                newTrace.ext[property] = String(trace[property]);
 
                 if (extensions.indexOf(property) === -1) {
                     extensions.push(property);
@@ -520,7 +516,7 @@ function* identifyExtensionsFromIndex(esClient, index) {
                 if (!mapping[upgradeIndex].mappings[type]) {
                     mapping[upgradeIndex].mappings[type] = {
                         properties: {}
-                    }
+                    };
                 }
 
                 let props = currentProperties.properties;
@@ -540,7 +536,7 @@ function* identifyExtensionsFromIndex(esClient, index) {
                                     ignore_above: 256
                                 }
                             }
-                        }
+                        };
                     } else if (!newProperties[property]) {
                         newProperties.properties[property] = {
                             type: 'text',
@@ -550,7 +546,7 @@ function* identifyExtensionsFromIndex(esClient, index) {
                                     ignore_above: 256
                                 }
                             }
-                        }
+                        };
                     }
                 }
             }
@@ -584,29 +580,6 @@ function* identifyExtensionsFromIndex(esClient, index) {
 
         if (bulkUpgradedTraces.length > 0) {
             yield at(esClient.bulk({body: bulkUpgradedTraces}));
-            /*
-                .then(function (resp) {
-                    if (resp.errors) {
-                        for (let i = 0; i < resp.items.length; ++i) {
-                            let hit = resp.items[i];
-                            if (hit.status === 400) {
-                                console.log(JSON.stringify(hit, null, 4));
-
-                            }
-
-                            if (hit &&
-                                hit.status === 400 &&
-                                hit.error &&
-                                hit.error.type === 'illegal_argument_exception' &&
-                                hit.error.reason.indexOf('mapper') === 0 &&
-                                hit.error.reason.indexOf('current_type') > 0 &&
-                                hit.error.reason.indexOf('merged_type') > 0) {
-                                console.log('proved!');
-                            }
-                        }
-                    }
-                }));
-                */
             upgraded = true;
         }
     }

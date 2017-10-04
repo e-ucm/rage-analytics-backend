@@ -52,7 +52,7 @@ var connectToDB = function () {
 
 app.esClient = new elasticsearch.Client({
         host: app.config.elasticsearch.uri,
-        api: '5.0'
+        api: '5.6'
     });
 
 app.esClient.ping({
