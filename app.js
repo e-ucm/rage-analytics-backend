@@ -107,6 +107,7 @@ app.use(app.config.apiPath + '/collector', require('./routes/collector'));
 app.use(app.config.apiPath + '/health', require('./routes/health'));
 app.use(app.config.apiPath + '/kibana', require('./routes/kibana'));
 app.use(app.config.apiPath + '/lti', require('./routes/lti'));
+app.use(app.config.apiPath + '/env', require('./routes/env'));
 
 var activities = require('./lib/activities');
 activities.preRemove(function (_id, next) {
@@ -123,8 +124,12 @@ activities.endTasks.push(stormService.endTopology);
 
 var dataSource = require('./lib/traces');
 dataSource.addConsumer(require('./lib/consumers/kafka')(app.config.kafka));
-dataSource.addConsumer(require('./lib/consumers/openlrs')(app.config.lrs));
 dataSource.addConsumer(require('./lib/consumers/elasticsearch')(app.esClient));
+
+if (app.config.lrs.useLrs) {
+    dataSource.addConsumer(require('./lib/consumers/openlrs')(app.config.lrs));
+}
+
 
 // Catch 404 and forward to error handler
 app.use(function (req, res, next) {

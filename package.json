@@ -41,7 +41,7 @@
     "jade": "*",
     "kafka-node": "^0.5.9",
     "mkdirp": "^0.5.x",
-    "mongodb": "^2.0.x",
+    "mongodb": "^2.2.x",
     "morgan": "^1.6.x",
     "multer": "^1.1.x",
     "promise-retry": "1.1.x",
