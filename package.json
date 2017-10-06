@@ -58,7 +58,7 @@
     "istanbul": "*",
     "jscs": "3.0.3",
     "jshint": "*",
-    "mocha": "*",
+    "mocha": "3.5.3",
     "promptly": "*",
     "q": "*",
     "should": "*",
