@@ -23,7 +23,7 @@ var should = require('should'),
 
 var idGame = new ObjectID('dummyGameId0'),
     idVersion = new ObjectID('dummyVersId0'),
-    idSession = new ObjectID('dummySessId0'),
+    idActivity = new ObjectID('dummySessId0'),
     idClass = new ObjectID('dummyClasId0');
 
 module.exports = function (request, db) {
@@ -33,7 +33,7 @@ module.exports = function (request, db) {
     /**                   Test Sessions API                         **/
     /**-------------------------------------------------------------**/
     /**-------------------------------------------------------------**/
-    describe('Sessions tests', function () {
+    describe('Activities tests', function () {
 
         beforeEach(function (done) {
             db.collection('games').insert(
@@ -48,12 +48,11 @@ module.exports = function (request, db) {
                         }, function () {
                             db.collection('classes').insert(
                                 {
-                                    _id: idClass,
-                                    versionId: idVersion
+                                    _id: idClass
                                 }, function () {
-                                    db.collection('sessions').insert(
+                                    db.collection('activities').insert(
                                         [{
-                                            _id: idSession,
+                                            _id: idActivity,
                                             gameId: idGame,
                                             versionId: idVersion,
                                             classId: idClass,
@@ -75,17 +74,22 @@ module.exports = function (request, db) {
             db.collection('games').drop(function () {
                 db.collection('versions').drop(function () {
                     db.collection('classes').drop(function () {
-                        db.collection('sessions').drop(done);
+                        db.collection('activities').drop(done);
                     });
                 });
             });
         });
 
-        it('should POST a new session', function (done) {
-            request.post('/api/games/' + idGame + '/versions/' + idVersion + '/classes/' + idClass + '/sessions')
+        it('should POST a new activity', function (done) {
+            request.post('/api/activities')
                 .expect(200)
-                .set('Accept', 'application/json')
                 .set('X-Gleaner-User', 'username')
+                .send({
+                    gameId: idGame,
+                    versionId: idVersion,
+                    classId: idClass
+                })
+                .set('Accept', 'application/json')
                 .expect('Content-Type', /json/)
                 .end(function (err, res) {
                     should.not.exist(err);
@@ -93,6 +97,7 @@ module.exports = function (request, db) {
                     should.equal(res.body.allowAnonymous, false);
                     should.equal(res.body.gameId, idGame);
                     should.equal(res.body.versionId, idVersion);
+                    should.equal(res.body.classId, idClass);
                     should(res.body.created).be.String();
                     should.not.exist(res.body.start);
                     should.not.exist(res.body.end);
@@ -100,8 +105,8 @@ module.exports = function (request, db) {
                 });
         });
 
-        it('should GET sessions', function (done) {
-            request.get('/api/games/' + idGame + '/versions/' + idVersion + '/classes/' + idClass + '/sessions')
+        it('should GET activities', function (done) {
+            request.get('/api/activities')
                 .expect(200)
                 .end(function (err, res) {
                     should.not.exist(err);
@@ -111,37 +116,86 @@ module.exports = function (request, db) {
                 });
         });
 
-        it('should GET my sessions', function (done) {
-            request.get('/api/games/' + idGame + '/versions/' + idVersion + '/classes/' + idClass + '/sessions/my')
+        it('should GET class activities', function (done) {
+            request.get('/api/classes/' + idClass + '/activities')
+                .expect(200)
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    should(res).be.Object();
+                    should.equal(res.body.length, 2);
+                    done();
+                });
+        });
+
+        it('should GET game activities', function (done) {
+            request.get('/api/games/' + idGame + '/versions/' + idVersion + '/activities')
+                .expect(200)
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    should(res).be.Object();
+                    should.equal(res.body.length, 2);
+                    done();
+                });
+        });
+
+        it('should GET my activities', function (done) {
+            request.get('/api/activities/my')
                 .expect(200)
                 .set('X-Gleaner-User', 'Teacher1')
                 .end(function (err, res) {
                     should.not.exist(err);
                     should(res).be.Object();
                     should.equal(res.body.length, 1);
+                    should.equal(res.body[0]._id, idActivity);
                     done();
                 });
         });
 
-        it('should GET a session', function (done) {
-            request.get('/api/sessions/' + idSession)
+        it('should GET my class activities', function (done) {
+            request.get('/api/classes/' + idClass + '/activities/my')
+                .expect(200)
+                .set('X-Gleaner-User', 'Teacher1')
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    should(res).be.Object();
+                    should.equal(res.body.length, 1);
+                    should.equal(res.body[0]._id, idActivity);
+                    done();
+                });
+        });
+
+        it('should GET my game activities', function (done) {
+            request.get('/api/games/' + idGame + '/versions/' + idVersion + '/activities/my')
+                .expect(200)
+                .set('X-Gleaner-User', 'Teacher1')
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    should(res).be.Object();
+                    should.equal(res.body.length, 1);
+                    should.equal(res.body[0]._id, idActivity);
+                    done();
+                });
+        });
+
+        it('should GET an activity', function (done) {
+            request.get('/api/activities/' + idActivity)
                 .expect(200)
                 .end(function (err, res) {
                     should.not.exist(err);
                     should(res).be.Object();
-                    should.equal(res.body._id, idSession);
+                    should.equal(res.body._id, idActivity);
                     done();
                 });
         });
 
-        it('should PUT (add) a session', function (done) {
-            request.put('/api/sessions/' + idSession)
+        it('should PUT (add) an activity', function (done) {
+            request.put('/api/activities/' + idActivity)
                 .expect(401)
                 .set('X-Gleaner-User', 'notAllowedUsername')
                 .end(function (err, res) {
                     should.not.exist(err);
                     should(res).be.Object();
-                    request.put('/api/sessions/' + idSession)
+                    request.put('/api/activities/' + idActivity)
                         .expect(200)
                         .set('X-Gleaner-User', 'Teacher1')
                         .send({
@@ -162,14 +216,14 @@ module.exports = function (request, db) {
                 });
         });
 
-        it('should PUT (remove) a session', function (done) {
-            request.put('/api/sessions/' + idSession + '/remove')
+        it('should PUT (remove) an activity', function (done) {
+            request.put('/api/activities/' + idActivity + '/remove')
                 .expect(401)
                 .set('X-Gleaner-User', 'notAllowedUsername')
                 .end(function (err, res) {
                     should.not.exist(err);
                     should(res).be.Object();
-                    request.put('/api/sessions/' + idSession + '/remove')
+                    request.put('/api/activities/' + idActivity + '/remove')
                         .expect(200)
                         .set('X-Gleaner-User', 'Teacher1')
                         .send({
@@ -185,6 +239,16 @@ module.exports = function (request, db) {
                             should.equal(res.body.students.length, 0);
                             done();
                         });
+                });
+        });
+
+        it('should DELETE an activity', function (done) {
+            request.delete('/api/activities/' + idActivity)
+                .expect(200)
+                .set('X-Gleaner-User', 'Teacher1')
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    done();
                 });
         });
     });
