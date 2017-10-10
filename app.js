@@ -126,7 +126,7 @@ var dataSource = require('./lib/traces');
 dataSource.addConsumer(require('./lib/consumers/kafka')(app.config.kafka));
 dataSource.addConsumer(require('./lib/consumers/elasticsearch')(app.esClient));
 
-if (app.config.lrs.useLrs) {
+if (app.config.lrs.useLrs === true) {
     dataSource.addConsumer(require('./lib/consumers/openlrs')(app.config.lrs));
 }
 
