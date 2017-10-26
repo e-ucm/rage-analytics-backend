@@ -77,6 +77,18 @@ module.exports = function (request, db) {
                 });
         });
 
+        it('should GET an specific game', function (done) {
+            request.get('/api/games/' + idGame)
+                .expect(200)
+                .set('Accept', 'application/json')
+                .set('X-Gleaner-User', 'DummyUsername')
+                .expect('Content-Type', /json/)
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    should.equal(res.body._id, idGame);
+                    done();
+                });
+        });
 
         it('should UPDATE the author of a specific game', function (done) {
             request.put('/api/games/' + idGame)

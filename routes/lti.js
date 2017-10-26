@@ -27,7 +27,7 @@ var lti = require('../lib/lti');
 router.get('/key/:id', restUtils.findById(lti));
 
 /**
- * @api {get} lti/keyid/:gameId/:versionId/:classId Return the lti object that satisfy.
+ * @api {get} lti/keyid/:classId Return the lti object that satisfy.
  * @apiName GetLti
  * @apiGroup Lti
  *
@@ -42,12 +42,9 @@ router.get('/key/:id', restUtils.findById(lti));
  *              "classId": "classId"
  *          }
  *      ]
- *
  */
-router.get('/keyid/:gameId/:versionId/:classId', function (req, res) {
+router.get('/keyid/:classId', function (req, res) {
     var query  = {
-        gameId: req.params.gameId,
-        versionId: req.params.versionId === 'undefined' ? { $exists: false } : req.params.versionId,
         classId: req.params.classId === 'undefined' ? { $exists: false } : req.params.classId
     };
     restUtils.processResponse(lti.getLtiByQuery(query), res);

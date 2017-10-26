@@ -103,6 +103,8 @@ exports.defaultValues = {
     mongoHost: 'localhost',
     mongoPort: '27017',
     mongodbUrl: 'mongodb://localhost:27017/analytics-backend',
+    mongodbUrlA2: 'mongodb://localhost:27017/' + (process.env.A2_MONGO_NAME || 'a2'),
+    mongoModelVersion: '3', // Integer increment per version change
     elasticsearchURL: 'http://localhost:9200',
     apiPath: '/api',
     port: 3300,
@@ -132,6 +134,7 @@ exports.defaultValues = {
     analysisFolder: './analysis',
     elasticsearchHost: 'localhost',
     elasticsearchPort: 9200,
+    elasticsearchModelVersion: '2',
     defaultKibanaIndex: 'default-kibana-index',
     maxSizeRequest: '1mb'
 };
@@ -142,6 +145,8 @@ exports.testValues = {
     mongoHost: 'localhost',
     mongoPort: '27017',
     mongodbUrl: 'mongodb://localhost:27017/analytics-backend-test', // This must be different than 'exports.defaultValues.mongodbUrl'
+    mongodbUrlA2: 'mongodb://localhost:27017/' + (process.env.A2_MONGO_NAME || 'a2') + '-test',
+    mongoModelVersion: '3', // Integer increment per version change
     elasticsearchURL: 'http://localhost:9200',
     apiPath: '/api',
     port: 3330,
@@ -169,6 +174,7 @@ exports.testValues = {
     analysisFolder: './analysis',
     elasticsearchHost: 'localhost',
     elasticsearchPort: 9200,
+    elasticsearchModelVersion: '2',
     defaultKibanaIndex: 'default-kibana-index',
     maxSizeRequest: '1mb'
 };
@@ -183,6 +189,9 @@ initFromEnv(exports.testValues, prefix, links);
 // Ensuring that 'mongodbUrl' values are different
 exports.defaultValues.mongodbUrl = 'mongodb://' + exports.defaultValues.mongoHost + ':' + exports.defaultValues.mongoPort + '/analytics-backend';
 exports.testValues.mongodbUrl = exports.defaultValues.mongodbUrl + '-test';
+
+exports.defaultValues.mongodbUrlA2 = 'mongodb://' + exports.defaultValues.mongoHost + ':' + exports.defaultValues.mongoPort + '/' + (process.env.A2_MONGO_NAME || 'a2');
+exports.testValues.mongodbUrlA2 = exports.defaultValues.mongodbUrlA2 + '-test';
 
 exports.defaultValues.elasticsearchURL = 'http://' + exports.defaultValues.elasticsearchHost + ':' + exports.defaultValues.elasticsearchPort;
 
