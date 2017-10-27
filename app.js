@@ -108,6 +108,8 @@ app.use(app.config.apiPath + '/health', require('./routes/health'));
 app.use(app.config.apiPath + '/kibana', require('./routes/kibana'));
 app.use(app.config.apiPath + '/lti', require('./routes/lti'));
 
+app.use(app.config.apiPath + '/data', require('./routes/data'));
+
 var activities = require('./lib/activities');
 activities.preRemove(function (_id, next) {
     activities.deleteAnalysisData(app.config, _id, app.esClient);
