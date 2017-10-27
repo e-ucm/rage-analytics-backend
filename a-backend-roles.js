@@ -177,7 +177,8 @@ exports.app = {
         '/games/:id/xapi/:versionId',
         '/collector/start/:trackingCode',
         '/collector/track',
-        '/lti/key/:id'
+        '/lti/key/:id',
+        '/data/overall/:studentid'
     ],
     autoroles: [
         'student',
