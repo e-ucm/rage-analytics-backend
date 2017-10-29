@@ -34,7 +34,7 @@ let baseUsersAPI = config.elasticsearch.uri;
 
 let esClient = new elasticsearch.Client({
     host: baseUsersAPI,
-    api: '5.0'
+    api: '5.6'
 });
 
 // Used for attempting
@@ -221,8 +221,7 @@ co(function*() {
 
             result = yield at(esClient.scroll({
                 scrollId: result._scroll_id,
-                scroll: defaultScrollTimeout,
-                size: defaultScrollSize
+                scroll: defaultScrollTimeout
             }));
             total += result.hits.hits.length;
 

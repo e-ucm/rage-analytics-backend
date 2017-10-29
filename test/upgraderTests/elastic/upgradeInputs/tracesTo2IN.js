@@ -23,12 +23,10 @@ var traces = [
             target: 'target',
             type: 'type',
             extension1: 'extension1Value',
-            extension2: 1,
-            extension3: true,
-            extension4: ['elem1', 'elem2', 'elem3'],
-            extension5: {
-                key: 'value'
-            }
+            extension2: '1',
+            extension3: 'true',
+            extension4: 'elem1, elem2, elem3',
+            extension5: 'value'
         }
     },
     {
@@ -40,7 +38,7 @@ var traces = [
             event: 'event',
             target: 'target',
             type: 'type',
-            extension1: null
+            extension1: 'null'
         }
     },
     {
@@ -52,7 +50,7 @@ var traces = [
             event: 'event',
             target: 'target',
             type: 'type',
-            ext: 2
+            ext: '2'
         }
     }
 ];
