@@ -351,11 +351,11 @@ module.exports = function (app, esClient, mongo) {
 
                 var r = Math.floor(Math.random() * 10);
                 if (r < 3) {
-                    doc['extension' + r] = Math.random() < 0.5;
+                    doc['extension' + r] = (Math.random() < 0.5).toString();
                 } else if (r < 7) {
                     doc['extension' + r] = (Math.random() + 1).toString(36).substring(r);
                 } else {
-                    doc['extension' + r] = Math.floor(Math.random() * 100);
+                    doc['extension' + r] = Math.floor(Math.random() * 100).toString();
                 }
                 bulkBody.body.push(doc);
             }

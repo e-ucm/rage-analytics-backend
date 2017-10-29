@@ -178,7 +178,8 @@ exports.app = {
         '/collector/start/:trackingCode',
         '/collector/track',
         '/lti/key/:id',
-        '/data/overall/:studentid'
+        '/data/overall/:studentid',
+        '/env'
     ],
     autoroles: [
         'student',

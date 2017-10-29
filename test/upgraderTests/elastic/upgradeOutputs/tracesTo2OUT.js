@@ -26,16 +26,11 @@ var traces = [
             type: 'type',
             ext: {
                 extension1: 'extension1Value',
-                extension2: 1,
-                extension3: true,
-                extension4: [
-                    'elem1',
-                    'elem2',
-                    'elem3'
-                ],
-                extension5: {
-                    key: 'value'
-                }
+                extension2: '1',
+                extension3: 'true',
+                extension4:
+                    'elem1, elem2, elem3',
+                extension5: 'value'
             }
         }
     },
@@ -63,7 +58,7 @@ var traces = [
             target: 'target',
             type: 'type',
             ext: {
-                ext: 2
+                ext: '2'
             }
         }
     }
