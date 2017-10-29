@@ -69,8 +69,8 @@ router.get('/overall/:studentid', function (req, res) {
                 if (document._source) {
                     document._source._id = document._id;
 
-                    analysis_result.alternatives.correct += document.source.selected.true;
-                    analysis_result.alternatives.incorrect += document.source.selected.false;
+                    analysis_result.alternatives.correct += document._source.selected.true;
+                    analysis_result.alternatives.incorrect += document._source.selected.false;
                 }
             });
         }
