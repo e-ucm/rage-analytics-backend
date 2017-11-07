@@ -76,6 +76,7 @@ describe('Traces converter tests', function () {
         };
         var result = getRealtimeData(statement);
         var trace = result.trace;
+        delete trace.uuidv4;
         should(result.error).eql(undefined);
         should(trace).eql(resultTrace);
 
@@ -120,6 +121,7 @@ describe('Traces converter tests', function () {
         };
         var result = getRealtimeData(statement);
         var trace = result.trace;
+        delete trace.uuidv4;
         should(result.error).eql(undefined);
         should(trace).eql(resultTrace);
 
@@ -177,6 +179,7 @@ describe('Traces converter tests', function () {
         };
         var result = getRealtimeData(statement);
         var trace = result.trace;
+        delete trace.uuidv4;
         should(result.error).eql(undefined);
         should(trace).eql(resultTrace);
 
@@ -231,6 +234,7 @@ describe('Traces converter tests', function () {
         };
         var result = getRealtimeData(statement);
         var trace = result.trace;
+        delete trace.uuidv4;
         should(result.error).eql(undefined);
         should(trace).eql(resultTrace);
 
@@ -284,6 +288,7 @@ describe('Traces converter tests', function () {
         };
         var result = getRealtimeData(statement);
         var trace = result.trace;
+        delete trace.uuidv4;
         should(result.error).eql(undefined);
         should(trace).eql(resultTrace);
 
@@ -333,6 +338,7 @@ describe('Traces converter tests', function () {
         };
         var result = getRealtimeData(statement);
         var trace = result.trace;
+        delete trace.uuidv4;
         should(result.error).eql(undefined);
         should(trace).eql(resultTrace);
 
@@ -381,6 +387,7 @@ describe('Traces converter tests', function () {
         };
         var result = getRealtimeData(statement);
         var trace = result.trace;
+        delete trace.uuidv4;
         should(result.error).eql(undefined);
         should(trace).eql(resultTrace);
 
@@ -444,6 +451,7 @@ describe('Traces converter tests', function () {
         };
         var result = getRealtimeData(statement);
         var trace = result.trace;
+        delete trace.uuidv4;
         should(result.error).eql(undefined);
         should(trace).eql(resultTrace);
 

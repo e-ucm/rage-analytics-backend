@@ -62,6 +62,9 @@ if (process.env.NODE_ENV === 'test') {
     var configTemplate = Handlebars.compile(source);
     Fs.writeFileSync(configPath, configTemplate(defaultValues));
     Fs.writeFileSync(configTestPath, configTemplate(testValues));
+
+    mkdirp.sync(defaultValues.rawTracesFolder);
+    mkdirp.sync(testValues.rawTracesFolder);
     console.log('Setup complete.');
     process.exit(0);
 
