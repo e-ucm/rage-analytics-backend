@@ -42,6 +42,7 @@ var Async = require('async');
 var Mongodb = require('mongodb');
 var Promptly = require('promptly');
 var Handlebars = require('handlebars');
+var mkdirp = require('mkdirp');
 
 var configTemplatePath = Path.resolve(__dirname, '../config-example.js');
 var configTestPath = Path.resolve(__dirname, '../config-test.js');
@@ -61,6 +62,9 @@ if (process.env.NODE_ENV === 'test') {
     var configTemplate = Handlebars.compile(source);
     Fs.writeFileSync(configPath, configTemplate(defaultValues));
     Fs.writeFileSync(configTestPath, configTemplate(testValues));
+
+    mkdirp.sync(defaultValues.rawTracesFolder);
+    mkdirp.sync(testValues.rawTracesFolder);
     console.log('Setup complete.');
     process.exit(0);
 
@@ -144,7 +148,26 @@ if (process.env.NODE_ENV === 'test') {
                         console.error('Failed to write config.js file.');
                         return done(err);
                     }
-                    Fs.writeFile(configTestPath, configTemplate(testValues), done);
+                    Fs.writeFile(configTestPath, configTemplate(testValues), function (err) {
+                        if (err) {
+                            console.error('Failed to write configTest.js file.');
+                            return done(err);
+                        }
+
+                        mkdirp(defaultValues.rawTracesFolder, function (err) {
+                            if (err) {
+                                console.error('Failed to create folder', defaultValues.rawTracesFolder);
+                                return done(err);
+                            }
+                            mkdirp(testValues.rawTracesFolder, function (err) {
+                                if (err) {
+                                    console.error('Failed to create folder', testValues.rawTracesFolder);
+                                    return done(err);
+                                }
+                                done();
+                            });
+                        });
+                    });
                 });
             });
         }]

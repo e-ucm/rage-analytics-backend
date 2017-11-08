@@ -32,6 +32,7 @@ exports.elasticsearch = {
 exports.apiPath = '{{apiPath}}';
 exports.companyName = '{{companyName}}';
 exports.projectName = '{{projectName}}';
+exports.rawTracesFolder = '{{rawTracesFolder}}';
 exports.lrs = {
     uri: process.env.LRS_URI || process.env.LRS_URL || '{{lrsUrl}}',
     username: '{{lrsUsername}}',

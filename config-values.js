@@ -137,7 +137,8 @@ exports.defaultValues = {
     elasticsearchPort: 9200,
     elasticsearchModelVersion: '2',
     defaultKibanaIndex: 'default-kibana-index',
-    maxSizeRequest: '1mb'
+    maxSizeRequest: '1mb',
+    rawTracesFolder: './analysis/raw'
 };
 
 exports.testValues = {
@@ -178,7 +179,8 @@ exports.testValues = {
     elasticsearchPort: 9200,
     elasticsearchModelVersion: '2',
     defaultKibanaIndex: 'default-kibana-index',
-    maxSizeRequest: '1mb'
+    maxSizeRequest: '1mb',
+    rawTracesFolder: './analysis/rawtest'
 };
 
 var prefix = 'RAGE_ANALYTICS_BACKEND_';
