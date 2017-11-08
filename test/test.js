@@ -48,6 +48,7 @@ describe('API Test', function (done) {
         require('./tests/tracesConverterTest');
 
         require('./tests/health')(request);
+        require('./tests/fsrawConsumerTest')(config);
         require('./tests/gamesTest')(request, db);
         require('./tests/versionsTest')(request, db);
         require('./tests/classesTest')(request, db);
