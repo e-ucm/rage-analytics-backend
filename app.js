@@ -52,7 +52,7 @@ var connectToDB = function () {
 
 app.esClient = new elasticsearch.Client({
         host: app.config.elasticsearch.uri,
-        api: '5.0'
+        api: '5.6'
     });
 
 app.esClient.ping({
@@ -101,30 +101,35 @@ var stormService = require('./lib/services/storm')(app.config.storm, app.config.
 
 app.use(app.config.apiPath + '/games', require('./routes/games'));
 app.use(app.config.apiPath + '/classes', require('./routes/classes'));
-app.use(app.config.apiPath + '/sessions', require('./routes/sessions')(kafkaService, stormService));
+app.use(app.config.apiPath + '/activities', require('./routes/activities')(kafkaService, stormService));
 app.use(app.config.apiPath + '/analysis', require('./routes/analysis'));
 app.use(app.config.apiPath + '/collector', require('./routes/collector'));
 app.use(app.config.apiPath + '/health', require('./routes/health'));
 app.use(app.config.apiPath + '/kibana', require('./routes/kibana'));
 app.use(app.config.apiPath + '/lti', require('./routes/lti'));
+app.use(app.config.apiPath + '/env', require('./routes/env'));
 
-var sessions = require('./lib/sessions');
-sessions.preRemove(function (_id, next) {
-    sessions.deleteAnalysisData(_id, app.esClient);
+var activities = require('./lib/activities');
+activities.preRemove(function (_id, next) {
+    activities.deleteAnalysisData(app.config, _id, app.esClient);
     next();
 });
 
-sessions.startTasks.push(kafkaService.createTopic);
-sessions.endTasks.push(kafkaService.removeTopic);
+activities.startTasks.push(kafkaService.createTopic);
+activities.endTasks.push(kafkaService.removeTopic);
 
 var stormService = require('./lib/services/storm')(app.config.storm, app.config.kafka.uri);
-sessions.startTasks.push(stormService.startTopology);
-sessions.endTasks.push(stormService.endTopology);
+activities.startTasks.push(stormService.startTopology);
+activities.endTasks.push(stormService.endTopology);
 
 var dataSource = require('./lib/traces');
 dataSource.addConsumer(require('./lib/consumers/kafka')(app.config.kafka));
-dataSource.addConsumer(require('./lib/consumers/openlrs')(app.config.lrs));
 dataSource.addConsumer(require('./lib/consumers/elasticsearch')(app.esClient));
+
+if (app.config.lrs.useLrs === true) {
+    dataSource.addConsumer(require('./lib/consumers/openlrs')(app.config.lrs));
+}
+
 
 // Catch 404 and forward to error handler
 app.use(function (req, res, next) {

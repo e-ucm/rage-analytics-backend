@@ -21,10 +21,13 @@
 exports.port = process.env.PORT || '{{port}}';
 exports.myHost = '{{myHost}}';
 exports.mongodb = {
-    uri: process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || '{{mongodbUrl}}'
+    uri: process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || '{{mongodbUrl}}',
+    modelVersion: '{{mongoModelVersion}}',
+    uriA2: '{{mongodbUrlA2}}'
 };
 exports.elasticsearch = {
-    uri: process.env.ELASTIC_HOST || '{{elasticsearchURL}}'
+    uri: process.env.ELASTIC_HOST || '{{elasticsearchURL}}',
+    modelVersion: '{{elasticsearchModelVersion}}'
 };
 exports.apiPath = '{{apiPath}}';
 exports.companyName = '{{companyName}}';
@@ -32,7 +35,8 @@ exports.projectName = '{{projectName}}';
 exports.lrs = {
     uri: process.env.LRS_URI || process.env.LRS_URL || '{{lrsUrl}}',
     username: '{{lrsUsername}}',
-    password: '{{lrsPassword}}'
+    password: '{{lrsPassword}}',
+    useLrs: '{{useLrs}}'
 };
 exports.storm = {
     realtimeJar: '{{realtimeJar}}',

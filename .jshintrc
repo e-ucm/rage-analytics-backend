@@ -9,6 +9,7 @@
     "node": true,
     "undef": true,
     "unused": "vars",
+    "esversion": 6,
     // Global variables
     "globals": {
         "angular": false
