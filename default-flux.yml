@@ -1,12 +1,12 @@
 # required, otherwise it wont work
-name: "{{sessionId}}"                          # Topology name, must be uniquely identified using the "sessionId" value (e.g. "57d95801c5b55edc3259b450")
+name: "{{topologyName}}"                          # Topology name, must be uniquely identified using the "sessionId" value (e.g. "57d95801c5b55edc3259b450")
 
 # values substituted when the topology will be launched
 config:
   topology.workers: 1
   topology.max.spout.pending: 1
   zookeeperUrl: "{{zookeeperURL}}"             # Connects to Kafka (e.g. "localhost:2181")
-  sessionId: "{{sessionId}}"                   # Value used for the ElasticSearch indices namming (e.g. "57d95801c5b55edc3259b450")
+  topicName: "{{kafkaTopicName}}"         # Value used  to connect to kafka topic
   elasticsearchUrl: "{{elasticsearchUrl}}"     # Connects ElasticSearch host (without the port e.g. "localhost", default port 9200)
 
 # spout, bolts and streams definitions. Example: https://github.com/apache/storm/blob/master/external/flux/README.md#basic-word-count-example.
