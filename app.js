@@ -25,7 +25,8 @@ var path = require('path'),
     elasticsearch = require('elasticsearch');
 
 var app = express();
-app.config = require((process.env.NODE_ENV === 'test') ? './config-test' : './config');
+var isTest = (process.env.NODE_ENV === 'test');
+app.config = require(isTest ? './config-test' : './config');
 
 // Set database
 
@@ -34,6 +35,9 @@ var dbProvider = {
         return this.database;
     }
 };
+
+var kafkaService = require('./lib/services/kafka')(app.config.kafka.uri);
+var stormService = require('./lib/services/storm')(app.config.storm, app.config.kafka.uri);
 
 var connectToDB = function () {
     var MongoClient = require('mongodb').MongoClient;
@@ -46,14 +50,19 @@ var connectToDB = function () {
         } else {
             console.log('Successfully connected to ' + connectionString);
             dbProvider.database = db;
+
+            if (!isTest) {
+                kafkaService.createTopic(app.config.kafka.topicName);
+                stormService.startTopology(app.config.storm.defaultAnalysisName, app.config.kafka.topicName);
+            }
         }
     });
 };
 
 app.esClient = new elasticsearch.Client({
-        host: app.config.elasticsearch.uri,
-        api: '5.6'
-    });
+    host: app.config.elasticsearch.uri,
+    api: '5.6'
+});
 
 app.esClient.ping({
     // Ping usually has a 3000ms timeout
@@ -96,9 +105,6 @@ app.get('/', function (req, res) {
     res.render('apidoc');
 });
 
-var kafkaService = require('./lib/services/kafka')(app.config.kafka.uri);
-var stormService = require('./lib/services/storm')(app.config.storm, app.config.mongodb.uri, app.config.kafka.uri);
-
 app.use(app.config.apiPath + '/games', require('./routes/games'));
 app.use(app.config.apiPath + '/classes', require('./routes/classes'));
 app.use(app.config.apiPath + '/activities', require('./routes/activities')(kafkaService, stormService));
@@ -115,13 +121,6 @@ activities.preRemove(function (_id, next) {
     next();
 });
 
-activities.startTasks.push(kafkaService.createTopic);
-activities.endTasks.push(kafkaService.removeTopic);
-
-var stormService = require('./lib/services/storm')(app.config.storm, app.config.kafka.uri);
-activities.startTasks.push(stormService.startTopology);
-activities.endTasks.push(stormService.endTopology);
-
 var dataSource = require('./lib/traces');
 dataSource.addConsumer(require('./lib/consumers/fsraw')(app.config.rawTracesFolder));
 dataSource.addConsumer(require('./lib/consumers/kafka')(app.config.kafka));
@@ -130,7 +129,6 @@ dataSource.addConsumer(require('./lib/consumers/elasticsearch')(app.esClient));
 if (app.config.lrs.useLrs === true) {
     dataSource.addConsumer(require('./lib/consumers/openlrs')(app.config.lrs));
 }
-
 
 // Catch 404 and forward to error handler
 app.use(function (req, res, next) {
