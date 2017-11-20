@@ -846,6 +846,7 @@ router.post('/index/:indexTemplate/:indexName', function (req, res) {
                 id: req.params.indexName,
                 body: response.hits.hits[0]._source
             }, function () {
+                response.hits.hits[0]._source.title = 'thomaskilmann-' + req.params.indexName;
                 req.app.esClient.index({
                     index: '.kibana',
                     type: 'index-pattern',
@@ -857,9 +858,9 @@ router.post('/index/:indexTemplate/:indexName', function (req, res) {
                             if (err) {
                                 return res.json(err);
                             }
-                            activities.findById(req.params.indexName).then(function(activityObj) {
+                            activities.findById(req.params.indexName).then(function (activityObj) {
                                 if (activityObj) {
-                                    activityObj.students.forEach(function(stu) {
+                                    activityObj.students.forEach(function (stu) {
                                         updateKibanaPermission(req.app.config,
                                             stu, resources, function (err) {
 
@@ -1008,7 +1009,7 @@ router.post('/dashboard/activity/:activityId', function (req, res) {
             visualizations.forEach(function (visualization) {
                 resources.push(visualization.id);
             });
-            activities.findById(req.params.activityId).then(function(activityObj) {
+            activities.findById(req.params.activityId).then(function (activityObj) {
                 if (activityObj) {
                     activityObj.students.forEach(function (stu) {
                         updateKibanaPermission(req.app.config,

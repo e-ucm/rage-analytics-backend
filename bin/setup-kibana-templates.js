@@ -89,38 +89,38 @@ var updateVisualizationMapping = function() {
         index: '.kibana',
         type: 'visualization',
         body: {
-            "dynamic": "strict",
-            "properties": {
-                "description": {
-                    "type": "text"
+            dynamic: 'strict',
+            properties: {
+                description: {
+                    type: 'text'
                 },
-                "kibanaSavedObjectMeta": {
-                    "properties": {
-                        "searchSourceJSON": {
-                            "type": "text"
+                kibanaSavedObjectMeta: {
+                    properties: {
+                        searchSourceJSON: {
+                            type: 'text'
                         }
                     }
                 },
-                "savedSearchId": {
-                    "type": "keyword"
+                savedSearchId: {
+                    type: 'keyword'
                 },
-                "title": {
-                    "type": "text"
+                title: {
+                    type: 'text'
                 },
-                "uiStateJSON": {
-                    "type": "text"
+                uiStateJSON: {
+                    type: 'text'
                 },
-                "version": {
-                    "type": "integer"
+                version: {
+                    type: 'integer'
                 },
-                "author": {
-                    "type": "text"
+                author: {
+                    type: 'text'
                 },
-                "isTeacher": {
-                    "type": "boolean"
+                isTeacher: {
+                    type: 'boolean'
                 },
-                "isDeveloper": {
-                    "type": "boolean"
+                isDeveloper: {
+                    type: 'boolean'
                 }
             }
         }
