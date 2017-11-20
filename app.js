@@ -125,6 +125,7 @@ activities.startTasks.push(stormService.startTopology);
 activities.endTasks.push(stormService.endTopology);
 
 var dataSource = require('./lib/traces');
+dataSource.addConsumer(require('./lib/consumers/fsraw')(app.config.rawTracesFolder));
 dataSource.addConsumer(require('./lib/consumers/kafka')(app.config.kafka));
 dataSource.addConsumer(require('./lib/consumers/elasticsearch')(app.esClient));
 
