@@ -26,7 +26,7 @@ var elasticsearch = require('elasticsearch');
 
 var esClient = new elasticsearch.Client({
     host: config.elasticsearch.uri,
-    api: '5.0'
+    api: '5.6'
 });
 
 esClient.ping({
@@ -39,6 +39,7 @@ esClient.ping({
         console.log('Successfully connected to elasticsearch: ' + config.elasticsearch.uri);
         setupIndexTemplate();
         setupVisualizationTemplates();
+        updateVisualizationMapping();
     }
 });
 
@@ -80,6 +81,55 @@ var setupVisualizationTemplates = function() {
                 }
             });
         });
+    });
+};
+
+var updateVisualizationMapping = function() {
+    esClient.indices.putMapping({
+        index: '.kibana',
+        type: 'visualization',
+        body: {
+            "dynamic": "strict",
+            "properties": {
+                "description": {
+                    "type": "text"
+                },
+                "kibanaSavedObjectMeta": {
+                    "properties": {
+                        "searchSourceJSON": {
+                            "type": "text"
+                        }
+                    }
+                },
+                "savedSearchId": {
+                    "type": "keyword"
+                },
+                "title": {
+                    "type": "text"
+                },
+                "uiStateJSON": {
+                    "type": "text"
+                },
+                "version": {
+                    "type": "integer"
+                },
+                "author": {
+                    "type": "text"
+                },
+                "isTeacher": {
+                    "type": "boolean"
+                },
+                "isDeveloper": {
+                    "type": "boolean"
+                }
+            }
+        }
+    }, function (error, response) {
+        if (!error) {
+            console.log('Changed visualization mapping');
+        } else {
+            return handleError(error);
+        }
     });
 };
 

@@ -37,7 +37,7 @@ ElasticController.prototype.doConnect = function (config, callback) {
 
     var esClient = new elasticsearch.Client({
         host: baseUsersAPI,
-        api: '5.0'
+        api: '5.6'
     });
 
     esClient.ping({

@@ -122,8 +122,9 @@ exports.defaultValues = {
     lrsUrl: 'http://localhost:8080/xAPI/',
     lrsUsername: 'openlrs',     // Used for 'basic' authentication
     lrsPassword: 'openlrs',
+    useLrs: process.env.USE_LRS || false,
     realtimeJar: '/home/eucm/hlocal/rage2/rage-analytics-realtime/target/realtime-jar-with-dependencies.jar',
-    stormPath: '/home/eucm/hlocal/rage/gleaner/storm/apache-storm-1.0.2/bin',
+    stormPath: '/home/eucm/hlocal/rage/gleaner/storm/apache-storm-1.1.1/bin',
     nimbusHost: 'localhost',
     nimbusPort: '6627',
     kzkHost: 'localhost',
@@ -136,7 +137,8 @@ exports.defaultValues = {
     elasticsearchPort: 9200,
     elasticsearchModelVersion: '2',
     defaultKibanaIndex: 'default-kibana-index',
-    maxSizeRequest: '1mb'
+    maxSizeRequest: '1mb',
+    rawTracesFolder: './analysis/raw'
 };
 
 exports.testValues = {
@@ -162,8 +164,9 @@ exports.testValues = {
     lrsUrl: 'http://localhost:8080/xAPI/',
     lrsUsername: 'openlrs',
     lrsPassword: 'openlrs',
+    useLrs: process.env.USE_LRS || false,
     realtimeJar: '/home/eucm/hlocal/rage/gleaner/gleaner-realtime/target/realtime-jar-with-dependencies.jar',
-    stormPath: '/home/eucm/hlocal/rage/gleaner/storm/apache-storm-1.0.2/bin',
+    stormPath: '/home/eucm/hlocal/rage/gleaner/storm/apache-storm-1.1.1/bin',
     nimbusHost: 'localhost',
     nimbusPort: '6627',
     kzkHost: 'localhost',
@@ -176,7 +179,8 @@ exports.testValues = {
     elasticsearchPort: 9200,
     elasticsearchModelVersion: '2',
     defaultKibanaIndex: 'default-kibana-index',
-    maxSizeRequest: '1mb'
+    maxSizeRequest: '1mb',
+    rawTracesFolder: './analysis/rawtest'
 };
 
 var prefix = 'RAGE_ANALYTICS_BACKEND_';

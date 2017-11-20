@@ -23,8 +23,8 @@ var traces = [
             target: 'target',
             type: 'type',
             extension1: 'extension1Value',
-            extension2: 1,
-            extension3: true,
+            extension2: '1',
+            extension3: 'true',
             extension4: ['elem1', 'elem2', 'elem3'],
             extension5: {
                 key: 'value'

@@ -32,7 +32,7 @@ var dbA2;
 
 var esClient = new elasticsearch.Client({
     host: config.elasticsearch.uri,
-    api: '5.0'
+    api: '5.6'
 });
 
 var connectToDB = function (connectionString, dbVar) {
