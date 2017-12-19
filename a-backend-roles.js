@@ -118,6 +118,40 @@ exports.app = {
             ]
         },
         {
+            roles: 'teacherassistant',
+            allows: [
+                {
+                    resources: [
+                        '/activities',
+                        '/activities/:activityId/event/:event',
+                        '/activities/:activityId/results',
+                        '/analysis/:id',
+                        '/games/public',
+                        '/games/:gameId',
+                        '/games/:gameId/versions',
+                        '/games/:gameId/versions/:versionId',
+                        '/games/:gameId/versions/:versionId/activities/my',
+                        '/classes',
+                        '/classes/my',
+                        '/classes/:classId',
+                        '/classes/:classId/remove',
+                        '/classes/:classId/activities/my',
+                        '/activities/my',
+                        '/activities/:activityId/results',
+                        '/activities/:activityId',
+                        '/activities/:activityId/remove',
+                        '/activities/:activityId/results/:resultsId',
+                        '/lti',
+                        '/lti/keyid/:classId',
+                        '/kibana/*'
+                    ],
+                    permissions: [
+                        'get'
+                    ]
+                }
+            ]
+        },
+        {
             roles: 'developer',
             allows: [
                 {
@@ -183,6 +217,7 @@ exports.app = {
     autoroles: [
         'student',
         'teacher',
+        'teacherassistant',
         'developer'
     ]
 };
