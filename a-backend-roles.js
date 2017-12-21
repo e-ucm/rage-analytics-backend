@@ -118,7 +118,7 @@ exports.app = {
             ]
         },
         {
-            roles: 'teacherassistant',
+            roles: 'teachingassistant',
             allows: [
                 {
                     resources: [
@@ -217,7 +217,7 @@ exports.app = {
     autoroles: [
         'student',
         'teacher',
-        'teacherassistant',
+        'teachingassistant',
         'developer'
     ]
 };
