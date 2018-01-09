@@ -160,7 +160,7 @@ router.put('/:gameId', function (req, res) {
 });
 
 /**
- * @api {put} /games/:gameId/remove Removes an author of the game
+ * @api {put} /games/:gameId/remove Removes an developer of the game
  * @apiName PutGames
  * @apiGroup Games
  *
