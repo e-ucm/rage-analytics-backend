@@ -10,7 +10,7 @@ var activities = require('../lib/activities'),
 module.exports = function (kafkaService, stormService) {
 
     /**
-     * @api {get} /api/activities/:id Returns the Activities.
+     * @api {get} /classes Returns the Activities.
      * @apiName GetActivities
      * @apiGroup Activities
      *
@@ -38,7 +38,7 @@ module.exports = function (kafkaService, stormService) {
     router.get('/', restUtils.find(activities));
 
     /**
-     * @api {get} /api/activities/my Returns the Activities where the user participates.
+     * @api {get} /activities/my Returns the Activities where the user participates.
      * @apiName GetActivities
      * @apiGroup Activities
      *
@@ -69,7 +69,7 @@ module.exports = function (kafkaService, stormService) {
     });
 
     /**
-     * @api {get} /api/activities/:id Returns the Activity that has the given id.
+     * @api {get} /activities/:id Returns the Activity that has the given id.
      * @apiName GetActivities
      * @apiGroup Activities
      *
@@ -356,7 +356,7 @@ module.exports = function (kafkaService, stormService) {
     });
 
     /**
-     * @api {post} /activities/:activityId/:event Starts or ends a activity depending on the event value.
+     * @api {post} /activities/:activityId/event/:event Starts or ends a activity depending on the event value.
      * @apiName postActivities
      * @apiGroup Activities
      *

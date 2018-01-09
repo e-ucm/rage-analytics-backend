@@ -39,6 +39,7 @@
     "elasticsearch": "*",
     "express": "~4.13.x",
     "jade": "*",
+    "jsonschema": "*",
     "kafka-node": "^0.5.9",
     "mkdirp": "^0.5.x",
     "mongodb": "^2.2.x",
