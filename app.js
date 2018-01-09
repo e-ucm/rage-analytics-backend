@@ -106,7 +106,10 @@ app.get('/', function (req, res) {
 });
 
 app.use(app.config.apiPath + '/games', require('./routes/games'));
+app.use(app.config.apiPath + '/courses', require('./routes/courses'));
 app.use(app.config.apiPath + '/classes', require('./routes/classes'));
+app.use(app.config.apiPath + '/classes', require('./routes/groups'));
+app.use(app.config.apiPath + '/classes', require('./routes/groupings'));
 app.use(app.config.apiPath + '/activities', require('./routes/activities')(kafkaService, stormService));
 app.use(app.config.apiPath + '/analysis', require('./routes/analysis'));
 app.use(app.config.apiPath + '/collector', require('./routes/collector'));
