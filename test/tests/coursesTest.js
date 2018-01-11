@@ -196,7 +196,7 @@ module.exports = function (request, db) {
                                 .end(function (err, res) {
                                     should.not.exist(err);
                                     should.equal(res.body.name, 'name');
-                                    should.not.exist(res.body.courseId);
+                                    should.equal(res.body.courseId, undefined);
                                     done();
                                 });
                         });
