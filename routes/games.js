@@ -24,9 +24,11 @@ var games = require('../lib/games'),
  *      {
  *          "_id": "559a447831b76cec185bf511",
  *          "title": "My Game",
+ *          "created": "2017-07-06T09:00:52.630Z",
  *          "authors": ["someDeveloper"],
  *          "developers": ["someDeveloper"],
- *          "public": "true"
+ *          "public": "true",
+ *          "deleted": "false"
  *      }
  *    ]
  */
@@ -51,9 +53,11 @@ router.get('/my', restUtils.find(games, function (req, callback) {
  *          {
  *              "_id": "559a447831b7acec185bf513",
  *              "title": "My Game",
+ *              "created": "2017-07-06T09:00:52.630Z",
  *              "authors": ["someDeveloper"],
  *              "developers": ["someDeveloper"],
- *              "public": "true"
+ *              "public": "true",
+ *              "deleted": "false"
  *          }
  *      ]
  *
@@ -79,15 +83,16 @@ router.get('/public', restUtils.find(games, function (req, callback) {
  *      {
  *          "_id": "559a447831b7acec185bf513",
  *          "title": "My Game",
+ *          "created": "2017-07-06T09:00:52.630Z",
  *          "authors": ["someDeveloper"],
  *          "developers": ["someDeveloper"],
- *          "public": "true"
+ *          "public": "true",
+ *          "deleted": "false"
  *      }
  *
  */
 router.get('/:gameId', function (req, res) {
     var username = req.headers['x-gleaner-user'];
-    console.log(req.params.gameId + ' ' + username);
     restUtils.processResponse(games.getGame(req.params.gameId, username), res);
 });
 
@@ -113,10 +118,12 @@ router.get('/:gameId', function (req, res) {
  *      HTTP/1.1 200 OK
  *      {
  *          "_id": "559a447831b7acec185bf513",
- *          "title": "My Game"
+ *          "title": "My Game",
+ *          "created": "2017-07-06T09:00:52.630Z",
  *          "authors": ["someDeveloper"],
  *          "developers": ["someDeveloper"],
- *          "public": "true"
+ *          "public": "true",
+ *          "deleted": "false"
  *      }
  *
  */
