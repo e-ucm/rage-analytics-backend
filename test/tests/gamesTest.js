@@ -100,7 +100,6 @@ module.exports = function (request, db) {
                     title: 'title3',
                     developers: 'username2'
                 }).end(function (err, res) {
-
                     should.not.exist(err);
                     should(res.body.authors).containDeep(['DummyUsername']);
                     should(res.body.developers).containDeep(['username2', 'DummyUsername']);
