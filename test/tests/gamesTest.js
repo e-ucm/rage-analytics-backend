@@ -21,7 +21,8 @@
 var should = require('should'),
     ObjectID = require('mongodb').ObjectId;
 
-var idGame = new ObjectID('dummyGameId0');
+var idGame = ObjectID.createFromTime(3);
+var idGame2 = ObjectID.createFromTime(7);
 
 module.exports = function (request, db) {
 
@@ -34,18 +35,34 @@ module.exports = function (request, db) {
         beforeEach(function (done) {
             db.collection('games').insert(
                 [{
+                    _id: idGame2,
                     title: 'Dummy2',
+                    developers: ['DummyUsername2'],
+                    authors: ['DummyUsername2'],
+                    deleted: false,
                     public: true
                 },
-                    {
-                        _id: idGame,
-                        title: 'Dummy',
-                        authors: ['DummyUsername'],
-                        developers: ['DummyUsername']
-                    }], done);
+                {
+                    _id: idGame,
+                    title: 'Dummy',
+                    authors: ['DummyUsername'],
+                    developers: ['DummyUsername'],
+                    public: false
+                }],
+                db.collection('activities').insert(
+                {
+                    gameId: idGame2,
+                    name: ''
+                }, function(){
+                   setTimeout(function(){ done() }, 500);
+                }));
         });
         afterEach(function (done) {
-            db.collection('games').drop(done);
+            db.collection('games').drop(
+                db.collection('activities').drop(
+                    done
+                )
+            );
         });
 
         it('should POST games', function (done) {
@@ -201,6 +218,27 @@ module.exports = function (request, db) {
                         .end(function (err, res) {
                             should.not.exist(err);
                             should.equal(res.body.length, 0);
+                            done();
+                        });
+                });
+        });
+
+        it('should DELETE a game make deleted field true', function (done) {
+            request.delete('/api/games/' + idGame2)
+                .expect(200)
+                .set('X-Gleaner-User', 'DummyUsername2')
+                .set('Accept', 'application/json')
+                .expect('Content-Type', /json/)
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    request.get('/api/games/' + idGame2)
+                        .expect(200)
+                        .set('X-Gleaner-User', 'DummyUsername2')
+                        .set('Accept', 'application/json')
+                        .expect('Content-Type', /json/)
+                        .end(function (err, res) {
+                            should.not.exist(err);
+                            should.equal(res.body.deleted, true);
                             done();
                         });
                 });
