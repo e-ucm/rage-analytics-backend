@@ -37,10 +37,13 @@ module.exports = function (request, db) {
             {
                 _id: idClass,
                 name: 'name',
-                authors: ['Teacher1'],
-                teachers: ['Teacher1'],
-                students: ['Student1']
-            }, done);
+                participants: {
+                    teachers: ['Teacher1'],
+                    students: ['Student1']
+                }
+            }, function(){
+                    setTimeout(function(){ done() }, 500);
+                });
         });
 
         afterEach(function (done) {
@@ -56,7 +59,7 @@ module.exports = function (request, db) {
                 .end(function (err, res) {
                     should.not.exist(err);
                     should(res.body).be.Object();
-                    should.equal(res.body.teachers[0], 'username');
+                    should.equal(res.body.participants.teachers[0], 'username');
                     should(res.body.created).be.String();
                     done();
                 });
@@ -112,15 +115,17 @@ module.exports = function (request, db) {
                         .set('X-Gleaner-User', 'Teacher1')
                         .send({
                             name: 'someClassNameTest',
-                            teachers: ['Teacher1', 'Teacher2'],
-                            students: ['Student2']
+                            participants: {
+                                teachers: ['Teacher1', 'Teacher2'],
+                                students: ['Student2']
+                            }
                         })
                         .end(function (err, res) {
                             should.not.exist(err);
                             should(res).be.Object();
                             should.equal(res.body.name, 'someClassNameTest');
-                            should(res.body.teachers).containDeep(['Teacher1', 'Teacher2']);
-                            should(res.body.students).containDeep(['Student1', 'Student2']);
+                            should(res.body.participants.teachers).containDeep(['Teacher1', 'Teacher2']);
+                            should(res.body.participants.students).containDeep(['Student1', 'Student2']);
                             done();
                         });
                 });
@@ -137,16 +142,20 @@ module.exports = function (request, db) {
                         .expect(200)
                         .set('X-Gleaner-User', 'Teacher1')
                         .send({
-                            teachers: ['Teacher2'],
-                            students: ['Student1']
+                            participants: {
+                                teachers: ['Teacher2'],
+                                students: ['Student1']
+                            }
+
+
                         })
                         .end(function (err, res) {
                             should.not.exist(err);
                             should(res).be.an.Object();
-                            should(res.body.students).not.containDeep(['Student1']);
-                            should(res.body.teachers).containDeep(['Teacher1']);
-                            should.equal(res.body.teachers.length, 1);
-                            should.equal(res.body.students.length, 0);
+                            should(res.body.participants.students).not.containDeep(['Student1']);
+                            should(res.body.participants.teachers).containDeep(['Teacher1']);
+                            should.equal(res.body.participants.teachers.length, 1);
+                            should.equal(res.body.participants.students.length, 0);
                             done();
                         });
                 });
