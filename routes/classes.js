@@ -19,9 +19,14 @@ var classes = require('../lib/classes'),
  *          {
  *              "_id": "559a447831b7acec185bf513",
  *              "name": "My Class",
- *              "authors": ["someTeacher"],
- *              "teachers": ["someTeacher"]
- *              "students": ["someStudent"]
+ *              "courseId": "5429l3v2jkfe20acec83tbf98s",
+ *              "groups": ["group1", "group2"],
+ *              "groupings": ["grouping1"],
+ *              "participants":{
+ *                  "students": ["st1", "st2"],
+ *                  "assistants": ["as1", "as2"],
+ *                  "teachers": ["teacher"]
+ *              }
  *          }
  *      ]
  *
@@ -45,16 +50,24 @@ router.get('/', restUtils.find(classes));
  *          {
  *              "_id": "559a447831b76cec185bf501",
  *              "name": 'first class',
- *              "authors": [ 'someTeacher' ],
- *              "teachers": [ 'someTeacher' ],
- *              "students": [ 'someStudent' ] }
+ *              "courseId": "5429l3v2jkfe20acec83tbf98s",
+ *              "groups": ["group1", "group2"],
+ *              "groupings": ["grouping1"],
+ *              "participants":{
+ *                  "students": ["st1", "st2"],
+ *                  "assistants": ["as1", "as2"],
+ *                  "teachers": ["teacher"]
+ *              }
  *          },
  *          {
  *              "_id": "559a447831b76cec185bf511",
  *              "name": 'second class',
- *              "authors": [ 'someTeacher' ],
- *              "teachers": [ 'someTeacher', 'someTeacher_2' ],
- *              "students": [ 'someStudent_2' ] }
+ *              "courseId": "5429l3v2jkfe20acec83tbf98s",
+ *              "participants":{
+ *                  "students": ["st1", "st2", "st3"],
+ *                  "assistants": ["as2"],
+ *                  "teachers": ["teacher2"]
+ *              }
  *          }
  *      ]
  *
@@ -77,9 +90,14 @@ router.get('/my', function (req, res) {
  *      {
  *          "_id": "559a447831b76cec185bf501",
  *          "name": "Some Class Name",
- *          "authors": ["someTeacher"],
- *          "teachers": ["someTeacher", "Ben"]
- *          "students": ["someStudent"]
+ *          "courseId": "5429l3v2jkfe20acec83tbf98s",
+ *          "groups": ["group1", "group2"],
+ *          "groupings": ["grouping1"],
+ *          "participants":{
+ *              "students": ["st1", "st2"],
+ *              "assistants": ["as1", "as2"],
+ *              "teachers": ["teacher"]
+ *          }
  *      }
  *
  */
