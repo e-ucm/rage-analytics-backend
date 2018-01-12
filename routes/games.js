@@ -196,7 +196,7 @@ router.put('/:gameId/remove', function (req, res) {
 });
 
 /**
- * @api {delete} /games/:id Removes the game.
+ * @api {delete} /games/:id Removes the game if doesn't contain activities else change the deleted field by true.
  * @apiName DeleteGame
  * @apiGroup Games
  *
