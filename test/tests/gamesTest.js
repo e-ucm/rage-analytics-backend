@@ -53,8 +53,8 @@ module.exports = function (request, db) {
                 {
                     gameId: idGame2,
                     name: ''
-                }, function(){
-                   setTimeout(function(){ done() }, 500);
+                }, function() {
+                    setTimeout(function() { done(); }, 500);
                 }));
         });
         afterEach(function (done) {

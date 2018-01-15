@@ -70,7 +70,7 @@ module.exports = function (request, db) {
         });
 
         it('should POST a new group', function (done) {
-            request.post('/api/classes/'+idClass+'/groups')
+            request.post('/api/classes/' + idClass + '/groups')
                 .expect(200)
                 .set('Accept', 'application/json')
                 .set('X-Gleaner-User', 'teacher')
@@ -95,7 +95,7 @@ module.exports = function (request, db) {
         });
 
         it('should GET groups', function (done) {
-            request.get('/api/classes/'+idClass+'/groups')
+            request.get('/api/classes/' + idClass + '/groups')
                 .expect(200)
                 .set('X-Gleaner-User', 'teacher')
                 .end(function (err, res) {
@@ -219,7 +219,7 @@ module.exports = function (request, db) {
                 .expect('Content-Type', /json/)
                 .end(function (err, res) {
                     should.not.exist(err);
-                    request.get('/api/classes/'+idClass+'/groups')
+                    request.get('/api/classes/' + idClass + '/groups')
                         .expect(200)
                         .set('X-Gleaner-User', 'teacher')
                         .set('Accept', 'application/json')
