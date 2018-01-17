@@ -148,6 +148,14 @@ exports.app = {
                     permissions: [
                         'get'
                     ]
+                },
+                {
+                    resources: [
+                        '/kibana/hulldata/:activityId'
+                    ],
+                    permissions: [
+                        'post'
+                    ]
                 }
             ]
         },

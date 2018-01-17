@@ -54,6 +54,14 @@ var connectToDB = function () {
             if (!isTest) {
                 kafkaService.createTopic(app.config.kafka.topicName);
                 stormService.startTopology(app.config.storm.defaultAnalysisName, app.config.kafka.topicName);
+                setTimeout(function () {
+                    var tkFolder = process.env.RAGE_ANALYTICS_BACKEND_TK_REALTIMEJAR;
+                    if (!tkFolder) {
+                        tkFolder = '/app/output/tk/realtime-jar-with-dependencies.jar';
+                    }
+                    app.config.storm.realtimeJar = tkFolder;
+                    stormService.startTopology(app.config.storm.defaultAnalysisName + 'tk', app.config.kafka.topicName);
+                }, 30000);
             }
         }
     });

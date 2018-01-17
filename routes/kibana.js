@@ -1034,4 +1034,71 @@ router.post('/dashboard/activity/:activityId', function (req, res) {
     });
 });
 
+router.post('/hulldata/:activityId', function (req, res) {
+    var body = req.body;
+    if (!body) {
+        res.status(400);
+        return res.json(new Error('No body provided!'));
+    }
+
+    if (!body.visualizationsIds) {
+        res.status(400);
+        return res.json(new Error('No body.visualizationsIds provided!'));
+    }
+
+    if (!body.visualizations) {
+        res.status(400);
+        return res.json(new Error('No body.visualizations provided!'));
+    }
+
+    if (!body.dashboard) {
+        res.status(400);
+        return res.json(new Error('No doby.dashboard provided!'));
+    }
+
+    req.app.esClient.search({
+        index: '.kibana',
+        q: 'title:' + body.dashboard.title
+    }, function (error, response) {
+        if (!error) {
+            if (response.hits.hits.length === 0) {
+
+                req.app.esClient.index({
+                    index: '.kibana',
+                    type: 'dashboard',
+                    id: 'dashboard_tk_' + req.params.activityId,
+                    body: req.body.dashboard
+                }, function (error, response) {
+                    if (!error) {
+
+                        for (var i = 0; i < req.body.visualizations.length; ++i) {
+                            var vis = req.body.visualizations[i];
+                            var visId = req.body.visualizationsIds[i];
+                            req.app.esClient.index({
+                                index: '.kibana',
+                                type: 'visualization',
+                                id: visId,
+                                body: vis
+                            }, function (error, response) {
+
+                            });
+                        }
+
+                        res.json({message: 'Done!'});
+                    } else {
+                        res.status(error.status);
+                        res.json(error);
+                    }
+                });
+
+            } else {
+                res.json(new Error('There is a dashboard set up already!', 404));
+            }
+        } else {
+            res.status(error.status);
+            res.json(error);
+        }
+    });
+});
+
 module.exports = router;
