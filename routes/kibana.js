@@ -124,7 +124,7 @@ var buildKibanaResources = function (req, callback) {
  */
 router.post('/templates/:type/:id', function (req, res) {
     if (req.params.type !== 'visualization' && req.params.type !== 'index') {
-        res.json('Invalid type parameter', 300);
+        res.json('Invalid type parameter', 400);
     } else {
         req.app.esClient.index({
             index: '.template',
@@ -179,12 +179,12 @@ router.post('/templates/:type/author/:idAuthor', function (req, res) {
                 bool: {
                     must: [
                         {
-                            term: {
+                            match: {
                                 author: req.params.idAuthor
                             }
                         },
                         {
-                            term: {
+                            match: {
                                 title: req.body.title
                             }
                         }
@@ -200,7 +200,7 @@ router.post('/templates/:type/author/:idAuthor', function (req, res) {
                 body: req.body
             };
             if (response.hits && response.hits.hits.length > 0) {
-                obj.id = response.hit.hits[0]._id;
+                obj.id = response.hits.hits[0]._id;
             }
             req.body.author = req.params.idAuthor;
             req.app.esClient.index(obj, function (error, response) {
@@ -280,11 +280,11 @@ router.get('/templates/:idAuthor', function (req, res) {
 });
 
 /**
- * @api {get} /api/kibana/templates/index/:id Return the index with the id.
- * @apiName GetIndexTemplate
+ * @api {get} /api/kibana/templates/index/:id Return the template with the id.
+ * @apiName GetTemplate
  * @apiGroup Template
  *
- * @apiParam {String} id The visualization id
+ * @apiParam {String} id The template id
  *
  * @apiSuccess(200) Success.
  *
@@ -311,7 +311,7 @@ router.get('/templates/index/:id', function (req, res) {
             if (response.hits.hits[0]) {
                 res.json(response.hits.hits[0]);
             } else {
-                res.json(new Error('Index not found', 404));
+                res.json(new Error('Template not found', 404));
             }
         } else {
             res.status(error.status);
@@ -341,12 +341,12 @@ router.get('/templates/fields/:id', function (req, res) {
         if (!error) {
             var result = [];
             if (response.hits.hits[0]) {
-                var re = /"field":"(\w+.?\w+)"/g;
+                var re = /"field":"((\w+.?)+)"/g;
 
                 var sourceField = 'visState';
                 if (response.hits.hits[0]._type === 'index') {
                     sourceField = 'fields';
-                    re = /"name":"([^_]\w+.?\w+)"/g;
+                    re = /"name":"([^_](\w+.?)+)"/g;
                 }
 
                 var pos = 0;
@@ -539,6 +539,7 @@ router.post('/visualization/tuples/fields/game/:id', function (req, res) {
  * @apiGroup GameVisualization
  *
  * @apiParam {String} id The game id
+ * @apiParam {String} usr The role of the user (dev, tch or all)
  *
  * @apiSuccess(200) Success.
  *
@@ -930,8 +931,6 @@ router.post('/visualization/activity/:gameId/:visualizationId/:activityId', func
                 if (m && m.length > 1) {
                     obj.kibanaSavedObjectMeta.searchSourceJSON = obj.kibanaSavedObjectMeta.searchSourceJSON.replace(m[2], req.params.activityId);
                 }
-                // Replace template and save it
-                obj.title = response.hits.hits[0]._id + '_' + req.params.activityId;
 
                 req.app.esClient.index({
                     index: '.kibana',
