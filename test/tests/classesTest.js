@@ -22,6 +22,7 @@ var should = require('should'),
     ObjectID = require('mongodb').ObjectId;
 
 var idClass = new ObjectID('dummyClasId9');
+var courseId =  ObjectID.createFromTime(15);
 
 module.exports = function (request, db) {
 
@@ -41,13 +42,18 @@ module.exports = function (request, db) {
                     teachers: ['Teacher1'],
                     students: ['Student1']
                 }
-            }, function(){
-                    setTimeout(function(){ done() }, 500);
-                });
+            }, db.collection('courses').insert(
+                    {
+                        _id: courseId,
+                        title: 'course',
+                        teachers: ['teacher']
+                    }, function() {
+                        setTimeout(function() { done(); }, 500);
+                    }));
         });
 
         afterEach(function (done) {
-            db.collection('classes').drop(done);
+            db.collection('classes').drop(db.collection('courses').drop(done));
         });
 
         it('should POST a new class', function (done) {
@@ -107,6 +113,14 @@ module.exports = function (request, db) {
             request.put('/api/classes/' + idClass)
                 .expect(401)
                 .set('X-Gleaner-User', 'notAllowedUsername')
+                .send({
+                    name: 'someClassNameTest',
+                    participants: {
+                        teachers: ['Teacher1', 'Teacher2'],
+                        students: ['Student2']
+                    },
+                    courseId: courseId
+                })
                 .end(function (err, res) {
                     should.not.exist(err);
                     should(res).be.Object();
@@ -118,7 +132,8 @@ module.exports = function (request, db) {
                             participants: {
                                 teachers: ['Teacher1', 'Teacher2'],
                                 students: ['Student2']
-                            }
+                            },
+                            courseId: courseId
                         })
                         .end(function (err, res) {
                             should.not.exist(err);
@@ -131,10 +146,34 @@ module.exports = function (request, db) {
                 });
         });
 
+        it('should not PUT (add) a class if the courseId doesn\'t exist', function (done) {
+            request.put('/api/classes/' + idClass)
+                .expect(400)
+                .set('X-Gleaner-User', 'Teacher1')
+                .send({
+                    name: 'someClassNameTest',
+                    participants: {
+                        teachers: ['Teacher1', 'Teacher2'],
+                        students: ['Student2']
+                    },
+                    courseId: 'course'
+                })
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    done();
+                });
+        });
+
         it('should PUT (remove) a class', function (done) {
             request.put('/api/classes/' + idClass + '/remove')
                 .expect(401)
                 .set('X-Gleaner-User', 'notAllowedUsername')
+                .send({
+                    participants: {
+                        teachers: ['Teacher2'],
+                        students: ['Student1']
+                    }
+                })
                 .end(function (err, res) {
                     should.not.exist(err);
                     should(res).be.Object();
@@ -146,8 +185,6 @@ module.exports = function (request, db) {
                                 teachers: ['Teacher2'],
                                 students: ['Student1']
                             }
-
-
                         })
                         .end(function (err, res) {
                             should.not.exist(err);

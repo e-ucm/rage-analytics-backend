@@ -35,6 +35,13 @@ module.exports = function (request, db) {
         beforeEach(function (done) {
             db.collection('games').insert(
                 [{
+                    title: 'Dummy3',
+                    developers: ['DummyUsername'],
+                    authors: ['DummyUsername'],
+                    deleted: true,
+                    public: true
+                },
+                {
                     _id: idGame2,
                     title: 'Dummy2',
                     developers: ['DummyUsername2'],
@@ -52,9 +59,9 @@ module.exports = function (request, db) {
                 db.collection('activities').insert(
                 {
                     gameId: idGame2,
-                    name: ''
-                }, function(){
-                   setTimeout(function(){ done() }, 500);
+                    name: 'act'
+                }, function() {
+                    setTimeout(function() { done(); }, 500);
                 }));
         });
         afterEach(function (done) {
@@ -92,6 +99,23 @@ module.exports = function (request, db) {
                     should.equal(res.body.public, true);
                     done();
                 });
+        });
+
+        it('should UPDATE a specific game', function (done) {
+            request.put('/api/games/' + idGame)
+                .expect(200)
+                .set('Accept', 'application/json')
+                .set('X-Gleaner-User', 'DummyUsername')
+                .expect('Content-Type', /json/)
+                .send({
+                    title: 'title3'
+                }).end(function (err, res) {
+                should.not.exist(err);
+                should.equal(res.body._id, idGame);
+                should.equal(res.body.title, 'title3');
+                should.equal(res.body.public, false);
+                done();
+            });
         });
 
         it('should GET an specific game', function (done) {

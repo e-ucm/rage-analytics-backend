@@ -42,7 +42,11 @@ exports.app = {
                         '/classes/:classId/activities/my',
                         '/activities/my',
                         '/activities/:activityId/results',
-                        '/lti/keyid/:gameId/:versionId/:classId'
+                        '/lti/keyid/:gameId/:versionId/:classId',
+                        '/activities/:id/attemps/my',
+                        '/activities/:id/attemps/:userId',
+                        '/activities/:id/attemps',
+                        '/courses/:id'
                     ],
                     permissions: [
                         'get'
@@ -56,6 +60,14 @@ exports.app = {
                     permissions: [
                         'put',
                         'get'
+                    ]
+                },
+                {
+                    resources: [
+                        '/activities/:activityId/results/resultId'
+                    ],
+                    permissions: [
+                        'put'
                     ]
                 }
             ]
@@ -84,7 +96,10 @@ exports.app = {
                         '/classes/:classId/activities/my',
                         '/activities/my',
                         '/activities/:activityId/results',
-                        '/lti/keyid/:classId'
+                        '/lti/keyid/:classId',
+                        '/activities/:id/attemps/my',
+                        '/activities/:id/attemps/:userId',
+                        '/activities/:id/attemps'
                     ],
                     permissions: [
                         'get'
@@ -96,8 +111,10 @@ exports.app = {
                         '/classes/:classId/remove',
                         '/activities/:activityId',
                         '/activities/:activityId/remove',
-                        '/activities/:activityId/results/:resultsId',
-                        '/kibana/*'
+                        '/kibana/*',
+                        '/courses/:id',
+                        '/classes/groups/:id',
+                        '/classes/groupings/:id'
                     ],
                     permissions: [
                         '*'
@@ -113,6 +130,26 @@ exports.app = {
                     ],
                     permissions: [
                         'post'
+                    ]
+                },
+                {
+                    resources: [
+                        '/courses',
+                        '/classes/:id/groups',
+                        '/classes/:id/groupings'
+                    ],
+                    permissions: [
+                        'get',
+                        'post'
+                    ]
+                },
+                {
+                    resources: [
+                        '/activities/:activityId/results/resultId',
+                        '/classes/groups/:id/remove'
+                    ],
+                    permissions: [
+                        'put'
                     ]
                 }
             ]
@@ -210,6 +247,7 @@ exports.app = {
     anonymous: [
         '/games/:id/xapi/:versionId',
         '/collector/start/:trackingCode',
+        '/collector/stop/:trackingCode',
         '/collector/track',
         '/lti/key/:id',
         '/env'

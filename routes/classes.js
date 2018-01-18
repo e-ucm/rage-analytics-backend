@@ -18,6 +18,7 @@ var classes = require('../lib/classes'),
  *      [
  *          {
  *              "_id": "559a447831b7acec185bf513",
+ *              "created": "2015-08-31T12:55:05.459Z",
  *              "name": "My Class",
  *              "courseId": "5429l3v2jkfe20acec83tbf98s",
  *              "groups": ["group1", "group2"],
@@ -49,6 +50,7 @@ router.get('/', restUtils.find(classes));
  *      [
  *          {
  *              "_id": "559a447831b76cec185bf501",
+ *              "created": "2015-08-31T12:55:05.459Z",
  *              "name": 'first class',
  *              "courseId": "5429l3v2jkfe20acec83tbf98s",
  *              "groups": ["group1", "group2"],
@@ -61,6 +63,7 @@ router.get('/', restUtils.find(classes));
  *          },
  *          {
  *              "_id": "559a447831b76cec185bf511",
+ *              "created": "2015-08-31T12:55:05.459Z",
  *              "name": 'second class',
  *              "courseId": "5429l3v2jkfe20acec83tbf98s",
  *              "participants":{
@@ -89,6 +92,7 @@ router.get('/my', function (req, res) {
  *
  *      {
  *          "_id": "559a447831b76cec185bf501",
+ *          "created": "2015-08-31T12:55:05.459Z",
  *          "name": "Some Class Name",
  *          "courseId": "5429l3v2jkfe20acec83tbf98s",
  *          "groups": ["group1", "group2"],
@@ -108,6 +112,11 @@ router.get('/:id', restUtils.findById(classes));
  * @apiName PostClasses
  * @apiGroup Classes
  *
+ * @apiParam {String} [name] The name of the class.
+ * @apiParam {Object} [participants] The students, assistants and students in the class
+ * @apiParam {String[]} [courseId] The id of the course that contains the class
+ * @apiParam {String[]} [groups] Group Id of the group with the participants of the class
+ * @apiParam {String[]} [groupings] Grouping Id of the grouping with the participants of the class
  *
  * @apiParamExample {json} Request-Example:
  *      {
@@ -121,32 +130,41 @@ router.get('/:id', restUtils.findById(classes));
  *      {
  *          "name": "New name",
  *          "created": "2015-08-31T12:55:05.459Z",
- *          "teachers": [
- *              "user"
- *          ],
- *          "_id": "55e44ea9f1448e1067e64d6c"
+ *          "participants":{
+ *              "students": ["st1", "st2"],
+ *              "assistants": ["as1", "as2"],
+ *              "teachers": ["teacher"]
+ *          },
+ *          "_id": "55e44ea9f1448e1067e64d6c",
+ *          "groups": [],
+            "groupings": []
  *      }
  *
  */
 router.post('/', function (req, res) {
     var username = req.headers['x-gleaner-user'];
-    restUtils.processResponse(classes.createClass(username, req.body.name), res);
+    restUtils.processResponse(classes.createClass(username, req.body.name || 'ClassWithoutName'), res);
 });
 
 /**
- * @api {put} /classes/:classId Changes the name and/or teachers array of a class.
+ * @api {put} /classes/:classId Changes the name and participants of a class.
  * @apiName PutClasses
  * @apiGroup Classes
  *
  * @apiParam {String} sessionId The id of the session.
  * @apiParam {String} [name] The new name of the session
- * @apiParam {String[]} [students] Array with the username of the students that you want to add to the session. Also can be a String
- * @apiParam {String[]} [teachers] Array with the username of the teachers that you want to add to the session. Also can be a String
+ * @apiParam {Object} [participants] Object with the participants
+ * @apiParam {String[]} [groups] Group ids with of the participants
+ * @apiParam {String[]} [groupings] Grouping ids with of the participants
+ *
  * @apiParamExample {json} Request-Example:
  *      {
  *          "name": "My New Name",
- *          "teachers": ["Some Teacher"],
- *          "students": ["Some Student"]
+ *          "participants":{
+ *              "students": ["st1", "st2"],
+ *              "assistants": ["as1", "as2"],
+ *              "teachers": ["teacher2"]
+ *          },
  *      }
  *
  * @apiSuccess(200) Success.
@@ -155,12 +173,15 @@ router.post('/', function (req, res) {
  *      HTTP/1.1 200 OK
  *      {
  *          "_id": "559a447831b76cec185bf511"
- *          "versionId": "559a447831b76cec185bf514",
  *          "created": "2015-07-06T09:00:50.630Z",
  *          "name": "My New Name",
- *          "authors": ["someTeacher"],
- *          "teachers": ["someTeacher", "Some Teacher"],
- *          "students": ["Some Student"]
+ *          "participants":{
+ *              "students": ["st1", "st2"],
+ *              "assistants": ["as1", "as2"],
+ *              "teachers": ["teacher", "teacher2"]
+ *          },
+ *          groups: [],
+ *          groupings: []
  *      }
  */
 router.put('/:classId', function (req, res) {
