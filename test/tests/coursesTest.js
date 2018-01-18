@@ -64,7 +64,6 @@ module.exports = function (request, db) {
                                 teachers: []
                             }
                         }, done);
-                    done();
                 });
         });
 
@@ -188,7 +187,7 @@ module.exports = function (request, db) {
                         .end(function (err, res) {
                             should.not.exist(err);
                             should.equal(res.body.length, 0);
-                            request.get('/api/classes/'+idClass)
+                            request.get('/api/classes/' + idClass)
                                 .expect(200)
                                 .set('X-Gleaner-User', 'teacher')
                                 .set('Accept', 'application/json')

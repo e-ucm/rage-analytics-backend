@@ -36,7 +36,8 @@ router.get('/my', restUtils.find(games, function (req, callback) {
     var user = req.headers['x-gleaner-user'];
     // Creates a Query for the 'find' operation
     callback({
-        developers: user.toString()
+        developers: user.toString(),
+        $or: [ {deleted: false}, {deleted: undefined} ]
     });
 }));
 
@@ -65,7 +66,8 @@ router.get('/my', restUtils.find(games, function (req, callback) {
 router.get('/public', restUtils.find(games, function (req, callback) {
     // Creates a Query for the 'find' operation
     callback({
-        public: true
+        public: true,
+        deleted: false
     });
 }));
 
