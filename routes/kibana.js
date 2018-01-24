@@ -833,58 +833,99 @@ router.delete('/visualization/list/:gameId/:list/:idToRemove', function (req, re
  *      }
  */
 router.post('/index/:indexTemplate/:indexName', function (req, res) {
-    req.body.title = req.params.indexName;
-    req.app.esClient.search({
-        index: '.template',
-        q: '_id:' + req.params.indexTemplate
-    }, function (error, response) {
-        if (response.hits.hits[0]) {
-            response.hits.hits[0]._source.title = req.params.indexName;
-            req.app.esClient.index({
-                index: '.kibana',
-                type: 'index-pattern',
-                id: req.params.indexName,
-                body: response.hits.hits[0]._source
-            }, function () {
-                response.hits.hits[0]._source.title = 'thomaskilmann-' + req.params.indexName;
+    var setupIndex = function () {
+        req.body.title = req.params.indexName;
+        req.app.esClient.search({
+            index: '.template',
+            q: '_id:' + req.params.indexTemplate
+        }, function (error, response) {
+            if (response.hits.hits[0]) {
+                response.hits.hits[0]._source.title = req.params.indexName;
                 req.app.esClient.index({
                     index: '.kibana',
                     type: 'index-pattern',
-                    id: 'thomaskilmann-' + req.params.indexName,
+                    id: req.params.indexName,
                     body: response.hits.hits[0]._source
-                }, function (error, response) {
-                    if (!error) {
-                        buildKibanaResources(req, function (err, resources) {
-                            if (err) {
-                                return res.json(err);
-                            }
-                            activities.findById(req.params.indexName).then(function (activityObj) {
-                                if (activityObj) {
-                                    activityObj.students.forEach(function (stu) {
-                                        updateKibanaPermission(req.app.config,
-                                            stu, resources, function (err) {
-
-                                            });
-                                    });
+                }, function () {
+                    response.hits.hits[0]._source.title = 'thomaskilmann-' + req.params.indexName;
+                    req.app.esClient.index({
+                        index: '.kibana',
+                        type: 'index-pattern',
+                        id: 'thomaskilmann-' + req.params.indexName,
+                        body: response.hits.hits[0]._source
+                    }, function (error, response) {
+                        if (!error) {
+                            buildKibanaResources(req, function (err, resources) {
+                                if (err) {
+                                    return res.json(err);
                                 }
-                                updateKibanaPermission(req.app.config,
-                                    req.headers['x-gleaner-user'],
-                                    resources, function (err) {
-                                        if (err) {
-                                            return res.json(err);
-                                        }
-                                        res.json(response);
-                                    });
+                                activities.findById(req.params.indexName).then(function (activityObj) {
+                                    if (activityObj) {
+                                        activityObj.students.forEach(function (stu) {
+                                            updateKibanaPermission(req.app.config,
+                                                stu, resources, function (err) {
+
+                                                });
+                                        });
+                                    }
+                                    updateKibanaPermission(req.app.config,
+                                        req.headers['x-gleaner-user'],
+                                        resources, function (err) {
+                                            if (err) {
+                                                return res.json(err);
+                                            }
+                                            res.json(response);
+                                        });
+                                });
                             });
-                        });
-                    } else {
-                        res.status(error.status);
-                        res.json(error);
-                    }
+                        } else {
+                            res.status(error.status);
+                            res.json(error);
+                        }
+                    });
                 });
+            } else {
+                res.json(new Error('Template not found', 404));
+            }
+        });
+    };
+
+    // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
+    req.app.esClient.indices.exists({index: req.params.indexName}, function (err, exists) {
+        if (err || !exists) {
+            req.app.esClient.index({
+                index: req.params.indexName,
+                type: 'traces',
+                body: {
+                    out: {
+                        name: '',
+                        gameplayId: '',
+                        type_hashCode: 0,
+                        score: 0,
+                        response: '',
+                        type: '',
+                        event_hashcode: 0,
+                        target: '',
+                        versionId: '',
+                        success: false,
+                        gameplayId_hashCode: 0,
+                        event: '',
+                        timestamp: '2000-01-19T11:05:27.772Z',
+                        target_hashCode: 0,
+                        stored: '2000-01-19T11:05:27.772Z',
+                        progress: 0,
+                        time: 0,
+                        ext: {
+                            progress: 0,
+                            time: 0
+                        }
+                    }
+                }
+            }, function (creationError, created) {
+                setTimeout(setupIndex, 100);
             });
         } else {
-            res.json(new Error('Template not found', 404));
+            setupIndex();
         }
     });
 });
@@ -996,42 +1037,86 @@ router.post('/visualization/activity/:gameId/:visualizationId/:activityId', func
  *      }
  */
 router.post('/dashboard/activity/:activityId', function (req, res) {
-    req.app.esClient.index({
-        index: '.kibana',
-        type: 'dashboard',
-        id: 'dashboard_' + req.params.activityId,
-        body: req.body
-    }, function (error, response) {
-        if (!error) {
+    var updateIndex = function () {
 
-            var visualizations = JSON.parse(req.body.panelsJSON);
-            var resources = ['dashboard_' + req.params.activityId];
-            visualizations.forEach(function (visualization) {
-                resources.push(visualization.id);
-            });
-            activities.findById(req.params.activityId).then(function (activityObj) {
-                if (activityObj) {
-                    activityObj.students.forEach(function (stu) {
-                        updateKibanaPermission(req.app.config,
-                            stu, resources, function (err) {
+        req.body.kibanaSavedObjectMeta = {
+            searchSourceJSON: '{"filter":[{"query":{"match_all":{}}}],"highlightAll":true,"version":true}'
+        };
+        req.app.esClient.index({
+            index: '.kibana',
+            type: 'dashboard',
+            id: 'dashboard_' + req.params.activityId,
+            body: req.body
+        }, function (error, response) {
+            if (!error) {
 
-                            });
-                    });
-                }
-                updateKibanaPermission(req.app.config,
-                    req.headers['x-gleaner-user'],
-                    resources, function (err) {
-                        if (err) {
-                            return res.json(err);
+                var visualizations = JSON.parse(req.body.panelsJSON);
+                var resources = ['dashboard_' + req.params.activityId];
+                visualizations.forEach(function (visualization) {
+                    resources.push(visualization.id);
+                });
+                activities.findById(req.params.activityId).then(function (activityObj) {
+                    if (activityObj) {
+                        activityObj.students.forEach(function (stu) {
+                            updateKibanaPermission(req.app.config,
+                                stu, resources, function (err) {
+
+                                });
+                        });
+                    }
+                    updateKibanaPermission(req.app.config,
+                        req.headers['x-gleaner-user'],
+                        resources, function (err) {
+                            if (err) {
+                                return res.json(err);
+                            }
+                            res.json(response);
+                        });
+                });
+            } else {
+                res.status(error.status);
+                res.json(error);
+            }
+        });
+    };
+    req.app.esClient.indices.exists({index: req.params.activityId}, function (err, exists) {
+        if (err || !exists) {
+            req.app.esClient.index({
+                index: req.params.activityId,
+                type: 'traces',
+                body: {
+                    out: {
+                        name: '',
+                        gameplayId: '',
+                        type_hashCode: 0,
+                        score: 0,
+                        response: '',
+                        type: '',
+                        event_hashcode: 0,
+                        target: '',
+                        versionId: '',
+                        success: false,
+                        gameplayId_hashCode: 0,
+                        event: '',
+                        timestamp: '2000-01-19T11:05:27.772Z',
+                        target_hashCode: 0,
+                        stored: '2000-01-19T11:05:27.772Z',
+                        progress: 0,
+                        time: 0,
+                        ext: {
+                            progress: 0,
+                            time: 0
                         }
-                        res.json(response);
-                    });
+                    }
+                }
+            }, function (creationError, created) {
+                updateIndex();
             });
         } else {
-            res.status(error.status);
-            res.json(error);
+            updateIndex();
         }
     });
 });
 
+// jscs:enable requireCamelCaseOrUpperCaseIdentifiers
 module.exports = router;
