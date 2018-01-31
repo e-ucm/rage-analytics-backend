@@ -917,7 +917,11 @@ router.post('/index/:indexTemplate/:indexName', function (req, res) {
                         time: 0,
                         ext: {
                             progress: 0,
-                            time: 0
+                            time: 0,
+                            location: {
+                                lat: 0,
+                                lon: 0
+                            }
                         }
                     }
                 }
@@ -1105,7 +1109,11 @@ router.post('/dashboard/activity/:activityId', function (req, res) {
                         time: 0,
                         ext: {
                             progress: 0,
-                            time: 0
+                            time: 0,
+                            location: {
+                                lat: 0,
+                                lon: 0
+                            }
                         }
                     }
                 }
