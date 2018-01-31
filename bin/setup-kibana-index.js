@@ -31,36 +31,46 @@ var elasticsearch = require('elasticsearch');
 var defaultKibanaIndexValue = config.kibana.defaultIndex;
 
 request({
-    uri: config.elasticsearch.uri + '/_template/geopoint',
-    method: 'PUT',
-    body: {
-        order: 0,
-        template: '*',
-        settings: {},
-        mappings: {
-            _default_: {
-                properties: {
-                    ext: {
-                        type: 'object',
-                        properties: {
-                            location: {
-                                type: 'geo_point'
+        uri: config.elasticsearch.uri + '/_template/geopoint',
+        method: 'PUT',
+        body: {
+            order: 0,
+            template: '*',
+            settings: {},
+            mappings: {
+                _default_: {
+                    properties: {
+                        out: {
+                            type: 'object',
+                            properties: {
+                                ext: {
+                                    type: 'object',
+                                    properties: {
+                                        location: {
+                                            type: 'geo_point'
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
                 }
             }
-        }
+        },
+        json:
+            true
     },
-    json: true
-}, function (err, httpResponse, body) {
-    if (err) {
-        console.error(err);
-        console.log('Did not setup default Elasticsearch geopoint _template!');
-    }
 
-    console.log('Success setting up geopoint elasticsearch _template');
-});
+    function (err, httpResponse, body) {
+        if (err) {
+            console.error(err);
+            console.log('Did not setup default Elasticsearch geopoint _template!');
+        }
+
+        console.log('Success setting up geopoint elasticsearch _template');
+    }
+)
+;
 
 var esClient = new elasticsearch.Client({
     host: config.elasticsearch.uri,
@@ -121,7 +131,7 @@ var setupDefaultKibanaIndex = function () {
                                     }
                                     if (!appData._source['visualization:tileMap:maxPrecision']) {
                                         appData._source['visualization:tileMap:maxPrecision'] =
-                                      process.env.MAX_KIBANA_PRECISION || 12;
+                                            process.env.MAX_KIBANA_PRECISION || 12;
                                         addDefaultIndex(appData);
                                     }
                                 }
@@ -143,7 +153,7 @@ var setupDefaultKibanaIndex = function () {
     });
 };
 
-var addDefaultIndex = function(appData) {
+var addDefaultIndex = function (appData) {
     esClient.index({
         index: '.kibana',
         type: 'config',
@@ -159,7 +169,7 @@ var addDefaultIndex = function(appData) {
     });
 };
 
-var handleError = function(error) {
+var handleError = function (error) {
     console.error(error);
     console.error('Could not connect to ElasticsearchDB!');
     console.log('Did not configure kibana default index, continuing anyway!');
