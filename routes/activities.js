@@ -5,6 +5,7 @@ var express = require('express'),
     restUtils = require('./rest-utils');
 
 var activities = require('../lib/activities'),
+    gameplays = require('../lib/gameplays'),
     getRealTimeData = require('../lib/tracesConverter');
 
 module.exports = function (kafkaService, stormService) {
@@ -398,6 +399,121 @@ module.exports = function (kafkaService, stormService) {
                 break;
             }
         }
+    });
+
+    /**
+     * @api {post} /activities/:activityId/event/:event Starts or ends a activity depending on the event value.
+     * @apiName postActivities
+     * @apiGroup Activities
+     *
+     * @apiParam {String} event Determines if we should start or end a activity. Allowed values: start, end.
+     *
+     * @apiSuccess(200) Success.
+     *
+     * @apiSuccessExample Success-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "_id": "559a447831b76cec185bf511"
+     *          "gameId": "559a447831b76cec185bf513",
+     *          "versionId": "559a447831b76cec185bf514",
+     *          "classId": "559a447831b76cec185bf515",
+     *          "name": "The Activity Name",
+     *          "created": "2015-07-06T09:00:50.630Z",
+     *          "start": "2015-07-06T09:01:52.636Z",
+     *          "end": "2015-07-06T09:03:45.631Z",
+     *          "name": "Some Activity Name",
+     *          "allowAnonymous": false,
+     *          "teachers": ["Ben"],
+     *          "students": ["Alice", "Dan"]
+     *      }
+     *
+     */
+    router.get('/:activityId/attempts', function (req, res) {
+        var username = req.headers['x-gleaner-user'];
+        restUtils.processResponse(activities.getAttempts(username, req.params.activityId), res);
+    });
+
+    /**
+     * @api {post} /activities/:activityId/event/:event Starts or ends a activity depending on the event value.
+     * @apiName postActivities
+     * @apiGroup Activities
+     *
+     * @apiParam {String} event Determines if we should start or end a activity. Allowed values: start, end.
+     *
+     * @apiSuccess(200) Success.
+     *
+     * @apiSuccessExample Success-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "_id": "559a447831b76cec185bf511"
+     *          "gameId": "559a447831b76cec185bf513",
+     *          "versionId": "559a447831b76cec185bf514",
+     *          "classId": "559a447831b76cec185bf515",
+     *          "name": "The Activity Name",
+     *          "created": "2015-07-06T09:00:50.630Z",
+     *          "start": "2015-07-06T09:01:52.636Z",
+     *          "end": "2015-07-06T09:03:45.631Z",
+     *          "name": "Some Activity Name",
+     *          "allowAnonymous": false,
+     *          "teachers": ["Ben"],
+     *          "students": ["Alice", "Dan"]
+     *      }
+     *
+     */
+    router.get('/:activityId/attempts/my', function (req, res) {
+        var username = req.headers['x-gleaner-user'];
+        switch (req.params.event) {
+            case 'start': {
+                restUtils.processResponse(activities.startActivity(username, req.params.activityId), res);
+                break;
+            }
+            case 'end': {
+                restUtils.processResponse(activities.endActivity(username, req.params.activityId), res);
+                break;
+            }
+            default: {
+                res.status(400).end();
+                break;
+            }
+        }
+    });
+
+    /**
+     * @api {post} /activities/:activityId/event/:event Starts or ends a activity depending on the event value.
+     * @apiName postActivities
+     * @apiGroup Activities
+     *
+     * @apiParam {String} event Determines if we should start or end a activity. Allowed values: start, end.
+     *
+     * @apiSuccess(200) Success.
+     *
+     * @apiSuccessExample Success-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "_id": "559a447831b76cec185bf511"
+     *          "gameId": "559a447831b76cec185bf513",
+     *          "versionId": "559a447831b76cec185bf514",
+     *          "classId": "559a447831b76cec185bf515",
+     *          "name": "The Activity Name",
+     *          "created": "2015-07-06T09:00:50.630Z",
+     *          "start": "2015-07-06T09:01:52.636Z",
+     *          "end": "2015-07-06T09:03:45.631Z",
+     *          "name": "Some Activity Name",
+     *          "allowAnonymous": false,
+     *          "teachers": ["Ben"],
+     *          "students": ["Alice", "Dan"]
+     *      }
+     *
+     */
+    router.get('/:activityId/attempts/:userId', function (req, res) {
+        var username = req.headers['x-gleaner-user'];
+        users.find(req.params.userId, true, function (user) {
+            if (user) {
+                restUtils.processResponse(gameplays.getAttempts(req.params.activityId, user.name), res);
+            }
+
+
+        });
     });
 
 
