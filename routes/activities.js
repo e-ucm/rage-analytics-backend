@@ -5,7 +5,6 @@ var express = require('express'),
     restUtils = require('./rest-utils');
 
 var activities = require('../lib/activities'),
-    gameplays = require('../lib/gameplays'),
     getRealTimeData = require('../lib/tracesConverter');
 
 module.exports = function (kafkaService, stormService) {
@@ -461,21 +460,8 @@ module.exports = function (kafkaService, stormService) {
      *
      */
     router.get('/:activityId/attempts/my', function (req, res) {
-        var username = req.headers['x-gleaner-user'];
-        switch (req.params.event) {
-            case 'start': {
-                restUtils.processResponse(activities.startActivity(username, req.params.activityId), res);
-                break;
-            }
-            case 'end': {
-                restUtils.processResponse(activities.endActivity(username, req.params.activityId), res);
-                break;
-            }
-            default: {
-                res.status(400).end();
-                break;
-            }
-        }
+        var me = req.headers['x-gleaner-user'];
+        restUtils.processResponse(activities.getUserAttempts(me, req.params.activityId, me), res);
     });
 
     /**
@@ -505,15 +491,9 @@ module.exports = function (kafkaService, stormService) {
      *      }
      *
      */
-    router.get('/:activityId/attempts/:userId', function (req, res) {
-        var username = req.headers['x-gleaner-user'];
-        users.find(req.params.userId, true, function (user) {
-            if (user) {
-                restUtils.processResponse(gameplays.getAttempts(req.params.activityId, user.name), res);
-            }
-
-
-        });
+    router.get('/:activityId/attempts/:username', function (req, res) {
+        var me = req.headers['x-gleaner-user'];
+        restUtils.processResponse(activities.getUserAttempts(me, req.params.activityId, req.params.username), res);
     });
 
 
