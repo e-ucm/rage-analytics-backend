@@ -107,8 +107,8 @@ router.post('/track', function (req, res) {
  * @apiError BadRequest The statement must be an array. Example: [{trace1},{trace2}].
  * @apiError NotValidSession No active session can fit this user.
  */
-router.post('/track', function (req, res) {
-    restUtils.processResponse(collector.track(req.headers.authorization, req.body), res);
+router.post('/end', function (req, res) {
+    restUtils.processResponse(collector.end(req.headers.authorization, req.body), res);
 });
 
 module.exports = router;

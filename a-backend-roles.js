@@ -42,6 +42,7 @@ exports.app = {
                         '/classes/:classId/activities/my',
                         '/activities/my',
                         '/activities/:activityId/results',
+                        '/activities/:activityId/attempts/my',
                         '/lti/keyid/:gameId/:versionId/:classId'
                     ],
                     permissions: [
@@ -84,6 +85,9 @@ exports.app = {
                         '/classes/:classId/activities/my',
                         '/activities/my',
                         '/activities/:activityId/results',
+                        '/activities/:activityId/attempts',
+                        '/activities/:activityId/attempts/my',
+                        '/activities/:activityId/attempts/:username',
                         '/lti/keyid/:classId'
                     ],
                     permissions: [
