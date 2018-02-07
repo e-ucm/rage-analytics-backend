@@ -36,30 +36,32 @@ module.exports = function (request, db) {
 
         beforeEach(function (done) {
             db.collection('classes').insert(
-            {
-                _id: idClass,
-                name: 'name',
-                participants: {
-                    teachers: ['Teacher1'],
-                    students: ['Student1']
-                }
-            }, db.collection('classes').insert(
-            {
-                _id: idClass2,
-                courseId: courseId,
-                name: 'name2',
-                participants: {
-                    teachers: ['Teacher1'],
-                    students: ['Student1']
-                }
-            }, db.collection('courses').insert(
-            {
-                _id: courseId,
-                title: 'course',
-                teachers: ['teacher']
-            }, function() {
-                setTimeout(function() { done(); }, 500);
-            })));
+                {
+                    _id: idClass,
+                    name: 'name',
+                    participants: {
+                        teachers: ['Teacher1'],
+                        students: ['Student1']
+                    }
+                }, db.collection('classes').insert(
+                    {
+                        _id: idClass2,
+                        courseId: courseId,
+                        name: 'name2',
+                        participants: {
+                            teachers: ['Teacher1'],
+                            students: ['Student1']
+                        }
+                    }, db.collection('courses').insert(
+                        {
+                            _id: courseId,
+                            title: 'course',
+                            teachers: ['Teacher1']
+                        }, function() {
+                            setTimeout(function() { done(); }, 500);
+                        })
+                    )
+                );
         });
 
         afterEach(function (done) {

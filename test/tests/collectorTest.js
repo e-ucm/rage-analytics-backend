@@ -47,12 +47,12 @@ module.exports = function (request, db, config) {
                     db.collection('versions').insert(
                         {
                             _id: idVersion,
-                            gameId: idGame,
-                            trackingCode: trackingCode
+                            gameId: idGame
                         }, function () {
                             db.collection('activities').insert(
                                 {
                                     _id: idActivity,
+                                    trackingCode: trackingCode,
                                     gameId: idGame,
                                     versionId: idVersion,
                                     name: 'name',
@@ -705,7 +705,7 @@ module.exports = function (request, db, config) {
                 .set('x-gleaner-user', playerIdentifier)
                 .set('Authorization', 'Bearer 1234')
                 .end(function (err, res) {
-
+                    should.not.exist(err);
                     should(res.body).be.Object();
                     should(res.body.authToken).be.String();
                     should(res.body.objectId).be.String();

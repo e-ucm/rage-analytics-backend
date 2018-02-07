@@ -24,7 +24,9 @@ var should = require('should'),
 var idGame = new ObjectID('dummyGameId0'),
     idVersion = new ObjectID('dummyVersId0'),
     idActivity = new ObjectID('dummySessId0'),
-    idClass = new ObjectID('dummyClasId0');
+    idClass = new ObjectID('dummyClasId0'),
+    idGroup = new ObjectID('dummyGrouId0'),
+    idGrouping = new ObjectID('dummyGrogId0');
 
 module.exports = function (request, db) {
 
@@ -46,25 +48,46 @@ module.exports = function (request, db) {
                             _id: idVersion,
                             gameId: idGame
                         }, function () {
-                            db.collection('classes').insert(
+                            db.collection('groups').insert(
                                 {
-                                    _id: idClass
+                                    _id: idGroup,
+                                    participants: {
+                                        teachers: ['Teacher1'],
+                                        assistants: ['Assistant1'],
+                                        students: ['Student1']
+                                    }
                                 }, function () {
-                                    db.collection('activities').insert(
-                                        [{
-                                            _id: idActivity,
-                                            gameId: idGame,
-                                            versionId: idVersion,
-                                            classId: idClass,
-                                            name: 'name',
-                                            allowAnonymous: true,
-                                            teachers: ['Teacher1'],
-                                            students: ['Student1']
-                                        }, {
-                                            gameId: idGame,
-                                            versionId: idVersion,
-                                            classId: idClass
-                                        }], done);
+                                    db.collection('groupings').insert(
+                                        {
+                                            _id: idGrouping,
+                                            groups: [idGroup]
+                                        }, function () {
+                                            db.collection('classes').insert(
+                                                {
+                                                    _id: idClass,
+                                                    participants: {
+                                                        teachers: ['Teacher1'],
+                                                        assistants: ['Assistant1'],
+                                                        students: ['Student1']
+                                                    }
+                                                }, function () {
+                                                    db.collection('activities').insert(
+                                                        [{
+                                                            _id: idActivity,
+                                                            gameId: idGame,
+                                                            versionId: idVersion,
+                                                            classId: idClass,
+                                                            name: 'name',
+                                                            allowAnonymous: true,
+                                                            teachers: ['Teacher1'],
+                                                            students: ['Student1']
+                                                        }, {
+                                                            gameId: idGame,
+                                                            versionId: idVersion,
+                                                            classId: idClass
+                                                        }], done);
+                                                });
+                                        });
                                 });
                         });
                 });
@@ -201,16 +224,16 @@ module.exports = function (request, db) {
                         .send({
                             name: 'someSessionName',
                             allowAnonymous: true,
-                            teachers: ['Teacher1', 'Teacher2'],
-                            students: ['Student2']
+                            groups: [idGroup],
+                            groupings: [idGrouping]
                         })
                         .end(function (err, res) {
                             should.not.exist(err);
                             should(res).be.Object();
                             should.equal(res.body.name, 'someSessionName');
                             should.equal(res.body.allowAnonymous, true);
-                            should(res.body.teachers).containDeep(['Teacher1', 'Teacher2']);
-                            should(res.body.students).containDeep(['Student1', 'Student2']);
+                            should(res.body.groups).containDeep([idGroup.toString()]);
+                            should(res.body.groupings).containDeep([idGrouping.toString()]);
                             done();
                         });
                 });
@@ -223,21 +246,39 @@ module.exports = function (request, db) {
                 .end(function (err, res) {
                     should.not.exist(err);
                     should(res).be.Object();
-                    request.put('/api/activities/' + idActivity + '/remove')
+
+                    request.put('/api/activities/' + idActivity)
                         .expect(200)
                         .set('X-Gleaner-User', 'Teacher1')
                         .send({
-                            teachers: ['Teacher2'],
-                            students: ['Student1']
+                            name: 'someSessionName',
+                            allowAnonymous: true,
+                            groups: [idGroup],
+                            groupings: [idGrouping]
                         })
                         .end(function (err, res) {
                             should.not.exist(err);
-                            should(res).be.an.Object();
-                            should(res.body.students).not.containDeep(['Student1']);
-                            should(res.body.teachers).containDeep(['Teacher1']);
-                            should.equal(res.body.teachers.length, 1);
-                            should.equal(res.body.students.length, 0);
-                            done();
+                            should(res).be.Object();
+                            should.equal(res.body.name, 'someSessionName');
+                            should.equal(res.body.allowAnonymous, true);
+                            should(res.body.groups).containDeep([idGroup.toString()]);
+                            should(res.body.groupings).containDeep([idGrouping.toString()]);
+                            request.put('/api/activities/' + idActivity + '/remove')
+                                .expect(200)
+                                .set('X-Gleaner-User', 'Teacher1')
+                                .send({
+                                    groups: [idGroup],
+                                    groupings: [idGrouping]
+                                })
+                                .end(function (err, res) {
+                                    should.not.exist(err);
+                                    should(res).be.an.Object();
+                                    should(res.body.groups).not.containDeep([idGroup.toString()]);
+                                    should(res.body.groupings).not.containDeep([idGrouping.toString()]);
+                                    should.equal(res.body.groups.length, 0);
+                                    should.equal(res.body.groupings.length, 0);
+                                    done();
+                                });
                         });
                 });
         });

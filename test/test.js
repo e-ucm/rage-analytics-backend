@@ -60,6 +60,7 @@ describe('API Test', function (done) {
         require('./tests/coursesTest')(request, db);
         require('./tests/groupsTest')(request, db);
         require('./tests/groupingsTest')(request, db);
+        require('./tests/attemptsTest')(request, db);
 
         require('./tests/analysisTest')(request, db);
 
