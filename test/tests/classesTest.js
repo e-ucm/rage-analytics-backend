@@ -22,6 +22,7 @@ var should = require('should'),
     ObjectID = require('mongodb').ObjectId;
 
 var idClass = new ObjectID('dummyClasId9');
+var idClass2 =  ObjectID.createFromTime(2);
 var courseId =  ObjectID.createFromTime(15);
 
 module.exports = function (request, db) {
@@ -42,14 +43,23 @@ module.exports = function (request, db) {
                     teachers: ['Teacher1'],
                     students: ['Student1']
                 }
+            }, db.collection('classes').insert(
+            {
+                _id: idClass2,
+                courseId: courseId,
+                name: 'name2',
+                participants: {
+                    teachers: ['Teacher1'],
+                    students: ['Student1']
+                }
             }, db.collection('courses').insert(
-                    {
-                        _id: courseId,
-                        title: 'course',
-                        teachers: ['teacher']
-                    }, function() {
-                        setTimeout(function() { done(); }, 500);
-                    }));
+            {
+                _id: courseId,
+                title: 'course',
+                teachers: ['teacher']
+            }, function() {
+                setTimeout(function() { done(); }, 500);
+            })));
         });
 
         afterEach(function (done) {
@@ -78,7 +88,7 @@ module.exports = function (request, db) {
                 .end(function (err, res) {
                     should.not.exist(err);
                     should(res).be.Object();
-                    should.equal(res.body.length, 1);
+                    should.equal(res.body.length, 2);
                     should.equal(res.body[0]._id, idClass);
                     done();
                 });
@@ -92,7 +102,7 @@ module.exports = function (request, db) {
                     should.not.exist(err);
                     should(res).be.Object();
                     console.log(res.body);
-                    should.equal(res.body.length, 1);
+                    should.equal(res.body.length, 2);
                     should.equal(res.body[0]._id, idClass);
                     done();
                 });
@@ -141,8 +151,27 @@ module.exports = function (request, db) {
                             should.equal(res.body.name, 'someClassNameTest');
                             should(res.body.participants.teachers).containDeep(['Teacher1', 'Teacher2']);
                             should(res.body.participants.students).containDeep(['Student1', 'Student2']);
+                            should.equal(res.body.courseId, courseId);
                             done();
                         });
+                });
+        });
+
+        it('should PUT (add) a class', function (done) {
+            request.put('/api/classes/' + idClass2)
+                .expect(200)
+                .set('X-Gleaner-User', 'Teacher1')
+                .send({
+                    courseId: ''
+                })
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    should(res).be.Object();
+                    should.equal(res.body.name, 'name2');
+                    should(res.body.participants.teachers).containDeep(['Teacher1']);
+                    should(res.body.participants.students).containDeep(['Student1']);
+                    should.not.exist(res.body.courseId);
+                    done();
                 });
         });
 
