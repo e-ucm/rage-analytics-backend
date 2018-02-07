@@ -249,7 +249,7 @@ module.exports = function (request, db) {
                 });
         });
 
-        it('should GET attempts', function (done) {
+        it('should GET any user attempts', function (done) {
             request.post('/api/collector/start/' + activityTrackingCode)
                 .expect(200)
                 .set('Accept', 'application/json')
