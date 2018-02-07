@@ -46,7 +46,7 @@ module.exports = function (request, db) {
                     {
                         _id: courseId,
                         title: 'course',
-                        teachers: ['teacher']
+                        teachers: ['Teacher1']
                     }, function() {
                         setTimeout(function() { done(); }, 500);
                     }));

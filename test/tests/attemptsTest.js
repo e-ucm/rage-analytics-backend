@@ -107,7 +107,7 @@ module.exports = function (request, db) {
                     should.exist(res.body.playerId);
                     should.exist(res.body.objectId);
                     should.equal(res.body.session, 1);
-                    // S should.equal(res.body.firstSessionStarted, res.body.currentSessionStarted);
+                    should.equal(res.body.firstSessionStarted, res.body.currentSessionStarted);
 
                     request.get('/api/activities/' + idActivity + '/attempts')
                         .set('X-Gleaner-User', 'Teacher1')
@@ -142,7 +142,7 @@ module.exports = function (request, db) {
                     should.exist(res.body.playerId);
                     should.exist(res.body.objectId);
                     should.equal(res.body.session, 1);
-                    // S should.equal(res.body.firstSessionStarted, res.body.currentSessionStarted);
+                    should.equal(res.body.firstSessionStarted, res.body.currentSessionStarted);
 
                     request.get('/api/activities/' + idActivity + '/attempts')
                         .set('X-Gleaner-User', 'Teacher1')
@@ -176,7 +176,7 @@ module.exports = function (request, db) {
                     should.exist(res.body.playerId);
                     should.exist(res.body.objectId);
                     should.equal(res.body.session, 1);
-                    // S should.equal(res.body.firstSessionStarted, res.body.currentSessionStarted);
+                    should.equal(res.body.firstSessionStarted, res.body.currentSessionStarted);
 
                     request.post('/api/collector/end')
                         .expect(200)
@@ -231,13 +231,13 @@ module.exports = function (request, db) {
             request.post('/api/collector/start/' + activityTrackingCode)
                 .expect(200)
                 .set('Accept', 'application/json')
-                .set('X-Gleaner-User', 'username')
+                .set('X-Gleaner-User', 'Student1')
                 .expect('Content-Type', /json/)
                 .end(function (err, res) {
                     request.get('/api/activities/' + idActivity + '/attempts/my')
                         .expect(200)
                         .set('Accept', 'application/json')
-                        .set('X-Gleaner-User', 'username')
+                        .set('X-Gleaner-User', 'Student1')
                         .expect('Content-Type', /json/)
                         .end(function (err, res) {
                             should.not.exist(err);
