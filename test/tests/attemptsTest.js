@@ -241,9 +241,8 @@ module.exports = function (request, db) {
                         .expect('Content-Type', /json/)
                         .end(function (err, res) {
                             should.not.exist(err);
-                            should(res.body).be.Array();
-                            should(res.body.length).be.greaterThanOrEqual(1);
-                            should(res.body[0].attempts.length).be.greaterThanOrEqual(1);
+                            should(res.body).be.Object();
+                            should(res.body.attempts.length).be.greaterThanOrEqual(1);
                             done();
                         });
                 });
@@ -263,9 +262,8 @@ module.exports = function (request, db) {
                         .expect('Content-Type', /json/)
                         .end(function (err, res) {
                             should.not.exist(err);
-                            should(res.body).be.Array();
-                            should(res.body.length).be.greaterThanOrEqual(1);
-                            should(res.body[0].attempts.length).be.greaterThanOrEqual(1);
+                            should(res.body).be.Object();
+                            should(res.body.attempts.length).be.greaterThanOrEqual(1);
                             done();
                         });
                 });
