@@ -341,12 +341,12 @@ router.get('/templates/fields/:id', function (req, res) {
         if (!error) {
             var result = [];
             if (response.hits.hits[0]) {
-                var re = /"field":"(\w+.?\w+)"/g;
+                var re = /"field":"([\w+.?]+)"/g;
 
                 var sourceField = 'visState';
                 if (response.hits.hits[0]._type === 'index') {
                     sourceField = 'fields';
-                    re = /"name":"([^_]\w+.?\w+)"/g;
+                    re = /"name":"([^_](\w+.?)+)"/g;
                 }
 
                 var pos = 0;
@@ -406,36 +406,43 @@ function exist(result, element) {
  *      }
  */
 router.post('/visualization/game/:gameId/:id', function (req, res) {
-    if (req.body.visualizationTemplate) {
-        Object.keys(req.body).forEach(function (key) {
-            req.body.visualizationTemplate.visState = req.body.visualizationTemplate.visState.replace(new RegExp(key, 'g'), req.body[key]);
-        });
-        setGameVisualizationByTemplate(req, res, req.body.visualizationTemplate);
-    } else {
-        req.app.esClient.search({
-            index: '.template',
-            q: '_id:' + req.params.id
-        }, function (error, response) {
-            if (!error) {
-                // Replace template and save it
-                if (response.hits.hits[0]) {
-                    var obj = response.hits.hits[0]._source;
-                    Object.keys(req.body).forEach(function (key) {
-                        obj.visState = obj.visState.replace(new RegExp(key, 'g'), req.body[key]);
-                    });
-                    setGameVisualizationByTemplate(req, res, obj);
+    req.app.esClient.search({
+        index: '.games' + req.params.gameId,
+        type: 'fields',
+        q: '_id:fields' + req.params.gameId
+    }, function (error, response) {
+        var fieldsObj = {};
+        if (!error && response.hits.hits[0]) {
+            fieldsObj = response.hits.hits[0]._source;
+        }
+        if (req.body.visualizationTemplate) {
+            setGameVisualizationByTemplate(req, res, req.body.visualizationTemplate, fieldsObj);
+        } else {
+            req.app.esClient.search({
+                index: '.template',
+                q: '_id:' + req.params.id
+            }, function (error, response) {
+                if (!error) {
+                    // Replace template and save it
+                    if (response.hits.hits[0]) {
+                        var obj = response.hits.hits[0]._source;
+                        setGameVisualizationByTemplate(req, res, obj, fieldsObj);
+                    } else {
+                        res.json(new Error('Template not found', 404));
+                    }
                 } else {
-                    res.json(new Error('Template not found', 404));
+                    res.status(error.status);
+                    res.json(error);
                 }
-            } else {
-                res.status(error.status);
-                res.json(error);
-            }
-        });
-    }
+            });
+        }
+    });
 });
 
-var setGameVisualizationByTemplate = function (req, res, obj) {
+var setGameVisualizationByTemplate = function (req, res, obj, fields) {
+    Object.keys(fields).forEach(function (key) {
+        obj.visState = obj.visState.replace(new RegExp(key, 'g'), fields[key]);
+    });
     req.app.esClient.index({
         index: '.games' + req.params.gameId,
         type: 'visualization',
@@ -971,13 +978,11 @@ router.post('/visualization/activity/:gameId/:visualizationId/:activityId', func
                 var obj = response.hits.hits[0]._source;
                 // Replace template and save it
                 var m = re.exec(obj.kibanaSavedObjectMeta.searchSourceJSON);
-
                 if (m && m.length > 1) {
                     obj.kibanaSavedObjectMeta.searchSourceJSON = obj.kibanaSavedObjectMeta.searchSourceJSON.replace(m[2], req.params.activityId);
                 }
                 // Replace template and save it
                 obj.title = response.hits.hits[0]._id + '_' + req.params.activityId;
-
                 req.app.esClient.index({
                     index: '.kibana',
                     type: 'visualization',
