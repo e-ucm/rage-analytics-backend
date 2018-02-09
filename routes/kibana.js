@@ -987,32 +987,41 @@ router.post('/index/:indexTemplate/:indexName', function (req, res) {
         });
     };
 
+    var presetupIndex = function(versionId){
+        var object_fields = defaulObject;
+        req.app.esClient.search({
+            index: '.objectfields',
+            type: 'object_fields',
+            q: '_id:' + 'object_fields' + versionId,
+        }, function (error, response) {
+            if (!error) {
+                if (response.hits.hits) {
+                    object_fields = response.hits.hits[0]._source;
+                }
+                console.log("Object is: " + JSON.stringify(object_fields));
+
+                req.app.esClient.index({
+                    index: req.params.indexName,
+                    type: 'traces',
+                    body: object_fields
+                }, function (creationError, created) {
+                    setTimeout(setupIndex, 100);
+                });
+            } else {
+                res.status(error.status);
+                res.json(error);
+            }
+        });
+    };
+
     // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
     req.app.esClient.indices.exists({index: req.params.indexName}, function (err, exists) {
         if (err || !exists) {
-            var object_fields = defaulObject;
-
-            req.app.esClient.search({
-                index: '.objectfields',
-                type: 'object_fields',
-                q: '_id:' + 'object_fields' + req.params.indexName,
-            }, function (error, response) {
-                if (!error) {
-                    if (response.hits.hits) {
-                        object_fields = response.hits.hits[0]._source;
-                    }
-                    console.log("Object is: " + JSON.stringify(object_fields));
-
-                    req.app.esClient.index({
-                        index: req.params.indexName,
-                        type: 'traces',
-                        body: object_fields
-                    }, function (creationError, created) {
-                        setTimeout(setupIndex, 100);
-                    });
+            activities.findById(req.params.activityId).then(function (activityObj) {
+                if (activityObj) {
+                    presetupIndex(activityObj.versionId);
                 } else {
-                    res.status(error.status);
-                    res.json(error);
+                    presetupIndex(req.params.indexName);
                 }
             });
         } else {
