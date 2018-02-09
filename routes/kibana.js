@@ -382,6 +382,59 @@ function exist(result, element) {
 }
 
 /**
+ * @api {get} /api/kibana/object/:gameId Return the index with the id.
+ * @apiName GetIndexObject
+ * @apiGroup Object
+ *
+ * @apiParam {String} gameId The game id
+ *
+ * @apiSuccess(200) Success.
+ */
+router.get('/object/:gameId', function (req, res) {
+    req.app.esClient.search({
+        index: '.games' + req.params.gameId,
+        type: 'object_fields'
+    }, function (error, response) {
+        if (!error) {
+            if (response.hits.hits[0]) {
+                res.json(response.hits.hits[0]._source);
+            } else {
+                res.json(new Error('Index object not found in game with id: ' + req.params.gameId, 404));
+            }
+        } else {
+            res.status(error.status);
+            res.json(error);
+        }
+    });
+});
+
+/**
+ * @api {post} /api/kibana/object/:gameId saves the given index object
+ * @apiName PostIndexObject
+ * @apiGroup Object
+ *
+ * @apiParam {String} id The visualization id
+ *
+ * @apiSuccess(200) Success.
+ */
+
+router.post('/object/:gameId', function (req, res) {
+    req.app.esClient.index({
+        index: '.game-s' + req.params.gameId,
+        type: 'object_fields',
+        body: req.body
+    }, function (error, response) {
+        if (!error) {
+            res.json(response);
+        } else {
+            res.status(error.status);
+            res.json(error);
+        }
+    });
+});
+
+
+/**
  * @api {post} /api/kibana/visualization/game/:gameId/:id Adds a new visualization with the index fields of game gameId.
  * @apiName PostVisualization
  * @apiGroup GameVisualization
