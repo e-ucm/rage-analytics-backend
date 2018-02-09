@@ -1021,7 +1021,7 @@ router.post('/index/:indexTemplate/:indexName', function (req, res) {
     // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
     req.app.esClient.indices.exists({index: req.params.indexName}, function (err, exists) {
         if (err || !exists) {
-            activities.findById(req.params.activityId).then(function (activityObj) {
+            activities.findById(req.params.indexName).then(function (activityObj) {
                 if (activityObj) {
                     presetupIndex(activityObj.versionId);
                 } else {
