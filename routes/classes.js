@@ -105,7 +105,19 @@ router.get('/my', function (req, res) {
  *      }
  *
  */
-router.get('/:id', restUtils.findById(classes));
+router.get('/:id', function (req, res) {
+    var username = req.headers['x-gleaner-user'];
+    restUtils.processResponse(classes.isAuthorizedFor(req.params.id, username, 'get', '/:id')
+        .then(function (classReq, isAuthorized) {
+            if (!classReq || !isAuthorized) {
+                throw {
+                    status: 401,
+                    message: 'Not authorized to get this class'
+                };
+            }
+            return classReq;
+        }), res);
+});
 
 /**
  * @api {post} /classes Creates new Class.
@@ -186,7 +198,16 @@ router.post('/', function (req, res) {
  */
 router.put('/:classId', function (req, res) {
     var username = req.headers['x-gleaner-user'];
-    restUtils.processResponse(classes.modifyClass(req.params.classId, username, req.body, true), res);
+    restUtils.processResponse(classes.isAuthorizedFor(req.params.classId, username, 'put', '/:classId')
+        .then(function (classReq, isAuthorized) {
+            if (!classReq || !isAuthorized) {
+                throw {
+                    status: 401,
+                    message: 'Not authorized to modify this class'
+                };
+            }
+            return classes.modifyClass(req.params.classId, username, req.body, true);
+        }), res);
 });
 
 /**
@@ -217,7 +238,16 @@ router.put('/:classId', function (req, res) {
  */
 router.put('/:classId/remove', function (req, res) {
     var username = req.headers['x-gleaner-user'];
-    restUtils.processResponse(classes.modifyClass(req.params.classId, username, req.body, false), res);
+    restUtils.processResponse(classes.isAuthorizedFor(req.params.classId, username, 'put', '/:classId/remove')
+        .then(function (classReq, isAuthorized) {
+            if (!classReq || !isAuthorized) {
+                throw {
+                    status: 401,
+                    message: 'Not authorized to modify this class'
+                };
+            }
+            return classes.modifyClass(req.params.classId, username, req.body, false);
+        }), res);
 });
 
 
@@ -238,7 +268,16 @@ router.put('/:classId/remove', function (req, res) {
  */
 router.delete('/:classId', function (req, res) {
     var username = req.headers['x-gleaner-user'];
-    restUtils.processResponse(classes.removeClass(req.params.classId, username), res);
+    restUtils.processResponse(classes.isAuthorizedFor(req.params.classId, username, 'delete', '/:classId')
+        .then(function (classReq, isAuthorized) {
+            if (!classReq || !isAuthorized) {
+                throw {
+                    status: 401,
+                    message: 'Not authorized to delete this class'
+                };
+            }
+            return classes.removeClass(req.params.classId, username);
+        }), res);
 });
 
 
@@ -281,7 +320,17 @@ router.delete('/:classId', function (req, res) {
  *
  */
 router.get('/:classId/activities', function (req, res) {
-    restUtils.processResponse(activities.getClassActivities(req.params.classId), res);
+    var username = req.headers['x-gleaner-user'];
+    restUtils.processResponse(classes.isAuthorizedFor(req.params.classId, username, 'get', '/:classId/activities')
+        .then(function (classReq, isAuthorized) {
+            if (!classReq || !isAuthorized) {
+                throw {
+                    status: 401,
+                    message: 'Not authorized to delete this class'
+                };
+            }
+            return activities.getClassActivities(req.params.classId);
+        }), res);
 });
 
 /**
@@ -318,8 +367,17 @@ router.get('/:classId/activities', function (req, res) {
  *
  */
 router.get('/:classId/activities/my', function (req, res) {
-    restUtils.processResponse(activities.getUserActivitiesByClass(req.params.classId,
-        req.headers['x-gleaner-user']), res);
+    var username = req.headers['x-gleaner-user'];
+    restUtils.processResponse(classes.isAuthorizedFor(req.params.classId, username, 'get', '/:classId/activities/my')
+        .then(function (classReq, isAuthorized) {
+            if (!classReq || !isAuthorized) {
+                throw {
+                    status: 401,
+                    message: 'Not authorized to delete this class'
+                };
+            }
+            return activities.getUserActivitiesByClass(req.params.classId, username);
+        }), res);
 });
 
 module.exports = router;
