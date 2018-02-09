@@ -422,7 +422,7 @@ var defaulObject = {
  */
 router.get('/object/:versionId', function (req, res) {
     req.app.esClient.search({
-        index: '.games' + req.params.versionId,
+        index: '.objectfields',
         type: 'object_fields',
         q: '_id:' + 'object_fields' + req.params.versionId,
     }, function (error, response) {
@@ -434,8 +434,12 @@ router.get('/object/:versionId', function (req, res) {
                 res.json(defaulObject);
             }
         } else {
-            res.status(error.status);
-            res.json(error);
+            if(error.status === 404){
+                res.json(defaulObject);
+            }else{
+                res.status(error.status);
+                res.json(error);
+            }
         }
     });
 });
@@ -452,7 +456,7 @@ router.get('/object/:versionId', function (req, res) {
 
 router.post('/object/:versionId', function (req, res) {
     req.app.esClient.index({
-        index: '.games' + req.params.versionId,
+        index: '.objectfields',
         type: 'object_fields',
         id: 'object_fields' + req.params.versionId,
         body: req.body
@@ -989,7 +993,7 @@ router.post('/index/:indexTemplate/:indexName', function (req, res) {
             var object_fields = defaulObject;
 
             req.app.esClient.search({
-                index: '.games' + req.params.indexName,
+                index: '.objectfields',
                 type: 'object_fields',
                 q: '_id:' + 'object_fields' + req.params.indexName,
             }, function (error, response) {
@@ -1173,7 +1177,7 @@ router.post('/dashboard/activity/:activityId', function (req, res) {
             activities.findById(req.params.activityId).then(function (activityObj) {
                 if (activityObj) {
                     req.app.esClient.search({
-                        index: '.games' + activityObj.versionId,
+                        index: '.objectfields',
                         type: 'object_fields',
                         q: '_id:' + 'object_fields' + activityObj.versionId,
                     }, function (error, response) {
