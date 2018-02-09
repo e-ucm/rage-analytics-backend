@@ -988,6 +988,8 @@ router.post('/index/:indexTemplate/:indexName', function (req, res) {
     };
 
     var presetupIndex = function(versionId){
+        console.log("Using versionId: " + versionId + " (" + req.params.indexTemplate + "," + req.params.indexName + ")");
+
         var object_fields = defaulObject;
         req.app.esClient.search({
             index: '.objectfields',
@@ -995,6 +997,8 @@ router.post('/index/:indexTemplate/:indexName', function (req, res) {
             q: '_id:' + 'object_fields' + versionId,
         }, function (error, response) {
             if (!error) {
+                console.log(JSON.stringify(response, null, 2));
+                
                 if (response.hits.hits) {
                     object_fields = response.hits.hits[0]._source;
                 }
