@@ -381,7 +381,7 @@ function exist(result, element) {
     return exist;
 }
 
-var defaulObject = {
+var defaultObject = {
     out: {
         name: '',
         gameplayId: '',
@@ -427,15 +427,15 @@ router.get('/object/:versionId', function (req, res) {
         q: '_id:' + 'object_fields' + req.params.versionId,
     }, function (error, response) {
         if (!error) {
-            if (response.hits.hits) {
+            if (response.hits.hits && response.hits.hits.length > 0) {
                 res.json(response.hits.hits[0]._source);
             } else {
                 //res.json(new Error('Index object not found in game with id: ' + req.params.gameId, 404));
-                res.json(defaulObject);
+                res.json(defaultObject);
             }
         } else {
             if(error.status === 404){
-                res.json(defaulObject);
+                res.json(defaultObject);
             }else{
                 res.status(error.status);
                 res.json(error);
@@ -990,7 +990,7 @@ router.post('/index/:indexTemplate/:indexName', function (req, res) {
     var presetupIndex = function(versionId){
         console.log("Using versionId: " + versionId + " (" + req.params.indexTemplate + "," + req.params.indexName + ")");
 
-        var object_fields = defaulObject;
+        var object_fields = defaultObject;
         req.app.esClient.search({
             index: '.objectfields',
             type: 'object_fields',
@@ -998,8 +998,8 @@ router.post('/index/:indexTemplate/:indexName', function (req, res) {
         }, function (error, response) {
             if (!error) {
                 console.log(JSON.stringify(response, null, 2));
-                
-                if (response.hits.hits) {
+
+                if (response.hits.hits && response.hits.hits.length > 0) {
                     object_fields = response.hits.hits[0]._source;
                 }
                 console.log("Object is: " + JSON.stringify(object_fields));
@@ -1183,7 +1183,7 @@ router.post('/dashboard/activity/:activityId', function (req, res) {
         });
     };
     req.app.esClient.indices.exists({index: req.params.activityId}, function (err, exists) {
-        var object_fields = defaulObject;
+        var object_fields = defaultObject;
 
         console.log("Including object in new activity");
         if (err || !exists) {
