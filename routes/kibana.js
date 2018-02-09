@@ -381,8 +381,38 @@ function exist(result, element) {
     return exist;
 }
 
+var defaulObject = {
+    out: {
+        name: '',
+        gameplayId: '',
+        type_hashCode: 0,
+        score: 0,
+        response: '',
+        type: '',
+        event_hashcode: 0,
+        target: '',
+        versionId: '',
+        success: false,
+        gameplayId_hashCode: 0,
+        event: '',
+        timestamp: '2000-01-19T11:05:27.772Z',
+        target_hashCode: 0,
+        stored: '2000-01-19T11:05:27.772Z',
+        progress: 0,
+        time: 0,
+        ext: {
+            progress: 0,
+            time: 0,
+            location: {
+                lat: 0,
+                lon: 0
+            }
+        }
+    }
+}
+
 /**
- * @api {get} /api/kibana/object/:gameId Return the index with the id.
+ * @api {get} /api/kibana/object/:versionId Return the index with the id.
  * @apiName GetIndexObject
  * @apiGroup Object
  *
@@ -390,16 +420,18 @@ function exist(result, element) {
  *
  * @apiSuccess(200) Success.
  */
-router.get('/object/:gameId', function (req, res) {
+router.get('/object/:versionId', function (req, res) {
     req.app.esClient.search({
-        index: '.games' + req.params.gameId,
-        type: 'object_fields'
+        index: '.games' + req.params.versionId,
+        type: 'object_fields',
+        q: '_id:' + 'object_fields' + req.params.versionId,
     }, function (error, response) {
         if (!error) {
-            if (response.hits.hits[0]) {
+            if (response.hits.hits) {
                 res.json(response.hits.hits[0]._source);
             } else {
-                res.json(new Error('Index object not found in game with id: ' + req.params.gameId, 404));
+                //res.json(new Error('Index object not found in game with id: ' + req.params.gameId, 404));
+                res.json(defaulObject);
             }
         } else {
             res.status(error.status);
@@ -409,7 +441,7 @@ router.get('/object/:gameId', function (req, res) {
 });
 
 /**
- * @api {post} /api/kibana/object/:gameId saves the given index object
+ * @api {post} /api/kibana/object/:versionId saves the given index object
  * @apiName PostIndexObject
  * @apiGroup Object
  *
@@ -418,10 +450,11 @@ router.get('/object/:gameId', function (req, res) {
  * @apiSuccess(200) Success.
  */
 
-router.post('/object/:gameId', function (req, res) {
+router.post('/object/:versionId', function (req, res) {
     req.app.esClient.index({
-        index: '.game-s' + req.params.gameId,
+        index: '.games' + req.params.versionId,
         type: 'object_fields',
+        id: 'object_fields' + req.params.versionId,
         body: req.body
     }, function (error, response) {
         if (!error) {
@@ -953,40 +986,30 @@ router.post('/index/:indexTemplate/:indexName', function (req, res) {
     // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
     req.app.esClient.indices.exists({index: req.params.indexName}, function (err, exists) {
         if (err || !exists) {
-            req.app.esClient.index({
-                index: req.params.indexName,
-                type: 'traces',
-                body: {
-                    out: {
-                        name: '',
-                        gameplayId: '',
-                        type_hashCode: 0,
-                        score: 0,
-                        response: '',
-                        type: '',
-                        event_hashcode: 0,
-                        target: '',
-                        versionId: '',
-                        success: false,
-                        gameplayId_hashCode: 0,
-                        event: '',
-                        timestamp: '2000-01-19T11:05:27.772Z',
-                        target_hashCode: 0,
-                        stored: '2000-01-19T11:05:27.772Z',
-                        progress: 0,
-                        time: 0,
-                        ext: {
-                            progress: 0,
-                            time: 0,
-                            location: {
-                                lat: 0,
-                                lon: 0
-                            }
-                        }
+            var object_fields = defaulObject;
+
+            req.app.esClient.search({
+                index: '.games' + req.params.indexName,
+                type: 'object_fields',
+                q: '_id:' + 'object_fields' + req.params.indexName,
+            }, function (error, response) {
+                if (!error) {
+                    if (response.hits.hits) {
+                        object_fields = response.hits.hits[0]._source;
                     }
+                    console.log("Object is: " + JSON.stringify(object_fields));
+
+                    req.app.esClient.index({
+                        index: req.params.indexName,
+                        type: 'traces',
+                        body: object_fields
+                    }, function (creationError, created) {
+                        setTimeout(setupIndex, 100);
+                    });
+                } else {
+                    res.status(error.status);
+                    res.json(error);
                 }
-            }, function (creationError, created) {
-                setTimeout(setupIndex, 100);
             });
         } else {
             setupIndex();
@@ -1132,6 +1155,7 @@ router.post('/dashboard/activity/:activityId', function (req, res) {
                             if (err) {
                                 return res.json(err);
                             }
+
                             res.json(response);
                         });
                 });
@@ -1142,41 +1166,36 @@ router.post('/dashboard/activity/:activityId', function (req, res) {
         });
     };
     req.app.esClient.indices.exists({index: req.params.activityId}, function (err, exists) {
+        var object_fields = defaulObject;
+
+        console.log("Including object in new activity");
         if (err || !exists) {
-            req.app.esClient.index({
-                index: req.params.activityId,
-                type: 'traces',
-                body: {
-                    out: {
-                        name: '',
-                        gameplayId: '',
-                        type_hashCode: 0,
-                        score: 0,
-                        response: '',
-                        type: '',
-                        event_hashcode: 0,
-                        target: '',
-                        versionId: '',
-                        success: false,
-                        gameplayId_hashCode: 0,
-                        event: '',
-                        timestamp: '2000-01-19T11:05:27.772Z',
-                        target_hashCode: 0,
-                        stored: '2000-01-19T11:05:27.772Z',
-                        progress: 0,
-                        time: 0,
-                        ext: {
-                            progress: 0,
-                            time: 0,
-                            location: {
-                                lat: 0,
-                                lon: 0
+            activities.findById(req.params.activityId).then(function (activityObj) {
+                if (activityObj) {
+                    req.app.esClient.search({
+                        index: '.games' + activityObj.versionId,
+                        type: 'object_fields',
+                        q: '_id:' + 'object_fields' + activityObj.versionId,
+                    }, function (error, response) {
+                        if (!error) {
+                            if (response.hits.hits) {
+                                object_fields = response.hits.hits[0]._source;
                             }
+                            console.log("Object is: " + JSON.stringify(object_fields));
+
+                            req.app.esClient.index({
+                                index: req.params.indexName,
+                                type: 'traces',
+                                body: object_fields
+                            }, function (creationError, created) {
+                                updateIndex();
+                            });
+                        } else {
+                            res.status(error.status);
+                            res.json(error);
                         }
-                    }
+                    });
                 }
-            }, function (creationError, created) {
-                updateIndex();
             });
         } else {
             updateIndex();
