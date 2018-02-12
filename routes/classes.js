@@ -81,7 +81,7 @@ router.get('/my', function (req, res) {
 });
 
 /**
- * @api {get} /classes/:id Returns a given class.
+ * @api {get} /classes/:classId Returns a given class.
  * @apiName GetClasses
  * @apiGroup Classes
  *
@@ -105,16 +105,10 @@ router.get('/my', function (req, res) {
  *      }
  *
  */
-router.get('/:id', function (req, res) {
+router.get('/:classId', function (req, res) {
     var username = req.headers['x-gleaner-user'];
-    restUtils.processResponse(classes.isAuthorizedFor(req.params.id, username, 'get', '/:id')
-        .then(function (classReq, isAuthorized) {
-            if (!classReq || !isAuthorized) {
-                throw {
-                    status: 401,
-                    message: 'Not authorized to get this class'
-                };
-            }
+    restUtils.processResponse(classes.isAuthorizedFor(req.params.classId, username, 'get', '/classes/:classId')
+        .then(function (classReq) {
             return classReq;
         }), res);
 });
@@ -198,14 +192,8 @@ router.post('/', function (req, res) {
  */
 router.put('/:classId', function (req, res) {
     var username = req.headers['x-gleaner-user'];
-    restUtils.processResponse(classes.isAuthorizedFor(req.params.classId, username, 'put', '/:classId')
-        .then(function (classReq, isAuthorized) {
-            if (!classReq || !isAuthorized) {
-                throw {
-                    status: 401,
-                    message: 'Not authorized to modify this class'
-                };
-            }
+    restUtils.processResponse(classes.isAuthorizedFor(req.params.classId, username, 'put', '/classes/:classId')
+        .then(function (classReq) {
             return classes.modifyClass(req.params.classId, username, req.body, true);
         }), res);
 });
@@ -238,14 +226,8 @@ router.put('/:classId', function (req, res) {
  */
 router.put('/:classId/remove', function (req, res) {
     var username = req.headers['x-gleaner-user'];
-    restUtils.processResponse(classes.isAuthorizedFor(req.params.classId, username, 'put', '/:classId/remove')
-        .then(function (classReq, isAuthorized) {
-            if (!classReq || !isAuthorized) {
-                throw {
-                    status: 401,
-                    message: 'Not authorized to modify this class'
-                };
-            }
+    restUtils.processResponse(classes.isAuthorizedFor(req.params.classId, username, 'put', '/classes/:classId/remove')
+        .then(function (classReq) {
             return classes.modifyClass(req.params.classId, username, req.body, false);
         }), res);
 });
@@ -268,14 +250,8 @@ router.put('/:classId/remove', function (req, res) {
  */
 router.delete('/:classId', function (req, res) {
     var username = req.headers['x-gleaner-user'];
-    restUtils.processResponse(classes.isAuthorizedFor(req.params.classId, username, 'delete', '/:classId')
-        .then(function (classReq, isAuthorized) {
-            if (!classReq || !isAuthorized) {
-                throw {
-                    status: 401,
-                    message: 'Not authorized to delete this class'
-                };
-            }
+    restUtils.processResponse(classes.isAuthorizedFor(req.params.classId, username, 'delete', '/classes/:classId')
+        .then(function (classReq) {
             return classes.removeClass(req.params.classId, username);
         }), res);
 });
@@ -321,14 +297,8 @@ router.delete('/:classId', function (req, res) {
  */
 router.get('/:classId/activities', function (req, res) {
     var username = req.headers['x-gleaner-user'];
-    restUtils.processResponse(classes.isAuthorizedFor(req.params.classId, username, 'get', '/:classId/activities')
-        .then(function (classReq, isAuthorized) {
-            if (!classReq || !isAuthorized) {
-                throw {
-                    status: 401,
-                    message: 'Not authorized to delete this class'
-                };
-            }
+    restUtils.processResponse(classes.isAuthorizedFor(req.params.classId, username, 'get', '/classes/:classId/activities')
+        .then(function (classReq) {
             return activities.getClassActivities(req.params.classId);
         }), res);
 });
@@ -368,14 +338,8 @@ router.get('/:classId/activities', function (req, res) {
  */
 router.get('/:classId/activities/my', function (req, res) {
     var username = req.headers['x-gleaner-user'];
-    restUtils.processResponse(classes.isAuthorizedFor(req.params.classId, username, 'get', '/:classId/activities/my')
-        .then(function (classReq, isAuthorized) {
-            if (!classReq || !isAuthorized) {
-                throw {
-                    status: 401,
-                    message: 'Not authorized to delete this class'
-                };
-            }
+    restUtils.processResponse(classes.isAuthorizedFor(req.params.classId, username, 'get', '/classes/:classId/activities/my')
+        .then(function (classReq) {
             return activities.getUserActivitiesByClass(req.params.classId, username);
         }), res);
 });
