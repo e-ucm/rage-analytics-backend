@@ -25,6 +25,7 @@ var should = require('should'),
 
 var idGame = new ObjectID('dummyGameId0'),
     idVersion = new ObjectID('dummyVersId0'),
+    idClass = new ObjectID('dummyClasId0'),
     idActivity = new ObjectID('dummyActsId0'),
     trackingCode = '123';
 
@@ -43,25 +44,34 @@ module.exports = function (request, db, config) {
                     _id: idGame,
                     title: 'Dummy',
                     public: true
-                }, function () {
-                    db.collection('versions').insert(
+                }, db.collection('versions').insert(
+                    {
+                        _id: idVersion,
+                        gameId: idGame
+                    }, db.collection('classes').insert(
                         {
-                            _id: idVersion,
-                            gameId: idGame
-                        }, function () {
-                            db.collection('activities').insert(
-                                {
-                                    _id: idActivity,
-                                    trackingCode: trackingCode,
-                                    gameId: idGame,
-                                    versionId: idVersion,
-                                    name: 'name',
-                                    allowAnonymous: true,
-                                    teachers: ['Teacher1'],
-                                    students: ['Student1']
-                                }, done);
-                        });
-                });
+                            _id: idClass,
+                            name: 'Class',
+                            groups: [],
+                            groupings: [],
+                            participants: {
+                                teachers: ['Teacher1'],
+                                assistants: [],
+                                students: []
+                            }
+                        }, db.collection('activities').insert(
+                            {
+                                _id: idActivity,
+                                trackingCode: trackingCode,
+                                classId: idClass,
+                                gameId: idGame,
+                                versionId: idVersion,
+                                name: 'name',
+                                allowAnonymous: true
+                            }, done)
+                    )
+                )
+            );
         });
 
         after(function (done) {

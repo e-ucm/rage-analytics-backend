@@ -65,6 +65,8 @@ module.exports = function (request, db) {
                                             db.collection('classes').insert(
                                                 {
                                                     _id: idClass,
+                                                    groups: [],
+                                                    groupings: [],
                                                     participants: {
                                                         teachers: ['Teacher1'],
                                                         assistants: ['Assistant1'],
@@ -78,9 +80,9 @@ module.exports = function (request, db) {
                                                             versionId: idVersion,
                                                             classId: idClass,
                                                             name: 'name',
-                                                            allowAnonymous: true,
-                                                            teachers: ['Teacher1'],
-                                                            students: ['Student1']
+                                                            groups: [],
+                                                            groupings: [],
+                                                            allowAnonymous: true
                                                         }, {
                                                             gameId: idGame,
                                                             versionId: idVersion,
@@ -105,8 +107,7 @@ module.exports = function (request, db) {
 
         it('should POST a new activity', function (done) {
             request.post('/api/activities')
-                .expect(200)
-                .set('X-Gleaner-User', 'username')
+                .expect(401)
                 .send({
                     gameId: idGame,
                     versionId: idVersion,
@@ -117,14 +118,28 @@ module.exports = function (request, db) {
                 .end(function (err, res) {
                     should.not.exist(err);
                     should(res.body).be.Object();
-                    should.equal(res.body.allowAnonymous, false);
-                    should.equal(res.body.gameId, idGame);
-                    should.equal(res.body.versionId, idVersion);
-                    should.equal(res.body.classId, idClass);
-                    should(res.body.created).be.String();
-                    should.not.exist(res.body.start);
-                    should.not.exist(res.body.end);
-                    done();
+                    request.post('/api/activities')
+                        .expect(200)
+                        .set('X-Gleaner-User', 'Teacher1')
+                        .send({
+                            gameId: idGame,
+                            versionId: idVersion,
+                            classId: idClass
+                        })
+                        .set('Accept', 'application/json')
+                        .expect('Content-Type', /json/)
+                        .end(function (err, res) {
+                            should.not.exist(err);
+                            should(res.body).be.Object();
+                            should.equal(res.body.allowAnonymous, false);
+                            should.equal(res.body.gameId, idGame);
+                            should.equal(res.body.versionId, idVersion);
+                            should.equal(res.body.classId, idClass);
+                            should(res.body.created).be.String();
+                            should.not.exist(res.body.start);
+                            should.not.exist(res.body.end);
+                            done();
+                        });
                 });
         });
 
@@ -141,12 +156,19 @@ module.exports = function (request, db) {
 
         it('should GET class activities', function (done) {
             request.get('/api/classes/' + idClass + '/activities')
-                .expect(200)
+                .expect(401)
                 .end(function (err, res) {
                     should.not.exist(err);
                     should(res).be.Object();
-                    should.equal(res.body.length, 2);
-                    done();
+                    request.get('/api/classes/' + idClass + '/activities')
+                        .expect(200)
+                        .set('X-Gleaner-User', 'Teacher1')
+                        .end(function (err, res) {
+                            should.not.exist(err);
+                            should(res).be.Object();
+                            should.equal(res.body.length, 2);
+                            done();
+                        });
                 });
         });
 
@@ -202,12 +224,19 @@ module.exports = function (request, db) {
 
         it('should GET an activity', function (done) {
             request.get('/api/activities/' + idActivity)
-                .expect(200)
+                .expect(401)
                 .end(function (err, res) {
                     should.not.exist(err);
                     should(res).be.Object();
-                    should.equal(res.body._id, idActivity);
-                    done();
+                    request.get('/api/activities/' + idActivity)
+                        .expect(200)
+                        .set('X-Gleaner-User', 'Teacher1')
+                        .end(function (err, res) {
+                            should.not.exist(err);
+                            should(res).be.Object();
+                            should.equal(res.body._id, idActivity);
+                            done();
+                        });
                 });
         });
 
