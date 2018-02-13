@@ -247,8 +247,8 @@ exports.app = {
     anonymous: [
         '/games/:id/xapi/:versionId',
         '/collector/start/:trackingCode',
-        '/collector/stop/:trackingCode',
         '/collector/track',
+        '/collector/end',
         '/lti/key/:id',
         '/env'
     ],

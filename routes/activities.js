@@ -294,7 +294,7 @@ module.exports = function (kafkaService, stormService) {
      */
     router.get('/:activityId/results', function (req, res) {
         var username = req.headers['x-gleaner-user'];
-        restUtils.processResponse(activities.isAuthorizedFor(req.params.activityId, username, 'put', '/activities/:activityId/results')
+        restUtils.processResponse(activities.isAuthorizedFor(req.params.activityId, username, 'get', '/activities/:activityId/results')
             .then(function (activity) {
                 return activities.results(req.params.activityId, username, req.app.esClient);
             }), res);
