@@ -68,7 +68,8 @@ module.exports = function (request, db) {
                                             name: 'name',
                                             allowAnonymous: true,
                                             groups: [],
-                                            groupings: []
+                                            groupings: [],
+                                            open: true
                                         }, {
                                             gameId: idGame,
                                             versionId: idVersion,

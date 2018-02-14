@@ -67,7 +67,8 @@ module.exports = function (request, db, config) {
                                 gameId: idGame,
                                 versionId: idVersion,
                                 name: 'name',
-                                allowAnonymous: true
+                                allowAnonymous: true,
+                                open: true
                             }, done)
                     )
                 )
