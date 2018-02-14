@@ -241,12 +241,14 @@ router.delete('/:id', function (req, res) {
  *      ]
  *
  */
-router.get('/:gameId/versions', restUtils.find(versions, function (req, callback) {
-    // Creates a Query for the 'find' operation
-    callback({
+router.get('/:gameId/versions', function(req, res) {
+    var query = {
+        // Creates a Query for the 'find' operation
         gameId: games.toObjectID(req.params.gameId)
-    });
-}));
+    };
+    console.info(query);
+    restUtils.processResponse(versions.find(query), res);
+});
 
 /**
  * @api {get} /games/:id/xapi/:versionId Returns the game with the given id.
@@ -286,10 +288,11 @@ router.get('/:id/xapi/:versionId', restUtils.findById(games));
  *      }
  *
  */
-router.post('/:gameId/versions', restUtils.insert(versions, function (req) {
-    // Saves the 'gameId' inside the generated 'version' document
-    req.body.gameId = games.toObjectID(req.params.gameId);
-}));
+router.post('/:gameId/versions', function(req, res) {
+    restUtils.processResponse(versions.createVersion({
+        gameId: req.params.gameId
+    }), res);
+});
 
 /**
  * @api {get} /games/:gameId/versions/:id Returns a version for a specific game.

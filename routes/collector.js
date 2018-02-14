@@ -84,4 +84,31 @@ router.post('/track', function (req, res) {
     restUtils.processResponse(collector.track(req.headers.authorization, req.body), res);
 });
 
+/**
+ * @api {post} /collector/end Ends the current authorization.
+ * @apiDescription Note that this method expects an 'Authorization' header with the following format
+ *  <Authorization, 'authToken'>.
+ *  The 'authToken' can be obtained by issuing a request to '/api/collector/start/:trackingCode' or by
+ *  re-using a previous active authToken obtained from attempt list.
+ *
+ * @apiName postCollectorTrack
+ * @apiGroup Collector
+ *
+ * @apiHeader {String} Authorization Authorization token obtained on start. Format: "authToken".
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      {
+ *         "message": "Success."
+ *      }
+ *
+ * @apiError BadRequest The statement must be an array. Example: [{trace1},{trace2}].
+ * @apiError NotValidSession No active session can fit this user.
+ */
+router.post('/end', function (req, res) {
+    restUtils.processResponse(collector.end(req.headers.authorization, req.body), res);
+});
+
 module.exports = router;

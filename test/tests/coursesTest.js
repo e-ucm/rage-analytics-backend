@@ -58,10 +58,12 @@ module.exports = function (request, db) {
                             _id: idClass,
                             name: 'name',
                             courseId: idCourse,
+                            groups: [],
+                            groupings: [],
                             participants: {
                                 students: [],
                                 assistants: [],
-                                teachers: []
+                                teachers: ['teacher']
                             }
                         }, done);
                 });
