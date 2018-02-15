@@ -25,8 +25,11 @@ var should = require('should'),
 
 var idGame = new ObjectID('dummyGameId0'),
     idVersion = new ObjectID('dummyVersId0'),
+    idClass = new ObjectID('dummyClasId0'),
     idActivity = new ObjectID('dummyActsId0'),
-    trackingCode = '123';
+    idActivity2 = new ObjectID('dummyActsId2'),
+    trackingCode = '123',
+    trackingCode2 = '456';
 
 module.exports = function (request, db, config) {
 
@@ -43,25 +46,50 @@ module.exports = function (request, db, config) {
                     _id: idGame,
                     title: 'Dummy',
                     public: true
-                }, function () {
-                    db.collection('versions').insert(
+                }, db.collection('versions').insert(
+                    {
+                        _id: idVersion,
+                        gameId: idGame
+                    }, db.collection('classes').insert(
                         {
-                            _id: idVersion,
-                            gameId: idGame,
-                            trackingCode: trackingCode
-                        }, function () {
-                            db.collection('activities').insert(
+                            _id: idClass,
+                            name: 'Class',
+                            groups: [],
+                            groupings: [],
+                            participants: {
+                                teachers: ['Teacher1'],
+                                assistants: [],
+                                students: []
+                            }
+                        }, db.collection('activities').insert(
+                            {
+                                _id: idActivity,
+                                trackingCode: trackingCode,
+                                classId: idClass,
+                                gameId: idGame,
+                                versionId: idVersion,
+                                name: 'name',
+                                allowAnonymous: true,
+                                groups: [],
+                                groupings: [],
+                                open: true
+                            }, db.collection('activities').insert(
                                 {
-                                    _id: idActivity,
+                                    _id: idActivity2,
+                                    trackingCode: trackingCode2,
+                                    classId: idClass,
                                     gameId: idGame,
                                     versionId: idVersion,
                                     name: 'name',
-                                    allowAnonymous: true,
-                                    teachers: ['Teacher1'],
-                                    students: ['Student1']
-                                }, done);
-                        });
-                });
+                                    allowAnonymous: false,
+                                    groups: [],
+                                    groupings: [],
+                                    open: true
+                                }, done)
+                        )
+                    )
+                )
+            );
         });
 
         after(function (done) {
@@ -705,7 +733,7 @@ module.exports = function (request, db, config) {
                 .set('x-gleaner-user', playerIdentifier)
                 .set('Authorization', 'Bearer 1234')
                 .end(function (err, res) {
-
+                    should.not.exist(err);
                     should(res.body).be.Object();
                     should(res.body.authToken).be.String();
                     should(res.body.objectId).be.String();
@@ -777,6 +805,19 @@ module.exports = function (request, db, config) {
                 startNewIdentifiedSession(4, 'dan');
             }, 1500);
             setTimeout(done, 1800);
+        });
+
+        it('Should fail to start a session with a non participant username', function (done) {
+            request.post('/api/collector/start/' + trackingCode2)
+                .expect(401)
+                .expect('Content-Type', /json/)
+                .set('x-gleaner-user', 'AnyUser')
+                .set('Authorization', 'Bearer 1234')
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    should(res).be.Object();
+                    done();
+                });
         });
 
         it('Should fail to start an anonymous session with a non existant "anonymous" playerId', function (done) {
