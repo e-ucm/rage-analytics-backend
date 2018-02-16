@@ -43,9 +43,9 @@ exports.app = {
                         '/activities/my',
                         '/activities/:activityId/results',
                         '/lti/keyid/:gameId/:versionId/:classId',
-                        '/activities/:id/attemps/my',
-                        '/activities/:id/attemps/:userId',
-                        '/activities/:id/attemps',
+                        '/activities/:activityId/attemps/my',
+                        '/activities/:activityId/attemps/:userId',
+                        '/activities/:activityId/attemps',
                         '/courses/:id'
                     ],
                     permissions: [
@@ -96,10 +96,10 @@ exports.app = {
                         '/classes/:classId/activities/my',
                         '/activities/my',
                         '/activities/:activityId/results',
-                        '/lti/keyid/:classId',
-                        '/activities/:id/attemps/my',
-                        '/activities/:id/attemps/:userId',
-                        '/activities/:id/attemps'
+                        '/activities/:activityId/attempts',
+                        '/activities/:activityId/attempts/my',
+                        '/activities/:activityId/attempts/:username',
+                        '/lti/keyid/:classId'
                     ],
                     permissions: [
                         'get'
@@ -247,8 +247,8 @@ exports.app = {
     anonymous: [
         '/games/:id/xapi/:versionId',
         '/collector/start/:trackingCode',
-        '/collector/stop/:trackingCode',
         '/collector/track',
+        '/collector/end',
         '/lti/key/:id',
         '/env'
     ],
