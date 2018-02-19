@@ -381,6 +381,99 @@ function exist(result, element) {
     return exist;
 }
 
+// jscs:disable requireCamelCaseOrUpperCaseIdentifiers
+
+var defaultObject = {
+    out: {
+        name: '',
+        gameplayId: '',
+        type_hashCode: 0,
+        score: 0,
+        response: '',
+        type: '',
+        event_hashcode: 0,
+        target: '',
+        versionId: '',
+        success: false,
+        gameplayId_hashCode: 0,
+        event: '',
+        timestamp: '2000-01-19T11:05:27.772Z',
+        target_hashCode: 0,
+        stored: '2000-01-19T11:05:27.772Z',
+        progress: 0,
+        time: 0,
+        ext: {
+            progress: 0,
+            time: 0,
+            location: {
+                lat: 0,
+                lon: 0
+            }
+        }
+    }
+};
+
+// jscs:enable requireCamelCaseOrUpperCaseIdentifiers
+
+/**
+ * @api {get} /api/kibana/object/:versionId Return the index with the id.
+ * @apiName GetIndexObject
+ * @apiGroup Object
+ *
+ * @apiParam {String} gameId The game id
+ *
+ * @apiSuccess(200) Success.
+ */
+router.get('/object/:versionId', function (req, res) {
+    req.app.esClient.search({
+        index: '.objectfields',
+        type: 'object_fields',
+        q: '_id:' + 'object_fields' + req.params.versionId
+    }, function (error, response) {
+        if (!error) {
+            if (response.hits.hits && response.hits.hits.length > 0) {
+                res.json(response.hits.hits[0]._source);
+            } else {
+                res.json(defaultObject);
+            }
+        } else {
+            if (error.status === 404) {
+                res.json(defaultObject);
+            }else {
+                res.status(error.status);
+                res.json(error);
+            }
+        }
+    });
+});
+
+/**
+ * @api {post} /api/kibana/object/:versionId saves the given index object
+ * @apiName PostIndexObject
+ * @apiGroup Object
+ *
+ * @apiParam {String} id The visualization id
+ *
+ * @apiSuccess(200) Success.
+ */
+
+router.post('/object/:versionId', function (req, res) {
+    req.app.esClient.index({
+        index: '.objectfields',
+        type: 'object_fields',
+        id: 'object_fields' + req.params.versionId,
+        body: req.body
+    }, function (error, response) {
+        if (!error) {
+            res.json(response);
+        } else {
+            res.status(error.status);
+            res.json(error);
+        }
+    });
+});
+
+
 /**
  * @api {post} /api/kibana/visualization/game/:gameId/:id Adds a new visualization with the index fields of game gameId.
  * @apiName PostVisualization
@@ -897,43 +990,46 @@ router.post('/index/:indexTemplate/:indexName', function (req, res) {
         });
     };
 
+    var presetupIndex = function(versionId) {
+        console.log('Using versionId: ' + versionId + ' (' + req.params.indexTemplate + ',' + req.params.indexName + ')');
+
+        var objectfields = defaultObject;
+        req.app.esClient.search({
+            index: '.objectfields',
+            type: 'object_fields',
+            q: '_id:' + 'object_fields' + versionId
+        }, function (error, response) {
+            if (!error) {
+                console.log(JSON.stringify(response, null, 2));
+
+                if (response.hits.hits && response.hits.hits.length > 0) {
+                    objectfields = response.hits.hits[0]._source;
+                }
+                console.log('Object is: ' + JSON.stringify(objectfields));
+
+                req.app.esClient.index({
+                    index: req.params.indexName,
+                    type: 'traces',
+                    body: objectfields
+                }, function (creationError, created) {
+                    setTimeout(setupIndex, 100);
+                });
+            } else {
+                res.status(error.status);
+                res.json(error);
+            }
+        });
+    };
+
     // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
     req.app.esClient.indices.exists({index: req.params.indexName}, function (err, exists) {
         if (err || !exists) {
-            req.app.esClient.index({
-                index: req.params.indexName,
-                type: 'traces',
-                body: {
-                    out: {
-                        name: '',
-                        gameplayId: '',
-                        type_hashCode: 0,
-                        score: 0,
-                        response: '',
-                        type: '',
-                        event_hashcode: 0,
-                        target: '',
-                        versionId: '',
-                        success: false,
-                        gameplayId_hashCode: 0,
-                        event: '',
-                        timestamp: '2000-01-19T11:05:27.772Z',
-                        target_hashCode: 0,
-                        stored: '2000-01-19T11:05:27.772Z',
-                        progress: 0,
-                        time: 0,
-                        ext: {
-                            progress: 0,
-                            time: 0,
-                            location: {
-                                lat: 0,
-                                lon: 0
-                            }
-                        }
-                    }
+            activities.findById(req.params.indexName).then(function (activityObj) {
+                if (activityObj) {
+                    presetupIndex(activityObj.versionId);
+                } else {
+                    presetupIndex(req.params.indexName);
                 }
-            }, function (creationError, created) {
-                setTimeout(setupIndex, 100);
             });
         } else {
             setupIndex();
@@ -1079,6 +1175,7 @@ router.post('/dashboard/activity/:activityId', function (req, res) {
                             if (err) {
                                 return res.json(err);
                             }
+
                             res.json(response);
                         });
                 });
@@ -1089,41 +1186,36 @@ router.post('/dashboard/activity/:activityId', function (req, res) {
         });
     };
     req.app.esClient.indices.exists({index: req.params.activityId}, function (err, exists) {
+        var object_fields = defaultObject;
+
+        console.log('Including object in new activity');
         if (err || !exists) {
-            req.app.esClient.index({
-                index: req.params.activityId,
-                type: 'traces',
-                body: {
-                    out: {
-                        name: '',
-                        gameplayId: '',
-                        type_hashCode: 0,
-                        score: 0,
-                        response: '',
-                        type: '',
-                        event_hashcode: 0,
-                        target: '',
-                        versionId: '',
-                        success: false,
-                        gameplayId_hashCode: 0,
-                        event: '',
-                        timestamp: '2000-01-19T11:05:27.772Z',
-                        target_hashCode: 0,
-                        stored: '2000-01-19T11:05:27.772Z',
-                        progress: 0,
-                        time: 0,
-                        ext: {
-                            progress: 0,
-                            time: 0,
-                            location: {
-                                lat: 0,
-                                lon: 0
+            activities.findById(req.params.activityId).then(function (activityObj) {
+                if (activityObj) {
+                    req.app.esClient.search({
+                        index: '.objectfields',
+                        type: 'object_fields',
+                        q: '_id:' + 'object_fields' + activityObj.versionId
+                    }, function (error, response) {
+                        if (!error) {
+                            if (response.hits.hits) {
+                                object_fields = response.hits.hits[0]._source;
                             }
+                            console.log('Object is: ' + JSON.stringify(object_fields));
+
+                            req.app.esClient.index({
+                                index: req.params.indexName,
+                                type: 'traces',
+                                body: object_fields
+                            }, function (creationError, created) {
+                                updateIndex();
+                            });
+                        } else {
+                            res.status(error.status);
+                            res.json(error);
                         }
-                    }
+                    });
                 }
-            }, function (creationError, created) {
-                updateIndex();
             });
         } else {
             updateIndex();
