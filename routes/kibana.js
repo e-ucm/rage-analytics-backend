@@ -381,6 +381,8 @@ function exist(result, element) {
     return exist;
 }
 
+// jscs:disable requireCamelCaseOrUpperCaseIdentifiers
+
 var defaultObject = {
     out: {
         name: '',
@@ -409,7 +411,9 @@ var defaultObject = {
             }
         }
     }
-}
+};
+
+// jscs:enable requireCamelCaseOrUpperCaseIdentifiers
 
 /**
  * @api {get} /api/kibana/object/:versionId Return the index with the id.
@@ -424,19 +428,18 @@ router.get('/object/:versionId', function (req, res) {
     req.app.esClient.search({
         index: '.objectfields',
         type: 'object_fields',
-        q: '_id:' + 'object_fields' + req.params.versionId,
+        q: '_id:' + 'object_fields' + req.params.versionId
     }, function (error, response) {
         if (!error) {
             if (response.hits.hits && response.hits.hits.length > 0) {
                 res.json(response.hits.hits[0]._source);
             } else {
-                //res.json(new Error('Index object not found in game with id: ' + req.params.gameId, 404));
                 res.json(defaultObject);
             }
         } else {
-            if(error.status === 404){
+            if (error.status === 404) {
                 res.json(defaultObject);
-            }else{
+            }else {
                 res.status(error.status);
                 res.json(error);
             }
@@ -987,27 +990,27 @@ router.post('/index/:indexTemplate/:indexName', function (req, res) {
         });
     };
 
-    var presetupIndex = function(versionId){
-        console.log("Using versionId: " + versionId + " (" + req.params.indexTemplate + "," + req.params.indexName + ")");
+    var presetupIndex = function(versionId) {
+        console.log('Using versionId: ' + versionId + ' (' + req.params.indexTemplate + ',' + req.params.indexName + ')');
 
-        var object_fields = defaultObject;
+        var objectfields = defaultObject;
         req.app.esClient.search({
             index: '.objectfields',
             type: 'object_fields',
-            q: '_id:' + 'object_fields' + versionId,
+            q: '_id:' + 'object_fields' + versionId
         }, function (error, response) {
             if (!error) {
                 console.log(JSON.stringify(response, null, 2));
 
                 if (response.hits.hits && response.hits.hits.length > 0) {
-                    object_fields = response.hits.hits[0]._source;
+                    objectfields = response.hits.hits[0]._source;
                 }
-                console.log("Object is: " + JSON.stringify(object_fields));
+                console.log('Object is: ' + JSON.stringify(objectfields));
 
                 req.app.esClient.index({
                     index: req.params.indexName,
                     type: 'traces',
-                    body: object_fields
+                    body: objectfields
                 }, function (creationError, created) {
                     setTimeout(setupIndex, 100);
                 });
@@ -1185,20 +1188,20 @@ router.post('/dashboard/activity/:activityId', function (req, res) {
     req.app.esClient.indices.exists({index: req.params.activityId}, function (err, exists) {
         var object_fields = defaultObject;
 
-        console.log("Including object in new activity");
+        console.log('Including object in new activity');
         if (err || !exists) {
             activities.findById(req.params.activityId).then(function (activityObj) {
                 if (activityObj) {
                     req.app.esClient.search({
                         index: '.objectfields',
                         type: 'object_fields',
-                        q: '_id:' + 'object_fields' + activityObj.versionId,
+                        q: '_id:' + 'object_fields' + activityObj.versionId
                     }, function (error, response) {
                         if (!error) {
                             if (response.hits.hits) {
                                 object_fields = response.hits.hits[0]._source;
                             }
-                            console.log("Object is: " + JSON.stringify(object_fields));
+                            console.log('Object is: ' + JSON.stringify(object_fields));
 
                             req.app.esClient.index({
                                 index: req.params.indexName,
