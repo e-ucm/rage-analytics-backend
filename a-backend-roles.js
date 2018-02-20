@@ -112,9 +112,7 @@ exports.app = {
                         '/activities/:activityId',
                         '/activities/:activityId/remove',
                         '/kibana/*',
-                        '/courses/:id',
-                        '/classes/groups/:id',
-                        '/classes/groupings/:id'
+                        '/courses/:id'
                     ],
                     permissions: [
                         '*'
@@ -146,7 +144,10 @@ exports.app = {
                 {
                     resources: [
                         '/activities/:activityId/results/resultId',
-                        '/classes/groups/:id/remove'
+                        '/classes/groups/:groupId/remove',
+                        '/classes/groups/:groupId',
+                        '/classes/groupings/:groupingId/remove',
+                        '/classes/groupings/:groupingId'
                     ],
                     permissions: [
                         'put'
