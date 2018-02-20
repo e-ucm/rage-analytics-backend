@@ -81,7 +81,7 @@ router.get('/my', function (req, res) {
 });
 
 /**
- * @api {get} /classes/:id Returns a given class.
+ * @api {get} /classes/:classId Returns a given class.
  * @apiName GetClasses
  * @apiGroup Classes
  *
@@ -105,7 +105,13 @@ router.get('/my', function (req, res) {
  *      }
  *
  */
-router.get('/:id', restUtils.findById(classes));
+router.get('/:classId', function (req, res) {
+    var username = req.headers['x-gleaner-user'];
+    restUtils.processResponse(classes.isAuthorizedFor(req.params.classId, username, 'get', '/classes/:classId')
+        .then(function (classReq) {
+            return classReq;
+        }), res);
+});
 
 /**
  * @api {post} /classes Creates new Class.
@@ -186,7 +192,10 @@ router.post('/', function (req, res) {
  */
 router.put('/:classId', function (req, res) {
     var username = req.headers['x-gleaner-user'];
-    restUtils.processResponse(classes.modifyClass(req.params.classId, username, req.body, true), res);
+    restUtils.processResponse(classes.isAuthorizedFor(req.params.classId, username, 'put', '/classes/:classId')
+        .then(function (classReq) {
+            return classes.modifyClass(req.params.classId, username, req.body, true);
+        }), res);
 });
 
 /**
@@ -217,7 +226,10 @@ router.put('/:classId', function (req, res) {
  */
 router.put('/:classId/remove', function (req, res) {
     var username = req.headers['x-gleaner-user'];
-    restUtils.processResponse(classes.modifyClass(req.params.classId, username, req.body, false), res);
+    restUtils.processResponse(classes.isAuthorizedFor(req.params.classId, username, 'put', '/classes/:classId/remove')
+        .then(function (classReq) {
+            return classes.modifyClass(req.params.classId, username, req.body, false);
+        }), res);
 });
 
 
@@ -238,7 +250,10 @@ router.put('/:classId/remove', function (req, res) {
  */
 router.delete('/:classId', function (req, res) {
     var username = req.headers['x-gleaner-user'];
-    restUtils.processResponse(classes.removeClass(req.params.classId, username), res);
+    restUtils.processResponse(classes.isAuthorizedFor(req.params.classId, username, 'delete', '/classes/:classId')
+        .then(function (classReq) {
+            return classes.removeClass(req.params.classId, username);
+        }), res);
 });
 
 
@@ -281,7 +296,11 @@ router.delete('/:classId', function (req, res) {
  *
  */
 router.get('/:classId/activities', function (req, res) {
-    restUtils.processResponse(activities.getClassActivities(req.params.classId), res);
+    var username = req.headers['x-gleaner-user'];
+    restUtils.processResponse(classes.isAuthorizedFor(req.params.classId, username, 'get', '/classes/:classId/activities')
+        .then(function (classReq) {
+            return activities.getClassActivities(req.params.classId);
+        }), res);
 });
 
 /**
@@ -318,8 +337,11 @@ router.get('/:classId/activities', function (req, res) {
  *
  */
 router.get('/:classId/activities/my', function (req, res) {
-    restUtils.processResponse(activities.getUserActivitiesByClass(req.params.classId,
-        req.headers['x-gleaner-user']), res);
+    var username = req.headers['x-gleaner-user'];
+    restUtils.processResponse(classes.isAuthorizedFor(req.params.classId, username, 'get', '/classes/:classId/activities/my')
+        .then(function (classReq) {
+            return activities.getUserActivitiesByClass(req.params.classId, username);
+        }), res);
 });
 
 module.exports = router;

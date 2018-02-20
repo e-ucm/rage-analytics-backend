@@ -23,6 +23,15 @@ var should = require('should'),
 
 var idClass = new ObjectID('dummyClasId9');
 var idClass2 =  ObjectID.createFromTime(2);
+var idClassWithNoParticipants =  ObjectID.createFromTime(3);
+var idClassWithNoParticipantsButGroup =  ObjectID.createFromTime(4);
+var idClassButEmptyGroup =  ObjectID.createFromTime(5);
+var idClassWithNoParticipantsButGrouping =  ObjectID.createFromTime(6);
+var idClassButEmptyGrouping =  ObjectID.createFromTime(7);
+var idGroup =  ObjectID.createFromTime(8);
+var idGroupWithNoParticipants =  ObjectID.createFromTime(9);
+var idGrouping =  ObjectID.createFromTime(10);
+var idGroupingWithNoParticipants =  ObjectID.createFromTime(11);
 var courseId =  ObjectID.createFromTime(15);
 
 module.exports = function (request, db) {
@@ -36,34 +45,142 @@ module.exports = function (request, db) {
 
         beforeEach(function (done) {
             db.collection('classes').insert(
-            {
-                _id: idClass,
-                name: 'name',
-                participants: {
-                    teachers: ['Teacher1'],
-                    students: ['Student1']
-                }
-            }, db.collection('classes').insert(
-            {
-                _id: idClass2,
-                courseId: courseId,
-                name: 'name2',
-                participants: {
-                    teachers: ['Teacher1'],
-                    students: ['Student1']
-                }
-            }, db.collection('courses').insert(
-            {
-                _id: courseId,
-                title: 'course',
-                teachers: ['teacher']
-            }, function() {
-                setTimeout(function() { done(); }, 500);
-            })));
+                {
+                    _id: idClass,
+                    name: 'name',
+                    groups: [],
+                    groupings: [],
+                    participants: {
+                        teachers: ['Teacher1'],
+                        assistants: ['Assistant1'],
+                        students: ['Student1']
+                    }
+                }, db.collection('classes').insert(
+                    {
+                        _id: idClass2,
+                        courseId: courseId,
+                        name: 'name2',
+                        groups: [],
+                        groupings: [],
+                        participants: {
+                            teachers: ['Teacher1'],
+                            assistants: ['Assistant1'],
+                            students: ['Student1']
+                        }
+                    },db.collection('classes').insert(
+                        {
+                            _id: idClassWithNoParticipants,
+                            name: 'orphan class',
+                            groups: [],
+                            groupings: [],
+                            participants: {
+                                teachers: [],
+                                assistants: [],
+                                students: []
+                            }
+                        },db.collection('classes').insert(
+                            {
+                                _id: idClassWithNoParticipantsButGroup,
+                                courseId: courseId,
+                                groups: [idGroup],
+                                groupings: [],
+                                name: 'group class',
+                                participants: {
+                                    teachers: [],
+                                    assistants: [],
+                                    students: []
+                                }
+                            },db.collection('classes').insert(
+                                {
+                                    _id: idClassButEmptyGroup,
+                                    courseId: courseId,
+                                    groups: [idGroupWithNoParticipants],
+                                    groupings: [],
+                                    name: 'with empty group',
+                                    participants: {
+                                        teachers: ['Teacher1'],
+                                        assistants: ['Assistant1'],
+                                        students: ['Student1']
+                                    }
+                                },db.collection('classes').insert(
+                                    {
+                                        _id: idClassWithNoParticipantsButGrouping,
+                                        courseId: courseId,
+                                        groups: [],
+                                        groupings: [idGrouping],
+                                        name: 'with empty group',
+                                        participants: {
+                                            teachers: [],
+                                            assistants: [],
+                                            students: []
+                                        }
+                                    },db.collection('classes').insert(
+                                        {
+                                            _id: idClassButEmptyGrouping,
+                                            courseId: courseId,
+                                            groups: [],
+                                            groupings: [idGroupingWithNoParticipants],
+                                            name: 'with empty group',
+                                            participants: {
+                                                teachers: ['Teacher1'],
+                                                assistants: ['Assistant1'],
+                                                students: ['Student1']
+                                            }
+                                        }, db.collection('groups').insert(
+                                            {
+                                                _id: idGroup,
+                                                participants: {
+                                                    teachers: ['Teacher1'],
+                                                    assistants: ['Assistant1'],
+                                                    students: ['Student1']
+                                                }
+                                            }, db.collection('groups').insert(
+                                                {
+                                                    _id: idGroupWithNoParticipants,
+                                                    participants: {
+                                                        teachers: [],
+                                                        assistants: [],
+                                                        students: []
+                                                    }
+                                                }, db.collection('groupings').insert(
+                                                    {
+                                                        _id: idGrouping,
+                                                        courseId: courseId,
+                                                        teachers: ['Teacher1'],
+                                                        groups: [ idGroup, idGroupWithNoParticipants ]
+                                                    }, db.collection('groupings').insert(
+                                                        {
+                                                            _id: idGroupingWithNoParticipants,
+                                                            courseId: courseId,
+                                                            teachers: ['Teacher1'],
+                                                            groups: []
+                                                        }, db.collection('courses').insert(
+                                                            {
+                                                                _id: courseId,
+                                                                title: 'course',
+                                                                teachers: ['Teacher1']
+                                                            }, function() {
+                                                                setTimeout(function() { done(); }, 500);
+                                                            })
+                                                    )
+                                                )
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            );
         });
 
         afterEach(function (done) {
-            db.collection('classes').drop(db.collection('courses').drop(done));
+            db.collection('classes')
+                .drop(db.collection('courses')
+                    .drop(db.collection('groups')
+                        .drop(db.collection('groupings')
+                            .drop(done))));
         });
 
         it('should POST a new class', function (done) {
@@ -88,7 +205,7 @@ module.exports = function (request, db) {
                 .end(function (err, res) {
                     should.not.exist(err);
                     should(res).be.Object();
-                    should.equal(res.body.length, 2);
+                    should.equal(res.body.length, 7);
                     should.equal(res.body[0]._id, idClass);
                     done();
                 });
@@ -101,8 +218,7 @@ module.exports = function (request, db) {
                 .end(function (err, res) {
                     should.not.exist(err);
                     should(res).be.Object();
-                    console.log(res.body);
-                    should.equal(res.body.length, 2);
+                    should.equal(res.body.length, 4);
                     should.equal(res.body[0]._id, idClass);
                     done();
                 });
@@ -111,6 +227,7 @@ module.exports = function (request, db) {
         it('should GET a class', function (done) {
             request.get('/api/classes/' + idClass)
                 .expect(200)
+                .set('X-Gleaner-User', 'Teacher1')
                 .end(function (err, res) {
                     should.not.exist(err);
                     should(res).be.Object();
@@ -132,27 +249,35 @@ module.exports = function (request, db) {
                     courseId: courseId
                 })
                 .end(function (err, res) {
-                    should.not.exist(err);
-                    should(res).be.Object();
                     request.put('/api/classes/' + idClass)
-                        .expect(200)
-                        .set('X-Gleaner-User', 'Teacher1')
+                        .expect(401)
+                        .set('X-Gleaner-User', 'Student1')
                         .send({
-                            name: 'someClassNameTest',
-                            participants: {
-                                teachers: ['Teacher1', 'Teacher2'],
-                                students: ['Student2']
-                            },
-                            courseId: courseId
+                            name: 'newName'
                         })
                         .end(function (err, res) {
                             should.not.exist(err);
                             should(res).be.Object();
-                            should.equal(res.body.name, 'someClassNameTest');
-                            should(res.body.participants.teachers).containDeep(['Teacher1', 'Teacher2']);
-                            should(res.body.participants.students).containDeep(['Student1', 'Student2']);
-                            should.equal(res.body.courseId, courseId);
-                            done();
+                            request.put('/api/classes/' + idClass)
+                                .expect(200)
+                                .set('X-Gleaner-User', 'Teacher1')
+                                .send({
+                                    name: 'someClassNameTest',
+                                    participants: {
+                                        teachers: ['Teacher1', 'Teacher2'],
+                                        students: ['Student2']
+                                    },
+                                    courseId: courseId
+                                })
+                                .end(function (err, res) {
+                                    should.not.exist(err);
+                                    should(res).be.Object();
+                                    should.equal(res.body.name, 'someClassNameTest');
+                                    should(res.body.participants.teachers).containDeep(['Teacher1', 'Teacher2']);
+                                    should(res.body.participants.students).containDeep(['Student1', 'Student2']);
+                                    should.equal(res.body.courseId, courseId);
+                                    done();
+                                });
                         });
                 });
         });
