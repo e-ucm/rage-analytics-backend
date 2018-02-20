@@ -121,6 +121,39 @@ router.put('/groupings/:id', function (req, res) {
 });
 
 /**
+ * @api {put} /classes/groupings/:id/remove Removes group from a grouping.
+ * @apiName PutGroupings
+ * @apiGroup Groupings
+ *
+ * @apiParam {String} id The id of the course.
+ * @apiParam {String[]} [teachers] Array with the username of the teachers that you want to add to the grouping.
+ * @apiParam {String[]} [groups] Array with the id of the groups that you want to add to the grouping.
+ *
+ * @apiParamExample {json} Request-Example:
+ *      {
+ *          "name": "New Name",
+ *          "teachers: []
+ *          "groups": ["559a447834376ce3485bf503"]
+ *      }
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "_id": "559a447831b76cec185bf511",
+ *          "name": "New Name",
+ *          "classId": "559a447831b76cec185bf501",
+ *          "teachers": ["Teacher1"]
+ *          "groups": ["559a447834376ce3485bf503", "559a447834376cec185bf501"]
+ *      }
+ */
+router.put('/groupings/:id/remove', function (req, res) {
+    var username = req.headers['x-gleaner-user'];
+    restUtils.processResponse(groupings.modifyGroupings(req.params.id, username, req.body, false), res);
+});
+
+/**
  * @api {delete} /classes/grouping/:id Deletes a group
  * @apiName DeleteGrouping
  * @apiGroup Grouping
