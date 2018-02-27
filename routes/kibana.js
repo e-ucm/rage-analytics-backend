@@ -439,7 +439,7 @@ router.get('/object/:versionId', function (req, res) {
         } else {
             if (error.status === 404) {
                 res.json(defaultObject);
-            }else {
+            } else {
                 res.status(error.status);
                 res.json(error);
             }
@@ -990,7 +990,7 @@ router.post('/index/:indexTemplate/:indexName', function (req, res) {
         });
     };
 
-    var presetupIndex = function(versionId) {
+    var presetupIndex = function (versionId) {
         console.log('Using versionId: ' + versionId + ' (' + req.params.indexTemplate + ',' + req.params.indexName + ')');
 
         var objectfields = defaultObject;
@@ -999,25 +999,18 @@ router.post('/index/:indexTemplate/:indexName', function (req, res) {
             type: 'object_fields',
             q: '_id:' + 'object_fields' + versionId
         }, function (error, response) {
-            if (!error) {
-                console.log(JSON.stringify(response, null, 2));
 
-                if (response.hits.hits && response.hits.hits.length > 0) {
-                    objectfields = response.hits.hits[0]._source;
-                }
-                console.log('Object is: ' + JSON.stringify(objectfields));
-
-                req.app.esClient.index({
-                    index: req.params.indexName,
-                    type: 'traces',
-                    body: objectfields
-                }, function (creationError, created) {
-                    setTimeout(setupIndex, 100);
-                });
-            } else {
-                res.status(error.status);
-                res.json(error);
+            if (response.hits.hits && response.hits.hits.length > 0) {
+                objectfields = response.hits.hits[0]._source;
             }
+
+            req.app.esClient.index({
+                index: req.params.indexName,
+                type: 'traces',
+                body: objectfields
+            }, function (creationError, created) {
+                setTimeout(setupIndex, 100);
+            });
         });
     };
 
@@ -1094,7 +1087,7 @@ router.post('/visualization/activity/:gameId/:visualizationId/:activityId', func
                 });
 
             } else {
-                res.json(new Error('Template not found', 404));
+                res.json(new Error('Template not found ' + 404));
             }
         } else {
             res.status(error.status);
@@ -1197,23 +1190,17 @@ router.post('/dashboard/activity/:activityId', function (req, res) {
                         type: 'object_fields',
                         q: '_id:' + 'object_fields' + activityObj.versionId
                     }, function (error, response) {
-                        if (!error) {
-                            if (response.hits.hits) {
-                                object_fields = response.hits.hits[0]._source;
-                            }
-                            console.log('Object is: ' + JSON.stringify(object_fields));
-
-                            req.app.esClient.index({
-                                index: req.params.indexName,
-                                type: 'traces',
-                                body: object_fields
-                            }, function (creationError, created) {
-                                updateIndex();
-                            });
-                        } else {
-                            res.status(error.status);
-                            res.json(error);
+                        if (response.hits.hits && response.hits.hits.length > 0) {
+                            object_fields = response.hits.hits[0]._source;
                         }
+
+                        req.app.esClient.index({
+                            index: req.params.indexName,
+                            type: 'traces',
+                            body: object_fields
+                        }, function (creationError, created) {
+                            updateIndex();
+                        });
                     });
                 }
             });
