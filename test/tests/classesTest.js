@@ -218,7 +218,7 @@ module.exports = function (request, db) {
                 .end(function (err, res) {
                     should.not.exist(err);
                     should(res).be.Object();
-                    should.equal(res.body.length, 4);
+                    should.equal(res.body.length, 5);
                     should.equal(res.body[0]._id, idClass);
                     done();
                 });

@@ -1,11 +1,15 @@
 'use strict';
 
 var express = require('express'),
+    async = require('async'),
     router = express.Router(),
     request = require('request'),
     db = require('../lib/db'),
     Collection = require('easy-collections'),
-    activities = new Collection(db, 'activities');
+    activities = new Collection(db, 'activities'),
+    classes = new Collection(db, 'classes'),
+    groups = new Collection(db, 'groups'),
+    groupings = new Collection(db, 'groupings');
 
 /**
  * Logs in as an admin and tries to set the permissions for the user that
@@ -92,6 +96,69 @@ var buildKibanaResources = function (req, callback) {
             callback(null, resources);
         } else {
             callback(new Error('No Kibana version found!'));
+        }
+    });
+};
+
+/**
+ * Get all participants of activity. If the activity use groupings, return the participants of the grouping, if use groups
+ * return the participants of the groups. Else, return the participants of the parent class.
+ * @param activityObj
+ */
+var getActivityParticipants = function(activityObj, callback) {
+    var participants = {students: [], teachers: [], assistants: []};
+    if (activityObj.groupings.length > 0) {
+        console.log('using groupings');
+        groupings.find({classId: activityObj.classId}).then(function (groupingsArray) {
+            groups.find({classId: activityObj.classId}).then(function (groupsArray) {
+                activityObj.groupings.forEach(function(groupingId) {
+                    addParticipantsFromGroupingId(participants, groupingsArray, groupsArray, groupingId);
+                    callback(participants);
+                });
+            });
+        });
+    } else if (activityObj.groups.length > 0) {
+        console.log('using groups');
+        groups.find({classId: activityObj.classId}).then(function (groupsArray) {
+            activityObj.groups.forEach(function(groupId) {
+                addParticipantsFromGroupId(participants, groupsArray, groupId);
+                callback(participants);
+            });
+        });
+    } else {
+        console.log('using class');
+        classes.findById(activityObj.classId).then(function (classObj) {
+            callback(classObj.participants);
+        });
+    }
+};
+
+var addParticipantsFromGroupingId = function(participants, groupingsArray, groupsArray, groupingId) {
+    for (var i = 0; i < groupingsArray.length; i++) {
+        if (groupingId === groupingsArray[i]._id) {
+            for (var j = 0; j < groupingsArray[i].groups.length; j++) {
+                addParticipantsFromGroupId(participants, groupsArray, groupingsArray[i].groups[j]);
+            }
+            break;
+        }
+    }
+};
+
+var addParticipantsFromGroupId = function(participants, groupsArray, groupId) {
+    for (var i = 0; i < groupsArray.length; i++) {
+        if (groupId === groupsArray[i]._id) {
+            pushUsrFromGroupToParticipants(participants, groupsArray[i], 'teachers');
+            pushUsrFromGroupToParticipants(participants, groupsArray[i], 'assistants');
+            pushUsrFromGroupToParticipants(participants, groupsArray[i], 'students');
+            return;
+        }
+    }
+};
+
+var pushUsrFromGroupToParticipants = function(participants, group, role) {
+    group.participants[role].forEach(function (usr) {
+        if (participants[role].indexOf(usr) === -1) {
+            participants[role].push(usr);
         }
     });
 };
@@ -861,21 +928,18 @@ router.post('/index/:indexTemplate/:indexName', function (req, res) {
                             }
                             activities.findById(req.params.indexName).then(function (activityObj) {
                                 if (activityObj) {
-                                    activityObj.students.forEach(function (stu) {
-                                        updateKibanaPermission(req.app.config,
-                                            stu, resources, function (err) {
-
+                                    getActivityParticipants(activityObj, function(participants) {
+                                        var users = participants.students.concat(participants.teachers.concat(participants.assistants));
+                                        async.every(users, function (user, cb) {
+                                            updateKibanaPermission(req.app.config, user, resources, function (err) {
+                                                cb();
                                             });
+                                        }, function (err, result) {
+                                            return res.json(response);
+                                        });
                                     });
                                 }
-                                updateKibanaPermission(req.app.config,
-                                    req.headers['x-gleaner-user'],
-                                    resources, function (err) {
-                                        if (err) {
-                                            return res.json(err);
-                                        }
-                                        res.json(response);
-                                    });
+
                             });
                         });
                     } else {
@@ -1002,7 +1066,6 @@ router.post('/dashboard/activity/:activityId', function (req, res) {
         body: req.body
     }, function (error, response) {
         if (!error) {
-
             var visualizations = JSON.parse(req.body.panelsJSON);
             var resources = ['dashboard_' + req.params.activityId];
             visualizations.forEach(function (visualization) {
@@ -1010,21 +1073,18 @@ router.post('/dashboard/activity/:activityId', function (req, res) {
             });
             activities.findById(req.params.activityId).then(function (activityObj) {
                 if (activityObj) {
-                    activityObj.students.forEach(function (stu) {
-                        updateKibanaPermission(req.app.config,
-                            stu, resources, function (err) {
-
-                            });
+                    getActivityParticipants(activityObj, function(participants) {
+                        var users = participants.students.concat(participants.teachers.concat(participants.assistants));
+                        console.log('>>>USUARIOS>>>', JSON.stringify(users, null, 2));
+                        async.every(users, function (user, cb) {
+                            updateKibanaPermission(req.app.config, user, resources, cb);
+                        }, function (err, result) {
+                            return res.json(response);
+                        });
                     });
+                } else {
+                    return res.json(response);
                 }
-                updateKibanaPermission(req.app.config,
-                    req.headers['x-gleaner-user'],
-                    resources, function (err) {
-                        if (err) {
-                            return res.json(err);
-                        }
-                        res.json(response);
-                    });
             });
         } else {
             res.status(error.status);
