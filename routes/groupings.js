@@ -6,6 +6,8 @@ var express = require('express'),
 
 var groupings = require('../lib/groupings');
 
+var ObjectID = require('mongodb').ObjectID;
+
 /**
  * @api {get} /classes/:id/groupings Return a list of the current groupings
  * @apiName GetGroupings
@@ -31,7 +33,7 @@ var groupings = require('../lib/groupings');
  *
  */
 router.get('/:id/groupings', function (req, res) {
-    restUtils.processResponse(groupings.find({classId: req.params.id}), res);
+    restUtils.processResponse(groupings.find({classId: new ObjectID(req.params.id)}), res);
 });
 
 /**
