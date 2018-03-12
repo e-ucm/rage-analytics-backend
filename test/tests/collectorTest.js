@@ -226,7 +226,7 @@ module.exports = function (request, db, config) {
                 });
         });
 
-        var checkConsumerData = function(playerId, versionId, gameplayId, data, convertedTraces) {
+        var checkConsumerData = function(playerId, versionId, gameplayId, activity, data, convertedTraces) {
             for (var i = 0; i < data.length; ++i) {
                 var extensions = data[i].object.definition.extensions;
                 should(data[i].actor.name).not.eql(playerId);
@@ -238,6 +238,12 @@ module.exports = function (request, db, config) {
                 should(extensions.session).be.a.Number();
                 if (extensions.session === 1) {
                     should(extensions.firstSessionStarted).eql(extensions.currentSessionStarted);
+                }
+                
+                if (activity) {
+                    var activityId = activity._id.toString();
+                    should.equal(extensions.activityId, activityId);
+                    should.equal(convertedTraces[i].activityId, activityId);
                 }
 
                 should.equal(convertedTraces[i].gameplayId, gameplayId);
@@ -256,8 +262,8 @@ module.exports = function (request, db, config) {
 
             dataSource.clearConsumers();
             dataSource.addConsumer({
-                addTraces: function (playerId, versionId, gameplayId, data, convertedTraces) {
-                    checkConsumerData(playerId, versionId, gameplayId, data, convertedTraces);
+                addTraces: function (playerId, versionId, gameplayId, activity, data, convertedTraces) {
+                    checkConsumerData(playerId, versionId, gameplayId, activity, data, convertedTraces);
                 }
             });
             request.post('/api/collector/track')
@@ -279,8 +285,8 @@ module.exports = function (request, db, config) {
 
             dataSource.clearConsumers();
             dataSource.addConsumer({
-                addTraces: function (playerId, versionId, gameplayId, data, convertedTraces) {
-                    checkConsumerData(playerId, versionId, gameplayId, data, convertedTraces);
+                addTraces: function (playerId, versionId, gameplayId, activity, data, convertedTraces) {
+                    checkConsumerData(playerId, versionId, gameplayId, activity, data, convertedTraces);
                     var deferred = Q.defer();
                     setTimeout(function () {
                         var err = new Error(message);
@@ -307,8 +313,8 @@ module.exports = function (request, db, config) {
             var message = 'Provoked error!';
             dataSource.clearConsumers();
             dataSource.addConsumer({
-                addTraces: function (playerId, versionId, gameplayId, data, convertedTraces) {
-                    checkConsumerData(playerId, versionId, gameplayId, data, convertedTraces);
+                addTraces: function (playerId, versionId, gameplayId, activity, data, convertedTraces) {
+                    checkConsumerData(playerId, versionId, gameplayId, activity, data, convertedTraces);
                     var deferred = Q.defer();
                     setTimeout(function () {
                         var err = new Error(message);
@@ -592,8 +598,8 @@ module.exports = function (request, db, config) {
             var consumer2Failed = false;
 
             var firstConsumer = {
-                addTraces: function (playerId, versionId, gameplayId, data, convertedTraces) {
-                    checkConsumerData(playerId, versionId, gameplayId, data, convertedTraces);
+                addTraces: function (playerId, versionId, gameplayId, activity, data, convertedTraces) {
+                    checkConsumerData(playerId, versionId, gameplayId, activity, data, convertedTraces);
                     consumer2Called = true;
                     var deferred = Q.defer();
                     setTimeout(function () {
@@ -606,8 +612,8 @@ module.exports = function (request, db, config) {
                 }
             };
             var secondConsumer = {
-                addTraces: function (playerId, versionId, gameplayId, data, convertedTraces) {
-                    checkConsumerData(playerId, versionId, gameplayId, data, convertedTraces);
+                addTraces: function (playerId, versionId, gameplayId, activity, data, convertedTraces) {
+                    checkConsumerData(playerId, versionId, gameplayId, activity, data, convertedTraces);
                     var deferred = Q.defer();
                     setTimeout(function () {
                         var err = new Error(message2);
@@ -674,8 +680,8 @@ module.exports = function (request, db, config) {
                     var dataSource = require('../../lib/traces');
                     dataSource.clearConsumers();
                     var checkSessionCount = {
-                        addTraces: function (playerId, versionId, gameplayId, data, convertedTraces) {
-                            checkConsumerData(playerId, versionId, gameplayId, data, convertedTraces);
+                        addTraces: function (playerId, versionId, gameplayId, activity, data, convertedTraces) {
+                            checkConsumerData(playerId, versionId, gameplayId, activity, data, convertedTraces);
 
                             should(convertedTraces[0].session).eql(expectedSession);
 
@@ -758,8 +764,8 @@ module.exports = function (request, db, config) {
                     var dataSource = require('../../lib/traces');
                     dataSource.clearConsumers();
                     var checkSessionCount = {
-                        addTraces: function (playerId, versionId, gameplayId, data, convertedTraces) {
-                            checkConsumerData(playerId, versionId, gameplayId, data, convertedTraces);
+                        addTraces: function (playerId, versionId, gameplayId, activity, data, convertedTraces) {
+                            checkConsumerData(playerId, versionId, gameplayId, activity, data, convertedTraces);
 
                             should(convertedTraces[0].session).eql(expectedSession);
                             var deferred = Q.defer();
