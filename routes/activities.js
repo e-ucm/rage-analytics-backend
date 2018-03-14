@@ -2,7 +2,8 @@
 
 var express = require('express'),
     router = express.Router(),
-    restUtils = require('./rest-utils');
+    restUtils = require('./rest-utils'),
+    Q = require('q');
 
 var activities = require('../lib/activities'),
     classes = require('../lib/classes'),
@@ -107,8 +108,8 @@ module.exports = function (kafkaService, stormService) {
     /**
      * @api {post} /activities Creates new Activity for a
      * class in a given version of a game.
-     * @apiName PostSessions
-     * @apiGroup Sessions
+     * @apiName PostActivity
+     * @apiGroup Activities
      *
      * @apiParam {String} name The name for the Activity.
      * @apiParam {String} gameId The Game id of the session.
@@ -147,6 +148,91 @@ module.exports = function (kafkaService, stormService) {
                 return activities.createActivity(req.body.gameId, req.body.versionId, req.body.classId,
                     username, req.body.name);
             }), res);
+    });
+
+    /**
+     * @api {post} /activities/bundle/ Creates new Activity for a
+     * class in a given version of a game, including dashboards and visualizations.
+     * @apiName PostBundleActivity
+     * @apiGroup Activities
+     *
+     * @apiParam {String} name The name for the Activity.
+     * @apiParam {String} gameId The Game id of the session.
+     * @apiParam {String} versionId The Version id of the session.
+     * @apiParam {String} classId The Class id of the session.
+     *
+     * @apiParamExample {json} Request-Example:
+     *      {
+     *          "name": "New name",
+     *          "gameId": "55e433c773415f105025d2d4",
+     *          "versionId": "55e433c773415f105025d2d5",
+     *          "classId": "55e433c773415f105025d2d3"
+     *      }
+     *
+     * @apiSuccess(200) Success.
+     *
+     * @apiSuccessExample Success-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "gameId": "55e433c773415f105025d2d4",
+     *          "versionId": "55e433c773415f105025d2d5",
+     *          "classId": "55e433c773415f105025d2d3",
+     *          "name": "New name",
+     *          "created": "2015-08-31T12:55:05.459Z",
+     *          "teachers": [
+     *              "user"
+     *          ],
+     *          "_id": "55e44ea9f1448e1067e64d6c"
+     *      }
+     *
+     */
+    router.post('/bundle', function (req, res) {
+        var username = req.headers['x-gleaner-user'];
+        var config = req.app.config;
+
+        restUtils.processResponse(classes.isAuthorizedFor(req.body.classId, username, 'post', '/activities/bundle')
+            .then(function (classReq) {
+                var deferred = Q.defer();
+
+                var rootId = req.body.rootId;
+                if(!req.body.rootId){
+                    rootId = '';
+                }
+
+                activities.createActivity(req.body.gameId, req.body.versionId, req.body.classId, username, req.body.name, rootId)
+                .then(function(activity) {
+                        return activities.kibana.getKibanaBaseVisualizations(config, activity, req.app.esClient)
+                        .then(function(visualizations) {
+                            console.log('PostBundle -> VisObtained!');
+                            return activities.kibana.createIndex(config, activity, username, req.app.esClient)
+                                .then(function(result) {
+                                    console.log('PostBundle -> IndexCreated!');
+                                    return activities.kibana.createVisualizationsAndDashboard(config, activity, visualizations, username, req.app.esClient);
+                                })
+                                .then(function(result) {
+                                    console.log('PostBundle -> VisAndDashCreated!');
+                                    deferred.resolve(activity);
+                                })
+                                .fail(function(e) {
+                                    deferred.reject(e);
+                                });
+                        })
+                        .fail(function(err) {
+                            console.log('PostBundle -> getKibanaBaseVisualizationsFailcase!');
+                            console.log(JSON.stringify(err, null, 2));
+                            return deferred.reject(err);
+                        });
+                    })
+                .fail(function(error) {
+                    console.log('PostBundle -> activityfailed!');
+                    console.log(JSON.stringify(error, null, 2));
+                    return deferred.reject(error);
+                });
+
+                return deferred.promise;
+            }), res);
+
+        console.log('PostBundle -> finnished!');
     });
 
     /**

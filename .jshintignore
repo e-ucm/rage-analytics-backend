@@ -3,4 +3,5 @@ mongoDB
 node_modules/
 coverage/
 config-example.js
+/lib/activities.js
 /public/apidoc

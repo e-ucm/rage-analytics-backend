@@ -122,6 +122,7 @@ exports.app = {
                     resources: [
                         '/classes',
                         '/activities',
+                        '/activities/bundle',
                         '/activities/:activityId/event/:event',
                         '/activities/:activityId/results',
                         '/lti'
