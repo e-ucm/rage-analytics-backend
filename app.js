@@ -54,6 +54,15 @@ var connectToDB = function () {
             if (!isTest) {
                 kafkaService.createTopic(app.config.kafka.topicName);
                 stormService.startTopology(app.config.storm.defaultAnalysisName, app.config.kafka.topicName);
+
+                setTimeout(function () {
+                    var glpFolder = process.env.RAGE_ANALYTICS_BACKEND_GLP_REALTIMEJAR;
+                    if (!glpFolder) {
+                        glpFolder = '/app/output/glp/realtime-jar-with-dependencies.jar';
+                    }
+                    app.config.storm.realtimeJar = glpFolder;
+                    stormService.startTopology(app.config.storm.defaultAnalysisName + 'glp', app.config.kafka.topicName);
+                }, 30000);
             }
         }
     });
