@@ -6,6 +6,8 @@ var express = require('express'),
 
 var groups = require('../lib/groups');
 
+var ObjectID = require('mongodb').ObjectID;
+
 /**
  * @api {get} /classes/:id/groups Return a list of the current groups
  * @apiName GetGroups
@@ -37,7 +39,7 @@ var groups = require('../lib/groups');
  *
  */
 router.get('/:id/groups', function (req, res) {
-    restUtils.processResponse(groups.find({classId: req.params.id}), res);
+    restUtils.processResponse(groups.find({classId: new ObjectID(req.params.id)}), res);
 });
 
 /**
@@ -98,7 +100,7 @@ router.get('/groups/:id', restUtils.findById(groups));
  */
 router.post('/:id/groups', function (req, res) {
     var username = req.headers['x-gleaner-user'];
-    restUtils.processResponse(groups.createGroup(username, req.params.id,req.body), res);
+    restUtils.processResponse(groups.createGroup(username, req.params.id, req.body), res);
 });
 
 /**

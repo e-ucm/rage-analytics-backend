@@ -195,7 +195,7 @@ module.exports = function (kafkaService, stormService) {
                 var deferred = Q.defer();
 
                 var rootId = req.body.rootId;
-                if(!req.body.rootId){
+                if (!req.body.rootId) {
                     rootId = '';
                 }
 
