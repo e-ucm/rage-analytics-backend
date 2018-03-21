@@ -122,40 +122,40 @@ router.get('/performance/:classId/:time_scale/:date', function (req, res) {
     var analysis_result = {
         classId: classId,
         students: [
-            {student: 'River', score: 0.9},
-            {student: 'Jocelynn', score: 0.8},
-            {student: 'Roman', score: 0.74},
-            {student: 'Gerardo', score: 0.7},
-            {student: 'Paxton', score: 0.67},
-            {student: 'Ishaan', score: 0.66},
-            {student: 'Landen', score: 0.63},
-            {student: 'Finley', score: 0.5},
-            {student: 'Gracie', score: 0.43},
-            {student: 'Arjun', score: 0.33},
-            {student: 'Eli', score: 0.28},
-            {student: 'Randy', score: 0.2},
+            {student: { id: 50, username: 'river' }, score: 0.9},
+            {student: { id: 22, username: 'jocelynn' }, score: 0.8},
+            {student: { id: 13, username: 'roman' }, score: 0.74},
+            {student: { id: 98, username: 'gerardo' }, score: 0.7},
+            {student: { id: 47, username: 'paxton' }, score: 0.67},
+            {student: { id: 14, username: 'ishaan' }, score: 0.66},
+            {student: { id: 67, username: 'landen' }, score: 0.63},
+            {student: { id: 79, username: 'finley' }, score: 0.5},
+            {student: { id: 50, username: 'gracie' }, score: 0.43},
+            {student: { id: 7, username: 'arjun' }, score: 0.33},
+            {student: { id: 72, username: 'eli' }, score: 0.28},
+            {student: { id: 38, username: 'randy' }, score: 0.2}
         ],
         improvement: [
-            {student: 'River', score: 0.1},
-            {student: 'Jocelynn', score: 0},
-            {student: 'Roman', score: 0},
-            {student: 'Gerardo', score: 0.2},
-            {student: 'Paxton', score: 0.6},
-            {student: 'Ishaan', score: 0.8},
-            {student: 'Landen', score: 0.4},
-            {student: 'Finley', score: 0.2},
-            {student: 'Gracie', score: 0.3},
-            {student: 'Arjun', score: 0.8},
-            {student: 'Eli', score: 0.9},
-            {student: 'Randy', score: 0.2},
+            {student: { id: 72, username: 'eli' }, score: 0.9},
+            {student: { id: 14, username: 'ishaan' }, score: 0.8},
+            {student: { id: 7, username: 'arjun' }, score: 0.8},
+            {student: { id: 47, username: 'paxton' }, score: 0.6},
+            {student: { id: 67, username: 'landen' }, score: 0.4},
+            {student: { id: 50, username: 'gracie' }, score: 0.3},
+            {student: { id: 98, username: 'gerardo' }, score: 0.2},
+            {student: { id: 79, username: 'finley' }, score: 0.2},
+            {student: { id: 38, username: 'randy' }, score: 0.2},
+            {student: { id: 50, username: 'river' }, score: 0.1},
+            {student: { id: 22, username: 'jocelynn' }, score: 0},
+            {student: { id: 13, username: 'roman' }, score: 0}
         ],
         year: fdate.year()
     };
 
     if(time_scale === 'week'){
-        analysis_result.week = fdate.week();
+        analysis_result.week = fdate.week() + 1;
     }else if(time_scale === 'month'){
-        analysis_result.month = fdate.month();
+        analysis_result.month = fdate.month() + 1;
     }
 
     res.send(analysis_result);
