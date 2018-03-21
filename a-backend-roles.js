@@ -42,7 +42,11 @@ exports.app = {
                         '/classes/:classId/activities/my',
                         '/activities/my',
                         '/activities/:activityId/results',
-                        '/lti/keyid/:gameId/:versionId/:classId'
+                        '/lti/keyid/:gameId/:versionId/:classId',
+                        '/activities/:activityId/attemps/my',
+                        '/activities/:activityId/attemps/:userId',
+                        '/activities/:activityId/attemps',
+                        '/courses/:id'
                     ],
                     permissions: [
                         'get'
@@ -56,6 +60,14 @@ exports.app = {
                     permissions: [
                         'put',
                         'get'
+                    ]
+                },
+                {
+                    resources: [
+                        '/activities/:activityId/results/resultId'
+                    ],
+                    permissions: [
+                        'put'
                     ]
                 }
             ]
@@ -84,6 +96,9 @@ exports.app = {
                         '/classes/:classId/activities/my',
                         '/activities/my',
                         '/activities/:activityId/results',
+                        '/activities/:activityId/attempts',
+                        '/activities/:activityId/attempts/my',
+                        '/activities/:activityId/attempts/:username',
                         '/lti/keyid/:classId'
                     ],
                     permissions: [
@@ -96,8 +111,8 @@ exports.app = {
                         '/classes/:classId/remove',
                         '/activities/:activityId',
                         '/activities/:activityId/remove',
-                        '/activities/:activityId/results/:resultsId',
-                        '/kibana/*'
+                        '/kibana/*',
+                        '/courses/:id'
                     ],
                     permissions: [
                         '*'
@@ -107,12 +122,70 @@ exports.app = {
                     resources: [
                         '/classes',
                         '/activities',
+                        '/activities/bundle',
                         '/activities/:activityId/event/:event',
                         '/activities/:activityId/results',
                         '/lti'
                     ],
                     permissions: [
                         'post'
+                    ]
+                },
+                {
+                    resources: [
+                        '/courses',
+                        '/classes/:id/groups',
+                        '/classes/:id/groupings'
+                    ],
+                    permissions: [
+                        'get',
+                        'post'
+                    ]
+                },
+                {
+                    resources: [
+                        '/activities/:activityId/results/resultId',
+                        '/classes/groups/:groupId/remove',
+                        '/classes/groups/:groupId',
+                        '/classes/groupings/:groupingId/remove',
+                        '/classes/groupings/:groupingId'
+                    ],
+                    permissions: [
+                        'put'
+                    ]
+                }
+            ]
+        },
+        {
+            roles: 'teachingassistant',
+            allows: [
+                {
+                    resources: [
+                        '/activities',
+                        '/activities/:activityId/event/:event',
+                        '/activities/:activityId/results',
+                        '/analysis/:id',
+                        '/games/public',
+                        '/games/:gameId',
+                        '/games/:gameId/versions',
+                        '/games/:gameId/versions/:versionId',
+                        '/games/:gameId/versions/:versionId/activities/my',
+                        '/classes',
+                        '/classes/my',
+                        '/classes/:classId',
+                        '/classes/:classId/remove',
+                        '/classes/:classId/activities/my',
+                        '/activities/my',
+                        '/activities/:activityId/results',
+                        '/activities/:activityId',
+                        '/activities/:activityId/remove',
+                        '/activities/:activityId/results/:resultsId',
+                        '/lti',
+                        '/lti/keyid/:classId',
+                        '/kibana/*'
+                    ],
+                    permissions: [
+                        'get'
                     ]
                 }
             ]
@@ -177,6 +250,7 @@ exports.app = {
         '/games/:id/xapi/:versionId',
         '/collector/start/:trackingCode',
         '/collector/track',
+        '/collector/end',
         '/lti/key/:id',
         '/data/overall/:studentid',
         '/data/overall2/:studentid',
@@ -185,6 +259,7 @@ exports.app = {
     autoroles: [
         'student',
         'teacher',
+        'teachingassistant',
         'developer'
     ]
 };

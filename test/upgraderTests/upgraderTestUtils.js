@@ -15,7 +15,7 @@ var CompletionChecker = function (max, callback) {
 
 var compareDocuments = function (doc1, doc2, ignoredFields) {
     if (ignoredFields === undefined || ignoredFields === null) {
-        ignoredFields = [];
+        ignoredFields = ['uuidv4'];
     }
 
     var equal = true;

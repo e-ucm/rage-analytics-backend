@@ -18,10 +18,16 @@ var classes = require('../lib/classes'),
  *      [
  *          {
  *              "_id": "559a447831b7acec185bf513",
+ *              "created": "2015-08-31T12:55:05.459Z",
  *              "name": "My Class",
- *              "authors": ["someTeacher"],
- *              "teachers": ["someTeacher"]
- *              "students": ["someStudent"]
+ *              "courseId": "5429l3v2jkfe20acec83tbf98s",
+ *              "groups": ["group1", "group2"],
+ *              "groupings": ["grouping1"],
+ *              "participants":{
+ *                  "students": ["st1", "st2"],
+ *                  "assistants": ["as1", "as2"],
+ *                  "teachers": ["teacher"]
+ *              }
  *          }
  *      ]
  *
@@ -44,17 +50,27 @@ router.get('/', restUtils.find(classes));
  *      [
  *          {
  *              "_id": "559a447831b76cec185bf501",
+ *              "created": "2015-08-31T12:55:05.459Z",
  *              "name": 'first class',
- *              "authors": [ 'someTeacher' ],
- *              "teachers": [ 'someTeacher' ],
- *              "students": [ 'someStudent' ] }
+ *              "courseId": "5429l3v2jkfe20acec83tbf98s",
+ *              "groups": ["group1", "group2"],
+ *              "groupings": ["grouping1"],
+ *              "participants":{
+ *                  "students": ["st1", "st2"],
+ *                  "assistants": ["as1", "as2"],
+ *                  "teachers": ["teacher"]
+ *              }
  *          },
  *          {
  *              "_id": "559a447831b76cec185bf511",
+ *              "created": "2015-08-31T12:55:05.459Z",
  *              "name": 'second class',
- *              "authors": [ 'someTeacher' ],
- *              "teachers": [ 'someTeacher', 'someTeacher_2' ],
- *              "students": [ 'someStudent_2' ] }
+ *              "courseId": "5429l3v2jkfe20acec83tbf98s",
+ *              "participants":{
+ *                  "students": ["st1", "st2", "st3"],
+ *                  "assistants": ["as2"],
+ *                  "teachers": ["teacher2"]
+ *              }
  *          }
  *      ]
  *
@@ -65,7 +81,7 @@ router.get('/my', function (req, res) {
 });
 
 /**
- * @api {get} /classes/:id Returns a given class.
+ * @api {get} /classes/:classId Returns a given class.
  * @apiName GetClasses
  * @apiGroup Classes
  *
@@ -76,20 +92,37 @@ router.get('/my', function (req, res) {
  *
  *      {
  *          "_id": "559a447831b76cec185bf501",
+ *          "created": "2015-08-31T12:55:05.459Z",
  *          "name": "Some Class Name",
- *          "authors": ["someTeacher"],
- *          "teachers": ["someTeacher", "Ben"]
- *          "students": ["someStudent"]
+ *          "courseId": "5429l3v2jkfe20acec83tbf98s",
+ *          "groups": ["group1", "group2"],
+ *          "groupings": ["grouping1"],
+ *          "participants":{
+ *              "students": ["st1", "st2"],
+ *              "assistants": ["as1", "as2"],
+ *              "teachers": ["teacher"]
+ *          }
  *      }
  *
  */
-router.get('/:id', restUtils.findById(classes));
+router.get('/:classId', function (req, res) {
+    var username = req.headers['x-gleaner-user'];
+    restUtils.processResponse(classes.isAuthorizedFor(req.params.classId, username, 'get', '/classes/:classId')
+        .then(function (classReq) {
+            return classReq;
+        }), res);
+});
 
 /**
  * @api {post} /classes Creates new Class.
  * @apiName PostClasses
  * @apiGroup Classes
  *
+ * @apiParam {String} [name] The name of the class.
+ * @apiParam {Object} [participants] The students, assistants and students in the class
+ * @apiParam {String[]} [courseId] The id of the course that contains the class
+ * @apiParam {String[]} [groups] Group Id of the group with the participants of the class
+ * @apiParam {String[]} [groupings] Grouping Id of the grouping with the participants of the class
  *
  * @apiParamExample {json} Request-Example:
  *      {
@@ -103,32 +136,41 @@ router.get('/:id', restUtils.findById(classes));
  *      {
  *          "name": "New name",
  *          "created": "2015-08-31T12:55:05.459Z",
- *          "teachers": [
- *              "user"
- *          ],
- *          "_id": "55e44ea9f1448e1067e64d6c"
+ *          "participants":{
+ *              "students": ["st1", "st2"],
+ *              "assistants": ["as1", "as2"],
+ *              "teachers": ["teacher"]
+ *          },
+ *          "_id": "55e44ea9f1448e1067e64d6c",
+ *          "groups": [],
+            "groupings": []
  *      }
  *
  */
 router.post('/', function (req, res) {
     var username = req.headers['x-gleaner-user'];
-    restUtils.processResponse(classes.createClass(username, req.body.name), res);
+    restUtils.processResponse(classes.createClass(username, req.body.name || 'ClassWithoutName'), res);
 });
 
 /**
- * @api {put} /classes/:classId Changes the name and/or teachers array of a class.
+ * @api {put} /classes/:classId Changes the name and participants of a class.
  * @apiName PutClasses
  * @apiGroup Classes
  *
  * @apiParam {String} sessionId The id of the session.
  * @apiParam {String} [name] The new name of the session
- * @apiParam {String[]} [students] Array with the username of the students that you want to add to the session. Also can be a String
- * @apiParam {String[]} [teachers] Array with the username of the teachers that you want to add to the session. Also can be a String
+ * @apiParam {Object} [participants] Object with the participants
+ * @apiParam {String[]} [groups] Group ids with of the participants
+ * @apiParam {String[]} [groupings] Grouping ids with of the participants
+ *
  * @apiParamExample {json} Request-Example:
  *      {
  *          "name": "My New Name",
- *          "teachers": ["Some Teacher"],
- *          "students": ["Some Student"]
+ *          "participants":{
+ *              "students": ["st1", "st2"],
+ *              "assistants": ["as1", "as2"],
+ *              "teachers": ["teacher2"]
+ *          },
  *      }
  *
  * @apiSuccess(200) Success.
@@ -137,17 +179,23 @@ router.post('/', function (req, res) {
  *      HTTP/1.1 200 OK
  *      {
  *          "_id": "559a447831b76cec185bf511"
- *          "versionId": "559a447831b76cec185bf514",
  *          "created": "2015-07-06T09:00:50.630Z",
  *          "name": "My New Name",
- *          "authors": ["someTeacher"],
- *          "teachers": ["someTeacher", "Some Teacher"],
- *          "students": ["Some Student"]
+ *          "participants":{
+ *              "students": ["st1", "st2"],
+ *              "assistants": ["as1", "as2"],
+ *              "teachers": ["teacher", "teacher2"]
+ *          },
+ *          groups: [],
+ *          groupings: []
  *      }
  */
 router.put('/:classId', function (req, res) {
     var username = req.headers['x-gleaner-user'];
-    restUtils.processResponse(classes.modifyClass(req.params.classId, username, req.body, true), res);
+    restUtils.processResponse(classes.isAuthorizedFor(req.params.classId, username, 'put', '/classes/:classId')
+        .then(function (classReq) {
+            return classes.modifyClass(req.params.classId, username, req.body, true);
+        }), res);
 });
 
 /**
@@ -178,7 +226,10 @@ router.put('/:classId', function (req, res) {
  */
 router.put('/:classId/remove', function (req, res) {
     var username = req.headers['x-gleaner-user'];
-    restUtils.processResponse(classes.modifyClass(req.params.classId, username, req.body, false), res);
+    restUtils.processResponse(classes.isAuthorizedFor(req.params.classId, username, 'put', '/classes/:classId/remove')
+        .then(function (classReq) {
+            return classes.modifyClass(req.params.classId, username, req.body, false);
+        }), res);
 });
 
 
@@ -199,7 +250,10 @@ router.put('/:classId/remove', function (req, res) {
  */
 router.delete('/:classId', function (req, res) {
     var username = req.headers['x-gleaner-user'];
-    restUtils.processResponse(classes.removeClass(req.params.classId, username), res);
+    restUtils.processResponse(classes.isAuthorizedFor(req.params.classId, username, 'delete', '/classes/:classId')
+        .then(function (classReq) {
+            return classes.removeClass(req.params.classId, username);
+        }), res);
 });
 
 
@@ -242,7 +296,11 @@ router.delete('/:classId', function (req, res) {
  *
  */
 router.get('/:classId/activities', function (req, res) {
-    restUtils.processResponse(activities.getClassActivities(req.params.classId), res);
+    var username = req.headers['x-gleaner-user'];
+    restUtils.processResponse(classes.isAuthorizedFor(req.params.classId, username, 'get', '/classes/:classId/activities')
+        .then(function (classReq) {
+            return activities.getClassActivities(req.params.classId);
+        }), res);
 });
 
 /**
@@ -279,8 +337,11 @@ router.get('/:classId/activities', function (req, res) {
  *
  */
 router.get('/:classId/activities/my', function (req, res) {
-    restUtils.processResponse(activities.getUserActivitiesByClass(req.params.classId,
-        req.headers['x-gleaner-user']), res);
+    var username = req.headers['x-gleaner-user'];
+    restUtils.processResponse(classes.isAuthorizedFor(req.params.classId, username, 'get', '/classes/:classId/activities/my')
+        .then(function (classReq) {
+            return activities.getUserActivitiesByClass(req.params.classId, username);
+        }), res);
 });
 
 module.exports = router;

@@ -2,99 +2,7 @@
 
 var express = require('express'),
     router = express.Router(),
-    request = require('request'),
-    db = require('../lib/db'),
-    Collection = require('easy-collections'),
-    activities = new Collection(db, 'activities');
-
-/**
- * Logs in as an admin and tries to set the permissions for the user that
- * performed the request
- * @param config
- * @param data The Lookup permissions, e.g.
- *     {
- *          "key":"_id",
- *          "user": "dev"
- *          "resource":"id1",
- *          "methods":["post","put"],
- *          "url":"/url/*"
- *      }
- * @param callback
- */
-var updateKibanaPermission = function (config, user, resources, callback) {
-    var baseUsersAPI = config.a2.a2ApiPath;
-    request.post(baseUsersAPI + 'login', {
-            form: {
-                username: config.a2.a2AdminUsername,
-                password: config.a2.a2AdminPassword
-            },
-            json: true
-        },
-        function (err, httpResponse, body) {
-            if (err) {
-                return callback(err);
-            }
-
-            if (!body.user || !body.user.token) {
-                var tokenErr = new Error('No user token (Wrong admin credentials)');
-                tokenErr.status = 403;
-                return callback(tokenErr);
-            }
-
-            request({
-                uri: baseUsersAPI + 'applications/look/kibana',
-                method: 'PUT',
-                body: {
-                    key: 'docs._id',
-                    user: user,
-                    resources: resources,
-                    methods: ['post', 'put'],
-                    url: '/elasticsearch/_mget'
-                },
-                json: true,
-                headers: {
-                    Authorization: 'Bearer ' + body.user.token
-                }
-            }, function (err, httpResponse, body) {
-                if (err) {
-                    return callback(err);
-                }
-
-                callback();
-            });
-        });
-};
-
-/**
- * Creates a resources array to define the correct permissions
- * @param req
- * @param callback
- */
-var buildKibanaResources = function (req, callback) {
-    req.app.esClient.search({
-        size: 1,
-        from: 0,
-        index: '.kibana',
-        type: 'config'
-    }, function (error, response) {
-        if (error) {
-            return callback(error);
-        }
-        var resources = [];
-        if (response.hits && response.hits.hits.length > 0) {
-            response.hits.hits.forEach(function (hit) {
-                resources.push(hit._id);
-            });
-            resources.push(req.app.config.kibana.defaultIndex);
-            var indexName = req.params.indexName;
-            resources.push(indexName);
-            resources.push('thomaskilmann-' + indexName);
-            callback(null, resources);
-        } else {
-            callback(new Error('No Kibana version found!'));
-        }
-    });
-};
+    kibana = require('../lib/kibana/kibana');
 
 /**
  * @api {post} /api/kibana/templates/:type/:id Adds a new template in .template index of ElasticSearch.
@@ -124,7 +32,7 @@ var buildKibanaResources = function (req, callback) {
  */
 router.post('/templates/:type/:id', function (req, res) {
     if (req.params.type !== 'visualization' && req.params.type !== 'index') {
-        res.json('Invalid type parameter', 300);
+        res.json('Invalid type parameter', 400);
     } else {
         req.app.esClient.index({
             index: '.template',
@@ -179,12 +87,12 @@ router.post('/templates/:type/author/:idAuthor', function (req, res) {
                 bool: {
                     must: [
                         {
-                            term: {
+                            match: {
                                 author: req.params.idAuthor
                             }
                         },
                         {
-                            term: {
+                            match: {
                                 title: req.body.title
                             }
                         }
@@ -200,7 +108,7 @@ router.post('/templates/:type/author/:idAuthor', function (req, res) {
                 body: req.body
             };
             if (response.hits && response.hits.hits.length > 0) {
-                obj.id = response.hit.hits[0]._id;
+                obj.id = response.hits.hits[0]._id;
             }
             req.body.author = req.params.idAuthor;
             req.app.esClient.index(obj, function (error, response) {
@@ -280,11 +188,11 @@ router.get('/templates/:idAuthor', function (req, res) {
 });
 
 /**
- * @api {get} /api/kibana/templates/index/:id Return the index with the id.
- * @apiName GetIndexTemplate
+ * @api {get} /api/kibana/templates/index/:id Return the template with the id.
+ * @apiName GetTemplate
  * @apiGroup Template
  *
- * @apiParam {String} id The visualization id
+ * @apiParam {String} id The template id
  *
  * @apiSuccess(200) Success.
  *
@@ -311,7 +219,7 @@ router.get('/templates/index/:id', function (req, res) {
             if (response.hits.hits[0]) {
                 res.json(response.hits.hits[0]);
             } else {
-                res.json(new Error('Index not found', 404));
+                res.json(new Error('Template not found', 404));
             }
         } else {
             res.status(error.status);
@@ -341,12 +249,12 @@ router.get('/templates/fields/:id', function (req, res) {
         if (!error) {
             var result = [];
             if (response.hits.hits[0]) {
-                var re = /"field":"(\w+.?\w+)"/g;
+                var re = /"field":"([\w+.?]+)"/g;
 
                 var sourceField = 'visState';
                 if (response.hits.hits[0]._type === 'index') {
                     sourceField = 'fields';
-                    re = /"name":"([^_]\w+.?\w+)"/g;
+                    re = /"name":"([^_](\w+.?)+)"/g;
                 }
 
                 var pos = 0;
@@ -382,6 +290,65 @@ function exist(result, element) {
 }
 
 /**
+ * @api {get} /api/kibana/object/:versionId Return the index with the id.
+ * @apiName GetIndexObject
+ * @apiGroup Object
+ *
+ * @apiParam {String} gameId The game id
+ *
+ * @apiSuccess(200) Success.
+ */
+router.get('/object/:versionId', function (req, res) {
+    req.app.esClient.search({
+        index: '.objectfields',
+        type: 'object_fields',
+        q: '_id:' + 'object_fields' + req.params.versionId
+    }, function (error, response) {
+        if (!error) {
+            if (response.hits.hits && response.hits.hits.length > 0) {
+                res.json(response.hits.hits[0]._source);
+            } else {
+                res.json(kibana.defaultObject);
+            }
+        } else {
+            if (error.status === 404) {
+                res.json(kibana.defaultObject);
+            } else {
+                res.status(error.status);
+                res.json(error);
+            }
+        }
+    });
+});
+
+/**
+ * @api {post} /api/kibana/object/:versionId saves the given index object
+ * @apiName PostIndexObject
+ * @apiGroup Object
+ *
+ * @apiParam {String} id The visualization id
+ *
+ * @apiSuccess(200) Success.
+ */
+
+router.post('/object/:versionId', function (req, res) {
+    req.app.esClient.index({
+        index: '.objectfields',
+        type: 'object_fields',
+        id: 'object_fields' + req.params.versionId,
+        body: req.body
+    }, function (error, response) {
+        if (!error) {
+            res.json(response);
+        } else {
+            res.status(error.status);
+            res.json(error);
+        }
+    });
+});
+
+
+/**
  * @api {post} /api/kibana/visualization/game/:gameId/:id Adds a new visualization with the index fields of game gameId.
  * @apiName PostVisualization
  * @apiGroup GameVisualization
@@ -406,36 +373,43 @@ function exist(result, element) {
  *      }
  */
 router.post('/visualization/game/:gameId/:id', function (req, res) {
-    if (req.body.visualizationTemplate) {
-        Object.keys(req.body).forEach(function (key) {
-            req.body.visualizationTemplate.visState = req.body.visualizationTemplate.visState.replace(new RegExp(key, 'g'), req.body[key]);
-        });
-        setGameVisualizationByTemplate(req, res, req.body.visualizationTemplate);
-    } else {
-        req.app.esClient.search({
-            index: '.template',
-            q: '_id:' + req.params.id
-        }, function (error, response) {
-            if (!error) {
-                // Replace template and save it
-                if (response.hits.hits[0]) {
-                    var obj = response.hits.hits[0]._source;
-                    Object.keys(req.body).forEach(function (key) {
-                        obj.visState = obj.visState.replace(new RegExp(key, 'g'), req.body[key]);
-                    });
-                    setGameVisualizationByTemplate(req, res, obj);
+    req.app.esClient.search({
+        index: '.games' + req.params.gameId,
+        type: 'fields',
+        q: '_id:fields' + req.params.gameId
+    }, function (error, response) {
+        var fieldsObj = {};
+        if (!error && response.hits.hits[0]) {
+            fieldsObj = response.hits.hits[0]._source;
+        }
+        if (req.body.visualizationTemplate) {
+            setGameVisualizationByTemplate(req, res, req.body.visualizationTemplate, fieldsObj);
+        } else {
+            req.app.esClient.search({
+                index: '.template',
+                q: '_id:' + req.params.id
+            }, function (error, response) {
+                if (!error) {
+                    // Replace template and save it
+                    if (response.hits.hits[0]) {
+                        var obj = response.hits.hits[0]._source;
+                        setGameVisualizationByTemplate(req, res, obj, fieldsObj);
+                    } else {
+                        res.json(new Error('Template not found', 404));
+                    }
                 } else {
-                    res.json(new Error('Template not found', 404));
+                    res.status(error.status);
+                    res.json(error);
                 }
-            } else {
-                res.status(error.status);
-                res.json(error);
-            }
-        });
-    }
+            });
+        }
+    });
 });
 
-var setGameVisualizationByTemplate = function (req, res, obj) {
+var setGameVisualizationByTemplate = function (req, res, obj, fields) {
+    Object.keys(fields).forEach(function (key) {
+        obj.visState = obj.visState.replace(new RegExp(key, 'g'), fields[key]);
+    });
     req.app.esClient.index({
         index: '.games' + req.params.gameId,
         type: 'visualization',
@@ -539,6 +513,7 @@ router.post('/visualization/tuples/fields/game/:id', function (req, res) {
  * @apiGroup GameVisualization
  *
  * @apiParam {String} id The game id
+ * @apiParam {String} usr The role of the user (dev, tch or all)
  *
  * @apiSuccess(200) Success.
  *
@@ -550,32 +525,14 @@ router.post('/visualization/tuples/fields/game/:id', function (req, res) {
  *          ]
  */
 router.get('/visualization/list/:usr/:id', function (req, res) {
-    req.app.esClient.search({
-        index: '.games' + req.params.id,
-        type: 'list',
-        q: '_id:' + req.params.id
-    }, function (error, response) {
-        if (!error) {
-            if (response.hits.hits[0]) {
-                if (req.params.usr === 'dev') {
-                    res.json(response.hits.hits[0]._source.visualizationsDev ? response.hits.hits[0]._source.visualizationsDev : []);
-                } else if ('tch') {
-                    res.json(response.hits.hits[0]._source.visualizationsTch ? response.hits.hits[0]._source.visualizationsTch : []);
-                } else if ('all') {
-                    var c = response.hits.hits[0]._source.visualizationsTch.concat(
-                        response.hits.hits[0]._source.visualizationsDev.filter(function (item) {
-                            return response.hits.hits[0]._source.visualizationsTch.indexOf(item) < 0;
-                        }));
-                    res.json(c);
-                }
-            } else {
-                res.json([]);
-            }
-        } else {
+    kibana.getVisualizations(req.params.usr, req.params.id, req.app.esClient)
+        .then(function(visualizations) {
+            res.json(visualizations);
+        })
+        .fail(function(error) {
             res.status(error.status);
             res.json(error);
-        }
-    });
+        });
 });
 
 /**
@@ -833,59 +790,15 @@ router.delete('/visualization/list/:gameId/:list/:idToRemove', function (req, re
  *      }
  */
 router.post('/index/:indexTemplate/:indexName', function (req, res) {
-    req.body.title = req.params.indexName;
-    req.app.esClient.search({
-        index: '.template',
-        q: '_id:' + req.params.indexTemplate
-    }, function (error, response) {
-        if (response.hits.hits[0]) {
-            response.hits.hits[0]._source.title = req.params.indexName;
-            req.app.esClient.index({
-                index: '.kibana',
-                type: 'index-pattern',
-                id: req.params.indexName,
-                body: response.hits.hits[0]._source
-            }, function () {
-                req.app.esClient.index({
-                    index: '.kibana',
-                    type: 'index-pattern',
-                    id: 'thomaskilmann-' + req.params.indexName,
-                    body: response.hits.hits[0]._source
-                }, function (error, response) {
-                    if (!error) {
-                        buildKibanaResources(req, function (err, resources) {
-                            if (err) {
-                                return res.json(err);
-                            }
-                            activities.findById(req.params.indexName).then(function(activityObj) {
-                                if (activityObj) {
-                                    activityObj.students.forEach(function(stu) {
-                                        updateKibanaPermission(req.app.config,
-                                            stu, resources, function (err) {
-
-                                            });
-                                    });
-                                }
-                                updateKibanaPermission(req.app.config,
-                                    req.headers['x-gleaner-user'],
-                                    resources, function (err) {
-                                        if (err) {
-                                            return res.json(err);
-                                        }
-                                        res.json(response);
-                                    });
-                            });
-                        });
-                    } else {
-                        res.status(error.status);
-                        res.json(error);
-                    }
-                });
-            });
-        } else {
-            res.json(new Error('Template not found', 404));
-        }
-    });
+    kibana.createRequiredIndexes(req.params.indexName, req.params.indexTemplate,
+        req.headers['x-gleaner-user'], req.app.config, req.app.esClient)
+        .then(function(response) {
+            res.json(response);
+        })
+        .fail(function(error) {
+            res.status(error.status);
+            res.json(error);
+        });
 });
 
 /**
@@ -915,45 +828,15 @@ router.post('/index/:indexTemplate/:indexName', function (req, res) {
  *      }
  */
 router.post('/visualization/activity/:gameId/:visualizationId/:activityId', function (req, res) {
-    req.app.esClient.search({
-        index: '.games' + req.params.gameId,
-        q: '_id:' + req.params.visualizationId
-    }, function (error, response) {
-        if (!error) {
-            if (response.hits.hits[0] && response.hits.hits[0]._source.kibanaSavedObjectMeta) {
-                var re = /"index":"(\w+-)?(\w+.?\w+)"/;
-                var obj = response.hits.hits[0]._source;
-                // Replace template and save it
-                var m = re.exec(obj.kibanaSavedObjectMeta.searchSourceJSON);
-
-                if (m && m.length > 1) {
-                    obj.kibanaSavedObjectMeta.searchSourceJSON = obj.kibanaSavedObjectMeta.searchSourceJSON.replace(m[2], req.params.activityId);
-                }
-                // Replace template and save it
-                obj.title = response.hits.hits[0]._id + '_' + req.params.activityId;
-
-                req.app.esClient.index({
-                    index: '.kibana',
-                    type: 'visualization',
-                    id: response.hits.hits[0]._id + '_' + req.params.activityId,
-                    body: obj
-                }, function (error, result) {
-                    if (!error) {
-                        res.json(result);
-                    } else {
-                        res.status(error.status);
-                        res.json(error);
-                    }
-                });
-
-            } else {
-                res.json(new Error('Template not found', 404));
-            }
-        } else {
+    kibana.cloneVisualizationForActivity(req.params.gameId, req.params.visualizationId,
+        req.params.activityId, req.app.esClient)
+        .then(function(result) {
+            res.json(result);
+        })
+        .fail(function(error) {
             res.status(error.status);
             res.json(error);
-        }
-    });
+        });
 });
 
 /**
@@ -995,42 +878,16 @@ router.post('/visualization/activity/:gameId/:visualizationId/:activityId', func
  *      }
  */
 router.post('/dashboard/activity/:activityId', function (req, res) {
-    req.app.esClient.index({
-        index: '.kibana',
-        type: 'dashboard',
-        id: 'dashboard_' + req.params.activityId,
-        body: req.body
-    }, function (error, response) {
-        if (!error) {
-
-            var visualizations = JSON.parse(req.body.panelsJSON);
-            var resources = ['dashboard_' + req.params.activityId];
-            visualizations.forEach(function (visualization) {
-                resources.push(visualization.id);
-            });
-            activities.findById(req.params.activityId).then(function(activityObj) {
-                if (activityObj) {
-                    activityObj.students.forEach(function (stu) {
-                        updateKibanaPermission(req.app.config,
-                            stu, resources, function (err) {
-
-                            });
-                    });
-                }
-                updateKibanaPermission(req.app.config,
-                    req.headers['x-gleaner-user'],
-                    resources, function (err) {
-                        if (err) {
-                            return res.json(err);
-                        }
-                        res.json(response);
-                    });
-            });
-        } else {
+    kibana.createDashboard(req.body, req.params.activityId, req.app.esClient, req.app.config,
+        req.headers['x-gleaner-user'])
+        .then(function(result) {
+            res.json(result);
+        })
+        .fail(function(error) {
             res.status(error.status);
             res.json(error);
-        }
-    });
+        });
 });
 
+// jscs:enable requireCamelCaseOrUpperCaseIdentifiers
 module.exports = router;

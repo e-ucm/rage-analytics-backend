@@ -56,14 +56,22 @@ module.exports = function(request, db) {
         });
 
         it('should POST a new game version', function (done) {
-            request.post('/api/games/' + idGame + '/versions')
-                .expect(200)
+            request.post('/api/games/000/versions')
+                .expect(400)
                 .set('Accept', 'application/json')
                 .expect('Content-Type', /json/)
                 .end(function (err, res) {
                     should.not.exist(err);
                     should(res.body).be.Object();
-                    done();
+                    request.post('/api/games/' + idGame + '/versions')
+                        .expect(200)
+                        .set('Accept', 'application/json')
+                        .expect('Content-Type', /json/)
+                        .end(function (err, res) {
+                            should.not.exist(err);
+                            should(res.body).be.Object();
+                            done();
+                        });
                 });
         });
 
