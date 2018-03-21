@@ -113,7 +113,7 @@ router.get('/performance/:classId/:time_scale/:date', function (req, res) {
         return res.json({message: 'Invalid date'});
     }else{
         fdate = moment(date);
-        if(!date.isValid()){
+        if(!fdate.isValid()){
             res.status(400);
             return res.json({message: 'Invalid date format, should be ISO 8601'});
         }
@@ -149,13 +149,13 @@ router.get('/performance/:classId/:time_scale/:date', function (req, res) {
             {student: 'Eli', score: 0.9},
             {student: 'Randy', score: 0.2},
         ],
-        year: date.year()
+        year: fdate.year()
     };
 
     if(time_scale === 'week'){
-        analysis_result.week = date.week();
+        analysis_result.week = fdate.week();
     }else if(time_scale === 'month'){
-        analysis_result.month = date.month();
+        analysis_result.month = fdate.month();
     }
 
     res.send(analysis_result);
