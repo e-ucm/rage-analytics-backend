@@ -239,7 +239,7 @@ module.exports = function (request, db, config) {
                 if (extensions.session === 1) {
                     should(extensions.firstSessionStarted).eql(extensions.currentSessionStarted);
                 }
-                
+
                 if (activity) {
                     var activityId = activity._id.toString();
                     should.equal(extensions.activityId, activityId);

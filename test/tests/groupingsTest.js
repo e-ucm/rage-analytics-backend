@@ -48,7 +48,7 @@ module.exports = function (request, db) {
                 }, db.collection('groups').insert(
                     {
                         name: 'groupName',
-                        classId: idClass.toString(),
+                        classId: idClass,
                         participants: {
                             _id: idGroup1,
                             teachers: ['t1'],
@@ -58,7 +58,7 @@ module.exports = function (request, db) {
                     }, db.collection('groups').insert(
                         {
                             name: 'groupName2',
-                            classId: idClass.toString(),
+                            classId: idClass,
                             participants: {
                                 _id: idGroup2,
                                 teachers: ['t2'],
@@ -68,10 +68,12 @@ module.exports = function (request, db) {
                         }, db.collection('groupings').insert(
                             {
                                 name: 'groupingNameInit',
-                                classId: idClass.toString(),
+                                classId: idClass,
                                 teachers: ['t2'],
-                                groups: [idGroup1.toString()]
-                            }, done))));
+                                groups: [idGroup1]
+                            }, function() {
+                                setTimeout(function() { done(); }, 500);
+                            }))));
         });
 
         after(function (done) {

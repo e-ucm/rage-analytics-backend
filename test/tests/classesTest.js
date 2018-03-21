@@ -287,7 +287,7 @@ module.exports = function (request, db) {
                 .expect(200)
                 .set('X-Gleaner-User', 'Teacher1')
                 .send({
-                    courseId: ''
+                    courseId: null
                 })
                 .end(function (err, res) {
                     should.not.exist(err);

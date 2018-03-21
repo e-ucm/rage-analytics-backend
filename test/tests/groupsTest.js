@@ -39,30 +39,34 @@ module.exports = function (request, db) {
                 {
                     _id: idClass,
                     name: 'name',
+                    groups: [],
+                    groupings: [],
                     participants: {
-                        students: [],
-                        assistants: [],
-                        teachers: []
+                        teachers: ['teacher'],
+                        assistants: ['Assistant1'],
+                        students: ['Student1']
                     }
                 }, db.collection('groups').insert(
                     {
                         name: 'groupName',
-                        classId: idClass.toString(),
+                        classId: idClass,
                         participants: {
-                            teachers: [],
+                            teachers: ['teacher'],
                             assistants: [],
                             students: []
                         }
                     }, db.collection('groups').insert(
                         {
                             name: 'groupName',
-                            classId: idClass2.toString(),
+                            classId: idClass2,
                             participants: {
-                                teachers: [],
+                                teachers: ['teacher'],
                                 assistants: [],
                                 students: []
                             }
-                        }, done)));
+                        }, function() {
+                            setTimeout(function() { done(); }, 500);
+                        })));
         });
 
         after(function (done) {
