@@ -99,7 +99,9 @@ exports.app = {
                         '/activities/:activityId/attempts',
                         '/activities/:activityId/attempts/my',
                         '/activities/:activityId/attempts/:username',
-                        '/lti/keyid/:classId'
+                        '/lti/keyid/:classId',
+                        '/data/overall/:studentid',
+                        '/performance/:classId/:time_scale/:date',
                     ],
                     permissions: [
                         'get'
@@ -252,8 +254,7 @@ exports.app = {
         '/collector/track',
         '/collector/end',
         '/lti/key/:id',
-        '/data/overall/:studentid',
-        '/data/overall2/:studentid',
+        '/data/overall_full/:studentid',
         '/env'
     ],
     autoroles: [
