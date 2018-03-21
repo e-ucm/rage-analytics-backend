@@ -101,7 +101,7 @@ exports.app = {
                         '/activities/:activityId/attempts/:username',
                         '/lti/keyid/:classId',
                         '/data/overall/:studentid',
-                        '/data/performance/:classId/:time_scale/:date'
+                        '/data/performance/:classId'
                     ],
                     permissions: [
                         'get'

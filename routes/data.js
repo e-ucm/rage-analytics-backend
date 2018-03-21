@@ -88,10 +88,10 @@ router.get('/overall_full/:studentid', function (req, res) {
     //res.send(analysis_result);
 });
 
-router.get('/performance/:classId/:time_scale/:date', function (req, res) {
+router.get('/performance/:classId', function (req, res) {
 
-    var date = req.params.date;
-    var time_scale = req.params.time_scale
+    var periodStart = req.query.periodStart;
+    var scale = req.query.scale
     var classId = req.params.classId;
 
     if(!classId){
@@ -99,20 +99,19 @@ router.get('/performance/:classId/:time_scale/:date', function (req, res) {
         return res.json({message: 'Invalid classId'});
     }
 
-    if(!time_scale){
+    if(!scale){
         res.status(400);
         return res.json({message: 'Invalid time scale'});
-    }else if(time_scale !== 'year' && time_scale !== 'month' && time_scale !== 'week'){
+    }else if(scale !== 'year' && scale !== 'month' && scale !== 'week'){
         res.status(400);
         return res.json({message: 'Time scale should be: year, month or week.'});
     }
 
     var fdate;
-    if(!date){
-        res.status(400);
-        return res.json({message: 'Invalid date'});
+    if(!periodStart){
+        var fdate = moment();
     }else{
-        fdate = moment(date);
+        fdate = moment(periodStart);
         if(!fdate.isValid()){
             res.status(400);
             return res.json({message: 'Invalid date format, should be ISO 8601'});
@@ -152,9 +151,9 @@ router.get('/performance/:classId/:time_scale/:date', function (req, res) {
         year: fdate.year()
     };
 
-    if(time_scale === 'week'){
+    if(scale === 'week'){
         analysis_result.week = fdate.week() + 1;
-    }else if(time_scale === 'month'){
+    }else if(scale === 'month'){
         analysis_result.month = fdate.month() + 1;
     }
 
