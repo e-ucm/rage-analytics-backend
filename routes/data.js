@@ -7,8 +7,8 @@ var express = require('express'),
     Q = require('q');
 
 router.get('/overall/:studentid', function (req, res) {
-    
-    var analysis_result = 
+
+    var analysisresult =
     {
         student: req.params.studentid,
         scores: {
@@ -20,14 +20,14 @@ router.get('/overall/:studentid', function (req, res) {
             yours: 0.5,
             others: 0.7
         },
-        alternatives:{
+        alternatives: {
             correct: 6,
             incorrect: 2
         },
         progress: 0.8
     };
 
-    res.send(analysis_result);
+    res.send(analysisresult);
 });
 
 router.get('/overall_full/:studentid', function (req, res) {
@@ -46,7 +46,7 @@ router.get('/overall_full/:studentid', function (req, res) {
             return deferred.reject(new Error(error));
         }
 
-        var analysis_result = 
+        var analysisresult =
         {
             sudent: req.params.studentid,
             scores: {
@@ -58,7 +58,7 @@ router.get('/overall_full/:studentid', function (req, res) {
                 yours: 0.5,
                 others: 0.7
             },
-            alternatives:{
+            alternatives: {
                 correct: 0,
                 incorrect: 0
             },
@@ -69,56 +69,56 @@ router.get('/overall_full/:studentid', function (req, res) {
             response.hits.hits.forEach(function (document) {
                 if (document._source) {
                     document._source._id = document._id;
-                    if(document._source.selected){
-                        if(document._source.selected.true)
-                            analysis_result.alternatives.correct += document._source.selected.true;
-                        if(document._source.selected.false)
-                            analysis_result.alternatives.incorrect += document._source.selected.false;
+                    if (document._source.selected) {
+                        if (document._source.selected.true) {
+                            analysisresult.alternatives.correct += document._source.selected.true;
+                        }
+                        if (document._source.selected.false) {
+                            analysisresult.alternatives.incorrect += document._source.selected.false;
+                        }
                     }
                 }
             });
         }
 
-        deferred.resolve(analysis_result);
+        deferred.resolve(analysisresult);
     });
 
     restUtils.processResponse(deferred.promise, res);
-
-
-    //res.send(analysis_result);
 });
 
 router.get('/performance/:classId', function (req, res) {
 
     var periodStart = req.query.periodStart;
-    var scale = req.query.scale
+    var scale = req.query.scale;
     var classId = req.params.classId;
 
-    if(!classId){
+    if (!classId) {
         res.status(400);
         return res.json({message: 'Invalid classId'});
     }
 
-    if(!scale){
+    if (!scale) {
         res.status(400);
         return res.json({message: 'Invalid time scale'});
-    }else if(scale !== 'year' && scale !== 'month' && scale !== 'week'){
+    }
+    if (scale !== 'year' && scale !== 'month' && scale !== 'week') {
         res.status(400);
         return res.json({message: 'Time scale should be: year, month or week.'});
     }
 
     var fdate;
-    if(!periodStart){
-        var fdate = moment();
-    }else{
+    if (!periodStart) {
+        fdate = moment();
+    } else {
         fdate = moment(periodStart);
-        if(!fdate.isValid()){
+        if (!fdate.isValid()) {
             res.status(400);
             return res.json({message: 'Invalid date format, should be ISO 8601'});
         }
     }
 
-    var analysis_result = {
+    var analysisresult = {
         classId: classId,
         students: [
             {student: { id: 50, username: 'river' }, score: 0.9},
@@ -151,13 +151,13 @@ router.get('/performance/:classId', function (req, res) {
         year: fdate.year()
     };
 
-    if(scale === 'week'){
-        analysis_result.week = fdate.week() + 1;
-    }else if(scale === 'month'){
-        analysis_result.month = fdate.month() + 1;
+    if (scale === 'week') {
+        analysisresult.week = fdate.week() + 1;
+    }else if (scale === 'month') {
+        analysisresult.month = fdate.month() + 1;
     }
 
-    res.send(analysis_result);
+    res.send(analysisresult);
 });
 
 
