@@ -1,15 +1,16 @@
 'use strict';
 
 var express = require('express'),
+    moment = require('moment'),
     router = express.Router(),
     restUtils = require('./rest-utils'),
     Q = require('q');
 
-router.get('/overall2/:studentid', function (req, res) {
+router.get('/overall/:studentid', function (req, res) {
     
     var analysis_result = 
     {
-        sudent: req.params.studentid,
+        student: req.params.studentid,
         scores: {
             min: 0.2,
             avg: 0.7,
@@ -29,7 +30,7 @@ router.get('/overall2/:studentid', function (req, res) {
     res.send(analysis_result);
 });
 
-router.get('/overall/:studentid', function (req, res) {
+router.get('/overall_full/:studentid', function (req, res) {
 
     var deferred = Q.defer();
 
@@ -85,6 +86,79 @@ router.get('/overall/:studentid', function (req, res) {
 
 
     //res.send(analysis_result);
+});
+
+router.get('/performance/:classId/:time_scale/:date', function (req, res) {
+
+    var date = req.params.date;
+    var time_scale = req.params.time_scale
+    var classId = req.params.classId;
+
+    if(!classId){
+        res.status(400);
+        return res.json({message: 'Invalid classId'});
+    }
+
+    if(!time_scale){
+        res.status(400);
+        return res.json({message: 'Invalid time scale'});
+    }else if(time_scale !== 'year' && time_scale !== 'month' && time_scale !== 'week'){
+        res.status(400);
+        return res.json({message: 'Time scale should be: year, month or week.'});
+    }
+
+    var fdate;
+    if(!date){
+        res.status(400);
+        return res.json({message: 'Invalid date'});
+    }else{
+        fdate = moment(date);
+        if(!date.isValid()){
+            res.status(400);
+            return res.json({message: 'Invalid date format, should be ISO 8601'});
+        }
+    }
+
+    var analysis_result = {
+        classId: classId,
+        students: [
+            {student: 'River', score: 0.9},
+            {student: 'Jocelynn', score: 0.8},
+            {student: 'Roman', score: 0.74},
+            {student: 'Gerardo', score: 0.7},
+            {student: 'Paxton', score: 0.67},
+            {student: 'Ishaan', score: 0.66},
+            {student: 'Landen', score: 0.63},
+            {student: 'Finley', score: 0.5},
+            {student: 'Gracie', score: 0.43},
+            {student: 'Arjun', score: 0.33},
+            {student: 'Eli', score: 0.28},
+            {student: 'Randy', score: 0.2},
+        ],
+        improvement: [
+            {student: 'River', score: 0.1},
+            {student: 'Jocelynn', score: 0},
+            {student: 'Roman', score: 0},
+            {student: 'Gerardo', score: 0.2},
+            {student: 'Paxton', score: 0.6},
+            {student: 'Ishaan', score: 0.8},
+            {student: 'Landen', score: 0.4},
+            {student: 'Finley', score: 0.2},
+            {student: 'Gracie', score: 0.3},
+            {student: 'Arjun', score: 0.8},
+            {student: 'Eli', score: 0.9},
+            {student: 'Randy', score: 0.2},
+        ],
+        year: date.year()
+    };
+
+    if(time_scale === 'week'){
+        analysis_result.week = date.week();
+    }else if(time_scale === 'month'){
+        analysis_result.month = date.month();
+    }
+
+    res.send(analysis_result);
 });
 
 
