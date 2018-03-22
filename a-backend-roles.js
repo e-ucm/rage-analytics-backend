@@ -55,7 +55,6 @@ exports.app = {
                 {
                     resources: [
                         '/classes/:classId',
-                        '/classes/:domain/:externalId',
                         '/activities/:activityId'
                     ],
                     permissions: [
@@ -113,6 +112,7 @@ exports.app = {
                         '/classes/:classId',
                         '/classes/:classId/remove',
                         '/activities/:activityId',
+                        '/classes/:domain/:externalId',
                         '/activities/:activityId/remove',
                         '/kibana/*',
                         '/courses/:id'
