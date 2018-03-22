@@ -219,6 +219,14 @@ router.put('/:classId', function (req, res) {
         }), res);
 });
 
+router.put('/:domain/:externalId', function (req, res) {
+    var username = req.headers['x-gleaner-user'];
+    restUtils.processResponse(classes.isAuthorizedForExternal(req.params.domain, req.params.externalId, username, 'put', '/classes/:domain/:externalId')
+        .then(function (classReq) {
+            return classes.modifyClass(req.params.classId, username, req.body, true);
+        }), res);
+});
+
 /**
  * @api {put} /classes/:classId/remove Removes students and/or teachers from a class.
  * @apiName PutClasses
