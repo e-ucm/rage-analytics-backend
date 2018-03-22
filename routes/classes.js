@@ -261,6 +261,14 @@ router.put('/:classId/remove', function (req, res) {
         }), res);
 });
 
+router.put('/:domain/:externalId/remove', function (req, res) {
+    var username = req.headers['x-gleaner-user'];
+    restUtils.processResponse(classes.isAuthorizedForExternal(req.params.domain, req.params.externalId, username, 'put', '/classes/:domain/:externalId/remove')
+        .then(function (classReq) {
+            return classes.modifyClass(classReq._id, username, req.body, false);
+        }), res);
+});
+
 /**
  * @api {delete} /classes/:classId Deletes a class and all the sessions associated with it
  * @apiName DeleteClasses
