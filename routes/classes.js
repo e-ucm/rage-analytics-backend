@@ -124,6 +124,14 @@ router.get('/:classId', function (req, res) {
         }), res);
 });
 
+router.get('/:domain/:externalId', function (req, res) {
+    var username = req.headers['x-gleaner-user'];
+    restUtils.processResponse(classes.isAuthorizedForExternal(req.params.domain, req.params.externalId, username, 'get', '/classes/:domain/:externalId')
+        .then(function (classReq) {
+            return classReq;
+        }), res);
+});
+
 /**
  * @api {post} /classes Creates new Class.
  * @apiName PostClasses
@@ -244,7 +252,6 @@ router.put('/:classId/remove', function (req, res) {
             return classes.modifyClass(req.params.classId, username, req.body, false);
         }), res);
 });
-
 
 /**
  * @api {delete} /classes/:classId Deletes a class and all the sessions associated with it

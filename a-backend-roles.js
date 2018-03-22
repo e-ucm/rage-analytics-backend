@@ -55,6 +55,7 @@ exports.app = {
                 {
                     resources: [
                         '/classes/:classId',
+                        '/classes/:domain/:externalId',
                         '/activities/:activityId'
                     ],
                     permissions: [
