@@ -124,9 +124,9 @@ router.get('/:classId', function (req, res) {
         }), res);
 });
 
-router.get('/:domain/:externalId', function (req, res) {
+router.get('/external/:domain/:externalId', function (req, res) {
     var username = req.headers['x-gleaner-user'];
-    restUtils.processResponse(classes.isAuthorizedForExternal(req.params.domain, req.params.externalId, username, 'get', '/classes/:domain/:externalId')
+    restUtils.processResponse(classes.isAuthorizedForExternal(req.params.domain, req.params.externalId, username, 'get', '/classes/external/:domain/:externalId')
         .then(function (classReq) {
             return classReq;
         }), res);
@@ -219,9 +219,9 @@ router.put('/:classId', function (req, res) {
         }), res);
 });
 
-router.put('/:domain/:externalId', function (req, res) {
+router.put('/external/:domain/:externalId', function (req, res) {
     var username = req.headers['x-gleaner-user'];
-    restUtils.processResponse(classes.isAuthorizedForExternal(req.params.domain, req.params.externalId, username, 'put', '/classes/:domain/:externalId')
+    restUtils.processResponse(classes.isAuthorizedForExternal(req.params.domain, req.params.externalId, username, 'put', '/classes/external/:domain/:externalId')
         .then(function (classReq) {
             return classes.modifyClass(classReq._id, username, req.body, true);
         }), res);
@@ -261,9 +261,9 @@ router.put('/:classId/remove', function (req, res) {
         }), res);
 });
 
-router.put('/:domain/:externalId/remove', function (req, res) {
+router.put('/external/:domain/:externalId/remove', function (req, res) {
     var username = req.headers['x-gleaner-user'];
-    restUtils.processResponse(classes.isAuthorizedForExternal(req.params.domain, req.params.externalId, username, 'put', '/classes/:domain/:externalId/remove')
+    restUtils.processResponse(classes.isAuthorizedForExternal(req.params.domain, req.params.externalId, username, 'put', '/classes/external/:domain/:externalId/remove')
         .then(function (classReq) {
             return classes.modifyClass(classReq._id, username, req.body, false);
         }), res);
