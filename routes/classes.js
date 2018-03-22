@@ -59,7 +59,11 @@ router.get('/', restUtils.find(classes));
  *                  "students": ["st1", "st2"],
  *                  "assistants": ["as1", "as2"],
  *                  "teachers": ["teacher"]
- *              }
+ *              },
+ *              "externalId":[
+ *                  { "domain": "d1", "id": "1" },
+ *                  { "domain": "d2", "id": "2" }
+ *              ]
  *          },
  *          {
  *              "_id": "559a447831b76cec185bf511",
@@ -70,7 +74,10 @@ router.get('/', restUtils.find(classes));
  *                  "students": ["st1", "st2", "st3"],
  *                  "assistants": ["as2"],
  *                  "teachers": ["teacher2"]
- *              }
+ *              },
+ *              "externalId":[
+ *                  { "domain": "d1", "id": "4" }
+ *              ]
  *          }
  *      ]
  *
@@ -101,7 +108,11 @@ router.get('/my', function (req, res) {
  *              "students": ["st1", "st2"],
  *              "assistants": ["as1", "as2"],
  *              "teachers": ["teacher"]
- *          }
+ *          },
+ *          "externalId":[
+ *              { "domain": "d1", "id": "1" },
+ *              { "domain": "d2", "id": "2" }
+ *          ]
  *      }
  *
  */
@@ -143,7 +154,8 @@ router.get('/:classId', function (req, res) {
  *          },
  *          "_id": "55e44ea9f1448e1067e64d6c",
  *          "groups": [],
-            "groupings": []
+ *          "groupings": [],
+ *          "externalId": []
  *      }
  *
  */
@@ -187,7 +199,8 @@ router.post('/', function (req, res) {
  *              "teachers": ["teacher", "teacher2"]
  *          },
  *          groups: [],
- *          groupings: []
+ *          groupings: [],
+ *          externalId: []
  *      }
  */
 router.put('/:classId', function (req, res) {
