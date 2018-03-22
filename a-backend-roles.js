@@ -113,6 +113,7 @@ exports.app = {
                         '/classes/:classId/remove',
                         '/activities/:activityId',
                         '/classes/:domain/:externalId',
+                        '/classes/:domain/:externalId/remove',
                         '/activities/:activityId/remove',
                         '/kibana/*',
                         '/courses/:id'
