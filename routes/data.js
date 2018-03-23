@@ -195,9 +195,7 @@ var obtainPerformance = function(classe, scale, year, position, req) {
         size: 200,
         from: 0,
         index: 'beaconing-performance',
-        query: {
-            term: { _id: classe._id.toString() }
-        }
+        q: '_id:' + classe._id.toString()
     }, function (error, response) {
         if (error) {
             if (response.error && response.error.type === 'index_not_found_exception') {
