@@ -306,6 +306,7 @@ var obtainUsers = function(classe, req) {
             request({
                 uri: req.app.config.a2.a2ApiPath + 'users?query=' + encodeURI(JSON.stringify(query)),
                 method: 'GET',
+                json: true,
                 headers: {
                     Authorization: "Bearer " + token
                 }
@@ -316,7 +317,6 @@ var obtainUsers = function(classe, req) {
                 }
 
                 console.log('obtainUsers: success');
-                console.log(body);
                 deferred.resolve(body.data);
             });
         });
