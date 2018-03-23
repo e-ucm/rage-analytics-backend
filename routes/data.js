@@ -302,7 +302,10 @@ var obtainUsers = function(classe, req) {
         .then(function(token) {
             request({
                 uri: req.app.config.a2.a2ApiPath + 'users?query=' + encodeURI(JSON.stringify(query)),
-                method: 'GET'
+                method: 'GET',
+                headers: {
+                    Authorization: "Bearer " + token
+                }
             }, function (err, httpResponse, body) {
                 if (err || (httpResponse && httpResponse.statusCode !== 200)) {
                     console.log('obtainUsers: error');
