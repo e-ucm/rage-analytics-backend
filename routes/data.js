@@ -301,7 +301,7 @@ var obtainUsers = function(classe, req) {
     authenticate(req.app.config)
         .then(function(token) {
             request({
-                uri: req.app.config.a2.a2ApiPath + 'users?query=' + encodeURI(query),
+                uri: req.app.config.a2.a2ApiPath + 'users?query=' + encodeURI(JSON.stringify(query)),
                 method: 'GET'
             }, function (err, httpResponse, body) {
                 if (err || (httpResponse && httpResponse.statusCode !== 200)) {
