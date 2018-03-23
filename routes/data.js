@@ -316,6 +316,7 @@ var obtainUsers = function(classe, req) {
                 }
 
                 console.log('obtainUsers: success');
+                console.log(body);
                 deferred.resolve(body.data);
             });
         });
