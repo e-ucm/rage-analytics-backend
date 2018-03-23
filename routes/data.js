@@ -152,7 +152,7 @@ router.get('/performance_full/:groupid', function (req, res) {
                         .then(function(allStudents) {
 
                             for (var i = allStudents.length - 1; i >= 0; i--) {
-                                var student = { id: getExternalId(allStudents[i]), username: allStudents[i].username };
+                                var student = { id: getExternalId(allStudents[i]), username: allStudents[i].username, score: 0 };
 
                                 for (var j = students.length - 1; j >= 0; j--) {
                                     if (allStudents[i].username === students[j].student) {
@@ -173,7 +173,7 @@ router.get('/performance_full/:groupid', function (req, res) {
 
 var getExternalId = function(user) {
     for (var i = user.externalId.length - 1; i >= 0; i--) {
-        if (user.externalId[i] === 'beaconing') {
+        if (user.externalId[i].domain === 'beaconing') {
             return user.externalId[i].id;
         }
     }
