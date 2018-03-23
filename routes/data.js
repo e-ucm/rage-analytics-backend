@@ -206,6 +206,8 @@ var obtainPerformance = function(classe, scale, year, position, req) {
             return deferred.reject(new Error(error));
         }
 
+        console.log(JSON.stringify(response, null, 2));
+
         var students = [];
         if (response.hits && response.hits.hits.length) {
             if (scale === 'year') {
