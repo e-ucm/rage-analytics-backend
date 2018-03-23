@@ -292,6 +292,13 @@ router.delete('/:classId', function (req, res) {
         }), res);
 });
 
+router.delete('/external/:domain/:externalId', function (req, res) {
+    var username = req.headers['x-gleaner-user'];
+    restUtils.processResponse(classes.isAuthorizedForExternal(req.params.domain, req.params.externalId, username, 'delete', '/classes/external/:domain/:externalId')
+        .then(function (classReq) {
+            return classes.removeClass(req.params.classId, username);
+        }), res);
+});
 
 /**
  * ACTIVITIES
