@@ -190,7 +190,10 @@ router.get('/performance/:classId', function (req, res) {
 
 var obtainPerformance = function(classe, scale, year, position, req) {
     var deferred = Q.defer();
+    year = year.toString();
+    position = position.toString();
 
+    console.log(scale + ' ' + year + ' ' + position);
     console.log('_id:' + classe._id.toString());
 
     req.app.esClient.search({
