@@ -5,6 +5,7 @@ var express = require('express'),
     router = express.Router(),
     restUtils = require('./rest-utils'),
     classes = require('../lib/classes'),
+    request = require('request'),
     Q = require('q');
 
 router.get('/overall/:studentid', function (req, res) {
@@ -93,6 +94,44 @@ router.get('/performance_full/:groupid', function (req, res) {
     var scale = req.query.scale;
     var groupid = req.params.groupid;
 
+    if (!groupid) {
+        res.status(400);
+        return res.json({message: 'Invalid groupid'});
+    }
+
+    if (!scale) {
+        res.status(400);
+        return res.json({message: 'Invalid time scale'});
+    }
+    if (scale !== 'year' && scale !== 'month' && scale !== 'week') {
+        res.status(400);
+        return res.json({message: 'Time scale should be: year, month or week.'});
+    }
+
+    var fdate;
+    if (!periodStart) {
+        fdate = moment();
+    } else {
+        fdate = moment(periodStart);
+        if (!fdate.isValid()) {
+            res.status(400);
+            return res.json({message: 'Invalid date format, should be ISO 8601'});
+        }
+    }
+
+    var analysisresult = {
+        classId: groupid,
+        students: [],
+        improvement: [],
+        year: fdate.year()
+    };
+
+    if (scale === 'week') {
+        analysisresult.week = fdate.week();
+    }else if (scale === 'month') {
+        analysisresult.month = fdate.month();
+    }
+
     var username = req.headers['x-gleaner-user'];
     restUtils.processResponse(classes.isAuthorizedForExternal('beaconing', groupid, username, 'get', '/classes/external/:domain/:externalId')
         .then(function (classReq) {
@@ -107,12 +146,39 @@ router.get('/performance_full/:groupid', function (req, res) {
                 }
             }
 
-            return obtainPerformance(classReq, scale, fdate.year(), scale === 'week' ? fdate.week() : fdate.month(), req)
+            return obtainPerformance(classReq, scale, fdate, req)
                 .then(function(students) {
-                    return students;
+                    return obtainUsers(classReq, req)
+                        .then(function(allStudents) {
+
+                            for (var i = allStudents.length - 1; i >= 0; i--) {
+                                var student = { id: getExternalId(allStudents[i]), username: allStudents[i].username };
+
+                                for (var j = students.length - 1; j >= 0; j--) {
+                                    if (allStudents[i].username === students[j].student) {
+                                        student.score = students[j].score;
+                                        break;
+                                    }
+                                }
+
+                                analysisresult.students.push(student);
+                                analysisresult.improvement.push(student);
+                            }
+
+                            return analysisresult;
+                        });
                 });
         }), res);
 });
+
+var getExternalId = function(user) {
+    for (var i = user.externalId.length - 1; i >= 0; i--) {
+        if (user.externalId[i] === 'beaconing') {
+            return user.externalId[i].id;
+        }
+    }
+    return -1;
+};
 
 router.get('/performance/:classId', function (req, res) {
 
@@ -188,13 +254,9 @@ router.get('/performance/:classId', function (req, res) {
 });
 
 
-var obtainPerformance = function(classe, scale, year, position, req) {
+var obtainPerformance = function(classe, scale, date, req) {
     var deferred = Q.defer();
-    year = year.toString();
-    position = position.toString();
-
-    console.log(scale + ' ' + year + ' ' + position);
-    console.log('_id:' + classe._id.toString());
+    var year = date.year().toString();
 
     req.app.esClient.search({
         size: 200,
@@ -209,20 +271,69 @@ var obtainPerformance = function(classe, scale, year, position, req) {
             return deferred.reject(new Error(error));
         }
 
-        console.log(JSON.stringify(response, null, 2));
-
         var students = [];
         if (response.hits && response.hits.hits.length) {
             if (scale === 'year') {
                 students = response.hits.hits[0]._source[year].students;
             }else if (scale === 'month') {
-                students = response.hits.hits[0]._source[year].months[position].students;
+                students = response.hits.hits[0]._source[year].months[date.month().toString()].students;
             }else if (scale === 'week') {
-                students = response.hits.hits[0]._source[year].weeks[position].students;
+                students = response.hits.hits[0]._source[year].weeks[date.week().toString()].students;
             }
         }
 
         deferred.resolve(students);
+    });
+
+    return deferred.promise;
+};
+
+var obtainUsers = function(classe, req) {
+    var deferred = Q.defer();
+    console.log('obtainUsers: starte');
+
+    var query = [];
+    for (var i = 0; i < classe.participants.students.length; i++) {
+        query.push({ username: classe.participants.students[i].username });
+    }
+    query = {$or: query};
+
+    authenticate(req.app.config)
+        .then(function(token) {
+            request({
+                uri: req.app.config.a2.a2ApiPath + 'users?query=' + encodeURI(query),
+                method: 'GET'
+            }, function (err, httpResponse, body) {
+                if (err || (httpResponse && httpResponse.statusCode !== 200)) {
+                    console.log('obtainUsers: error');
+                    return deferred.reject(body);
+                }
+
+                console.log('obtainUsers: success');
+                deferred.resolve(body.data);
+            });
+        });
+
+    return deferred.promise;
+};
+
+var authenticate = function(config) {
+    var deferred = Q.defer();
+    console.log('authenticate: start');
+
+    request({
+        uri: config.a2.a2ApiPath + 'login',
+        method: 'POST',
+        body: { username: config.a2.a2AdminUsername, password: config.a2.a2AdminPassword },
+        json: true
+    }, function (err, httpResponse, body) {
+        if (err || (httpResponse && httpResponse.statusCode !== 200)) {
+            console.log('authenticate: error');
+            return deferred.reject(body);
+        }
+
+        console.log('authenticate: success');
+        deferred.resolve(body.user.token);
     });
 
     return deferred.promise;
