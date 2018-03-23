@@ -191,6 +191,8 @@ router.get('/performance/:classId', function (req, res) {
 var obtainPerformance = function(classe, scale, year, position, req) {
     var deferred = Q.defer();
 
+    console.log('_id:' + classe._id.toString());
+
     req.app.esClient.search({
         size: 200,
         from: 0,
