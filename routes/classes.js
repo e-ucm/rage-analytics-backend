@@ -296,7 +296,7 @@ router.delete('/external/:domain/:externalId', function (req, res) {
     var username = req.headers['x-gleaner-user'];
     restUtils.processResponse(classes.isAuthorizedForExternal(req.params.domain, req.params.externalId, username, 'delete', '/classes/external/:domain/:externalId')
         .then(function (classReq) {
-            return classes.removeClass(req.params.classId, username);
+            return classes.removeClass(classReq._id, username);
         }), res);
 });
 
