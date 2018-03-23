@@ -294,9 +294,12 @@ var obtainUsers = function(classe, req) {
 
     var query = [];
     for (var i = 0; i < classe.participants.students.length; i++) {
-        query.push({ username: classe.participants.students[i].username });
+        console.log(classe.participants.students[i]);
+        query.push({ username: classe.participants.students[i] });
     }
     query = {$or: query};
+
+    console.log(JSON.stringify(query));
 
     authenticate(req.app.config)
         .then(function(token) {
