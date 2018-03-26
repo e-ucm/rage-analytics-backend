@@ -157,15 +157,14 @@ router.get('/performance_full/:groupid', function (req, res) {
                 .then(function(performance) {
                     return obtainUsers(classReq, req)
                         .then(function(allStudents) {
-                            console.log(JSON.stringify(allStudents, null, 2));
 
-                            for (var i = allStudents.students.length - 1; i >= 0; i--) {
-                                var exid = getExternalId(allStudents.students[i]);
-                                var student = { id: exid, username: allStudents.students[i].username, score: 0 };
-                                var improvement = { id: exid, username: allStudents.students[i].username, score: 0 };
+                            for (var i = allStudents.length - 1; i >= 0; i--) {
+                                var exid = getExternalId(allStudents[i]);
+                                var student = { id: exid, username: allStudents[i].username, score: 0 };
+                                var improvement = { id: exid, username: allStudents[i].username, score: 0 };
 
                                 for (var j = performance.students.length - 1; j >= 0; j--) {
-                                    if (allStudents.students[i].username === performance.students[j].student) {
+                                    if (allStudents[i].username === performance.students[j].student) {
                                         student.score = performance.students[j].score;
 
                                         for (var k = performance.previous.length - 1; k >= 0; k--) {
