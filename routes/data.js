@@ -184,6 +184,14 @@ router.get('/performance_full/:groupid', function (req, res) {
                                 analysisresult.improvement.push(improvement);
                             }
 
+                            analysisresult.students.sort(function(x, y){
+                                return y.score - x.score;
+                            });
+
+                            analysisresult.improvement.sort(function(x, y){
+                                return y.score - x.score;
+                            });
+
                             return analysisresult;
                         });
                 });
