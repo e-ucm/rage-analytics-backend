@@ -308,7 +308,7 @@ var obtainUsers = function(classe, req) {
                 method: 'GET',
                 json: true,
                 headers: {
-                    Authorization: "Bearer " + token
+                    Authorization: 'Bearer ' + token
                 }
             }, function (err, httpResponse, body) {
                 if (err || (httpResponse && httpResponse.statusCode !== 200)) {
