@@ -45,7 +45,7 @@ router.get('/overall_full/:studentid', function (req, res) {
     req.app.esClient.search({
         size: 200,
         from: 0,
-        index: 'results-beaconing-overall',,
+        index: 'results-beaconing-overall',
         q: '_id:' + studentId.toString()
     }, function (error, response) {
         if (error) {
@@ -168,9 +168,9 @@ router.get('/performance_full/:groupid', function (req, res) {
                                         student.score = performance.students[j].score;
 
                                         for (var k = performance.previous.length - 1; k >= 0; k--) {
-                                            if(performance.previous[k].student === performance.students[j].student){
-                                                var improvement = student.score - performance.previous[k].score;
-                                                improvement.score = improvement > 0 ? improvement : 0;
+                                            if (performance.previous[k].student === performance.students[j].student) {
+                                                var imp = student.score - performance.previous[k].score;
+                                                improvement.score = imp > 0 ? imp : 0;
                                                 performance.previous.splice(k, 1);
                                             }
                                         }
@@ -291,35 +291,40 @@ var obtainPerformance = function(classe, scale, date, req) {
             return deferred.reject(new Error(error));
         }
 
-        var students = [], previousStudents = [];
+        var students = [], previous = [];
         if (response.hits && response.hits.hits.length) {
-            if(response.hits.hits[0]._source[syear]){
+            if (response.hits.hits[0]._source[syear]) {
                 if (scale === 'year') {
                     students = response.hits.hits[0]._source[syear].students;
                 }else if (scale === 'month') {
                     var month = date.month();
 
-                    // Obtain previous week
-                    if(month-1 >= 0 && response.hits.hits[0]._source[syear].months[(month-1).toString()]){
-                        previous = response.hits.hits[0]._source[syear].months[(month-1).toString()].students;
-                    }else if(month-1 < 0 && response.hits.hits[0]._source[(year-1).toString()].months['11']){
-                        previous = response.hits.hits[0]._source[(year-1).toString()].months['11'].students;
+                    // Obtain previous month
+                    if (month - 1 >= 0 && response.hits.hits[0]._source[syear].months[(month - 1).toString()]) {
+                        previous = response.hits.hits[0]._source[syear].months[(month - 1).toString()].students;
+                    }else if (month - 1 < 0 && response.hits.hits[0]._source[(year - 1).toString()].months['11']) {
+                        previous = response.hits.hits[0]._source[(year - 1).toString()].months['11'].students;
                     }
 
-                    // Obtain current week
-                    if(response.hits.hits[0]._source[year].months[month])
+                    // Obtain current month
+                    if (response.hits.hits[0]._source[syear].months[month.toString()]) {
                         students = response.hits.hits[0]._source[syear].months[month.toString()].students;
+                    }
 
                 }else if (scale === 'week') {
                     var week = date.week();
 
-                    if(week-1 >= 0 && response.hits.hits[0]._source[syear].weeks[(week-1).toString()]){
-                        previous = response.hits.hits[0]._source[syear].weeks[(week-1).toString()].students;
-                    }else if(week-1 < 0 && response.hits.hits[0]._source[(year-1).toString()].weeks['51']){
-                        previous = response.hits.hits[0]._source[(year-1).toString()].weeks['51'].students;
+                    // Obtain previous week
+                    if (week - 1 >= 0 && response.hits.hits[0]._source[syear].weeks[(week - 1).toString()]) {
+                        previous = response.hits.hits[0]._source[syear].weeks[(week - 1).toString()].students;
+                    }else if (week - 1 < 0 && response.hits.hits[0]._source[(year - 1).toString()].weeks['51']) {
+                        previous = response.hits.hits[0]._source[(year - 1).toString()].weeks['51'].students;
                     }
 
-                    students = response.hits.hits[0]._source[year].weeks[week.toString()].students;
+                    // Obtain current month
+                    if (response.hits.hits[0]._source[syear].weeks[week.toString()]) {
+                        students = response.hits.hits[0]._source[syear].weeks[week.toString()].students;
+                    }
                 }
             }
         }
