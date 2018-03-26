@@ -157,6 +157,7 @@ router.get('/performance_full/:groupid', function (req, res) {
                 .then(function(performance) {
                     return obtainUsers(classReq, req)
                         .then(function(allStudents) {
+                            console.log(JSON.stringify(allStudents, null, 2));
 
                             for (var i = allStudents.students.length - 1; i >= 0; i--) {
                                 var exid = getExternalId(allStudents.students[i]);
