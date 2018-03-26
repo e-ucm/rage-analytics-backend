@@ -33,13 +33,20 @@ router.get('/overall/:studentid', function (req, res) {
 });
 
 router.get('/overall_full/:studentid', function (req, res) {
+    var studentId = req.params.studentId;
+
+    if (!studentId) {
+        res.status(400);
+        return res.json({message: 'Invalid studentId'});
+    }
 
     var deferred = Q.defer();
 
     req.app.esClient.search({
         size: 200,
         from: 0,
-        index: 'beaconing-overall'
+        index: 'results-beaconing-overall',,
+        q: '_id:' + studentId.toString()
     }, function (error, response) {
         if (error) {
             if (response.error && response.error.type === 'index_not_found_exception') {
@@ -147,22 +154,34 @@ router.get('/performance_full/:groupid', function (req, res) {
             }
 
             return obtainPerformance(classReq, scale, fdate, req)
-                .then(function(students) {
+                .then(function(performance) {
                     return obtainUsers(classReq, req)
                         .then(function(allStudents) {
 
-                            for (var i = allStudents.length - 1; i >= 0; i--) {
-                                var student = { id: getExternalId(allStudents[i]), username: allStudents[i].username, score: 0 };
+                            for (var i = allStudents.students.length - 1; i >= 0; i--) {
+                                var exid = getExternalId(allStudents.students[i]);
+                                var student = { id: exid, username: allStudents.students[i].username, score: 0 };
+                                var improvement = { id: exid, username: allStudents.students[i].username, score: 0 };
 
-                                for (var j = students.length - 1; j >= 0; j--) {
-                                    if (allStudents[i].username === students[j].student) {
-                                        student.score = students[j].score;
+                                for (var j = performance.students.length - 1; j >= 0; j--) {
+                                    if (allStudents.students[i].username === performance.students[j].student) {
+                                        student.score = performance.students[j].score;
+
+                                        for (var k = performance.previous.length - 1; k >= 0; k--) {
+                                            if(performance.previous[k].student === performance.students[j].student){
+                                                var improvement = student.score - performance.previous[k].score;
+                                                improvement.score = improvement > 0 ? improvement : 0;
+                                                performance.previous.splice(k, 1);
+                                            }
+                                        }
+
+                                        performance.students.splice(j, 1);
                                         break;
                                     }
                                 }
 
                                 analysisresult.students.push(student);
-                                analysisresult.improvement.push(student);
+                                analysisresult.improvement.push(improvement);
                             }
 
                             return analysisresult;
@@ -256,7 +275,8 @@ router.get('/performance/:classId', function (req, res) {
 
 var obtainPerformance = function(classe, scale, date, req) {
     var deferred = Q.defer();
-    var year = date.year().toString();
+    var year = date.year();
+    var syear = date.year().toString();
 
     req.app.esClient.search({
         size: 200,
@@ -271,18 +291,40 @@ var obtainPerformance = function(classe, scale, date, req) {
             return deferred.reject(new Error(error));
         }
 
-        var students = [];
+        var students = [], previousStudents = [];
         if (response.hits && response.hits.hits.length) {
-            if (scale === 'year') {
-                students = response.hits.hits[0]._source[year].students;
-            }else if (scale === 'month') {
-                students = response.hits.hits[0]._source[year].months[date.month().toString()].students;
-            }else if (scale === 'week') {
-                students = response.hits.hits[0]._source[year].weeks[date.week().toString()].students;
+            if(response.hits.hits[0]._source[syear]){
+                if (scale === 'year') {
+                    students = response.hits.hits[0]._source[syear].students;
+                }else if (scale === 'month') {
+                    var month = date.month();
+
+                    // Obtain previous week
+                    if(month-1 >= 0 && response.hits.hits[0]._source[syear].months[(month-1).toString()]){
+                        previous = response.hits.hits[0]._source[syear].months[(month-1).toString()].students;
+                    }else if(month-1 < 0 && response.hits.hits[0]._source[(year-1).toString()].months['11']){
+                        previous = response.hits.hits[0]._source[(year-1).toString()].months['11'].students;
+                    }
+
+                    // Obtain current week
+                    if(response.hits.hits[0]._source[year].months[month])
+                        students = response.hits.hits[0]._source[syear].months[month.toString()].students;
+
+                }else if (scale === 'week') {
+                    var week = date.week();
+
+                    if(week-1 >= 0 && response.hits.hits[0]._source[syear].weeks[(week-1).toString()]){
+                        previous = response.hits.hits[0]._source[syear].weeks[(week-1).toString()].students;
+                    }else if(week-1 < 0 && response.hits.hits[0]._source[(year-1).toString()].weeks['51']){
+                        previous = response.hits.hits[0]._source[(year-1).toString()].weeks['51'].students;
+                    }
+
+                    students = response.hits.hits[0]._source[year].weeks[week.toString()].students;
+                }
             }
         }
 
-        deferred.resolve(students);
+        deferred.resolve({current: students, previous: previous});
     });
 
     return deferred.promise;
