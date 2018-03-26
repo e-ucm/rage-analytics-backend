@@ -329,7 +329,7 @@ var obtainPerformance = function(classe, scale, date, req) {
             }
         }
 
-        deferred.resolve({current: students, previous: previous});
+        deferred.resolve({students: students, previous: previous});
     });
 
     return deferred.promise;
