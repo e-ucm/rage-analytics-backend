@@ -77,6 +77,11 @@ router.post('/templates/:type/:id', function (req, res) {
  *      }
  */
 router.post('/templates/:type/author/:idAuthor', function (req, res) {
+    console.log(JSON.stringify(req.params, null, 2));
+    console.log(JSON.stringify(req.body, null, 2));
+    console.log(req.params.idAuthor);
+    console.log(req.body.title);
+
     req.app.esClient.search({
         size: 100,
         from: 0,
@@ -87,10 +92,13 @@ router.post('/templates/:type/author/:idAuthor', function (req, res) {
                 bool: {
                     must: [
                         {
-                            multi_match: {
-                                author: req.params.idAuthor,
+                            match: {
+                                author: req.params.idAuthor
+                            }
+                        },
+                        {
+                            match: {
                                 title: req.body.title
-
                             }
                         }
                     ]
