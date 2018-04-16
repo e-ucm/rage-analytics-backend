@@ -87,13 +87,10 @@ router.post('/templates/:type/author/:idAuthor', function (req, res) {
                 bool: {
                     must: [
                         {
-                            match: {
-                                author: req.params.idAuthor
-                            }
-                        },
-                        {
-                            match: {
+                            multi_match: {
+                                author: req.params.idAuthor,
                                 title: req.body.title
+
                             }
                         }
                     ]
