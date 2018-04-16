@@ -77,21 +77,41 @@ router.post('/templates/:type/:id', function (req, res) {
  *      }
  */
 router.post('/templates/:type/author/:idAuthor', function (req, res) {
-    if(!req.body.title || !req.params.idAuthor){
-        res.status(400);
-        return res.json({message: "Missing title or idAuthor"});
-    }
-
-    var title_scaped = req.body.title.replace(/[\+\-\=\<\>\!\[\]\/\{\}\(\)\^\"\~\*\?\:\\\&\|]/g, "\\$&");
-    var author_scaped = req.params.idAuthor.replace(/[\+\-\=\<\>\!\[\]\/\{\}\(\)\^\"\~\*\?\:\\\&\|]/g, "\\$&");
-
-
     req.app.esClient.search({
         size: 100,
         from: 0,
         index: '.template',
         type: req.params.type,
-        q: '(author:' + author_scaped + ')AND(title:' + title_scaped + ')'
+        body: {
+            query: {
+                bool: {
+                    must: [
+                        {
+                            match: {
+                                author: '\\:' + req.params.idAuthor + '\\:'
+                            }
+                        },
+                        {
+                            match: {
+                                title: '\\:' + req.body.title + '\\:'
+                            }
+                        }
+                    ],
+                    filter: [
+                        {
+                            term: {
+                                author: eq.params.idAuthor 
+                            }
+                        },
+                        {
+                            term: {
+                                title: req.body.title 
+                            }
+                        }
+                    ]
+                }
+            }
+        }
     }, function (error, response) {
         if (!error) {
             var obj = {
