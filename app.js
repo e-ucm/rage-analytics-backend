@@ -78,9 +78,9 @@ var connectToDB = function () {
                             }
                             app.config.storm.realtimeJar = performanceFolder;
                             stormService.startTopology(app.config.storm.defaultAnalysisName + 'performance', app.config.kafka.topicName);
-                        }, 15000);
-                    }, 15000);
-                }, 15000);
+                        }, 30000);
+                    }, 30000);
+                }, 30000);
             }
         }
     });
