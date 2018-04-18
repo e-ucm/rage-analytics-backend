@@ -33,7 +33,7 @@ router.get('/overall/:studentid', function (req, res) {
 });
 
 router.get('/overall_full/:studentid', function (req, res) {
-    var studentId = req.params.studentId;
+    var studentId = req.params.studentid;
 
     if (!studentId) {
         res.status(400);
@@ -368,7 +368,12 @@ var obtainUsers = function(classe, req) {
             }, function (err, httpResponse, body) {
                 if (err || (httpResponse && httpResponse.statusCode !== 200)) {
                     console.log('obtainUsers: error');
-                    return deferred.reject(body);
+                    return deferred.reject({
+                        classId: groupid,
+                        students: [],
+                        improvement: [],
+                        year: fdate.year()
+                    });
                 }
 
                 console.log('obtainUsers: success');
