@@ -369,7 +369,7 @@ var obtainUsers = function(classe, req) {
                 if (err || (httpResponse && httpResponse.statusCode !== 200)) {
                     console.log('obtainUsers: error');
                     return deferred.reject({
-                        classId: groupid,
+                        classId: -1,
                         students: [],
                         improvement: [],
                         year: fdate.year()
