@@ -372,7 +372,7 @@ var obtainUsers = function(classe, req) {
                         classId: -1,
                         students: [],
                         improvement: [],
-                        year: fdate.year()
+                        year: 0
                     });
                 }
 
