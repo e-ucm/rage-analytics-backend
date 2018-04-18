@@ -157,7 +157,6 @@ router.get('/performance/:groupid', function (req, res) {
                 .then(function(performance) {
                     return obtainUsers(classReq, req)
                         .then(function(allStudents) {
-
                             for (var i = allStudents.length - 1; i >= 0; i--) {
                                 var exid = getExternalId(allStudents[i]);
                                 var student = { id: exid, username: allStudents[i].username, score: 0 };
@@ -193,6 +192,15 @@ router.get('/performance/:groupid', function (req, res) {
                             });
 
                             return analysisresult;
+                        })
+                        .fail(function(error){
+                            res.status(404);
+                            return res.json({
+                                classId: -1,
+                                students: [],
+                                improvement: [],
+                                year: 0
+                            });
                         });
                 });
         }), res);
@@ -368,12 +376,7 @@ var obtainUsers = function(classe, req) {
             }, function (err, httpResponse, body) {
                 if (err || (httpResponse && httpResponse.statusCode !== 200)) {
                     console.log('obtainUsers: error');
-                    return deferred.reject(new Error({
-                        classId: -1,
-                        students: [],
-                        improvement: [],
-                        year: 0
-                    }));
+                    return deferred.reject();
                 }
 
                 console.log('obtainUsers: success');
