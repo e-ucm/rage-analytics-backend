@@ -96,7 +96,7 @@ router.get('/overall_full/:studentid', function (req, res) {
     restUtils.processResponse(deferred.promise, res);
 });
 
-router.get('/performance_full/:groupid', function (req, res) {
+router.get('/performance/:groupid', function (req, res) {
     var periodStart = req.query.periodStart;
     var scale = req.query.scale;
     var groupid = req.params.groupid;
@@ -207,7 +207,7 @@ var getExternalId = function(user) {
     return -1;
 };
 
-router.get('/performance/:classId', function (req, res) {
+router.get('/performance_dummy/:classId', function (req, res) {
 
     var periodStart = req.query.periodStart;
     var scale = req.query.scale;
