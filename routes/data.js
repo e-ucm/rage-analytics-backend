@@ -407,7 +407,8 @@ var getUser = function(beaconingId, req) {
                 }
 
                 console.log('getUser: success');
-                deferred.resolve(body.user);
+
+                deferred.resolve(body);
             });
         });
 
