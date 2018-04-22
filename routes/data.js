@@ -183,17 +183,17 @@ router.get('/performance/:groupid', function (req, res) {
                                 analysisresult.improvement.push(improvement);
                             }
 
-                            analysisresult.students.sort(function(x, y){
+                            analysisresult.students.sort(function(x, y) {
                                 return y.score - x.score;
                             });
 
-                            analysisresult.improvement.sort(function(x, y){
+                            analysisresult.improvement.sort(function(x, y) {
                                 return y.score - x.score;
                             });
 
                             return analysisresult;
                         })
-                        .fail(function(error){
+                        .fail(function(error) {
                             res.status(404);
                             return res.json({
                                 classId: -1,
@@ -407,6 +407,524 @@ var authenticate = function(config) {
     });
 
     return deferred.promise;
+};
+
+router.get('/glp_results/:activityId/:studentId', function (req, res) {
+    var studentId = req.params.studentId;
+    var activityId = req.params.activityId;
+
+    if (!studentId) {
+        res.status(400);
+        return res.json({message: 'Invalid studentId'});
+    }
+
+    if (!activityId) {
+        res.status(400);
+        return res.json({message: 'Invalid activityId'});
+    }
+
+    var esClient = req.app.esClient;
+
+    var deferred = Q.defer();
+
+    getScores(activityId, esClient, function() {
+        getAccuracy(activityId, esClient, function() {
+            getTimes(activityId, esClient, function() {
+                getAnalytics(activityId, studentId, esClient, function() {
+                    getCompetencies(activityId, studentId, esClient, function() {
+                        deferred.resolve(glpBase);
+                    });
+                });
+            });
+        });
+    });
+
+    restUtils.processResponse(deferred.promise, res);
+});
+
+String.prototype.replaceAll = function(search, replacement) {
+    var target = this;
+    return target.replace(new RegExp(search, 'g'), replacement);
+};
+
+var elasticIndex = function(id) {
+    return id;
+};
+
+var analyticsIndex = function(id) {
+    return 'analytics-' + id;
+};
+
+var competencieIndex = function(id, student) {
+    return 'results-' + id;
+};
+
+var students = {};
+
+var minigames = {};
+
+var doAVG = function(avg, value, n) {
+    return ((avg * n) / (n + 1.0)) + (value / (n + 1.0));
+};
+
+var valueOrZero = function(value) {
+    return value ? value : 0;
+};
+
+var dorequest = function(index, query, esClient, callback) {
+    var deferred = Q.defer();
+
+    esClient.search({
+        size: 1000,
+        from: 0,
+        index: index,
+        query: query
+    }, function (error, response) {
+        if (error) {
+            if (response.error && response.error.type === 'index_not_found_exception') {
+                return deferred.resolve([]);
+            }
+            return deferred.reject(new Error(error));
+        }
+
+        deferred.resolve(response);
+    });
+
+    return deferred.promise;
+};
+
+// ####################################################
+// ################### glpBase OBJECTS ################
+// ####################################################
+
+var glpBase = {
+    competencies: {
+        /*"communication-and-collaboration": 0.1,
+        "problem-solving": 0.3,
+        "information-fluency": 0.7*/
+    },
+    performance: {
+        score: {
+            own: 0.7, min: 0.2, avg: 0.6, max: 0.4
+        },
+        time: {
+            own: 3403, min: 2340, avg: 3045, max: 4340
+        },
+        accuracy: {
+            own: 0.5, min: 0.2, avg: 0.6, max: 0.9
+        }
+    },
+    minigames: []
+};
+
+// ################################################
+// ################### REQUESTS ###################
+// ################################################
+
+var score_request = {
+    query: {
+        bool: {
+            must: [
+              {
+                query_string: {
+                    analyze_wildcard: true,
+                    query: 'out.event:completed'
+                }
+            }
+            ],
+            must_not: []
+        }
+    },
+    size: 0,
+    _source: {
+        excludes: []
+    },
+    aggs: {
+        2: {
+            terms: {
+                field: 'out.name.keyword',
+                size: 1000,
+                order: {
+                    _term: 'asc'
+                }
+            },
+            aggs: {
+                3: {
+                    terms: {
+                      field: 'orginalId.keyword',
+                      size: 1000,
+                      order: {
+                        1: 'desc'
+                      }
+                    },
+                    aggs: {
+                      1: {
+                        max: {
+                          field: 'out.score'
+                        }
+                      }
+                    }
+                }
+            }
+        }
+    }
+};
+
+var time_request = {
+    query: {
+        bool: {
+            must: [
+              {
+                query_string: {
+                    analyze_wildcard: true,
+                    query: 'out.event:completed'
+                }
+            }
+            ],
+            must_not: []
+        }
+    },
+    size: 0,
+    _source: {
+        excludes: []
+    },
+    aggs: {
+        2: {
+            terms: {
+                field: 'out.name.keyword',
+                size: 1000,
+                order: {
+                    _term: 'asc'
+                }
+            },
+            aggs: {
+                3: {
+                    terms: {
+                      field: 'orginalId.keyword',
+                      size: 1000,
+                      order: {
+                        1: 'desc'
+                      }
+                    },
+                    aggs: {
+                      1: {
+                        min: {
+                          field: 'out.ext.time'
+                        }
+                      }
+                    }
+                }
+            }
+        }
+    }
+};
+
+var accuracy_request = {
+    query: {
+        bool: {
+            must: [
+              {
+                query_string: {
+                    query: 'out.event:completed',
+                    analyze_wildcard: true
+                }
+            }
+            ],
+            must_not: []
+        }
+    },
+    size: 0,
+    _source: {
+        excludes: []
+    },
+    aggs: {
+        4: {
+            terms: {
+                field: 'out.success',
+                size: 5,
+                order: {
+                    _count: 'desc'
+                }
+            },
+            aggs: {
+                5: {
+                    terms: {
+                      field: 'out.name.keyword',
+                      size: 1000,
+                      order: {
+                        _term: 'asc'
+                      }
+                    },
+                    aggs: {
+                      6: {
+                        terms: {
+                          field: 'orginalId.keyword',
+                          size: 1000,
+                          order: {
+                            _count: 'desc'
+                          }
+                        }
+                      }
+                    }
+                }
+            }
+        }
+    }
+};
+
+var competencie_request = function(student) {
+    return {
+        query: {
+            bool: {
+                must: [
+                  {
+                    match: {
+                        _id: student
+                    }
+                }
+                ]
+            }
+        }
+    };
+};
+
+// ################################################
+
+var extractValues = function(b, metric) {
+    for (var i = 0; i < b.aggregations['2'].buckets.length; i++) {
+        var current_student = b.aggregations['2'].buckets[i];
+
+        for (var j = 0; j < current_student['3'].buckets.length; j++) {
+            var current_minigame = current_student['3'].buckets[j];
+
+            // Generate student object
+            if (!students[current_student.key])
+                students[current_student.key] = {};
+
+            if (!students[current_student.key][current_minigame.key])
+                students[current_student.key][current_minigame.key] = {};
+
+            students[current_student.key][current_minigame.key][metric] = current_minigame['1'].value;
+
+            //Generate minigame object
+
+            if (!minigames[current_minigame.key]) {
+                minigames[current_minigame.key] = {};
+                minigames[current_minigame.key][metric] = {value: current_minigame['1'].value, n_value: 1};
+            } else if (!minigames[current_minigame.key][metric]) {
+                minigames[current_minigame.key][metric] = {value: current_minigame['1'].value, n_value: 1};
+            }else {
+                var mg = minigames[current_minigame.key][metric];
+
+                var n = mg.n_value + 1;
+                mg.value = doAVG(mg.value, current_minigame['1'].value, mg.n_value);
+                mg.n_value = n;
+
+                minigames[current_minigame.key][metric] = mg;
+            }
+
+            glpBase.performance[metric].min = Math.min(current_minigame['1'].value, glpBase.performance[metric].min);
+            glpBase.performance[metric].max = Math.max(current_minigame['1'].value, glpBase.performance[metric].max);
+            glpBase.performance[metric].avg = -1;
+        }
+    }
+};
+
+var getScores = function(activityId, esClient, callback) {
+    console.log('Score');
+    dorequest(elasticIndex(activityId), score_request, esClient, function(error, b) {
+        if (error) {
+            console.log('error');
+        }else {
+            extractValues(b,'score');
+        }
+
+        callback();
+    });
+};
+
+var getAccuracy = function(activityId, esClient, callback) {
+    console.log('accuracy');
+    dorequest(elasticIndex(activityId), accuracy_request, esClient, function(error, b) {
+        if (error) {
+            console.log('error');
+        }else {
+            for (var i = 0; i < b.aggregations['4'].buckets.length; i++) {
+                var won = b.aggregations['4'].buckets[i].key;
+
+                var current_case = b.aggregations['4'].buckets[i];
+
+                for (var j = 0; j < current_case['5'].buckets.length; j++) {
+                    var current_student = current_case['5'].buckets[j];
+
+                    for (var k = 0; k < current_student['6'].buckets.length; k++) {
+                        var current_minigame = current_student['6'].buckets[k];
+
+                        // Generate student object
+                        if (!students[current_student.key])
+                            students[current_student.key] = {};
+
+                        if (!students[current_student.key][current_minigame.key])
+                            students[current_student.key][current_minigame.key] = {};
+
+                        if (!students[current_student.key][current_minigame.key].accuracy)
+                            students[current_student.key][current_minigame.key].accuracy = {correct: 0, incorrect: 0};
+
+                        if (won) {
+                            students[current_student.key][current_minigame.key].accuracy.correct += current_minigame.doc_count;
+                        }else {
+                            students[current_student.key][current_minigame.key].accuracy.incorrect += current_minigame.doc_count;
+                        }
+
+                        //Generate minigame object
+
+                        if (!minigames[current_minigame.key]) {
+                            minigames[current_minigame.key] = {};
+                            minigames[current_minigame.key].accuracy = {correct: 0, incorrect: 0};
+                        } else if (!minigames[current_minigame.key].accuracy) {
+                            minigames[current_minigame.key].accuracy = {correct: 0, incorrect: 0};
+                        }
+
+                        if (won) {
+                            minigames[current_minigame.key].accuracy.correct += current_minigame.doc_count;
+                        }else {
+                            minigames[current_minigame.key].accuracy.incorrect += current_minigame.doc_count;
+                        }
+
+                    }
+                }
+            }
+
+
+            for (var student in students) {
+                for (var minigame in students[student]) {
+                    if (students[student][minigame].accuracy) {
+                        var student_accuracy = students[student][minigame].accuracy;
+                        student_accuracy.value = student_accuracy.correct / (student_accuracy.correct + student_accuracy.incorrect);
+
+                        glpBase.performance.accuracy.min = Math.min(student_accuracy.value, glpBase.performance.accuracy.min);
+                        glpBase.performance.accuracy.max = Math.max(student_accuracy.value, glpBase.performance.accuracy.max);
+                        glpBase.performance.accuracy.avg = -1;
+
+                        if (!minigames[minigame].accuracy.n_value) {
+                            minigames[minigame].accuracy.value = 0;
+                            minigames[minigame].accuracy.n_value = 0;
+                        }
+
+                        minigames[minigame].accuracy.value = doAVG(minigames[minigame].accuracy.value, student_accuracy.value, minigames[minigame].accuracy.n_value);
+                        minigames[minigame].accuracy.n_value++;
+                    }
+                }
+            }
+        }
+
+        callback();
+    });
+};
+
+var getTimes = function(activityId, esClient, callback) {
+    console.log('Times');
+    dorequest(elasticIndex(activityId), time_request, esClient, function(error, b) {
+        if (error) {
+            console.log('error');
+        }else {
+            extractValues(b,'time');
+        }
+
+        callback();
+    });
+};
+
+var getAnalytics = function(activityId, username, esClient, callback) {
+    console.log('Analytics');
+    dorequest(analyticsIndex(activityId), {}, esClient, function(error, b) {
+        if (error) {
+            console.log('error');
+        }else {
+            var total = {
+                own: {
+                    score: 0,
+                    time: 0,
+                    accuracy: 0
+                },
+                avg: {
+                    score: 0,
+                    time: 0,
+                    accuracy: 0
+                },
+                count: 0
+            };
+
+            for (var i = 0; i < b.hits.hits.length; i++) {
+                var current_node = b.hits.hits[i]._source;
+                var activityId = b.hits.hits[i]._id;
+
+                if (!current_node.children) {
+                    glpBase.minigames.push({
+                        name: current_node.name,
+                        score: {
+                            own: valueOrZero(students[username][activityId].score),
+                            avg: valueOrZero(minigames[activityId].score.value)
+                        },
+                        time: {
+                            own: valueOrZero(students[username][activityId].time),
+                            avg: valueOrZero(minigames[activityId].time.value)
+                        },
+                        accuracy: {
+                            own: valueOrZero(students[username][activityId].accuracy.value),
+                            avg: valueOrZero(minigames[activityId].accuracy.value)
+                        }
+                    });
+
+                    total.count++;
+
+                    total.own.score += valueOrZero(students[username][activityId].score);
+                    total.own.time += valueOrZero(students[username][activityId].time);
+                    total.own.accuracy += valueOrZero(students[username][activityId].accuracy.value);
+                    total.avg.score += valueOrZero(minigames[activityId].score.value);
+                    total.avg.time += valueOrZero(minigames[activityId].time.value);
+                    total.avg.accuracy += valueOrZero(minigames[activityId].accuracy.value);
+                }
+            }
+
+            console.log(total.own.accuracy);
+            console.log(total.count);
+
+            glpBase.performance.score.own = total.own.score / total.count;
+            glpBase.performance.time.own = total.own.time / total.count;
+            glpBase.performance.accuracy.own = total.own.accuracy / total.count;
+            glpBase.performance.score.avg = total.avg.score / total.count;
+            glpBase.performance.time.avg = total.avg.time / total.count;
+            glpBase.performance.accuracy.avg = total.avg.accuracy / total.count;
+        }
+
+        callback();
+    });
+};
+
+var getCompetencies = function(activityId, username, esClient, callback) {
+    console.log('Competencies');
+    dorequest(competencieIndex(activityId), competencie_request(username), esClient, function(error, b) {
+        if (error) {
+            console.log('error');
+        }else {
+            for (var i = 0; i < b.hits.hits.length; i++) {
+                var current_node = b.hits.hits[i]._source;
+
+                if (current_node.competencies) {
+                    for (var competencie in current_node.competencies) {
+                        if (!glpBase.competencies[competencie]) {
+                            glpBase.competencies[competencie] = 0;
+                        }
+
+                        glpBase.competencies[competencie] += current_node.competencies[competencie];
+                    }
+                }
+            }
+        }
+
+        callback();
+    });
 };
 
 

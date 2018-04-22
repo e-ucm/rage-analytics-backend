@@ -258,6 +258,7 @@ exports.app = {
         '/collector/end',
         '/lti/key/:id',
         '/data/overall_full/:studentid',
+        '/data/glp_results/:activityId/:studentId',
         '/env'
     ],
     autoroles: [

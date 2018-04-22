@@ -100,12 +100,12 @@ router.post('/templates/:type/author/:idAuthor', function (req, res) {
                     filter: [
                         {
                             term: {
-                                author: req.params.idAuthor 
+                                author: req.params.idAuthor
                             }
                         },
                         {
                             term: {
-                                title: req.body.title 
+                                title: req.body.title
                             }
                         }
                     ]
