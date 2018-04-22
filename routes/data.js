@@ -389,7 +389,7 @@ var obtainUsers = function(classe, req) {
 
 var getUser = function(beaconingId, req) {
     var deferred = Q.defer();
-    console.log('obtainUser: started');
+    console.log('getUser: started');
 
     authenticate(req.app.config)
         .then(function(token) {
@@ -402,12 +402,12 @@ var getUser = function(beaconingId, req) {
                 }
             }, function (err, httpResponse, body) {
                 if (err || (httpResponse && httpResponse.statusCode !== 200)) {
-                    console.log('obtainUsers: error');
+                    console.log('getUser: error');
                     return deferred.reject();
                 }
 
-                console.log('obtainUsers: success');
-                deferred.resolve(body.data.user);
+                console.log('getUser: success');
+                deferred.resolve(body.user);
             });
         });
 
@@ -476,7 +476,7 @@ router.get('/glp_results/:activityId/:studentId', function (req, res) {
                 });
             });
         })
-        .catch(function(error) {
+        .fail(function(error) {
             deferred.reject(error);
         });
 
