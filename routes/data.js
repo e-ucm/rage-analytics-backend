@@ -403,7 +403,7 @@ var getUser = function(beaconingId, req) {
             }, function (err, httpResponse, body) {
                 if (err || (httpResponse && httpResponse.statusCode !== 200)) {
                     console.log('getUser: error');
-                    return deferred.reject();
+                    return deferred.reject(new Error('User not found'));
                 }
 
                 console.log('getUser: success');
@@ -457,29 +457,33 @@ router.get('/glp_results/:activityId/:studentId', function (req, res) {
 
     var deferred = Q.defer();
 
-    getUser(studentId, req)
-        .then(function(user) {
-            console.log(user.username);
-            return getScores(activityId, esClient)
-            .then(function() {
-                return getAccuracy(activityId, esClient)
+    try{
+        getUser(studentId, req)
+            .then(function(user) {
+                console.log(user.username);
+                return getScores(activityId, esClient)
                 .then(function() {
-                    return getTimes(activityId, esClient)
+                    return getAccuracy(activityId, esClient)
                     .then(function() {
-                        return getAnalytics(activityId, user.username, esClient)
+                        return getTimes(activityId, esClient)
                         .then(function() {
-                            return getCompetencies(activityId, user.username, esClient)
+                            return getAnalytics(activityId, user.username, esClient)
                             .then(function() {
-                                deferred.resolve(glpBase);
+                                return getCompetencies(activityId, user.username, esClient)
+                                .then(function() {
+                                    deferred.resolve(glpBase);
+                                });
                             });
                         });
                     });
                 });
+            })
+            .fail(function(error) {
+                deferred.reject(error);
             });
-        })
-        .fail(function(error) {
-            deferred.reject(error);
-        });
+    }catch(error){
+        deferred.reject(new Error('Unable to find data for that ActivityId'));
+    }
 
     restUtils.processResponse(deferred.promise, res);
 });
@@ -916,14 +920,21 @@ var getAnalytics = function(activityId, username, esClient) {
                 var activityId = b.hits.hits[i]._id;
 
                 if (!currentNode.children) {
+                    var tmp = {}
+                    tmp.score = students[username][activityId] ? valueOrZero(students[username][activityId].score) : 0;
+                    tmp.time = students[username][activityId] ? valueOrZero(students[username][activityId].time) : 0;
+                    tmp.accuracy = (students[username][activityId] ? 
+                                    (students[username][activityId].accuracy ? 
+                                    valueOrZero(students[username][activityId].accuracy.value) : 0) : 0);
+
                     glpBase.minigames.push({
                         name: currentNode.name,
                         score: {
-                            own: valueOrZero(students[username][activityId].score),
+                            own: tmp.score,
                             avg: valueOrZero(minigames[activityId].score.value)
                         },
                         time: {
-                            own: valueOrZero(students[username][activityId].time),
+                            own: tmp.time,
                             avg: valueOrZero(minigames[activityId].time.value)
                         },
                         accuracy: {
