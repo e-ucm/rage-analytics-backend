@@ -427,7 +427,7 @@ router.get('/glp_results/:activityId/:studentId', function (req, res) {
 
     var esClient = req.app.esClient;
 
-    var deferred = getScores(activityId, esClient)
+    var promise = getScores(activityId, esClient)
         .then(function() {
             return getAccuracy(activityId, esClient)
             .then(function() {
@@ -444,7 +444,7 @@ router.get('/glp_results/:activityId/:studentId', function (req, res) {
             });
         });
 
-    restUtils.processResponse(deferred.promise, res);
+    restUtils.processResponse(promise, res);
 });
 
 String.prototype.replaceAll = function(search, replacement) {
@@ -739,6 +739,7 @@ var extractValues = function(b, metric) {
 
 var getScores = function(activityId, esClient) {
     var deferred = Q.defer();
+
     console.log('Score');
     dorequest(elasticIndex(activityId), scoreRequest, esClient)
         .then(function(b) {
