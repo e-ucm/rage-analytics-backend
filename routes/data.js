@@ -387,6 +387,33 @@ var obtainUsers = function(classe, req) {
     return deferred.promise;
 };
 
+var getUser = function(beaconingId, req) {
+    var deferred = Q.defer();
+    console.log('obtainUser: started');
+
+    authenticate(req.app.config)
+        .then(function(token) {
+            request({
+                uri: req.app.config.a2.a2ApiPath + 'users/external/beaconing/' + beaconingId,
+                method: 'GET',
+                json: true,
+                headers: {
+                    Authorization: 'Bearer ' + token
+                }
+            }, function (err, httpResponse, body) {
+                if (err || (httpResponse && httpResponse.statusCode !== 200)) {
+                    console.log('obtainUsers: error');
+                    return deferred.reject();
+                }
+
+                console.log('obtainUsers: success');
+                deferred.resolve(body.data.user);
+            });
+        });
+
+    return deferred.promise;
+};
+
 var authenticate = function(config) {
     var deferred = Q.defer();
     console.log('authenticate: start');
@@ -425,19 +452,26 @@ router.get('/glp_results/:activityId/:studentId', function (req, res) {
         return res.json({message: 'Invalid activityId'});
     }
 
+    
+
+
     var esClient = req.app.esClient;
 
-    var promise = getScores(activityId, esClient)
-        .then(function() {
-            return getAccuracy(activityId, esClient)
+    var promise = getUser(studentId, req)
+        .then(function(user)){
+            console.log(user.username);
+            return getScores(activityId, esClient)
             .then(function() {
-                return getTimes(activityId, esClient)
+                return getAccuracy(activityId, esClient)
                 .then(function() {
-                    return getAnalytics(activityId, studentId, esClient)
+                    return getTimes(activityId, esClient)
                     .then(function() {
-                        return getCompetencies(activityId, studentId, esClient)
+                        return getAnalytics(activityId, user.username, esClient)
                         .then(function() {
-                            deferred.resolve(glpBase);
+                            return getCompetencies(activityId, user.username, esClient)
+                            .then(function() {
+                                deferred.resolve(glpBase);
+                            });
                         });
                     });
                 });
@@ -483,7 +517,7 @@ var dorequest = function(index, query, esClient) {
         size: 1000,
         from: 0,
         index: index,
-        query: query
+        body: query
     }, function (error, response) {
         if (error) {
             if (response.error && response.error.type === 'index_not_found_exception') {
