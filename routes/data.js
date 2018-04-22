@@ -409,6 +409,8 @@ var authenticate = function(config) {
     return deferred.promise;
 };
 
+// jscs:disable requireCamelCaseOrUpperCaseIdentifiers
+
 router.get('/glp_results/:activityId/:studentId', function (req, res) {
     var studentId = req.params.studentId;
     var activityId = req.params.activityId;
@@ -425,19 +427,22 @@ router.get('/glp_results/:activityId/:studentId', function (req, res) {
 
     var esClient = req.app.esClient;
 
-    var deferred = Q.defer();
-
-    getScores(activityId, esClient, function() {
-        getAccuracy(activityId, esClient, function() {
-            getTimes(activityId, esClient, function() {
-                getAnalytics(activityId, studentId, esClient, function() {
-                    getCompetencies(activityId, studentId, esClient, function() {
-                        deferred.resolve(glpBase);
+    var deferred = getScores(activityId, esClient)
+        .then(function() {
+            return getAccuracy(activityId, esClient)
+            .then(function() {
+                return getTimes(activityId, esClient)
+                .then(function() {
+                    return getAnalytics(activityId, studentId, esClient)
+                    .then(function() {
+                        return getCompetencies(activityId, studentId, esClient)
+                        .then(function() {
+                            deferred.resolve(glpBase);
+                        });
                     });
                 });
             });
         });
-    });
 
     restUtils.processResponse(deferred.promise, res);
 });
@@ -471,7 +476,7 @@ var valueOrZero = function(value) {
     return value ? value : 0;
 };
 
-var dorequest = function(index, query, esClient, callback) {
+var dorequest = function(index, query, esClient) {
     var deferred = Q.defer();
 
     esClient.search({
@@ -521,7 +526,7 @@ var glpBase = {
 // ################### REQUESTS ###################
 // ################################################
 
-var score_request = {
+var scoreRequest = {
     query: {
         bool: {
             must: [
@@ -551,18 +556,18 @@ var score_request = {
             aggs: {
                 3: {
                     terms: {
-                      field: 'orginalId.keyword',
-                      size: 1000,
-                      order: {
-                        1: 'desc'
-                      }
+                        field: 'orginalId.keyword',
+                        size: 1000,
+                        order: {
+                            1: 'desc'
+                        }
                     },
                     aggs: {
-                      1: {
-                        max: {
-                          field: 'out.score'
+                        1: {
+                            max: {
+                                field: 'out.score'
+                            }
                         }
-                      }
                     }
                 }
             }
@@ -570,7 +575,7 @@ var score_request = {
     }
 };
 
-var time_request = {
+var timeRequest = {
     query: {
         bool: {
             must: [
@@ -600,18 +605,18 @@ var time_request = {
             aggs: {
                 3: {
                     terms: {
-                      field: 'orginalId.keyword',
-                      size: 1000,
-                      order: {
-                        1: 'desc'
-                      }
+                        field: 'orginalId.keyword',
+                        size: 1000,
+                        order: {
+                            1: 'desc'
+                        }
                     },
                     aggs: {
-                      1: {
-                        min: {
-                          field: 'out.ext.time'
+                        1: {
+                            min: {
+                                field: 'out.ext.time'
+                            }
                         }
-                      }
                     }
                 }
             }
@@ -619,7 +624,7 @@ var time_request = {
     }
 };
 
-var accuracy_request = {
+var accuracyRequest = {
     query: {
         bool: {
             must: [
@@ -649,22 +654,22 @@ var accuracy_request = {
             aggs: {
                 5: {
                     terms: {
-                      field: 'out.name.keyword',
-                      size: 1000,
-                      order: {
-                        _term: 'asc'
-                      }
+                        field: 'out.name.keyword',
+                        size: 1000,
+                        order: {
+                            _term: 'asc'
+                        }
                     },
                     aggs: {
-                      6: {
-                        terms: {
-                          field: 'orginalId.keyword',
-                          size: 1000,
-                          order: {
-                            _count: 'desc'
-                          }
+                        6: {
+                            terms: {
+                                field: 'orginalId.keyword',
+                                size: 1000,
+                                order: {
+                                    _count: 'desc'
+                                }
+                            }
                         }
-                      }
                     }
                 }
             }
@@ -672,7 +677,7 @@ var accuracy_request = {
     }
 };
 
-var competencie_request = function(student) {
+var competencieRequest = function(student) {
     return {
         query: {
             bool: {
@@ -692,155 +697,168 @@ var competencie_request = function(student) {
 
 var extractValues = function(b, metric) {
     for (var i = 0; i < b.aggregations['2'].buckets.length; i++) {
-        var current_student = b.aggregations['2'].buckets[i];
+        var currentStudent = b.aggregations['2'].buckets[i];
 
-        for (var j = 0; j < current_student['3'].buckets.length; j++) {
-            var current_minigame = current_student['3'].buckets[j];
+        for (var j = 0; j < currentStudent['3'].buckets.length; j++) {
+            var currentMinigame = currentStudent['3'].buckets[j];
 
             // Generate student object
-            if (!students[current_student.key])
-                students[current_student.key] = {};
-
-            if (!students[current_student.key][current_minigame.key])
-                students[current_student.key][current_minigame.key] = {};
-
-            students[current_student.key][current_minigame.key][metric] = current_minigame['1'].value;
-
-            //Generate minigame object
-
-            if (!minigames[current_minigame.key]) {
-                minigames[current_minigame.key] = {};
-                minigames[current_minigame.key][metric] = {value: current_minigame['1'].value, n_value: 1};
-            } else if (!minigames[current_minigame.key][metric]) {
-                minigames[current_minigame.key][metric] = {value: current_minigame['1'].value, n_value: 1};
-            }else {
-                var mg = minigames[current_minigame.key][metric];
-
-                var n = mg.n_value + 1;
-                mg.value = doAVG(mg.value, current_minigame['1'].value, mg.n_value);
-                mg.n_value = n;
-
-                minigames[current_minigame.key][metric] = mg;
+            if (!students[currentStudent.key]) {
+                students[currentStudent.key] = {};
             }
 
-            glpBase.performance[metric].min = Math.min(current_minigame['1'].value, glpBase.performance[metric].min);
-            glpBase.performance[metric].max = Math.max(current_minigame['1'].value, glpBase.performance[metric].max);
+            if (!students[currentStudent.key][currentMinigame.key]) {
+                students[currentStudent.key][currentMinigame.key] = {};
+            }
+
+            students[currentStudent.key][currentMinigame.key][metric] = currentMinigame['1'].value;
+
+            // Generate minigame object
+
+            if (!minigames[currentMinigame.key]) {
+                minigames[currentMinigame.key] = {};
+                minigames[currentMinigame.key][metric] = {value: currentMinigame['1'].value, nValue: 1};
+            } else if (!minigames[currentMinigame.key][metric]) {
+                minigames[currentMinigame.key][metric] = {value: currentMinigame['1'].value, nValue: 1};
+            }else {
+                var mg = minigames[currentMinigame.key][metric];
+
+                var n = mg.nValue + 1;
+                mg.value = doAVG(mg.value, currentMinigame['1'].value, mg.nValue);
+                mg.nValue = n;
+
+                minigames[currentMinigame.key][metric] = mg;
+            }
+
+            glpBase.performance[metric].min = Math.min(currentMinigame['1'].value, glpBase.performance[metric].min);
+            glpBase.performance[metric].max = Math.max(currentMinigame['1'].value, glpBase.performance[metric].max);
             glpBase.performance[metric].avg = -1;
         }
     }
 };
 
-var getScores = function(activityId, esClient, callback) {
+var getScores = function(activityId, esClient) {
+    var deferred = Q.defer();
     console.log('Score');
-    dorequest(elasticIndex(activityId), score_request, esClient, function(error, b) {
-        if (error) {
-            console.log('error');
-        }else {
+    dorequest(elasticIndex(activityId), scoreRequest, esClient)
+        .then(function(b) {
             extractValues(b,'score');
-        }
+            deferred.resolve();
+        })
+        .fail(function(error) {
+            deferred.reject(error);
+        });
 
-        callback();
-    });
+    return deferred.promise;
 };
 
-var getAccuracy = function(activityId, esClient, callback) {
+var getAccuracy = function(activityId, esClient) {
+    var deferred = Q.defer();
+
     console.log('accuracy');
-    dorequest(elasticIndex(activityId), accuracy_request, esClient, function(error, b) {
-        if (error) {
-            console.log('error');
-        }else {
+    dorequest(elasticIndex(activityId), accuracyRequest, esClient)
+        .then(function(b) {
             for (var i = 0; i < b.aggregations['4'].buckets.length; i++) {
                 var won = b.aggregations['4'].buckets[i].key;
 
-                var current_case = b.aggregations['4'].buckets[i];
+                var currentCase = b.aggregations['4'].buckets[i];
 
-                for (var j = 0; j < current_case['5'].buckets.length; j++) {
-                    var current_student = current_case['5'].buckets[j];
+                for (var j = 0; j < currentCase['5'].buckets.length; j++) {
+                    var currentStudent = currentCase['5'].buckets[j];
 
-                    for (var k = 0; k < current_student['6'].buckets.length; k++) {
-                        var current_minigame = current_student['6'].buckets[k];
+                    for (var k = 0; k < currentStudent['6'].buckets.length; k++) {
+                        var currentMinigame = currentStudent['6'].buckets[k];
 
                         // Generate student object
-                        if (!students[current_student.key])
-                            students[current_student.key] = {};
-
-                        if (!students[current_student.key][current_minigame.key])
-                            students[current_student.key][current_minigame.key] = {};
-
-                        if (!students[current_student.key][current_minigame.key].accuracy)
-                            students[current_student.key][current_minigame.key].accuracy = {correct: 0, incorrect: 0};
-
-                        if (won) {
-                            students[current_student.key][current_minigame.key].accuracy.correct += current_minigame.doc_count;
-                        }else {
-                            students[current_student.key][current_minigame.key].accuracy.incorrect += current_minigame.doc_count;
+                        if (!students[currentStudent.key]) {
+                            students[currentStudent.key] = {};
                         }
 
-                        //Generate minigame object
+                        if (!students[currentStudent.key][currentMinigame.key]) {
+                            students[currentStudent.key][currentMinigame.key] = {};
+                        }
 
-                        if (!minigames[current_minigame.key]) {
-                            minigames[current_minigame.key] = {};
-                            minigames[current_minigame.key].accuracy = {correct: 0, incorrect: 0};
-                        } else if (!minigames[current_minigame.key].accuracy) {
-                            minigames[current_minigame.key].accuracy = {correct: 0, incorrect: 0};
+                        if (!students[currentStudent.key][currentMinigame.key].accuracy) {
+                            students[currentStudent.key][currentMinigame.key].accuracy = {correct: 0, incorrect: 0};
                         }
 
                         if (won) {
-                            minigames[current_minigame.key].accuracy.correct += current_minigame.doc_count;
+                            students[currentStudent.key][currentMinigame.key].accuracy.correct += currentMinigame.doc_count;
                         }else {
-                            minigames[current_minigame.key].accuracy.incorrect += current_minigame.doc_count;
+                            students[currentStudent.key][currentMinigame.key].accuracy.incorrect += currentMinigame.doc_count;
+                        }
+
+                        // Generate minigame object
+
+                        if (!minigames[currentMinigame.key]) {
+                            minigames[currentMinigame.key] = {};
+                            minigames[currentMinigame.key].accuracy = {correct: 0, incorrect: 0};
+                        } else if (!minigames[currentMinigame.key].accuracy) {
+                            minigames[currentMinigame.key].accuracy = {correct: 0, incorrect: 0};
+                        }
+
+                        if (won) {
+                            minigames[currentMinigame.key].accuracy.correct += currentMinigame.doc_count;
+                        }else {
+                            minigames[currentMinigame.key].accuracy.incorrect += currentMinigame.doc_count;
                         }
 
                     }
                 }
             }
-
 
             for (var student in students) {
                 for (var minigame in students[student]) {
                     if (students[student][minigame].accuracy) {
-                        var student_accuracy = students[student][minigame].accuracy;
-                        student_accuracy.value = student_accuracy.correct / (student_accuracy.correct + student_accuracy.incorrect);
+                        var studentAccuracy = students[student][minigame].accuracy;
+                        studentAccuracy.value = studentAccuracy.correct / (studentAccuracy.correct + studentAccuracy.incorrect);
 
-                        glpBase.performance.accuracy.min = Math.min(student_accuracy.value, glpBase.performance.accuracy.min);
-                        glpBase.performance.accuracy.max = Math.max(student_accuracy.value, glpBase.performance.accuracy.max);
+                        glpBase.performance.accuracy.min = Math.min(studentAccuracy.value, glpBase.performance.accuracy.min);
+                        glpBase.performance.accuracy.max = Math.max(studentAccuracy.value, glpBase.performance.accuracy.max);
                         glpBase.performance.accuracy.avg = -1;
 
-                        if (!minigames[minigame].accuracy.n_value) {
+                        if (!minigames[minigame].accuracy.nValue) {
                             minigames[minigame].accuracy.value = 0;
-                            minigames[minigame].accuracy.n_value = 0;
+                            minigames[minigame].accuracy.nValue = 0;
                         }
 
-                        minigames[minigame].accuracy.value = doAVG(minigames[minigame].accuracy.value, student_accuracy.value, minigames[minigame].accuracy.n_value);
-                        minigames[minigame].accuracy.n_value++;
+                        minigames[minigame].accuracy.value = doAVG(minigames[minigame].accuracy.value, studentAccuracy.value, minigames[minigame].accuracy.nValue);
+                        minigames[minigame].accuracy.nValue++;
                     }
                 }
             }
-        }
 
-        callback();
-    });
+            deferred.resolve();
+        })
+        .fail(function(error) {
+            deferred.reject(error);
+        });
+
+    return deferred.promise;
 };
 
-var getTimes = function(activityId, esClient, callback) {
+var getTimes = function(activityId, esClient) {
+    var deferred = Q.defer();
+
     console.log('Times');
-    dorequest(elasticIndex(activityId), time_request, esClient, function(error, b) {
-        if (error) {
-            console.log('error');
-        }else {
+    dorequest(elasticIndex(activityId), timeRequest, esClient)
+        .then(function(b) {
             extractValues(b,'time');
-        }
+            deferred.resolve();
+        })
+        .fail(function(error) {
+            deferred.reject(error);
+        });
 
-        callback();
-    });
+    return deferred.promise;
 };
 
-var getAnalytics = function(activityId, username, esClient, callback) {
+var getAnalytics = function(activityId, username, esClient) {
+    var deferred = Q.defer();
+
     console.log('Analytics');
-    dorequest(analyticsIndex(activityId), {}, esClient, function(error, b) {
-        if (error) {
-            console.log('error');
-        }else {
+    dorequest(analyticsIndex(activityId), {}, esClient)
+        .then(function(b) {
             var total = {
                 own: {
                     score: 0,
@@ -856,12 +874,12 @@ var getAnalytics = function(activityId, username, esClient, callback) {
             };
 
             for (var i = 0; i < b.hits.hits.length; i++) {
-                var current_node = b.hits.hits[i]._source;
+                var currentNode = b.hits.hits[i]._source;
                 var activityId = b.hits.hits[i]._id;
 
-                if (!current_node.children) {
+                if (!currentNode.children) {
                     glpBase.minigames.push({
-                        name: current_node.name,
+                        name: currentNode.name,
                         score: {
                             own: valueOrZero(students[username][activityId].score),
                             avg: valueOrZero(minigames[activityId].score.value)
@@ -887,45 +905,52 @@ var getAnalytics = function(activityId, username, esClient, callback) {
                 }
             }
 
-            console.log(total.own.accuracy);
-            console.log(total.count);
-
             glpBase.performance.score.own = total.own.score / total.count;
             glpBase.performance.time.own = total.own.time / total.count;
             glpBase.performance.accuracy.own = total.own.accuracy / total.count;
             glpBase.performance.score.avg = total.avg.score / total.count;
             glpBase.performance.time.avg = total.avg.time / total.count;
             glpBase.performance.accuracy.avg = total.avg.accuracy / total.count;
-        }
 
-        callback();
-    });
+            deferred.resolve();
+        })
+        .fail(function(error) {
+            deferred.reject(error);
+        });
+
+    return deferred.promise;
 };
 
-var getCompetencies = function(activityId, username, esClient, callback) {
-    console.log('Competencies');
-    dorequest(competencieIndex(activityId), competencie_request(username), esClient, function(error, b) {
-        if (error) {
-            console.log('error');
-        }else {
-            for (var i = 0; i < b.hits.hits.length; i++) {
-                var current_node = b.hits.hits[i]._source;
+var getCompetencies = function(activityId, username, esClient) {
+    var deferred = Q.defer();
 
-                if (current_node.competencies) {
-                    for (var competencie in current_node.competencies) {
+    console.log('Competencies');
+    dorequest(competencieIndex(activityId), competencieRequest(username), esClient)
+        .then(function(b) {
+            for (var i = 0; i < b.hits.hits.length; i++) {
+                var currentNode = b.hits.hits[i]._source;
+
+                if (currentNode.competencies) {
+                    for (var competencie in currentNode.competencies) {
                         if (!glpBase.competencies[competencie]) {
                             glpBase.competencies[competencie] = 0;
                         }
 
-                        glpBase.competencies[competencie] += current_node.competencies[competencie];
+                        glpBase.competencies[competencie] += currentNode.competencies[competencie];
                     }
                 }
             }
-        }
 
-        callback();
-    });
+            deferred.resolve();
+        })
+        .fail(function(error) {
+            deferred.reject(error);
+        });
+
+    return deferred.promise;
 };
+
+// jscs:enable requireCamelCaseOrUpperCaseIdentifiers
 
 
 module.exports = router;
