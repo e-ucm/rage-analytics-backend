@@ -452,13 +452,12 @@ router.get('/glp_results/:activityId/:studentId', function (req, res) {
         return res.json({message: 'Invalid activityId'});
     }
 
-    
-
-
     var esClient = req.app.esClient;
 
-    var promise = getUser(studentId, req)
-        .then(function(user)){
+    var deferred = Q.defer();
+
+    getUser(studentId, req)
+        .then(function(user) {
             console.log(user.username);
             return getScores(activityId, esClient)
             .then(function() {
@@ -476,9 +475,12 @@ router.get('/glp_results/:activityId/:studentId', function (req, res) {
                     });
                 });
             });
+        })
+        .catch(function(error) {
+            deferred.reject(error);
         });
 
-    restUtils.processResponse(promise, res);
+    restUtils.processResponse(deferred, res);
 });
 
 String.prototype.replaceAll = function(search, replacement) {
