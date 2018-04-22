@@ -480,7 +480,7 @@ router.get('/glp_results/:activityId/:studentId', function (req, res) {
             deferred.reject(error);
         });
 
-    restUtils.processResponse(deferred, res);
+    restUtils.processResponse(deferred.promise, res);
 });
 
 String.prototype.replaceAll = function(search, replacement) {
