@@ -8,7 +8,7 @@ var express = require('express'),
     request = require('request'),
     Q = require('q');
 
-router.get('/overall/:studentid', function (req, res) {
+router.get('/overall_dummy/:studentid', function (req, res) {
 
     var analysisresult =
     {
@@ -32,7 +32,7 @@ router.get('/overall/:studentid', function (req, res) {
     res.send(analysisresult);
 });
 
-router.get('/overall_full/:studentid', function (req, res) {
+router.get('/overall/:studentid', function (req, res) {
     var studentId = req.params.studentid;
 
     if (!studentId) {
@@ -42,56 +42,62 @@ router.get('/overall_full/:studentid', function (req, res) {
 
     var deferred = Q.defer();
 
-    req.app.esClient.search({
-        size: 200,
-        from: 0,
-        index: 'results-beaconing-overall',
-        q: '_id:' + studentId.toString()
-    }, function (error, response) {
-        if (error) {
-            if (response.error && response.error.type === 'index_not_found_exception') {
-                return deferred.resolve([]);
-            }
-            return deferred.reject(new Error(error));
-        }
-
-        var analysisresult =
-        {
-            sudent: req.params.studentid,
-            scores: {
-                min: 0.2,
-                avg: 0.7,
-                max: 0.95
-            },
-            durations: {
-                yours: 0.5,
-                others: 0.7
-            },
-            alternatives: {
-                correct: 0,
-                incorrect: 0
-            },
-            progress: 0.8
-        };
-
-        if (response.hits && response.hits.hits.length) {
-            response.hits.hits.forEach(function (document) {
-                if (document._source) {
-                    document._source._id = document._id;
-                    if (document._source.selected) {
-                        if (document._source.selected.true) {
-                            analysisresult.alternatives.correct += document._source.selected.true;
-                        }
-                        if (document._source.selected.false) {
-                            analysisresult.alternatives.incorrect += document._source.selected.false;
-                        }
+    getUser(studentId)
+        .then(function(user) {
+            req.app.esClient.search({
+                size: 200,
+                from: 0,
+                index: 'results-beaconing-overall',
+                q: '_id:' + user.username
+            }, function (error, response) {
+                if (error) {
+                    if (response.error && response.error.type === 'index_not_found_exception') {
+                        return deferred.resolve([]);
                     }
+                    return deferred.reject(new Error(error));
                 }
-            });
-        }
 
-        deferred.resolve(analysisresult);
-    });
+                var analysisresult =
+                {
+                    sudent: req.params.studentid,
+                    scores: {
+                        min: 0.2,
+                        avg: 0.7,
+                        max: 0.95
+                    },
+                    durations: {
+                        yours: 0.5,
+                        others: 0.7
+                    },
+                    alternatives: {
+                        correct: 0,
+                        incorrect: 0
+                    },
+                    progress: 0.8
+                };
+
+                if (response.hits && response.hits.hits.length) {
+                    response.hits.hits.forEach(function (document) {
+                        if (document._source) {
+                            document._source._id = document._id;
+                            if (document._source.selected) {
+                                if (document._source.selected.true) {
+                                    analysisresult.alternatives.correct += document._source.selected.true;
+                                }
+                                if (document._source.selected.false) {
+                                    analysisresult.alternatives.incorrect += document._source.selected.false;
+                                }
+                            }
+                        }
+                    });
+                }
+
+                deferred.resolve(analysisresult);
+            });
+        })
+        .fail(function(error) {
+            deferred.reject('User not found');
+        });
 
     restUtils.processResponse(deferred.promise, res);
 });
@@ -948,11 +954,18 @@ var getAnalytics = function(activityId, username, glpBase, students, minigames, 
 
                 if (!currentNode.children) {
                     var tmp = {};
-                    tmp.score = students[username][activityId] ? valueOrZero(students[username][activityId].score) : 0;
-                    tmp.time = students[username][activityId] ? valueOrZero(students[username][activityId].time) : 0;
-                    tmp.accuracy = (students[username][activityId] ?
-                                    (students[username][activityId].accuracy ?
-                                    valueOrZero(students[username][activityId].accuracy.value) : 0) : 0);
+
+                    if (students[username]) {
+                        tmp.score = students[username][activityId] ? valueOrZero(students[username][activityId].score) : 0;
+                        tmp.time = students[username][activityId] ? valueOrZero(students[username][activityId].time) : 0;
+                        tmp.accuracy = (students[username][activityId] ?
+                                        (students[username][activityId].accuracy ?
+                                        valueOrZero(students[username][activityId].accuracy.value) : 0) : 0);
+                    }else {
+                        tmp.score = 0;
+                        tmp.time = 0;
+                        tmp.accuracy = 0;
+                    }
 
                     glpBase.minigames.push({
                         name: currentNode.name,
@@ -972,9 +985,9 @@ var getAnalytics = function(activityId, username, glpBase, students, minigames, 
 
                     total.count++;
 
-                    total.own.score += valueOrZero(students[username][activityId].score);
-                    total.own.time += valueOrZero(students[username][activityId].time);
-                    total.own.accuracy += valueOrZero(students[username][activityId].accuracy.value);
+                    total.own.score += tmp.score;
+                    total.own.time += tmp.time;
+                    total.own.accuracy += tmp.accuracy;
                     total.avg.score += valueOrZero(minigames[activityId].score.value);
                     total.avg.time += valueOrZero(minigames[activityId].time.value);
                     total.avg.accuracy += valueOrZero(minigames[activityId].accuracy.value);
