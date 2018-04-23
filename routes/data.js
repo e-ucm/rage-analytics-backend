@@ -403,7 +403,7 @@ var getUser = function(beaconingId, req) {
             }, function (err, httpResponse, body) {
                 if (err || (httpResponse && httpResponse.statusCode !== 200)) {
                     console.log('getUser: error');
-                    return deferred.reject(new Error('User not found'));
+                    return deferred.reject('User not found');
                 }
 
                 console.log('getUser: success');
@@ -457,32 +457,55 @@ router.get('/glp_results/:activityId/:studentId', function (req, res) {
 
     var deferred = Q.defer();
 
-    try{
+    try {
         getUser(studentId, req)
             .then(function(user) {
                 console.log(user.username);
-                return getScores(activityId, esClient)
+                getScores(activityId, esClient)
                 .then(function() {
-                    return getAccuracy(activityId, esClient)
+                    getAccuracy(activityId, esClient)
                     .then(function() {
-                        return getTimes(activityId, esClient)
+                        getTimes(activityId, esClient)
                         .then(function() {
-                            return getAnalytics(activityId, user.username, esClient)
+                            getAnalytics(activityId, user.username, esClient)
                             .then(function() {
-                                return getCompetencies(activityId, user.username, esClient)
+                                getCompetencies(activityId, user.username, esClient)
                                 .then(function() {
                                     deferred.resolve(glpBase);
+                                })
+                                .fail(function(error) {
+                                    res.status(404);
+                                    return res.json({message: 'Unable to obtain competencies for that ActivityId'});
                                 });
+                            })
+                            .fail(function(error) {
+                                res.status(404);
+                                return res.json({message: 'Unable to obtain analytics for that ActivityId'});
                             });
+                        })
+                        .fail(function(error) {
+                            res.status(404);
+                            return res.json({message: 'Unable to obtain times for that ActivityId'});
                         });
+                    })
+                    .fail(function(error) {
+                        res.status(404);
+                        return res.json({message: 'Unable to obtain accuracy for that ActivityId'});
                     });
+
+                })
+                .fail(function(error) {
+                    res.status(404);
+                    return res.json({message: 'Unable to obtain scores for that ActivityId'});
                 });
             })
             .fail(function(error) {
-                deferred.reject(error);
+                res.status(404);
+                return res.json({message: 'User not found'});
             });
-    }catch(error){
-        deferred.reject(new Error('Unable to find data for that ActivityId'));
+    }catch (error) {
+        res.status(404);
+        return res.json({message: 'Unable to find data for that ActivityId'});
     }
 
     restUtils.processResponse(deferred.promise, res);
@@ -920,11 +943,11 @@ var getAnalytics = function(activityId, username, esClient) {
                 var activityId = b.hits.hits[i]._id;
 
                 if (!currentNode.children) {
-                    var tmp = {}
+                    var tmp = {};
                     tmp.score = students[username][activityId] ? valueOrZero(students[username][activityId].score) : 0;
                     tmp.time = students[username][activityId] ? valueOrZero(students[username][activityId].time) : 0;
-                    tmp.accuracy = (students[username][activityId] ? 
-                                    (students[username][activityId].accuracy ? 
+                    tmp.accuracy = (students[username][activityId] ?
+                                    (students[username][activityId].accuracy ?
                                     valueOrZero(students[username][activityId].accuracy.value) : 0) : 0);
 
                     glpBase.minigames.push({
