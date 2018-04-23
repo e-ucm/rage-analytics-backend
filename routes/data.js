@@ -457,19 +457,23 @@ router.get('/glp_results/:activityId/:studentId', function (req, res) {
 
     var deferred = Q.defer();
 
+    var glpBase = clone(originalGlpBase);
+    var students = {};
+    var minigames = {};
+
     try {
         getUser(studentId, req)
             .then(function(user) {
                 console.log(user.username);
-                getScores(activityId, esClient)
+                getScores(activityId, glpBase, students, minigames, esClient)
                 .then(function() {
-                    getAccuracy(activityId, esClient)
+                    getAccuracy(activityId, glpBase, students, minigames, esClient)
                     .then(function() {
-                        getTimes(activityId, esClient)
+                        getTimes(activityId, glpBase, students, minigames, esClient)
                         .then(function() {
-                            getAnalytics(activityId, user.username, esClient)
+                            getAnalytics(activityId, user.username, glpBase, students, minigames, esClient)
                             .then(function() {
-                                getCompetencies(activityId, user.username, esClient)
+                                getCompetencies(activityId, user.username, glpBase, students, minigames, esClient)
                                 .then(function() {
                                     deferred.resolve(glpBase);
                                 })
@@ -516,6 +520,10 @@ String.prototype.replaceAll = function(search, replacement) {
     return target.replace(new RegExp(search, 'g'), replacement);
 };
 
+var clone = function(a) {
+    return JSON.parse(JSON.stringify(a));
+};
+
 var elasticIndex = function(id) {
     return id;
 };
@@ -527,10 +535,6 @@ var analyticsIndex = function(id) {
 var competencieIndex = function(id, student) {
     return 'results-' + id;
 };
-
-var students = {};
-
-var minigames = {};
 
 var doAVG = function(avg, value, n) {
     return ((avg * n) / (n + 1.0)) + (value / (n + 1.0));
@@ -566,7 +570,7 @@ var dorequest = function(index, query, esClient) {
 // ################### glpBase OBJECTS ################
 // ####################################################
 
-var glpBase = {
+var originalGlpBase = {
     competencies: {
         /*"communication-and-collaboration": 0.1,
         "problem-solving": 0.3,
@@ -759,7 +763,7 @@ var competencieRequest = function(student) {
 
 // ################################################
 
-var extractValues = function(b, metric) {
+var extractValues = function(b, metric, glpBase, students, minigames) {
     for (var i = 0; i < b.aggregations['2'].buckets.length; i++) {
         var currentStudent = b.aggregations['2'].buckets[i];
 
@@ -801,13 +805,13 @@ var extractValues = function(b, metric) {
     }
 };
 
-var getScores = function(activityId, esClient) {
+var getScores = function(activityId, glpBase, students, minigames, esClient) {
     var deferred = Q.defer();
 
     console.log('Score');
     dorequest(elasticIndex(activityId), scoreRequest, esClient)
         .then(function(b) {
-            extractValues(b,'score');
+            extractValues(b, 'score', glpBase, students, minigames);
             deferred.resolve();
         })
         .fail(function(error) {
@@ -817,7 +821,7 @@ var getScores = function(activityId, esClient) {
     return deferred.promise;
 };
 
-var getAccuracy = function(activityId, esClient) {
+var getAccuracy = function(activityId, glpBase, students, minigames, esClient) {
     var deferred = Q.defer();
 
     console.log('accuracy');
@@ -902,13 +906,13 @@ var getAccuracy = function(activityId, esClient) {
     return deferred.promise;
 };
 
-var getTimes = function(activityId, esClient) {
+var getTimes = function(activityId, glpBase, students, minigames, esClient) {
     var deferred = Q.defer();
 
     console.log('Times');
     dorequest(elasticIndex(activityId), timeRequest, esClient)
         .then(function(b) {
-            extractValues(b,'time');
+            extractValues(b, 'time', glpBase, students, minigames);
             deferred.resolve();
         })
         .fail(function(error) {
@@ -918,7 +922,7 @@ var getTimes = function(activityId, esClient) {
     return deferred.promise;
 };
 
-var getAnalytics = function(activityId, username, esClient) {
+var getAnalytics = function(activityId, username, glpBase, students, minigames, esClient) {
     var deferred = Q.defer();
 
     console.log('Analytics');
@@ -993,7 +997,7 @@ var getAnalytics = function(activityId, username, esClient) {
     return deferred.promise;
 };
 
-var getCompetencies = function(activityId, username, esClient) {
+var getCompetencies = function(activityId, username, glpBase, students, minigames, esClient) {
     var deferred = Q.defer();
 
     console.log('Competencies');
