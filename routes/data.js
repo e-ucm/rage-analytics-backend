@@ -42,7 +42,7 @@ router.get('/overall/:studentid', function (req, res) {
 
     var deferred = Q.defer();
 
-    getUser(studentId)
+    getUser(studentId, req)
         .then(function(user) {
             req.app.esClient.search({
                 size: 200,

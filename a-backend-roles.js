@@ -102,6 +102,7 @@ exports.app = {
                         '/lti/keyid/:classId',
                         '/data/overall/:studentid',
                         '/data/performance/:classId',
+                        '/data/glp_results/:activityId/:studentId',
                         '/data/performance_full/:groupId'
                     ],
                     permissions: [
@@ -257,8 +258,6 @@ exports.app = {
         '/collector/track',
         '/collector/end',
         '/lti/key/:id',
-        '/data/overall_full/:studentid',
-        '/data/glp_results/:activityId/:studentId',
         '/env'
     ],
     autoroles: [
