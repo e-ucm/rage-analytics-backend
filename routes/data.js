@@ -965,7 +965,7 @@ var getAnalytics = function(activityId, username, glpBase, students, minigames, 
                             avg: valueOrZero(minigames[activityId].time.value)
                         },
                         accuracy: {
-                            own: valueOrZero(students[username][activityId].accuracy.value),
+                            own: tmp.accuracy,
                             avg: valueOrZero(minigames[activityId].accuracy.value)
                         }
                     });
