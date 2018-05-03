@@ -388,7 +388,7 @@ var defaultObject = {
         name: '',
         gameplayId: '',
         type_hashCode: 0,
-        score: 0,
+        score: 0.01,
         response: '',
         type: '',
         event_hashcode: 0,
@@ -400,14 +400,14 @@ var defaultObject = {
         timestamp: '2000-01-19T11:05:27.772Z',
         target_hashCode: 0,
         stored: '2000-01-19T11:05:27.772Z',
-        progress: 0,
-        time: 0,
+        progress: 0.01,
+        time: 0.01,
         ext: {
-            progress: 0,
-            time: 0,
+            progress: 0.01,
+            time: 0.01,
             location: {
-                lat: 0,
-                lon: 0
+                lat: 0.01,
+                lon: 0.01
             }
         }
     }
@@ -1000,7 +1000,7 @@ router.post('/index/:indexTemplate/:indexName', function (req, res) {
             q: '_id:' + 'object_fields' + versionId
         }, function (error, response) {
 
-            if (response.hits.hits && response.hits.hits.length > 0) {
+            if (!error && response.hits && response.hits.hits && response.hits.hits.length > 0) {
                 objectfields = response.hits.hits[0]._source;
             }
 
