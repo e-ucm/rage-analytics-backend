@@ -54,15 +54,6 @@ var connectToDB = function () {
             if (!isTest) {
                 kafkaService.createTopic(app.config.kafka.topicName);
                 stormService.startTopology(app.config.storm.defaultAnalysisName, app.config.kafka.topicName);
-
-                setTimeout(function () {
-                    var glpFolder = process.env.RAGE_ANALYTICS_BACKEND_GLP_REALTIMEJAR;
-                    if (!glpFolder) {
-                        glpFolder = '/app/output/glp/realtime-jar-with-dependencies.jar';
-                    }
-                    app.config.storm.realtimeJar = glpFolder;
-                    stormService.startTopology(app.config.storm.defaultAnalysisName + 'glp', app.config.kafka.topicName);
-                }, 30000);
             }
         }
     });
@@ -126,8 +117,6 @@ app.use(app.config.apiPath + '/health', require('./routes/health'));
 app.use(app.config.apiPath + '/kibana', require('./routes/kibana'));
 app.use(app.config.apiPath + '/lti', require('./routes/lti'));
 app.use(app.config.apiPath + '/env', require('./routes/env'));
-
-app.use(app.config.apiPath + '/data', require('./routes/data'));
 
 var activities = require('./lib/activities');
 activities.preRemove(function (_id, next) {
