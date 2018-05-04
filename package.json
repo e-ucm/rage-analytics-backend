@@ -43,6 +43,7 @@
     "kafka-node": "^0.5.9",
     "mkdirp": "^0.5.x",
     "mongodb": "^2.2.x",
+    "moment": "2.0.0",
     "morgan": "^1.6.x",
     "multer": "^1.1.x",
     "pify": "*",
