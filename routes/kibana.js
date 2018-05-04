@@ -88,11 +88,23 @@ router.post('/templates/:type/author/:idAuthor', function (req, res) {
                     must: [
                         {
                             match: {
-                                author: req.params.idAuthor
+                                author: '\\:' + req.params.idAuthor + '\\:'
                             }
                         },
                         {
                             match: {
+                                title: '\\:' + req.body.title + '\\:'
+                            }
+                        }
+                    ],
+                    filter: [
+                        {
+                            term: {
+                                author: req.params.idAuthor
+                            }
+                        },
+                        {
+                            term: {
                                 title: req.body.title
                             }
                         }
