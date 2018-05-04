@@ -59,7 +59,11 @@ router.get('/', restUtils.find(classes));
  *                  "students": ["st1", "st2"],
  *                  "assistants": ["as1", "as2"],
  *                  "teachers": ["teacher"]
- *              }
+ *              },
+ *              "externalId":[
+ *                  { "domain": "d1", "id": "1" },
+ *                  { "domain": "d2", "id": "2" }
+ *              ]
  *          },
  *          {
  *              "_id": "559a447831b76cec185bf511",
@@ -70,7 +74,10 @@ router.get('/', restUtils.find(classes));
  *                  "students": ["st1", "st2", "st3"],
  *                  "assistants": ["as2"],
  *                  "teachers": ["teacher2"]
- *              }
+ *              },
+ *              "externalId":[
+ *                  { "domain": "d1", "id": "4" }
+ *              ]
  *          }
  *      ]
  *
@@ -101,13 +108,25 @@ router.get('/my', function (req, res) {
  *              "students": ["st1", "st2"],
  *              "assistants": ["as1", "as2"],
  *              "teachers": ["teacher"]
- *          }
+ *          },
+ *          "externalId":[
+ *              { "domain": "d1", "id": "1" },
+ *              { "domain": "d2", "id": "2" }
+ *          ]
  *      }
  *
  */
 router.get('/:classId', function (req, res) {
     var username = req.headers['x-gleaner-user'];
     restUtils.processResponse(classes.isAuthorizedFor(req.params.classId, username, 'get', '/classes/:classId')
+        .then(function (classReq) {
+            return classReq;
+        }), res);
+});
+
+router.get('/external/:domain/:externalId', function (req, res) {
+    var username = req.headers['x-gleaner-user'];
+    restUtils.processResponse(classes.isAuthorizedForExternal(req.params.domain, req.params.externalId, username, 'get', '/classes/external/:domain/:externalId')
         .then(function (classReq) {
             return classReq;
         }), res);
@@ -143,7 +162,8 @@ router.get('/:classId', function (req, res) {
  *          },
  *          "_id": "55e44ea9f1448e1067e64d6c",
  *          "groups": [],
-            "groupings": []
+ *          "groupings": [],
+ *          "externalId": []
  *      }
  *
  */
@@ -187,7 +207,8 @@ router.post('/', function (req, res) {
  *              "teachers": ["teacher", "teacher2"]
  *          },
  *          groups: [],
- *          groupings: []
+ *          groupings: [],
+ *          externalId: []
  *      }
  */
 router.put('/:classId', function (req, res) {
@@ -195,6 +216,14 @@ router.put('/:classId', function (req, res) {
     restUtils.processResponse(classes.isAuthorizedFor(req.params.classId, username, 'put', '/classes/:classId')
         .then(function (classReq) {
             return classes.modifyClass(req.params.classId, username, req.body, true);
+        }), res);
+});
+
+router.put('/external/:domain/:externalId', function (req, res) {
+    var username = req.headers['x-gleaner-user'];
+    restUtils.processResponse(classes.isAuthorizedForExternal(req.params.domain, req.params.externalId, username, 'put', '/classes/external/:domain/:externalId')
+        .then(function (classReq) {
+            return classes.modifyClass(classReq._id, username, req.body, true);
         }), res);
 });
 
@@ -232,6 +261,13 @@ router.put('/:classId/remove', function (req, res) {
         }), res);
 });
 
+router.put('/external/:domain/:externalId/remove', function (req, res) {
+    var username = req.headers['x-gleaner-user'];
+    restUtils.processResponse(classes.isAuthorizedForExternal(req.params.domain, req.params.externalId, username, 'put', '/classes/external/:domain/:externalId/remove')
+        .then(function (classReq) {
+            return classes.modifyClass(classReq._id, username, req.body, false);
+        }), res);
+});
 
 /**
  * @api {delete} /classes/:classId Deletes a class and all the sessions associated with it
@@ -256,6 +292,13 @@ router.delete('/:classId', function (req, res) {
         }), res);
 });
 
+router.delete('/external/:domain/:externalId', function (req, res) {
+    var username = req.headers['x-gleaner-user'];
+    restUtils.processResponse(classes.isAuthorizedForExternal(req.params.domain, req.params.externalId, username, 'delete', '/classes/external/:domain/:externalId')
+        .then(function (classReq) {
+            return classes.removeClass(classReq._id, username);
+        }), res);
+});
 
 /**
  * ACTIVITIES

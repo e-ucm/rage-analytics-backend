@@ -110,6 +110,8 @@ exports.app = {
                         '/classes/:classId',
                         '/classes/:classId/remove',
                         '/activities/:activityId',
+                        '/classes/external/:domain/:externalId',
+                        '/classes/external/:domain/:externalId/remove',
                         '/activities/:activityId/remove',
                         '/kibana/*',
                         '/courses/:id'
@@ -252,8 +254,6 @@ exports.app = {
         '/collector/track',
         '/collector/end',
         '/lti/key/:id',
-        '/data/overall/:studentid',
-        '/data/overall2/:studentid',
         '/env'
     ],
     autoroles: [
