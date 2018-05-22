@@ -23,7 +23,6 @@ var compareDocuments = function (doc1, doc2, ignoredFields) {
         return true;
     }
     if (!doc1 || !doc2) {
-        console.log('ERROR COMPARING VALUES (SOME VALUE IS NOT VALID): ', doc1, ' AND ', doc2);
         return false;
     }
 
