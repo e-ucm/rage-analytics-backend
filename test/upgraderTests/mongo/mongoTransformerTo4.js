@@ -20,6 +20,7 @@
 
 var should = require('should');
 var async = require('async');
+var Collection = require('easy-collections');
 var utils = require('../upgraderTestUtils.js');
 
 module.exports = function (request, db, config) {
@@ -34,7 +35,6 @@ module.exports = function (request, db, config) {
 
         var inData = require('./upgradeInputs/exampleTo4IN');
         var outData = require('./upgradeOutputs/exampleTo4OUT');
-        
         var insertAndUpgrade = function (data, callback) {
             var transform = function () {
                 var t = require('../../../bin/upgrade/transformers/mongo/transformToVersion4.js');
@@ -77,7 +77,25 @@ module.exports = function (request, db, config) {
                 db.collection('classes').remove({}, function (err, removed) {
                     should.equal(err, null);
                     db.collection('activities').remove({}, function() {
-                        setTimeout(function() { done(); }, 500);
+                        db.collection('versions').remove({}, function (err, removed) {
+                            should.equal(err, null);
+                            db.collection('players').remove({}, function (err, removed) {
+                                should.equal(err, null);
+                                db.collection('authtokens').remove({}, function (err, removed) {
+                                    should.equal(err, null);
+                                    db.collection('gameplays_5a16cc69bfc960008bc5e079').remove({}, function (err, removed) {
+                                        should.equal(err, null);
+                                        db.collection('gameplays_5a16c726bfc960008bc5e071').remove({}, function (err, removed) {
+                                            should.equal(err, null);
+                                            db.collection('gameplays_5a14760fffce74008bddcabc').remove({}, function (err, removed) {
+                                                should.equal(err, null);
+                                                setTimeout(function() { done(); }, 500);
+                                            });
+                                        });
+                                    });
+                                });
+                            });
+                        });
                     });
                 });
             });
@@ -86,11 +104,28 @@ module.exports = function (request, db, config) {
         afterEach(function (done) {
             db.collection('games').remove({}, function (err, removed) {
                 should.equal(err, null);
-                db.collection('activities').remove({}, function (err, removed) {
+                db.collection('classes').remove({}, function (err, removed) {
                     should.equal(err, null);
-                    db.collection('classes').remove({}, function (err, removed) {
-                        should.equal(err, null);
-                        done();
+                    db.collection('activities').remove({}, function() {
+                        db.collection('versions').remove({}, function (err, removed) {
+                            should.equal(err, null);
+                            db.collection('players').remove({}, function (err, removed) {
+                                should.equal(err, null);
+                                db.collection('authtokens').remove({}, function (err, removed) {
+                                    should.equal(err, null);
+                                    db.collection('gameplays_5a16cc69bfc960008bc5e079').remove({}, function (err, removed) {
+                                        should.equal(err, null);
+                                        db.collection('gameplays_5a16c726bfc960008bc5e071').remove({}, function (err, removed) {
+                                            should.equal(err, null);
+                                            db.collection('gameplays_5a14760fffce74008bddcabc').remove({}, function (err, removed) {
+                                                should.equal(err, null);
+                                                setTimeout(function() { done(); }, 500);
+                                            });
+                                        });
+                                    });
+                                });
+                            });
+                        });
                     });
                 });
             });
@@ -113,6 +148,37 @@ module.exports = function (request, db, config) {
                 utils.collectionComparer(db, 'games', outData, done);
             });
         });
-        
+
+        it('should Players collection be equal to exampleTo4OUT players array', function (done) {
+            insertAndUpgrade(inData, function () {
+                utils.collectionComparer(db, 'players', outData, done);
+            });
+        });
+
+        it('should Gameplays collection be equal to exampleTo4OUT versions array', function (done) {
+            insertAndUpgrade(inData, function () {
+                utils.collectionComparer(db, 'gameplays_5a16cc69bfc960008bc5e079', outData, function () {
+                    utils.collectionComparer(db, 'gameplays_5a16c726bfc960008bc5e071', outData, function () {
+                        utils.collectionComparer(db, 'gameplays_5a14760fffce74008bddcabc', outData, done);
+                    });
+                });
+            });
+        });
+
+        it('should do the upgrade even with empty collections', function (done) {
+            insertAndUpgrade([], function () {
+                var checker = new utils.CompletionChecker(6, done);
+                var comp = function () {
+                    checker.Completed();
+                };
+
+                utils.collectionComparer(db, 'classes',      {classes: []}, comp);
+                utils.collectionComparer(db, 'activities',   {activities: []}, comp);
+                utils.collectionComparer(db, 'games',        {games: []}, comp);
+                utils.collectionComparer(db, 'players',      {players: []}, comp);
+                utils.collectionComparer(db, 'versions',     {versions: []}, comp);
+                utils.collectionComparer(db, 'authtokens',   {authtokens: []}, comp);
+            });
+        });
     });
 };
