@@ -26,10 +26,11 @@ var transformToVersion2 = require(Path.resolve(__dirname,
     '../transformers/mongo/transformToVersion2.js'));
 var transformToVersion3 = require(Path.resolve(__dirname,
     '../transformers/mongo/transformToVersion3.js'));
-
+var transformToVersion4 = require(Path.resolve(__dirname,
+    '../transformers/mongo/transformToVersion4.js'));
 
 function MongoController() {
-    AbstractController.call(this, [transformToVersion2, transformToVersion3]);
+    AbstractController.call(this, [transformToVersion2, transformToVersion3, transformToVersion4]);
     this.modelId = null;
     this.dbProvider = {
         db: function () {

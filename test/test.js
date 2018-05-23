@@ -45,10 +45,8 @@ describe('API Test', function (done) {
 
     it('Start tests', function (done) {
 
-
         require('./tests/configs');
         require('./tests/tracesConverterTest');
-
 
         require('./tests/health')(request);
         require('./tests/fsrawConsumerTest')(config);
@@ -69,6 +67,8 @@ describe('API Test', function (done) {
         require('./upgraderTests/mongo/mongoController')(request, app, db);
         require('./upgraderTests/mongo/mongoTransformerTo2')(app, db, config);
         require('./upgraderTests/mongo/mongoTransformerTo3')(app, db, config);
+        require('./upgraderTests/mongo/mongoTransformerTo4')(app, db, config);
+
         // Test transformers
         if (process.env.TEST_ES) {
             require('./upgraderTests/elastic/elasticController')(app, app.esClient, db);
