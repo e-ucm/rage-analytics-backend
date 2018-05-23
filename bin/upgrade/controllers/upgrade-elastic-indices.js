@@ -136,6 +136,12 @@ ElasticController.prototype.guessModelVersion = function(esClient, callback) {
                                 if (field && field.name && field.name.indexOf('ext.') === 0) {
                                     isVersion2 = field;
                                     break;
+                                } else if (field && field.name && field.name.indexOf('out.ext.') === 0) {
+                                    // Note that this is actually Version 3 of Elastic, but we don't have a transformer to version 3:
+                                    // Changes: out.{trace} statement field, and other changes in trace format
+                                    // Anyway, we set the version to 2, so that no changes are performed
+                                    isVersion2 = field;
+                                    break;
                                 }
                             }
 
