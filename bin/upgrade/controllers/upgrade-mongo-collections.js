@@ -79,7 +79,7 @@ MongoController.prototype.guessModelVersion = function(db, callback) {
             console.log('Mongo collections object has length 0, defaulting to min version!');
             return callback(minVersion);
         }
-        
+
         var targetVersion = '1';
         var hasGame = false;
         for (var i = 0; i < collections.length; ++i) {
@@ -99,23 +99,23 @@ MongoController.prototype.guessModelVersion = function(db, callback) {
                 targetVersion = '2';
             }
         }
-        
-        if(!hasGame || targetVersion === '2'){
+
+        if (!hasGame || targetVersion === '2') {
             return callback('2');
         }
-        
-        if(targetVersion === '3-4'){
+
+        if (targetVersion === '3-4') {
             var gamesCollection = db.db.collection('games');
             gamesCollection.findOne().then(function (game) {
-                if(!game){
+                if (!game) {
                     return callback('3');
                 }
-                if (game.deleted === true || game.deleted === false){
+                if (game.deleted === true || game.deleted === false) {
                     return callback('4');
                 }
-                else {
-                    return callback('3');
-                }
+
+                return callback('3');
+
             });
         } else {
             var sessionsCollection = db.collection('sessions');
@@ -124,7 +124,7 @@ MongoController.prototype.guessModelVersion = function(db, callback) {
             var found = false;
             cursor.each(function (err, item) {
                 if (found) {
-                    return;
+                    return callback(minVersion);
                 }
                 if (err) {
                     console.log('Unexpected error while iterating sessions, defaulting min version!', err);
@@ -140,7 +140,7 @@ MongoController.prototype.guessModelVersion = function(db, callback) {
                 // If the item is null then the cursor is exhausted/empty and closed
                 if (item && item.classId) {
                     found = true;
-                    return callback(targetVersion);
+                    return callback('2');
                 }
             });
         }
