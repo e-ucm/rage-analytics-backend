@@ -263,9 +263,9 @@ function checkAttempts(config, callback) {
                         err = 'Auth token is missing for an attempt.';
                     } else if (attempt.number !== authToken.session) {
                         err = 'Attempt and session number do not match.';
-                    } else if (attempt.start !== authToken.currentSessionStarted) {
-                        err = 'Attempt and session start do not match: ' + attempt.start + ' !== ' + authToken.currentSessionStart;
-                    } else if (attempt.end !== authToken.lastAccessed) {
+                    } else if (attempt.start.toString() !== authToken.currentSessionStarted.toString()) {
+                        err = 'Attempt and session start do not match: ' + attempt.start + ' !== ' + authToken.currentSessionStarted;
+                    } else if (attempt.end.toString() !== authToken.lastAccessed.toString()) {
                         err = 'Attempt and session end do not match.';
                     }
                     if (err) {
