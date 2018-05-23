@@ -282,6 +282,23 @@ module.exports = function (request, db) {
                 });
         });
 
+        it('should PUT a class using students and teachers array', function (done) {
+            request.put('/api/classes/' + idClass)
+                .expect(200)
+                .set('X-Gleaner-User', 'Teacher1')
+                .send({
+                    teachers: ['Teacher2'],
+                    students: ['Student2', 'Student3']
+                })
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    should(res).be.Object();
+                    should(res.body.participants.teachers).containDeep(['Teacher1', 'Teacher2']);
+                    should(res.body.participants.students).containDeep(['Student1', 'Student2', 'Student3']);
+                    done();
+                });
+        });
+
         it('should PUT (add) a class', function (done) {
             request.put('/api/classes/' + idClass2)
                 .expect(200)
