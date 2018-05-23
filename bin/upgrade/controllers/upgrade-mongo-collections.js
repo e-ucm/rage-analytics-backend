@@ -79,8 +79,9 @@ MongoController.prototype.guessModelVersion = function(db, callback) {
             console.log('Mongo collections object has length 0, defaulting to min version!');
             return callback(minVersion);
         }
-
-        var targetVersion = '2';
+        
+        var targetVersion = '1';
+        var hasGame = false;
         for (var i = 0; i < collections.length; ++i) {
             var collection = collections[i];
 
@@ -88,37 +89,61 @@ MongoController.prototype.guessModelVersion = function(db, callback) {
             if (!collectionName && collection.s) {
                 collectionName = collection.s.name;
             }
-            if (collectionName === 'classes') {
-                return callback(targetVersion);
+            if (collectionName === 'games') {
+                hasGame = true;
             }
-
+            if (collectionName === 'activities') {
+                targetVersion = '3-4';
+            }
+            if (targetVersion !== '3-4' && collectionName === 'classes') {
+                targetVersion = '2';
+            }
         }
+        
+        if(!hasGame || targetVersion === '2'){
+            return callback('2');
+        }
+        
+        if(targetVersion === '3-4'){
+            var gamesCollection = config.mongodb.db.collection('games');
+            gamesCollection.findOne().then(function (game) {
+                if(!game){
+                    return callback('3');
+                }
+                if (game.deleted === true || game.deleted === false){
+                    return callback('4');
+                }
+                else {
+                    return callback('3');
+                }
+            });
+        } else {
+            var sessionsCollection = db.collection('sessions');
+            var cursor = sessionsCollection.find();
 
-        var sessionsCollection = db.collection('sessions');
-        var cursor = sessionsCollection.find();
+            var found = false;
+            cursor.each(function (err, item) {
+                if (found) {
+                    return;
+                }
+                if (err) {
+                    console.log('Unexpected error while iterating sessions, defaulting min version!', err);
+                    found = true;
+                    return callback(minVersion);
+                }
 
-        var found = false;
-        cursor.each(function (err, item) {
-            if (found) {
-                return;
-            }
-            if (err) {
-                console.log('Unexpected error while iterating sessions, defaulting min version!', err);
-                found = true;
-                return callback(minVersion);
-            }
+                if (!item) {
+                    found = true;
+                    return callback(minVersion);
+                }
 
-            if (!item) {
-                found = true;
-                return callback(minVersion);
-            }
-
-            // If the item is null then the cursor is exhausted/empty and closed
-            if (item && item.classId) {
-                found = true;
-                return callback(targetVersion);
-            }
-        });
+                // If the item is null then the cursor is exhausted/empty and closed
+                if (item && item.classId) {
+                    found = true;
+                    return callback(targetVersion);
+                }
+            });
+        }
 
     });
 };
