@@ -20,7 +20,6 @@
 
 var should = require('should');
 var async = require('async');
-var Collection = require('easy-collections');
 var utils = require('../upgraderTestUtils.js');
 
 module.exports = function (request, db, config) {

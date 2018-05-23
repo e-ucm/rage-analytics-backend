@@ -239,7 +239,7 @@ function checkAttempts(config, callback) {
             return callback(err, config);
         }
 
-        var player = playersCollection.findOne({ _id: gameplay.playerId }).then(function(player) {
+        playersCollection.findOne({ _id: gameplay.playerId }).then(function(player) {
             var err = null;
             if (gameplay.playerName !== player.name) {
                 err = 'Player name does not match.';
