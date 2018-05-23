@@ -105,7 +105,7 @@ MongoController.prototype.guessModelVersion = function(db, callback) {
         }
         
         if(targetVersion === '3-4'){
-            var gamesCollection = config.mongodb.db.collection('games');
+            var gamesCollection = db.db.collection('games');
             gamesCollection.findOne().then(function (game) {
                 if(!game){
                     return callback('3');
