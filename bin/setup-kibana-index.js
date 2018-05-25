@@ -37,8 +37,8 @@ request({
             order: 0,
             template: '*',
             settings: {
-                index.number_of_replicas : '0',
-                index.number_of_shards : '1'
+                'index.number_of_replicas': '0',
+                'index.number_of_shards': '1'
             },
             mappings: {
                 _default_: {
