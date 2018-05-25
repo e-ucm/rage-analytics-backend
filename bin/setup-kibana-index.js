@@ -31,7 +31,7 @@ var elasticsearch = require('elasticsearch');
 var defaultKibanaIndexValue = config.kibana.defaultIndex;
 
 request({
-        uri: config.elasticsearch.uri + '/_template/templates',
+        uri: config.elasticsearch.uri + '/_template/geopoint',
         method: 'PUT',
         body: {
             order: 0,
