@@ -31,12 +31,15 @@ var elasticsearch = require('elasticsearch');
 var defaultKibanaIndexValue = config.kibana.defaultIndex;
 
 request({
-        uri: config.elasticsearch.uri + '/_template/geopoint',
+        uri: config.elasticsearch.uri + '/_template/templates',
         method: 'PUT',
         body: {
             order: 0,
             template: '*',
-            settings: {},
+            settings: {
+                index.number_of_replicas : '0',
+                index.number_of_shards : '1'
+            },
             mappings: {
                 _default_: {
                     properties: {
