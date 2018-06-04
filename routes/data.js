@@ -34,20 +34,49 @@ router.get('/overall_dummy/:studentid', function (req, res) {
 
 router.get('/overall/:studentid', function (req, res) {
     var studentId = req.params.studentid;
+    var deferred = Q.defer();
 
     if (!studentId) {
         res.status(400);
         return res.json({message: 'Invalid studentId'});
     }
 
-    var deferred = Q.defer();
+    var analysisresult =
+    {
+        sudent: req.params.studentid,
+        scores: {
+            min: 0,
+            avg: 0,
+            max: 0
+        },
+        durations: {
+            yours: 0,
+            others: 0
+        },
+        alternatives: {
+            correct: 0,
+            incorrect: 0
+        },
+        progress: 0
+    };
+
+    var queries = 3;
+    var done = 0;
+    var Completed = function() {
+        done++;
+
+        if (done >= queries) {
+            deferred.resolve(analysisresult);
+        }
+    };
+
 
     getUser(studentId, req)
         .then(function(user) {
             req.app.esClient.search({
                 size: 200,
                 from: 0,
-                index: 'results-beaconing-overall',
+                index: 'beaconing-overall',
                 q: '_id:' + user.username
             }, function (error, response) {
                 if (error) {
@@ -57,42 +86,88 @@ router.get('/overall/:studentid', function (req, res) {
                     return deferred.reject(new Error(error));
                 }
 
-                var analysisresult =
-                {
-                    sudent: req.params.studentid,
-                    scores: {
-                        min: 0.2,
-                        avg: 0.7,
-                        max: 0.95
-                    },
-                    durations: {
-                        yours: 0.5,
-                        others: 0.7
-                    },
-                    alternatives: {
-                        correct: 0,
-                        incorrect: 0
-                    },
-                    progress: 0.8
-                };
-
                 if (response.hits && response.hits.hits.length) {
                     response.hits.hits.forEach(function (document) {
                         if (document._source) {
-                            document._source._id = document._id;
-                            if (document._source.selected) {
-                                if (document._source.selected.true) {
-                                    analysisresult.alternatives.correct += document._source.selected.true;
-                                }
-                                if (document._source.selected.false) {
-                                    analysisresult.alternatives.incorrect += document._source.selected.false;
-                                }
+                            if (document._source.min) {
+                                analysisresult.scores.min = document._source.min;
+                            }
+                            if (document._source.avg) {
+                                analysisresult.scores.avg = document._source.avg;
+                            }
+                            if (document._source.max) {
+                                analysisresult.scores.max = document._source.max;
+                            }
+
+                            if (document._source.correct) {
+                                analysisresult.alternatives.correct = document._source.correct;
+                            }
+                            if (document._source.incorrect) {
+                                analysisresult.alternatives.incorrect = document._source.incorrect;
+                            }
+                            if (document._source.answers) {
+                                analysisresult.alternatives.answers = document._source.answers;
                             }
                         }
                     });
                 }
 
-                deferred.resolve(analysisresult);
+                Completed();
+            });
+
+            req.app.esClient.search({
+                size: 200,
+                from: 0,
+                index: 'beaconing-overall-completable',
+                q: '_id:' + user.username
+            }, function (error, response) {
+                if (error) {
+                    if (response.error && response.error.type === 'index_not_found_exception') {
+                        return deferred.resolve([]);
+                    }
+                    return deferred.reject(new Error(error));
+                }
+
+                if (response.hits && response.hits.hits.length) {
+                    response.hits.hits.forEach(function (document) {
+                        if (document._source) {
+                            if (document._source.mine) {
+                                analysisresult.durations.yours = document._source.mine;
+                            }
+                            if (document._source.avg) {
+                                analysisresult.durations.others = document._source.avg;
+                            }
+                        }
+                    });
+                }
+
+                Completed();
+            });
+
+            req.app.esClient.search({
+                size: 200,
+                from: 0,
+                index: 'beaconing-overall-progress',
+                q: '_id:' + user.username
+            }, function (error, response) {
+                if (error) {
+                    if (response.error && response.error.type === 'index_not_found_exception') {
+                        return deferred.resolve([]);
+                    }
+                    return deferred.reject(new Error(error));
+                }
+
+                if (response.hits && response.hits.hits.length) {
+                    response.hits.hits.forEach(function (document) {
+                        if (document._source) {
+                            if (document._source.myProgress) {
+                                analysisresult.progress = document._source.myProgress;
+                            }
+                        }
+                    });
+                }
+
+                Completed();
             });
         })
         .fail(function(error) {
