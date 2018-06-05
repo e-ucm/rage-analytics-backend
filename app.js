@@ -53,34 +53,7 @@ var connectToDB = function () {
 
             if (!isTest) {
                 kafkaService.createTopic(app.config.kafka.topicName);
-                stormService.startTopology(app.config.storm.defaultAnalysisName, app.config.kafka.topicName);
-
-                setTimeout(function () {
-                    var glpFolder = process.env.RAGE_ANALYTICS_BACKEND_GLP_REALTIMEJAR;
-                    if (!glpFolder) {
-                        glpFolder = '/app/output/glp/realtime-jar-with-dependencies.jar';
-                    }
-                    app.config.storm.realtimeJar = glpFolder;
-                    stormService.startTopology(app.config.storm.defaultAnalysisName + 'glp', app.config.kafka.topicName);
-
-                    setTimeout(function () {
-                        var overallFolder = process.env.RAGE_ANALYTICS_BACKEND_OVERALL_REALTIMEJAR;
-                        if (!overallFolder) {
-                            overallFolder = '/app/output/overall/realtime-jar-with-dependencies.jar';
-                        }
-                        app.config.storm.realtimeJar = overallFolder;
-                        stormService.startTopology(app.config.storm.defaultAnalysisName + 'overall', app.config.kafka.topicName);
-
-                        setTimeout(function () {
-                            var performanceFolder = process.env.RAGE_ANALYTICS_BACKEND_PERFORMANCE_REALTIMEJAR;
-                            if (!performanceFolder) {
-                                performanceFolder = '/app/output/performance/realtime-jar-with-dependencies.jar';
-                            }
-                            app.config.storm.realtimeJar = performanceFolder;
-                            stormService.startTopology(app.config.storm.defaultAnalysisName + 'performance', app.config.kafka.topicName);
-                        }, 60000);
-                    }, 60000);
-                }, 60000);
+                stormService.startTopology(app.config.storm.defaultAnalysisName, app.config.storm.defaultAnalysisFolder, app.config.kafka.topicName);
             }
         }
     });
