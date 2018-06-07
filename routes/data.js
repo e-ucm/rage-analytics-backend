@@ -1052,76 +1052,106 @@ var getAnalytics = function(activityId, username, glpBase, students, minigames, 
     console.log('Analytics');
     dorequest(analyticsIndex(activityId), {}, esClient)
         .then(function(b) {
-            var total = {
-                own: {
-                    score: 0,
-                    time: 0,
-                    accuracy: 0
-                },
-                avg: {
-                    score: 0,
-                    time: 0,
-                    accuracy: 0
-                },
-                count: 0
-            };
+            try {
+                var total = {
+                    own: {
+                        score: 0,
+                        time: 0,
+                        accuracy: 0
+                    },
+                    avg: {
+                        score: 0,
+                        time: 0,
+                        accuracy: 0
+                    },
+                    count: 0
+                };
 
-            for (var i = 0; i < b.hits.hits.length; i++) {
-                var currentNode = b.hits.hits[i]._source;
-                var activityId = b.hits.hits[i]._id;
+                for (var i = 0; i < b.hits.hits.length; i++) {
+                    console.log('  student: ' + i);
+                    var currentNode = b.hits.hits[i]._source;
+                    var activityId = b.hits.hits[i]._id;
 
-                if (!currentNode.children) {
-                    var tmp = {};
+                    if (!currentNode.children) {
+                        console.log('    !children');
+                        var tmp = {};
 
-                    if (students[username]) {
-                        tmp.score = students[username][activityId] ? valueOrZero(students[username][activityId].score) : 0;
-                        tmp.time = students[username][activityId] ? valueOrZero(students[username][activityId].time) : 0;
-                        tmp.accuracy = (students[username][activityId] ?
-                                        (students[username][activityId].accuracy ?
-                                        valueOrZero(students[username][activityId].accuracy.value) : 0) : 0);
-                    }else {
-                        tmp.score = 0;
-                        tmp.time = 0;
-                        tmp.accuracy = 0;
-                    }
-
-                    glpBase.minigames.push({
-                        name: currentNode.name,
-                        score: {
-                            own: tmp.score,
-                            avg: valueOrZero(minigames[activityId].score.value)
-                        },
-                        time: {
-                            own: tmp.time,
-                            avg: valueOrZero(minigames[activityId].time.value)
-                        },
-                        accuracy: {
-                            own: tmp.accuracy,
-                            avg: valueOrZero(minigames[activityId].accuracy.value)
+                        if (students[username]) {
+                            console.log('      username');
+                            tmp.score = students[username][activityId] ? valueOrZero(students[username][activityId].score) : 0;
+                            tmp.time = students[username][activityId] ? valueOrZero(students[username][activityId].time) : 0;
+                            tmp.accuracy = (students[username][activityId] ?
+                                            (students[username][activityId].accuracy ?
+                                            valueOrZero(students[username][activityId].accuracy.value) : 0) : 0);
+                        }else {
+                            console.log('      elsecase');
+                            tmp.score = 0;
+                            tmp.time = 0;
+                            tmp.accuracy = 0;
                         }
-                    });
+                        console.log('    prepush');
+                        var toPush = {
+                            name: currentNode.name,
+                            score: {
+                                own: tmp.score,
+                                avg: 0,
+                            },
+                            time: {
+                                own: tmp.time,
+                                avg: 0
+                            },
+                            accuracy: {
+                                own: tmp.accuracy,
+                                avg: 0
+                            }
+                        }
 
-                    total.count++;
+                        if(minigames[activityId]){
+                            if(minigames[activityId].score){
+                                toPush.score.avg = valueOrZero(minigames[activityId].score.value);
+                            }
+                            if(minigames[activityId].time){
+                                toPush.time.avg = valueOrZero(minigames[activityId].time.value);
+                            }
+                            if(minigames[activityId].accuracy){
+                                toPush.accuracy.avg = valueOrZero(minigames[activityId].accuracy.value);
+                            }
+                        }
 
-                    total.own.score += tmp.score;
-                    total.own.time += tmp.time;
-                    total.own.accuracy += tmp.accuracy;
-                    total.avg.score += valueOrZero(minigames[activityId].score.value);
-                    total.avg.time += valueOrZero(minigames[activityId].time.value);
-                    total.avg.accuracy += valueOrZero(minigames[activityId].accuracy.value);
+                        glpBase.minigames.push();
+                        console.log('    postpush');
+
+                        total.count++;
+
+                        total.own.score += tmp.score;
+                        total.own.time += tmp.time;
+                        total.own.accuracy += tmp.accuracy;
+                        total.avg.score += toPush.score.avg;
+                        total.avg.time += toPush.time.avg;
+                        total.avg.accuracy += toPush.accuracy.avg;
+                        console.log('    postassign');
+                    }
                 }
+
+                console.log('final');
+
+                glpBase.performance.score.own = total.own.score / total.count;
+                glpBase.performance.time.own = total.own.time / total.count;
+                glpBase.performance.accuracy.own = total.own.accuracy / total.count;
+                glpBase.performance.score.avg = total.avg.score / total.count;
+                glpBase.performance.time.avg = total.avg.time / total.count;
+                glpBase.performance.accuracy.avg = total.avg.accuracy / total.count;
+
+                deferred.resolve();
+            }catch (error) {
+                console.log('trycatcherror');
+                console.log(JSON.stringify(error));
+                deferred.reject(error);
             }
-
-            glpBase.performance.score.own = total.own.score / total.count;
-            glpBase.performance.time.own = total.own.time / total.count;
-            glpBase.performance.accuracy.own = total.own.accuracy / total.count;
-            glpBase.performance.score.avg = total.avg.score / total.count;
-            glpBase.performance.time.avg = total.avg.time / total.count;
-            glpBase.performance.accuracy.avg = total.avg.accuracy / total.count;
-
-            deferred.resolve();
         })
         .fail(function(error) {
+            console.log('failerror');
+            console.log(JSON.stringify(error));
             deferred.reject(error);
         });
 
