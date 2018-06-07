@@ -538,51 +538,17 @@ router.get('/glp_results/:activityId/:studentId', function (req, res) {
 
     var deferred = Q.defer();
 
-    var glpBase = clone(originalGlpBase);
-    var students = {};
-    var minigames = {};
-
     try {
         getUser(studentId, req)
             .then(function(user) {
-                console.log(user.username);
-                getScores(activityId, glpBase, students, minigames, esClient)
-                .then(function() {
-                    getAccuracy(activityId, glpBase, students, minigames, esClient)
-                    .then(function() {
-                        getTimes(activityId, glpBase, students, minigames, esClient)
-                        .then(function() {
-                            getAnalytics(activityId, user.username, glpBase, students, minigames, esClient)
-                            .then(function() {
-                                getCompetencies(activityId, user.username, glpBase, students, minigames, esClient)
-                                .then(function() {
-                                    deferred.resolve(glpBase);
-                                })
-                                .fail(function(error) {
-                                    res.status(404);
-                                    return res.json({message: 'Unable to obtain competencies for that ActivityId'});
-                                });
-                            })
-                            .fail(function(error) {
-                                res.status(404);
-                                return res.json({message: 'Unable to obtain analytics for that ActivityId'});
-                            });
-                        })
-                        .fail(function(error) {
-                            res.status(404);
-                            return res.json({message: 'Unable to obtain times for that ActivityId'});
-                        });
+                getGLPResults(user.username, activityId, esClient, res)
+                    .then(function(results) {
+                        deferred.resolve(results);
                     })
                     .fail(function(error) {
                         res.status(404);
-                        return res.json({message: 'Unable to obtain accuracy for that ActivityId'});
+                        return res.json({message: 'error obtaining GLP results', error: error});
                     });
-
-                })
-                .fail(function(error) {
-                    res.status(404);
-                    return res.json({message: 'Unable to obtain scores for that ActivityId'});
-                });
             })
             .fail(function(error) {
                 res.status(404);
@@ -595,6 +561,83 @@ router.get('/glp_results/:activityId/:studentId', function (req, res) {
 
     restUtils.processResponse(deferred.promise, res);
 });
+
+router.get('/glp_results/:activityId', function (req, res) {
+    var username = req.headers['x-gleaner-user'];
+    var activityId = req.params.activityId;
+
+    if (!activityId) {
+        res.status(400);
+        return res.json({message: 'Invalid activityId'});
+    }
+
+    if (!username) {
+        res.status(400);
+        return res.json({message: 'Username not found'});
+    }
+
+    var esClient = req.app.esClient;
+
+    var deferred = Q.defer();
+
+    try {
+        getGLPResults(username, activityId, esClient, res).then(function(results) {
+            deferred.resolve(results);
+        })
+        .fail(function(error) {
+            res.status(404);
+            return res.json({message: 'error obtaining GLP results', error: error});
+        });
+    }catch (error) {
+        res.status(404);
+        return res.json({message: 'Unable to find data for that ActivityId'});
+    }
+
+    restUtils.processResponse(deferred.promise, res);
+});
+
+var getGLPResults = function(username, activityId, esClient, res) {
+    var deferred = Q.defer();
+
+    var glpBase = clone(originalGlpBase);
+    var students = {};
+    var minigames = {};
+
+    getScores(activityId, glpBase, students, minigames, esClient)
+        .then(function() {
+            getAccuracy(activityId, glpBase, students, minigames, esClient)
+            .then(function() {
+                getTimes(activityId, glpBase, students, minigames, esClient)
+                .then(function() {
+                    getAnalytics(activityId, username, glpBase, students, minigames, esClient)
+                    .then(function() {
+                        getCompetencies(activityId, username, glpBase, students, minigames, esClient)
+                        .then(function() {
+                            deferred.resolve(glpBase);
+                        })
+                        .fail(function(error) {
+                            deferred.reject({message: 'Unable to obtain competencies for that ActivityId', error: error});
+                        });
+                    })
+                    .fail(function(error) {
+                        deferred.reject({message: 'Unable to obtain analytics for that ActivityId', error: error});
+                    });
+                })
+                .fail(function(error) {
+                    deferred.reject({message: 'Unable to obtain times for that ActivityId', error: error});
+                });
+            })
+            .fail(function(error) {
+                deferred.reject({message: 'Unable to obtain accuracy for that ActivityId', error: error});
+            });
+
+        })
+        .fail(function(error) {
+            deferred.reject({message: 'Unable to obtain scores for that ActivityId', error: error});
+        });
+
+    return deferred.promise;
+};
 
 String.prototype.replaceAll = function(search, replacement) {
     var target = this;

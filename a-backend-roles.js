@@ -46,6 +46,8 @@ exports.app = {
                         '/activities/:activityId/attemps/my',
                         '/activities/:activityId/attemps/:userId',
                         '/activities/:activityId/attemps',
+                        '/data/glp_results/:activityId/:studentId',
+                        '/data/glp_results/:activityId',
                         '/courses/:id'
                     ],
                     permissions: [

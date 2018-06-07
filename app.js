@@ -56,19 +56,19 @@ var connectToDB = function () {
                 stormService.startTopology(app.config.storm.defaultAnalysisName,
                     app.config.storm.defaultAnalysisFolder,
                     app.config.kafka.topicName)
-                .then(function(){
+                .then(function() {
                     console.log('Topology Started: ' + app.config.storm.defaultAnalysisName);
                 })
-                .fail(function(error){
+                .fail(function(error) {
                     console.log(error);
                 });
                 stormService.startTopology('realtimeBeaconingBundleAnalysis',
                     process.env.RAGE_ANALYTICS_BACKEND_BEACONINGANALYSISFOLDER,
                     app.config.kafka.topicName)
-                .then(function(){
+                .then(function() {
                     console.log('Topology Started: realtimeBeaconingBundleAnalysis');
                 })
-                .fail(function(error){
+                .fail(function(error) {
                     console.log(error);
                 });
             }
