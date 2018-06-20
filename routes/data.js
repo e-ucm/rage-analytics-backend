@@ -1094,7 +1094,7 @@ var getAnalytics = function(activityId, username, glpBase, students, minigames, 
                             name: currentNode.name,
                             score: {
                                 own: tmp.score,
-                                avg: 0,
+                                avg: 0
                             },
                             time: {
                                 own: tmp.time,
@@ -1104,16 +1104,16 @@ var getAnalytics = function(activityId, username, glpBase, students, minigames, 
                                 own: tmp.accuracy,
                                 avg: 0
                             }
-                        }
+                        };
 
-                        if(minigames[activityId]){
-                            if(minigames[activityId].score){
+                        if (minigames[activityId]) {
+                            if (minigames[activityId].score) {
                                 toPush.score.avg = valueOrZero(minigames[activityId].score.value);
                             }
-                            if(minigames[activityId].time){
+                            if (minigames[activityId].time) {
                                 toPush.time.avg = valueOrZero(minigames[activityId].time.value);
                             }
-                            if(minigames[activityId].accuracy){
+                            if (minigames[activityId].accuracy) {
                                 toPush.accuracy.avg = valueOrZero(minigames[activityId].accuracy.value);
                             }
                         }
