@@ -927,6 +927,8 @@ var extractValues = function(b, metric, glpBase, students, minigames) {
             glpBase.performance[metric].avg = -1;
         }
     }
+
+    console.log(JSON.stringify(minigames, null, 2));
 };
 
 var getScores = function(activityId, glpBase, students, minigames, esClient) {
@@ -1068,28 +1070,23 @@ var getAnalytics = function(activityId, username, glpBase, students, minigames, 
                 };
 
                 for (var i = 0; i < b.hits.hits.length; i++) {
-                    console.log('  student: ' + i);
                     var currentNode = b.hits.hits[i]._source;
                     var activityId = b.hits.hits[i]._id;
 
                     if (!currentNode.children) {
-                        console.log('    !children');
                         var tmp = {};
 
                         if (students[username]) {
-                            console.log('      username');
                             tmp.score = students[username][activityId] ? valueOrZero(students[username][activityId].score) : 0;
                             tmp.time = students[username][activityId] ? valueOrZero(students[username][activityId].time) : 0;
                             tmp.accuracy = (students[username][activityId] ?
                                             (students[username][activityId].accuracy ?
                                             valueOrZero(students[username][activityId].accuracy.value) : 0) : 0);
                         }else {
-                            console.log('      elsecase');
                             tmp.score = 0;
                             tmp.time = 0;
                             tmp.accuracy = 0;
                         }
-                        console.log('    prepush');
                         var toPush = {
                             name: currentNode.name,
                             score: {
@@ -1118,8 +1115,7 @@ var getAnalytics = function(activityId, username, glpBase, students, minigames, 
                             }
                         }
 
-                        glpBase.minigames.push();
-                        console.log('    postpush');
+                        glpBase.minigames.push(toPush);
 
                         total.count++;
 
@@ -1129,11 +1125,8 @@ var getAnalytics = function(activityId, username, glpBase, students, minigames, 
                         total.avg.score += toPush.score.avg;
                         total.avg.time += toPush.time.avg;
                         total.avg.accuracy += toPush.accuracy.avg;
-                        console.log('    postassign');
                     }
                 }
-
-                console.log('final');
 
                 glpBase.performance.score.own = total.own.score / total.count;
                 glpBase.performance.time.own = total.own.time / total.count;
@@ -1141,6 +1134,7 @@ var getAnalytics = function(activityId, username, glpBase, students, minigames, 
                 glpBase.performance.score.avg = total.avg.score / total.count;
                 glpBase.performance.time.avg = total.avg.time / total.count;
                 glpBase.performance.accuracy.avg = total.avg.accuracy / total.count;
+
 
                 deferred.resolve();
             }catch (error) {
