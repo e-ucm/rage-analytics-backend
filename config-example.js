@@ -53,6 +53,9 @@ exports.kafka = {
     uri: process.env.KAFKA_URI || process.env.KAFKA_URL || '{{kafkaUrl}}',
     topicName: '{{kafkaTopicName}}'
 };
+exports.zookeeper = {
+    uri: process.env.ZOOKEEPER_URI || process.env.ZOOKEEPER_URL || '{{zookeeperUrl}}'
+};
 exports.a2 = {
     a2ApiPath: '{{a2ApiPath}}',
     a2Prefix: '{{a2Prefix}}',

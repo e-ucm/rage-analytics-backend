@@ -127,9 +127,12 @@ exports.defaultValues = {
     stormPath: '/home/eucm/hlocal/rage/gleaner/storm/apache-storm-1.1.1/bin',
     nimbusHost: 'localhost',
     nimbusPort: '6627',
-    kzkHost: 'localhost',
-    kzkPort: '2181',
-    kafkaUrl: 'localhost:2181',
+    zookeeperHost: 'localhost',
+    zookeeperPort: '2181',
+    zookeeperUrl: 'localhost:2181',
+    kafkaHost: 'localhost',
+    kafkaPort: '9092',
+    kafkaUrl: 'localhost:9092',
     kafkaTopicName: 'defaultkafkaanalysistopic',
     myHost: process.env.MY_HOST || 'localhost',
     defaultAnalysisName: 'defaultstormanalysis',
@@ -170,9 +173,12 @@ exports.testValues = {
     stormPath: '/home/eucm/hlocal/rage/gleaner/storm/apache-storm-1.1.1/bin',
     nimbusHost: 'localhost',
     nimbusPort: '6627',
-    kzkHost: 'localhost',
-    kzkPort: '2181',
-    kafkaUrl: 'localhost:2181',
+    zookeeperHost: 'localhost',
+    zookeeperPort: '2181',
+    zookeeperUrl: 'localhost:2181',
+    kafkaHost: 'localhost',
+    kafkaPort: '9092',
+    kafkaUrl: 'localhost:9092',
     kafkaTopicName: 'defaultkafkaanalysistopictest',
     myHost: process.env.MY_HOST || 'localhost',
     defaultAnalysisName: 'defaultstormanalysistest',
@@ -186,7 +192,7 @@ exports.testValues = {
 };
 
 var prefix = 'RAGE_ANALYTICS_BACKEND_';
-var links = ['kzk', 'lrs', 'mongo', 'a2', 'nimbus', 'elasticsearch'];
+var links = ['kafka', 'zookeeper', 'lrs', 'mongo', 'a2', 'nimbus', 'elasticsearch'];
 initFromEnv(exports.defaultValues, prefix, links);
 initFromEnv(exports.testValues, prefix, links);
 
@@ -211,5 +217,8 @@ exports.testValues.a2AdminPassword = exports.defaultValues.a2AdminPassword;
 exports.defaultValues.lrsUrl = 'http://' + exports.defaultValues.lrsHost + ':' + exports.defaultValues.lrsPort + '/xAPI/';
 exports.testValues.lrsUrl = exports.defaultValues.lrsUrl;
 
-exports.defaultValues.kafkaUrl = exports.defaultValues.kzkHost + ':' + exports.defaultValues.kzkPort;
+exports.defaultValues.zookeeperUrl = exports.defaultValues.zookeeperHost + ':' + exports.defaultValues.zookeeperPort;
+exports.testValues.zookeeperUrl = exports.defaultValues.zookeeperUrl;
+
+exports.defaultValues.kafkaUrl = exports.defaultValues.kafkaHost + ':' + exports.defaultValues.kafkaPort;
 exports.testValues.kafkaUrl = exports.defaultValues.kafkaUrl;

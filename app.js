@@ -36,8 +36,8 @@ var dbProvider = {
     }
 };
 
-var kafkaService = require('./lib/services/kafka')(app.config.kafka.uri);
-var stormService = require('./lib/services/storm')(app.config.storm, app.config.kafka.uri);
+var kafkaService = require('./lib/services/kafka')(app.config.zookeeper.uri);
+var stormService = require('./lib/services/storm')(app.config.storm, app.config.zookeeper.uri, app.config.kafka.uri);
 
 var connectToDB = function () {
     var MongoClient = require('mongodb').MongoClient;
@@ -146,7 +146,7 @@ activities.preRemove(function (_id, next) {
 var dataSource = require('./lib/traces');
 dataSource.addConsumer(require('./lib/consumers/fsraw')(app.config.rawTracesFolder));
 dataSource.addConsumer(require('./lib/consumers/elasticsearch')(app.esClient));
-dataSource.addConsumer(require('./lib/consumers/kafka')(app.config.kafka));
+dataSource.addConsumer(require('./lib/consumers/kafka')(app.config.zookeeper, app.config.kafka));
 
 if (app.config.lrs.useLrs === true) {
     dataSource.addConsumer(require('./lib/consumers/openlrs')(app.config.lrs));
