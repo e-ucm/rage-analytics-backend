@@ -145,8 +145,13 @@ module.exports = function (kafkaService, stormService) {
         var username = req.headers['x-gleaner-user'];
         restUtils.processResponse(classes.isAuthorizedFor(req.body.classId, username, 'post', '/activities/')
             .then(function (classReq) {
+
+                var allowAnonymous = req.body.allowAnonymous;
+                if (!allowAnonymous) {
+                    allowAnonymous = false;
+                }
                 return activities.createActivity(req.body.gameId, req.body.versionId, req.body.classId,
-                    username, req.body.name);
+                    username, req.body.name, undefined, req.body.offline, allowAnonymous);
             }), res);
     });
 
@@ -199,7 +204,11 @@ module.exports = function (kafkaService, stormService) {
                     rootId = '';
                 }
 
-                activities.createActivity(req.body.gameId, req.body.versionId, req.body.classId, username, req.body.name, rootId)
+                var allowAnonymous = req.body.allowAnonymous;
+                if (!allowAnonymous) {
+                    allowAnonymous = false;
+                }
+                activities.createActivity(req.body.gameId, req.body.versionId, req.body.classId, username, req.body.name, rootId, req.body.offline, allowAnonymous)
                 .then(function(activity) {
                         return activities.kibana.getKibanaBaseVisualizations(config, activity, req.app.esClient)
                         .then(function(visualizations) {
