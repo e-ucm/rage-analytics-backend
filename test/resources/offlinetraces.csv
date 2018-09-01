@@ -1,0 +1,6 @@
+XJIR,1523611057499,initialized,level,A
+KVDC,1523611057500,initialized,level,A
+XJIR,1523611057510,interacted,gameobject,15Objects-A,Bombilla,1
+KVDC,1523611057623,selected,alternative,A,success,true,response,bombilla,mappings_Bombilla, bombilla,targets,Bombilla=true,bombilla,802,object-changed,0,correct,1
+XJIR,1523611057728,interacted,gameobject,15Objects-A,Bombilla,1
+KVDC,1523611057825,selected,alternative,A,success,false,response,pipa,mappings_Bombilla, ,targets,Bombilla=false,object-changed,0,correct,0
