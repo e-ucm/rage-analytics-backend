@@ -36,7 +36,7 @@ describe('CSV to xAPI tests', function () {
             definition: {
                 type: 'https://w3id.org/xapi/seriousgames/activity-types/level'
             },
-            id: 'https://w3id.org/xapi/adb/objectid/A\r'
+            id: 'https://w3id.org/xapi/adb/objectid/A'
         },
         timestamp: '2018-04-13T09:17:37.499Z',
         verb: {
@@ -55,7 +55,7 @@ describe('CSV to xAPI tests', function () {
                 definition: {
                     type: 'https://w3id.org/xapi/seriousgames/activity-types/level'
                 },
-                id: 'https://w3id.org/xapi/adb/objectid/A\r'
+                id: 'https://w3id.org/xapi/adb/objectid/A'
             },
             timestamp: '2018-04-13T09:17:37.500Z',
             verb: {
