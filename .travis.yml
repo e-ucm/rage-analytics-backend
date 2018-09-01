@@ -10,8 +10,10 @@ addons:
 
 services:
   - mongodb
+  - docker
 
 before_install:
+  - docker run -p 9092:9092 -p 2181:2181 --env ADVERTISED_HOST=localhost --env ADVERTISED_PORT=9092 -d eucm/kzk:0.11.0.1
   - curl -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.6.2.deb && sudo dpkg -i --force-confnew elasticsearch-5.6.2.deb && sudo service elasticsearch start
 
 before_script:
