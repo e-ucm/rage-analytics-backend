@@ -53,7 +53,15 @@ var connectToDB = function () {
 
             if (!isTest) {
                 kafkaService.createTopic(app.config.kafka.topicName);
-                stormService.startTopology(app.config.storm.defaultAnalysisName, app.config.storm.defaultAnalysisFolder, app.config.kafka.topicName);
+                stormService.startTopology(app.config.storm.defaultAnalysisName,
+                    app.config.storm.realtimeJar,
+                    app.config.kafka.topicName)
+                    .then(function() {
+                        console.log('Topology Started: ' + app.config.storm.defaultAnalysisName);
+                    })
+                    .fail(function(error) {
+                        console.log(error);
+                    });
             }
         }
     });
