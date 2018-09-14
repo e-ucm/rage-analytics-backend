@@ -89,6 +89,7 @@ exports.app = {
                         '/analysis/:id',
                         '/games/public',
                         '/games/:gameId',
+                        '/kibana/classvis/',
                         '/games/:gameId/versions',
                         '/games/:gameId/versions/:versionId',
                         '/games/:gameId/versions/:versionId/activities/my',

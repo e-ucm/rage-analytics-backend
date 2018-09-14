@@ -187,7 +187,8 @@ router.get('/templates/:idAuthor', function (req, res) {
                         id: response.hits.hits[i]._id,
                         title: response.hits.hits[i]._source.title,
                         isDeveloper: response.hits.hits[i]._source.isDeveloper,
-                        isTeacher: response.hits.hits[i]._source.isTeacher
+                        isTeacher: response.hits.hits[i]._source.isTeacher,
+                        isClass: response.hits.hits[i]._source.isClass
                     };
                 }
             }
@@ -813,6 +814,44 @@ router.post('/index/:indexTemplate/:indexName', function (req, res) {
         });
 });
 
+
+
+/**
+ * @api {post} /api/kibana/classindex//:classId Adds a new index using the classId.
+ * @apiName PostIndex
+ * @apiGroup Kibana
+ *
+ * @apiParam {String} classId The class id
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "_index": ".kibana",
+ *          "_type": "index-pattern",
+ *          "_id": "0535H53W34g",
+ *          "_version": 1,
+ *          "_shards": {
+ *              "total": 2,
+ *              "successful": 1,
+ *              "failed": 0
+ *          },
+ *          "created": true
+ *      }
+ */
+router.post('/classindex/:classId', function (req, res) {
+    kibana.createRequiredIndexesForClass(req.params.classId,
+        req.headers['x-gleaner-user'], req.app.config, req.app.esClient)
+        .then(function(response) {
+            res.json(response);
+        })
+        .fail(function(error) {
+            res.status(error.status);
+            res.json(error);
+        });
+});
+
 /**
  * @api {post} /api/kibana/visualization/activity/:gameId/:visualizationId/:activityId Adds new visualization using the template visualizationId.
  * @apiName PostVisualization
@@ -842,6 +881,44 @@ router.post('/index/:indexTemplate/:indexName', function (req, res) {
 router.post('/visualization/activity/:gameId/:visualizationId/:activityId', function (req, res) {
     kibana.cloneVisualizationForActivity(req.params.gameId, req.params.visualizationId,
         req.params.activityId, req.app.esClient)
+        .then(function(result) {
+            res.json(result);
+        })
+        .fail(function(error) {
+            res.status(error.status);
+            res.json(error);
+        });
+});
+
+
+/**
+ * @api {post} /api/kibana/visualization/class/:classId Adds new visualization using the template visualization from the body
+ * @apiName PostVisualizationClass
+ * @apiGroup Kibana
+ *
+ * @apiParam {String} Body of the request The visualization
+ * @apiParam {String} classId The class id
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "_index": ".kibana",
+ *          "_type": "visualization",
+ *          "_id": "activityId",
+ *          "_version": 1,
+ *          "_shards": {
+ *              "total": 2,
+ *              "successful": 1,
+ *              "failed": 0
+ *          },
+ *          "created": true
+ *      }
+ */
+router.post('/visualization/class/:classId', function (req, res) {
+    kibana.cloneVisualizationForClass(req.body,
+        req.params.classId, req.app.esClient)
         .then(function(result) {
             res.json(result);
         })
@@ -899,6 +976,97 @@ router.post('/dashboard/activity/:activityId', function (req, res) {
             res.status(error.status);
             res.json(error);
         });
+});
+
+/**
+ * @api {post} /api/kibana/dashboard/class/:classId Adds a new dashboard in .kibana index of ElasticSearch.
+ * @apiName PostDashboardClass
+ * @apiGroup Kibana
+ *
+ * @apiParam {String} id The activity id
+ *
+ * @apiParamExample {json} Request-Example:
+ *      {
+ *          "title": "dashboard_123",
+ *          "description2": "default visualization",
+ *          "panelsJSON": "[{ id:visualization_123, type:visualization, panelIndex: 1, size_x:3, size_y:2, col:1, row:1}]",
+ *          "optionsJSON": "{"darkTheme":false}",
+ *          "uiStateJSON": "{vis: {legendOpen: false}}",
+ *          "version": 1,
+ *          "timeRestore": false,
+ *          "kibanaSavedObjectMeta": {
+ *              searchSourceJSON: '{"filter":[{"query":{"query_string":{"query":"*","analyze_wildcard":true}}}]}'
+ *          }
+ *      }
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "_index": ".kibana",
+ *          "_type": "visualization",
+ *          "_id": "classId",
+ *          "_version": 1,
+ *          "_shards": {
+ *              "total": 2,
+ *              "successful": 1,
+ *              "failed": 0
+ *          },
+ *          "created": true
+ *      }
+ */
+router.post('/dashboard/class/:classId', function (req, res) {
+    kibana.createDashboardToClass(req.body, req.params.classId, req.app.esClient, req.app.config,
+        req.headers['x-gleaner-user'])
+        .then(function(result) {
+            res.json(result);
+        })
+        .fail(function(error) {
+            res.status(error.status);
+            res.json(error);
+        });
+});
+
+/**
+ * @api {GET} /api/kibana/classvis/ Returns kibana visualizations for class
+ * @apiGroup Kibana
+ *
+ * @apiParam {String} id The activity id
+ *
+ * @apiParamExample {json} Request-Example:
+ *      {
+ *          "title": "dashboard_123",
+ *          "description2": "default visualization",
+ *          "panelsJSON": "[{ id:visualization_123, type:visualization, panelIndex: 1, size_x:3, size_y:2, col:1, row:1}]",
+ *          "optionsJSON": "{"darkTheme":false}",
+ *          "uiStateJSON": "{vis: {legendOpen: false}}",
+ *          "version": 1,
+ *          "timeRestore": false,
+ *          "kibanaSavedObjectMeta": {
+ *              searchSourceJSON: '{"filter":[{"query":{"query_string":{"query":"*","analyze_wildcard":true}}}]}'
+ *          }
+ *      }
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "_index": ".kibana",
+ *          "_type": "visualization",
+ *          "_id": "classId",
+ *          "_version": 1,
+ *          "_shards": {
+ *              "total": 2,
+ *              "successful": 1,
+ *              "failed": 0
+ *          },
+ *          "created": true
+ *      }
+ */
+router.get('/classvis/', function (req, res) {
+    res.json(require('../lib/kibana/classVisualizations'));
 });
 
 // jscs:enable requireCamelCaseOrUpperCaseIdentifiers
