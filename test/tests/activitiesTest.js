@@ -111,7 +111,8 @@ module.exports = function (request, db) {
                 .send({
                     gameId: idGame,
                     versionId: idVersion,
-                    classId: idClass
+                    classId: idClass,
+                    offline: false
                 })
                 .set('Accept', 'application/json')
                 .expect('Content-Type', /json/)
@@ -124,7 +125,8 @@ module.exports = function (request, db) {
                         .send({
                             gameId: idGame,
                             versionId: idVersion,
-                            classId: idClass
+                            classId: idClass,
+                            offline: false
                         })
                         .set('Accept', 'application/json')
                         .expect('Content-Type', /json/)
