@@ -169,6 +169,7 @@ module.exports = function (request, db) {
                 .end(function (err, res) {
                     console.error(err);
                     console.info(res.body);
+                    console.info(res);
                     should.not.exist(err);
                     should(res).be.Object();
                     done();
