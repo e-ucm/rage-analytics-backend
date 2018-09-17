@@ -25,8 +25,11 @@ var should = require('should'),
 
 var idGame = new ObjectID('dummyGameId0'),
     idVersion = new ObjectID('dummyVersId0'),
+    idClass = new ObjectID('dummyClasId0'),
     idActivity = new ObjectID('dummyActsId0'),
-    trackingCode = '123';
+    idActivity2 = new ObjectID('dummyActsId2'),
+    trackingCode = '123',
+    trackingCode2 = '456';
 
 module.exports = function (request, db, config) {
 
@@ -43,25 +46,50 @@ module.exports = function (request, db, config) {
                     _id: idGame,
                     title: 'Dummy',
                     public: true
-                }, function () {
-                    db.collection('versions').insert(
+                }, db.collection('versions').insert(
+                    {
+                        _id: idVersion,
+                        gameId: idGame
+                    }, db.collection('classes').insert(
                         {
-                            _id: idVersion,
-                            gameId: idGame,
-                            trackingCode: trackingCode
-                        }, function () {
-                            db.collection('activities').insert(
+                            _id: idClass,
+                            name: 'Class',
+                            groups: [],
+                            groupings: [],
+                            participants: {
+                                teachers: ['Teacher1'],
+                                assistants: [],
+                                students: []
+                            }
+                        }, db.collection('activities').insert(
+                            {
+                                _id: idActivity,
+                                trackingCode: trackingCode,
+                                classId: idClass,
+                                gameId: idGame,
+                                versionId: idVersion,
+                                name: 'name',
+                                allowAnonymous: true,
+                                groups: [],
+                                groupings: [],
+                                open: true
+                            }, db.collection('activities').insert(
                                 {
-                                    _id: idActivity,
+                                    _id: idActivity2,
+                                    trackingCode: trackingCode2,
+                                    classId: idClass,
                                     gameId: idGame,
                                     versionId: idVersion,
                                     name: 'name',
-                                    allowAnonymous: true,
-                                    teachers: ['Teacher1'],
-                                    students: ['Student1']
-                                }, done);
-                        });
-                });
+                                    allowAnonymous: false,
+                                    groups: [],
+                                    groupings: [],
+                                    open: true
+                                }, done)
+                        )
+                    )
+                )
+            );
         });
 
         after(function (done) {
@@ -198,7 +226,7 @@ module.exports = function (request, db, config) {
                 });
         });
 
-        var checkConsumerData = function(playerId, versionId, gameplayId, data, convertedTraces) {
+        var checkConsumerData = function(playerId, versionId, gameplayId, activity, data, convertedTraces) {
             for (var i = 0; i < data.length; ++i) {
                 var extensions = data[i].object.definition.extensions;
                 should(data[i].actor.name).not.eql(playerId);
@@ -210,6 +238,12 @@ module.exports = function (request, db, config) {
                 should(extensions.session).be.a.Number();
                 if (extensions.session === 1) {
                     should(extensions.firstSessionStarted).eql(extensions.currentSessionStarted);
+                }
+
+                if (activity) {
+                    var activityId = activity._id.toString();
+                    should.equal(extensions.activityId, activityId);
+                    should.equal(convertedTraces[i].activityId, activityId);
                 }
 
                 should.equal(convertedTraces[i].gameplayId, gameplayId);
@@ -228,8 +262,8 @@ module.exports = function (request, db, config) {
 
             dataSource.clearConsumers();
             dataSource.addConsumer({
-                addTraces: function (playerId, versionId, gameplayId, data, convertedTraces) {
-                    checkConsumerData(playerId, versionId, gameplayId, data, convertedTraces);
+                addTraces: function (playerId, versionId, gameplayId, activity, data, convertedTraces) {
+                    checkConsumerData(playerId, versionId, gameplayId, activity, data, convertedTraces);
                 }
             });
             request.post('/api/collector/track')
@@ -251,8 +285,8 @@ module.exports = function (request, db, config) {
 
             dataSource.clearConsumers();
             dataSource.addConsumer({
-                addTraces: function (playerId, versionId, gameplayId, data, convertedTraces) {
-                    checkConsumerData(playerId, versionId, gameplayId, data, convertedTraces);
+                addTraces: function (playerId, versionId, gameplayId, activity, data, convertedTraces) {
+                    checkConsumerData(playerId, versionId, gameplayId, activity, data, convertedTraces);
                     var deferred = Q.defer();
                     setTimeout(function () {
                         var err = new Error(message);
@@ -279,8 +313,8 @@ module.exports = function (request, db, config) {
             var message = 'Provoked error!';
             dataSource.clearConsumers();
             dataSource.addConsumer({
-                addTraces: function (playerId, versionId, gameplayId, data, convertedTraces) {
-                    checkConsumerData(playerId, versionId, gameplayId, data, convertedTraces);
+                addTraces: function (playerId, versionId, gameplayId, activity, data, convertedTraces) {
+                    checkConsumerData(playerId, versionId, gameplayId, activity, data, convertedTraces);
                     var deferred = Q.defer();
                     setTimeout(function () {
                         var err = new Error(message);
@@ -564,8 +598,8 @@ module.exports = function (request, db, config) {
             var consumer2Failed = false;
 
             var firstConsumer = {
-                addTraces: function (playerId, versionId, gameplayId, data, convertedTraces) {
-                    checkConsumerData(playerId, versionId, gameplayId, data, convertedTraces);
+                addTraces: function (playerId, versionId, gameplayId, activity, data, convertedTraces) {
+                    checkConsumerData(playerId, versionId, gameplayId, activity, data, convertedTraces);
                     consumer2Called = true;
                     var deferred = Q.defer();
                     setTimeout(function () {
@@ -578,8 +612,8 @@ module.exports = function (request, db, config) {
                 }
             };
             var secondConsumer = {
-                addTraces: function (playerId, versionId, gameplayId, data, convertedTraces) {
-                    checkConsumerData(playerId, versionId, gameplayId, data, convertedTraces);
+                addTraces: function (playerId, versionId, gameplayId, activity, data, convertedTraces) {
+                    checkConsumerData(playerId, versionId, gameplayId, activity, data, convertedTraces);
                     var deferred = Q.defer();
                     setTimeout(function () {
                         var err = new Error(message2);
@@ -646,8 +680,8 @@ module.exports = function (request, db, config) {
                     var dataSource = require('../../lib/traces');
                     dataSource.clearConsumers();
                     var checkSessionCount = {
-                        addTraces: function (playerId, versionId, gameplayId, data, convertedTraces) {
-                            checkConsumerData(playerId, versionId, gameplayId, data, convertedTraces);
+                        addTraces: function (playerId, versionId, gameplayId, activity, data, convertedTraces) {
+                            checkConsumerData(playerId, versionId, gameplayId, activity, data, convertedTraces);
 
                             should(convertedTraces[0].session).eql(expectedSession);
 
@@ -705,7 +739,7 @@ module.exports = function (request, db, config) {
                 .set('x-gleaner-user', playerIdentifier)
                 .set('Authorization', 'Bearer 1234')
                 .end(function (err, res) {
-
+                    should.not.exist(err);
                     should(res.body).be.Object();
                     should(res.body.authToken).be.String();
                     should(res.body.objectId).be.String();
@@ -730,8 +764,8 @@ module.exports = function (request, db, config) {
                     var dataSource = require('../../lib/traces');
                     dataSource.clearConsumers();
                     var checkSessionCount = {
-                        addTraces: function (playerId, versionId, gameplayId, data, convertedTraces) {
-                            checkConsumerData(playerId, versionId, gameplayId, data, convertedTraces);
+                        addTraces: function (playerId, versionId, gameplayId, activity, data, convertedTraces) {
+                            checkConsumerData(playerId, versionId, gameplayId, activity, data, convertedTraces);
 
                             should(convertedTraces[0].session).eql(expectedSession);
                             var deferred = Q.defer();
@@ -777,6 +811,19 @@ module.exports = function (request, db, config) {
                 startNewIdentifiedSession(4, 'dan');
             }, 1500);
             setTimeout(done, 1800);
+        });
+
+        it('Should fail to start a session with a non participant username', function (done) {
+            request.post('/api/collector/start/' + trackingCode2)
+                .expect(401)
+                .expect('Content-Type', /json/)
+                .set('x-gleaner-user', 'AnyUser')
+                .set('Authorization', 'Bearer 1234')
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    should(res).be.Object();
+                    done();
+                });
         });
 
         it('Should fail to start an anonymous session with a non existant "anonymous" playerId', function (done) {

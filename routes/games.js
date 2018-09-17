@@ -24,9 +24,11 @@ var games = require('../lib/games'),
  *      {
  *          "_id": "559a447831b76cec185bf511",
  *          "title": "My Game",
+ *          "created": "2017-07-06T09:00:52.630Z",
  *          "authors": ["someDeveloper"],
  *          "developers": ["someDeveloper"],
- *          "public": "true"
+ *          "public": "true",
+ *          "deleted": "false"
  *      }
  *    ]
  */
@@ -34,7 +36,8 @@ router.get('/my', restUtils.find(games, function (req, callback) {
     var user = req.headers['x-gleaner-user'];
     // Creates a Query for the 'find' operation
     callback({
-        developers: user.toString()
+        developers: user.toString(),
+        $or: [ {deleted: false}, {deleted: undefined} ]
     });
 }));
 
@@ -51,9 +54,11 @@ router.get('/my', restUtils.find(games, function (req, callback) {
  *          {
  *              "_id": "559a447831b7acec185bf513",
  *              "title": "My Game",
+ *              "created": "2017-07-06T09:00:52.630Z",
  *              "authors": ["someDeveloper"],
  *              "developers": ["someDeveloper"],
- *              "public": "true"
+ *              "public": "true",
+ *              "deleted": "false"
  *          }
  *      ]
  *
@@ -61,7 +66,8 @@ router.get('/my', restUtils.find(games, function (req, callback) {
 router.get('/public', restUtils.find(games, function (req, callback) {
     // Creates a Query for the 'find' operation
     callback({
-        public: true
+        public: true,
+        deleted: false
     });
 }));
 
@@ -79,15 +85,16 @@ router.get('/public', restUtils.find(games, function (req, callback) {
  *      {
  *          "_id": "559a447831b7acec185bf513",
  *          "title": "My Game",
+ *          "created": "2017-07-06T09:00:52.630Z",
  *          "authors": ["someDeveloper"],
  *          "developers": ["someDeveloper"],
- *          "public": "true"
+ *          "public": "true",
+ *          "deleted": "false"
  *      }
  *
  */
 router.get('/:gameId', function (req, res) {
     var username = req.headers['x-gleaner-user'];
-    console.log(req.params.gameId + ' ' + username);
     restUtils.processResponse(games.getGame(req.params.gameId, username), res);
 });
 
@@ -113,10 +120,12 @@ router.get('/:gameId', function (req, res) {
  *      HTTP/1.1 200 OK
  *      {
  *          "_id": "559a447831b7acec185bf513",
- *          "title": "My Game"
+ *          "title": "My Game",
+ *          "created": "2017-07-06T09:00:52.630Z",
  *          "authors": ["someDeveloper"],
  *          "developers": ["someDeveloper"],
- *          "public": "true"
+ *          "public": "true",
+ *          "deleted": "false"
  *      }
  *
  */
@@ -160,7 +169,7 @@ router.put('/:gameId', function (req, res) {
 });
 
 /**
- * @api {put} /games/:gameId/remove Removes an author of the game
+ * @api {put} /games/:gameId/remove Removes an developer of the game
  * @apiName PutGames
  * @apiGroup Games
  *
@@ -189,7 +198,7 @@ router.put('/:gameId/remove', function (req, res) {
 });
 
 /**
- * @api {delete} /games/:id Removes the game.
+ * @api {delete} /games/:id Removes the game if doesn't contain activities else change the deleted field by true.
  * @apiName DeleteGame
  * @apiGroup Games
  *
@@ -232,12 +241,14 @@ router.delete('/:id', function (req, res) {
  *      ]
  *
  */
-router.get('/:gameId/versions', restUtils.find(versions, function (req, callback) {
-    // Creates a Query for the 'find' operation
-    callback({
+router.get('/:gameId/versions', function(req, res) {
+    var query = {
+        // Creates a Query for the 'find' operation
         gameId: games.toObjectID(req.params.gameId)
-    });
-}));
+    };
+    console.info(query);
+    restUtils.processResponse(versions.find(query), res);
+});
 
 /**
  * @api {get} /games/:id/xapi/:versionId Returns the game with the given id.
@@ -277,10 +288,11 @@ router.get('/:id/xapi/:versionId', restUtils.findById(games));
  *      }
  *
  */
-router.post('/:gameId/versions', restUtils.insert(versions, function (req) {
-    // Saves the 'gameId' inside the generated 'version' document
-    req.body.gameId = games.toObjectID(req.params.gameId);
-}));
+router.post('/:gameId/versions', function(req, res) {
+    restUtils.processResponse(versions.createVersion({
+        gameId: req.params.gameId
+    }), res);
+});
 
 /**
  * @api {get} /games/:gameId/versions/:id Returns a version for a specific game.

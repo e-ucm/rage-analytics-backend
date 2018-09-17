@@ -44,15 +44,22 @@ describe('API Test', function (done) {
     });
 
     it('Start tests', function (done) {
+
         require('./tests/configs');
         require('./tests/tracesConverterTest');
 
         require('./tests/health')(request);
         require('./tests/fsrawConsumerTest')(config);
+
         require('./tests/gamesTest')(request, db);
         require('./tests/versionsTest')(request, db);
         require('./tests/classesTest')(request, db);
         require('./tests/activitiesTest')(request, db);
+        require('./tests/coursesTest')(request, db);
+        require('./tests/groupsTest')(request, db);
+        require('./tests/groupingsTest')(request, db);
+        require('./tests/attemptsTest')(request, db);
+
         require('./tests/analysisTest')(request, db);
 
         // Test collector and track, also drop the database.
@@ -60,6 +67,8 @@ describe('API Test', function (done) {
         require('./upgraderTests/mongo/mongoController')(request, app, db);
         require('./upgraderTests/mongo/mongoTransformerTo2')(app, db, config);
         require('./upgraderTests/mongo/mongoTransformerTo3')(app, db, config);
+        require('./upgraderTests/mongo/mongoTransformerTo4')(app, db, config);
+
         // Test transformers
         if (process.env.TEST_ES) {
             require('./upgraderTests/elastic/elasticController')(app, app.esClient, db);
@@ -67,6 +76,7 @@ describe('API Test', function (done) {
         }
 
         require('./upgraderTests/processController')(request, app, db);
+
         done();
     });
 

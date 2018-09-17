@@ -26,10 +26,11 @@ var transformToVersion2 = require(Path.resolve(__dirname,
     '../transformers/mongo/transformToVersion2.js'));
 var transformToVersion3 = require(Path.resolve(__dirname,
     '../transformers/mongo/transformToVersion3.js'));
-
+var transformToVersion4 = require(Path.resolve(__dirname,
+    '../transformers/mongo/transformToVersion4.js'));
 
 function MongoController() {
-    AbstractController.call(this, [transformToVersion2, transformToVersion3]);
+    AbstractController.call(this, [transformToVersion2, transformToVersion3, transformToVersion4]);
     this.modelId = null;
     this.dbProvider = {
         db: function () {
@@ -79,7 +80,8 @@ MongoController.prototype.guessModelVersion = function(db, callback) {
             return callback(minVersion);
         }
 
-        var targetVersion = '2';
+        var targetVersion = '1';
+        var hasGame = false;
         for (var i = 0; i < collections.length; ++i) {
             var collection = collections[i];
 
@@ -87,37 +89,61 @@ MongoController.prototype.guessModelVersion = function(db, callback) {
             if (!collectionName && collection.s) {
                 collectionName = collection.s.name;
             }
-            if (collectionName === 'classes') {
-                return callback(targetVersion);
+            if (collectionName === 'games') {
+                hasGame = true;
             }
-
+            if (collectionName === 'activities') {
+                targetVersion = '3-4';
+            }
+            if (targetVersion !== '3-4' && collectionName === 'classes') {
+                targetVersion = '2';
+            }
         }
 
-        var sessionsCollection = db.collection('sessions');
-        var cursor = sessionsCollection.find();
+        if (!hasGame || targetVersion === '2') {
+            return callback('2');
+        }
 
-        var found = false;
-        cursor.each(function (err, item) {
-            if (found) {
-                return;
-            }
-            if (err) {
-                console.log('Unexpected error while iterating sessions, defaulting min version!', err);
-                found = true;
-                return callback(minVersion);
-            }
+        if (targetVersion === '3-4') {
+            var gamesCollection = db.db.collection('games');
+            gamesCollection.findOne().then(function (game) {
+                if (!game) {
+                    return callback('3');
+                }
+                if (game.deleted === true || game.deleted === false) {
+                    return callback('4');
+                }
 
-            if (!item) {
-                found = true;
-                return callback(minVersion);
-            }
+                return callback('3');
 
-            // If the item is null then the cursor is exhausted/empty and closed
-            if (item && item.classId) {
-                found = true;
-                return callback(targetVersion);
-            }
-        });
+            });
+        } else {
+            var sessionsCollection = db.collection('sessions');
+            var cursor = sessionsCollection.find();
+
+            var found = false;
+            cursor.each(function (err, item) {
+                if (found) {
+                    return callback(minVersion);
+                }
+                if (err) {
+                    console.log('Unexpected error while iterating sessions, defaulting min version!', err);
+                    found = true;
+                    return callback(minVersion);
+                }
+
+                if (!item) {
+                    found = true;
+                    return callback(minVersion);
+                }
+
+                // If the item is null then the cursor is exhausted/empty and closed
+                if (item && item.classId) {
+                    found = true;
+                    return callback('2');
+                }
+            });
+        }
 
     });
 };

@@ -2,15 +2,17 @@
 
 var express = require('express'),
     router = express.Router(),
-    restUtils = require('./rest-utils');
+    restUtils = require('./rest-utils'),
+    Q = require('q');
 
 var activities = require('../lib/activities'),
+    classes = require('../lib/classes'),
     getRealTimeData = require('../lib/tracesConverter');
 
 module.exports = function (kafkaService, stormService) {
 
     /**
-     * @api {get} /api/activities/:id Returns the Activities.
+     * @api {get} /classes Returns the Activities.
      * @apiName GetActivities
      * @apiGroup Activities
      *
@@ -38,7 +40,7 @@ module.exports = function (kafkaService, stormService) {
     router.get('/', restUtils.find(activities));
 
     /**
-     * @api {get} /api/activities/my Returns the Activities where the user participates.
+     * @api {get} /activities/my Returns the Activities where the user participates.
      * @apiName GetActivities
      * @apiGroup Activities
      *
@@ -69,11 +71,11 @@ module.exports = function (kafkaService, stormService) {
     });
 
     /**
-     * @api {get} /api/activities/:id Returns the Activity that has the given id.
+     * @api {get} /activities/:activityId Returns the Activity that has the given id.
      * @apiName GetActivities
      * @apiGroup Activities
      *
-     * @apiParam {String} id The Activity id
+     * @apiParam {String} activityId The Activity id
      *
      * @apiSuccess(200) Success.
      *
@@ -94,14 +96,20 @@ module.exports = function (kafkaService, stormService) {
      *      }
      *
      */
-    router.get('/:id', restUtils.findById(activities));
+    router.get('/:activityId', function (req, res) {
+        var username = req.headers['x-gleaner-user'];
+        restUtils.processResponse(activities.isAuthorizedFor(req.params.activityId, username, 'get', '/activities/:activityId')
+            .then(function (activity) {
+                return activity;
+            }), res);
+    });
 
 
     /**
      * @api {post} /activities Creates new Activity for a
      * class in a given version of a game.
-     * @apiName PostSessions
-     * @apiGroup Sessions
+     * @apiName PostActivity
+     * @apiGroup Activities
      *
      * @apiParam {String} name The name for the Activity.
      * @apiParam {String} gameId The Game id of the session.
@@ -135,8 +143,96 @@ module.exports = function (kafkaService, stormService) {
      */
     router.post('/', function (req, res) {
         var username = req.headers['x-gleaner-user'];
-        restUtils.processResponse(activities.createActivity(req.body.gameId, req.body.versionId, req.body.classId,
-            username, req.body.name), res);
+        restUtils.processResponse(classes.isAuthorizedFor(req.body.classId, username, 'post', '/activities/')
+            .then(function (classReq) {
+                return activities.createActivity(req.body.gameId, req.body.versionId, req.body.classId,
+                    username, req.body.name);
+            }), res);
+    });
+
+    /**
+     * @api {post} /activities/bundle/ Creates new Activity for a
+     * class in a given version of a game, including dashboards and visualizations.
+     * @apiName PostBundleActivity
+     * @apiGroup Activities
+     *
+     * @apiParam {String} name The name for the Activity.
+     * @apiParam {String} gameId The Game id of the session.
+     * @apiParam {String} versionId The Version id of the session.
+     * @apiParam {String} classId The Class id of the session.
+     *
+     * @apiParamExample {json} Request-Example:
+     *      {
+     *          "name": "New name",
+     *          "gameId": "55e433c773415f105025d2d4",
+     *          "versionId": "55e433c773415f105025d2d5",
+     *          "classId": "55e433c773415f105025d2d3"
+     *      }
+     *
+     * @apiSuccess(200) Success.
+     *
+     * @apiSuccessExample Success-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "gameId": "55e433c773415f105025d2d4",
+     *          "versionId": "55e433c773415f105025d2d5",
+     *          "classId": "55e433c773415f105025d2d3",
+     *          "name": "New name",
+     *          "created": "2015-08-31T12:55:05.459Z",
+     *          "teachers": [
+     *              "user"
+     *          ],
+     *          "_id": "55e44ea9f1448e1067e64d6c"
+     *      }
+     *
+     */
+    router.post('/bundle', function (req, res) {
+        var username = req.headers['x-gleaner-user'];
+        var config = req.app.config;
+
+        restUtils.processResponse(classes.isAuthorizedFor(req.body.classId, username, 'post', '/activities/bundle')
+            .then(function (classReq) {
+                var deferred = Q.defer();
+
+                var rootId = req.body.rootId;
+                if (!req.body.rootId) {
+                    rootId = '';
+                }
+
+                activities.createActivity(req.body.gameId, req.body.versionId, req.body.classId, username, req.body.name, rootId)
+                .then(function(activity) {
+                        return activities.kibana.getKibanaBaseVisualizations(config, activity, req.app.esClient)
+                        .then(function(visualizations) {
+                            console.log('PostBundle -> VisObtained!');
+                            return activities.kibana.createIndex(config, activity, username, req.app.esClient)
+                                .then(function(result) {
+                                    console.log('PostBundle -> IndexCreated!');
+                                    return activities.kibana.createVisualizationsAndDashboard(config, activity, visualizations, username, req.app.esClient);
+                                })
+                                .then(function(result) {
+                                    console.log('PostBundle -> VisAndDashCreated!');
+                                    deferred.resolve(activity);
+                                })
+                                .fail(function(e) {
+                                    deferred.reject(e);
+                                });
+                        })
+                        .fail(function(err) {
+                            console.log('PostBundle -> getKibanaBaseVisualizationsFailcase!');
+                            console.log(JSON.stringify(err, null, 2));
+                            return deferred.reject(err);
+                        });
+                    })
+                .fail(function(error) {
+                    console.log('PostBundle -> activityfailed!');
+                    console.log(JSON.stringify(error, null, 2));
+                    return deferred.reject(error);
+                });
+
+                return deferred.promise;
+            }), res);
+
+        console.log('PostBundle -> finnished!');
     });
 
     /**
@@ -177,7 +273,10 @@ module.exports = function (kafkaService, stormService) {
      */
     router.put('/:activityId', function (req, res) {
         var username = req.headers['x-gleaner-user'];
-        restUtils.processResponse(activities.modifyActivity(req.params.activityId, username, req.body, true), res);
+        restUtils.processResponse(activities.isAuthorizedFor(req.params.activityId, username, 'put', '/activities/:activityId')
+            .then(function (activity) {
+                return activities.modifyActivity(req.params.activityId, req.body, true);
+            }), res);
     });
 
     /**
@@ -213,7 +312,10 @@ module.exports = function (kafkaService, stormService) {
      */
     router.put('/:activityId/remove', function (req, res) {
         var username = req.headers['x-gleaner-user'];
-        restUtils.processResponse(activities.modifyActivity(req.params.activityId, username, req.body, false), res);
+        restUtils.processResponse(activities.isAuthorizedFor(req.params.activityId, username, 'put', '/activities/:activityId/remove')
+            .then(function (activity) {
+                return activities.modifyActivity(req.params.activityId, req.body, false);
+            }), res);
     });
 
     /**
@@ -233,7 +335,10 @@ module.exports = function (kafkaService, stormService) {
      */
     router.delete('/:activityId', function (req, res) {
         var username = req.headers['x-gleaner-user'];
-        restUtils.processResponse(activities.removeActivity(req.params.activityId, username), res);
+        restUtils.processResponse(activities.isAuthorizedFor(req.params.activityId, username, 'delete', '/activities/:activityId')
+            .then(function (activity) {
+                return activities.removeActivity(req.params.activityId);
+            }), res);
     });
 
     /**
@@ -275,12 +380,15 @@ module.exports = function (kafkaService, stormService) {
      */
     router.get('/:activityId/results', function (req, res) {
         var username = req.headers['x-gleaner-user'];
-        restUtils.processResponse(activities.results(req.params.activityId, username, req.app.esClient), res);
+        restUtils.processResponse(activities.isAuthorizedFor(req.params.activityId, username, 'get', '/activities/:activityId/results')
+            .then(function (activity) {
+                return activities.results(req.params.activityId, username, req.app.esClient);
+            }), res);
     });
 
     /**
-     * @api {post} /activities/:activityId/results/:resultId Updates a specific result from a activity.
-     * @apiName PostActivityResults
+     * @api {put} /activities/:activityId/results/:resultId Updates a specific result from a activity.
+     * @apiName PutActivityResults
      * @apiGroup Activities
      *
      * @apiParam {String} activityId Game id.
@@ -347,16 +455,19 @@ module.exports = function (kafkaService, stormService) {
      *      ]
      *
      */
-    router.post('/:activityId/results/:resultId', function (req, res) {
+    router.put('/:activityId/results/:resultId', function (req, res) {
         if (req.body && req.body._id) {
             delete req.body._id;
         }
         var username = req.headers['x-gleaner-user'];
-        restUtils.processResponse(activities.updateResult(req.params.activityId, req.params.resultId, req.body, username, req.app.esClient), res);
+        restUtils.processResponse(activities.isAuthorizedFor(req.params.activityId, username, 'put', '/activities/:activityId/results/:resultId')
+            .then(function (activity) {
+                return activities.updateResult(req.params.activityId, req.params.resultId, req.body, username, req.app.esClient);
+            }), res);
     });
 
     /**
-     * @api {post} /activities/:activityId/:event Starts or ends a activity depending on the event value.
+     * @api {post} /activities/:activityId/event/:event Starts or ends a activity depending on the event value.
      * @apiName postActivities
      * @apiGroup Activities
      *
@@ -384,20 +495,127 @@ module.exports = function (kafkaService, stormService) {
      */
     router.post('/:activityId/event/:event', function (req, res) {
         var username = req.headers['x-gleaner-user'];
-        switch (req.params.event) {
-            case 'start': {
-                restUtils.processResponse(activities.startActivity(username, req.params.activityId), res);
-                break;
-            }
-            case 'end': {
-                restUtils.processResponse(activities.endActivity(username, req.params.activityId), res);
-                break;
-            }
-            default: {
-                res.status(400).end();
-                break;
-            }
-        }
+        restUtils.processResponse(activities.isAuthorizedFor(req.params.activityId, username, 'post', '/activities/:activityId/event/:event')
+            .then(function (activity) {
+                switch (req.params.event) {
+                    case 'start': {
+                        return activities.startActivity(req.params.activityId);
+                    }
+                    case 'end': {
+                        return activities.endActivity(req.params.activityId);
+                    }
+                    default: {
+                        res.status(400).end();
+                        break;
+                    }
+                }
+            }), res);
+
+    });
+
+    /**
+     * @api {post} /activities/:activityId/event/:event Starts or ends a activity depending on the event value.
+     * @apiName postActivities
+     * @apiGroup Activities
+     *
+     * @apiParam {String} event Determines if we should start or end a activity. Allowed values: start, end.
+     *
+     * @apiSuccess(200) Success.
+     *
+     * @apiSuccessExample Success-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "_id": "559a447831b76cec185bf511"
+     *          "gameId": "559a447831b76cec185bf513",
+     *          "versionId": "559a447831b76cec185bf514",
+     *          "classId": "559a447831b76cec185bf515",
+     *          "name": "The Activity Name",
+     *          "created": "2015-07-06T09:00:50.630Z",
+     *          "start": "2015-07-06T09:01:52.636Z",
+     *          "end": "2015-07-06T09:03:45.631Z",
+     *          "name": "Some Activity Name",
+     *          "allowAnonymous": false,
+     *          "teachers": ["Ben"],
+     *          "students": ["Alice", "Dan"]
+     *      }
+     *
+     */
+    router.get('/:activityId/attempts', function (req, res) {
+        var username = req.headers['x-gleaner-user'];
+        restUtils.processResponse(activities.isAuthorizedFor(req.params.activityId, username, 'get', '/activities/:activityId/attempts')
+            .then(function (activity) {
+                return activities.getAttempts(req.params.activityId);
+            }), res);
+    });
+
+    /**
+     * @api {post} /activities/:activityId/event/:event Starts or ends a activity depending on the event value.
+     * @apiName postActivities
+     * @apiGroup Activities
+     *
+     * @apiParam {String} event Determines if we should start or end a activity. Allowed values: start, end.
+     *
+     * @apiSuccess(200) Success.
+     *
+     * @apiSuccessExample Success-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "_id": "559a447831b76cec185bf511"
+     *          "gameId": "559a447831b76cec185bf513",
+     *          "versionId": "559a447831b76cec185bf514",
+     *          "classId": "559a447831b76cec185bf515",
+     *          "name": "The Activity Name",
+     *          "created": "2015-07-06T09:00:50.630Z",
+     *          "start": "2015-07-06T09:01:52.636Z",
+     *          "end": "2015-07-06T09:03:45.631Z",
+     *          "name": "Some Activity Name",
+     *          "allowAnonymous": false,
+     *          "teachers": ["Ben"],
+     *          "students": ["Alice", "Dan"]
+     *      }
+     *
+     */
+    router.get('/:activityId/attempts/my', function (req, res) {
+        var username = req.headers['x-gleaner-user'];
+        restUtils.processResponse(activities.isAuthorizedFor(req.params.activityId, username, 'get', '/activities/:activityId/attempts/my')
+            .then(function (activity) {
+                return activities.getUserAttempts(req.params.activityId, username);
+            }), res);
+    });
+
+    /**
+     * @api {post} /activities/:activityId/event/:event Starts or ends a activity depending on the event value.
+     * @apiName postActivities
+     * @apiGroup Activities
+     *
+     * @apiParam {String} event Determines if we should start or end a activity. Allowed values: start, end.
+     *
+     * @apiSuccess(200) Success.
+     *
+     * @apiSuccessExample Success-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "_id": "559a447831b76cec185bf511"
+     *          "gameId": "559a447831b76cec185bf513",
+     *          "versionId": "559a447831b76cec185bf514",
+     *          "classId": "559a447831b76cec185bf515",
+     *          "name": "The Activity Name",
+     *          "created": "2015-07-06T09:00:50.630Z",
+     *          "start": "2015-07-06T09:01:52.636Z",
+     *          "end": "2015-07-06T09:03:45.631Z",
+     *          "name": "Some Activity Name",
+     *          "allowAnonymous": false,
+     *          "teachers": ["Ben"],
+     *          "students": ["Alice", "Dan"]
+     *      }
+     *
+     */
+    router.get('/:activityId/attempts/:username', function (req, res) {
+        var username = req.headers['x-gleaner-user'];
+        restUtils.processResponse(activities.isAuthorizedFor(req.params.activityId, username, 'get', '/activities/:activityId/attempts/:username')
+            .then(function (activity) {
+                return activities.getUserAttempts(req.params.activityId, req.params.username);
+            }), res);
     });
 
 
@@ -632,15 +850,6 @@ module.exports = function (kafkaService, stormService) {
         task.call(null, activityId)
             .then(function (result) {
                 startTopology(activityId, testVersionId, processTraces(analysisData, activityId, res));
-            })
-            .fail(function (err) {
-                if (err) {
-                    return res.status(400).json({
-                        message: 'Error creating Kafka Topic: ' +
-                        JSON.stringify(err)
-                    });
-                }
-                startTopology(activityId, testVersionId, processTraces(analysisData, activityId, res));
             });
     });
 
@@ -661,7 +870,11 @@ module.exports = function (kafkaService, stormService) {
      *
      */
     router.delete('/data/:activityId/', function (req, res) {
-        restUtils.processResponse(activities.deleteAnalysisData(req.app.config.storm, req.params.activityId, req.app.esClient), res);
+        var username = req.headers['x-gleaner-user'];
+        restUtils.processResponse(activities.isAuthorizedFor(req.params.activityId, username, 'delete', '/activities/data/:activityId/')
+            .then(function (activity) {
+                return activities.deleteAnalysisData(req.app.config.storm, req.params.activityId, req.app.esClient);
+            }), res);
     });
 
     /**
@@ -681,7 +894,11 @@ module.exports = function (kafkaService, stormService) {
      *
      */
     router.delete('/data/:activityId/:user', function (req, res) {
-        restUtils.processResponse(activities.deleteUserData(req.app.config.storm, req.params.activityId, req.params.user, req.app.esClient), res);
+        var username = req.headers['x-gleaner-user'];
+        restUtils.processResponse(activities.isAuthorizedFor(req.params.activityId, username, 'delete', '/activities/data/:activityId/:user')
+            .then(function (activity) {
+                return activities.deleteUserData(req.app.config.storm, req.params.activityId, req.params.user, req.app.esClient);
+            }), res);
     });
 
     return router;

@@ -35,7 +35,7 @@ module.exports = function (config) {
             } catch (ex) {
                 console.error('Error unlinking: ', ex);
             }
-            fsrawConsumer.addTraces(playerId, versionId, gameplayId, data, convertedData)
+            fsrawConsumer.addTraces(playerId, versionId, gameplayId, null, data, convertedData)
                 .then(function () {
                     var line = fs.readFileSync(config.rawTracesFolder + '/' + playerId, 'utf-8');
                     var parsed = JSON.parse(line);
