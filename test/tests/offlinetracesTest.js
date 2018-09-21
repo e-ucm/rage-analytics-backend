@@ -167,9 +167,6 @@ module.exports = function (request, db) {
                 .attach('offlinetraces', './test/resources/offlinetraces.csv')
                 .expect('Content-Type', /json/)
                 .end(function (err, res) {
-                    console.error(err);
-                    console.info(res.body);
-                    console.info(res);
                     should.not.exist(err);
                     should(res).be.Object();
                     done();
