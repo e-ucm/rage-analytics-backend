@@ -41,7 +41,7 @@ exports.lrs = {
 };
 exports.storm = {
     defaultAnalysisName: '{{defaultAnalysisName}}',
-    defaultAnalysisFolder: '{{defaultAnalysisFolder}}',
+    realtimeJar: '{{realtimeJar}}',
     path: '{{stormPath}}',
     nimbusHost: '{{nimbusHost}}',
     analysisFolder: '{{analysisFolder}}',

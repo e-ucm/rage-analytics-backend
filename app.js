@@ -37,7 +37,7 @@ var dbProvider = {
 };
 
 var kafkaService = require('./lib/services/kafka')(app.config.kafka.uri);
-var stormService = require('./lib/services/storm')(app.config.storm, app.config.kafka.uri);
+var stormService = require('./lib/services/storm')(app.config.storm, app.config.kafka.uri, app.config.kafka.uri);
 
 var connectToDB = function () {
     var MongoClient = require('mongodb').MongoClient;
