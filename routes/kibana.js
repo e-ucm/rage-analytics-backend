@@ -187,8 +187,7 @@ router.get('/templates/:idAuthor', function (req, res) {
                         id: response.hits.hits[i]._id,
                         title: response.hits.hits[i]._source.title,
                         isDeveloper: response.hits.hits[i]._source.isDeveloper,
-                        isTeacher: response.hits.hits[i]._source.isTeacher,
-                        isClass: response.hits.hits[i]._source.isClass
+                        isTeacher: response.hits.hits[i]._source.isTeacher
                     };
                 }
             }
