@@ -44,7 +44,6 @@ exports.storm = {
     realtimeJar: '{{realtimeJar}}',
     path: '{{stormPath}}',
     nimbusHost: '{{nimbusHost}}',
-    fluxYaml: '{{fluxYaml}}',
     analysisFolder: '{{analysisFolder}}',
     elasticsearchHost: '{{elasticsearchHost}}',
     elasticsearchPort: '{{elasticsearchPort}}'
