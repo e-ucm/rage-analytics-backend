@@ -2,10 +2,12 @@
 
 var express = require('express'),
     router = express.Router(),
+    Q = require('q'),
     restUtils = require('./rest-utils');
 
 var classes = require('../lib/classes'),
-    activities = require('../lib/activities');
+    activities = require('../lib/activities'),
+    kibana = require('../lib/kibana/kibana');
 /**
  * @api {get} /classes Returns all the classes.
  * @apiName GetClasses
@@ -170,6 +172,82 @@ router.get('/external/:domain/:externalId', function (req, res) {
 router.post('/', function (req, res) {
     var username = req.headers['x-gleaner-user'];
     restUtils.processResponse(classes.createClass(username, req.body.name || 'ClassWithoutName'), res);
+});
+
+
+/**
+ * @api {post} /classes/bundle/ Creates new Class.
+ * @apiName PostBundleClass
+ * @apiGroup Classes
+ *
+ * @apiParam {String} [name] The name of the class.
+ * @apiParam {Object} [participants] The students, assistants and students in the class
+ * @apiParam {String[]} [courseId] The id of the course that contains the class
+ * @apiParam {String[]} [groups] Group Id of the group with the participants of the class
+ * @apiParam {String[]} [groupings] Grouping Id of the grouping with the participants of the class
+ *
+ * @apiParamExample {json} Request-Example:
+ *      {
+ *          "name": "New name"
+ *      }
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "name": "New name",
+ *          "created": "2015-08-31T12:55:05.459Z",
+ *          "participants":{
+ *              "students": ["st1", "st2"],
+ *              "assistants": ["as1", "as2"],
+ *              "teachers": ["teacher"]
+ *          },
+ *          "_id": "55e44ea9f1448e1067e64d6c",
+ *          "groups": [],
+ *          "groupings": [],
+ *          "externalId": []
+ *      }
+ *
+ */
+router.post('/bundle', function (req, res) {
+    var username = req.headers['x-gleaner-user'];
+    var config = req.app.config;
+    var extra = {
+        timeFrom: 'now-12w',
+        refreshInterval: {
+            display: '60 seconds',
+            pause: false,
+            section: 1,
+            value: 60000
+        }
+    };
+
+    restUtils.processResponse(classes.createClass(username, req.body.name || 'ClassWithoutName')
+        .then(function (classObj) {
+            var classId = classObj._id.toString();
+            var deferred = Q.defer();
+            var visualizations = require('../lib/kibana/classVisualizations');
+            console.log('PostBundle -> VisObtained!');
+
+            kibana.createRequiredIndexesForClass(classId, username, config, req.app.esClient)
+                .then(function (result) {
+                    console.log('PostBundle -> IndexCreated!');
+                    return kibana.createVisualizationsAndDashboard(config, classId, null, visualizations, username,
+                        req.app.esClient, extra);
+                })
+                .then(function (result) {
+                    console.log('PostBundle -> VisAndDashCreated!');
+                    deferred.resolve(classObj);
+                })
+                .fail(function (e) {
+                    deferred.reject(e);
+                });
+
+            return deferred.promise;
+        }), res);
+
+    console.log('PostBundle -> finnished!');
 });
 
 /**

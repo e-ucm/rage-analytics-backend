@@ -1,13 +1,15 @@
 'use strict';
 
 var express = require('express'),
+    Q = require('q'),
     router = express.Router(),
     restUtils = require('./rest-utils'),
     request = require('request');
 
 var games = require('../lib/games'),
     versions = require('../lib/versions'),
-    activities = require('../lib/activities');
+    activities = require('../lib/activities'),
+    kibana = require('../lib/kibana/kibana');
 
 /**
  * @api {get} /games/my Return all games of the author in the x-gleaner-user header.
@@ -133,6 +135,91 @@ router.post('/', function (req, res) {
     var username = req.headers['x-gleaner-user'];
     restUtils.processResponse(games.createGame(username,
         req.body.title || '', req.body.public || false), res);
+});
+
+/**
+ * @api {post} /game/bundle/ Creates new Game, including a version one, dashboards and visualizations.
+ * @apiName PostBundleGame
+ * @apiGroup Games
+ *
+ * @apiParam {String} name The name for the Game.
+ *
+ * @apiParamExample {json} Request-Example:
+ *      {
+ *          "title": "New name",
+ *          "public": false
+ *      }
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "gameId": "55e433c773415f105025d2d4",
+ *          "versionId": "55e433c773415f105025d2d5",
+ *          "name": "New name",
+ *          "created": "2015-08-31T12:55:05.459Z",
+ *          "developers": [
+ *              "user"
+ *          ],
+ *          "_id": "55e44ea9f1448e1067e64d6c"
+ *      }
+ *
+ */
+router.post('/bundle', function (req, res) {
+    var username = req.headers['x-gleaner-user'];
+    var config = req.app.config;
+    var extra = {
+        timeFrom: 'now-7d',
+        refreshInterval: {
+            display: '10 seconds',
+            pause: false,
+            section: 1,
+            value: 10000
+        }
+    };
+
+    restUtils.processResponse(games.createGame(username,
+        req.body.title || '', req.body.public || false)
+        .then(function (game) {
+            var gameId = game._id.toString();
+            return versions.createVersion({ gameId: game._id })
+                .then(function (version) {
+                    return games.kibana.createGameTemplates(gameId, req.app.esClient)
+                        .then(function () {
+
+                            var deferred = Q.defer();
+
+                            kibana.getKibanaBaseVisualizations('dev', config, gameId, req.app.esClient)
+                                .then(function(visualizations) {
+                                    console.log('PostBundle -> VisObtained!');
+                                    return kibana.createIndex(config, version._id.toString(), gameId,
+                                        username, req.app.esClient)
+                                        .then(function(result) {
+                                            console.log('PostBundle -> IndexCreated!');
+                                            return kibana.createVisualizationsAndDashboard(config, version._id.toString(),
+                                                gameId, visualizations, username, req.app.esClient, extra);
+                                        })
+                                        .then(function(result) {
+                                            console.log('PostBundle -> VisAndDashCreated!');
+                                            deferred.resolve(game);
+                                        })
+                                        .fail(function(e) {
+                                            deferred.reject(e);
+                                        });
+                                })
+                                .fail(function(err) {
+                                    console.log('PostBundle -> getKibanaBaseVisualizationsFailcase!');
+                                    console.log(JSON.stringify(err, null, 2));
+                                    return deferred.reject(err);
+                                });
+
+                            return deferred.promise;
+                        });
+                });
+        }), res);
+
+    console.log('PostBundle -> finnished!');
 });
 
 /**

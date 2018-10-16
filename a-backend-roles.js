@@ -125,6 +125,7 @@ exports.app = {
                 {
                     resources: [
                         '/classes',
+                        '/classes/bundle',
                         '/activities',
                         '/activities/bundle',
                         '/activities/:activityId/event/:event',
@@ -242,7 +243,8 @@ exports.app = {
                 {
                     resources: [
                         '/sessions/test/:versionId',
-                        '/games'
+                        '/games',
+                        '/games/bundle'
                     ],
                     permissions: [
                         'post'
