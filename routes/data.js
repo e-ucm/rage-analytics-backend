@@ -1073,7 +1073,7 @@ var getAnalytics = function(activityId, username, glpBase, students, minigames, 
                     var currentNode = b.hits.hits[i]._source;
                     var activityId = b.hits.hits[i]._id;
 
-                    if (!currentNode.children) {
+                    if (!currentNode.children || currentNode.children.length == 0) {
                         var tmp = {};
 
                         if (students[username]) {
@@ -1134,7 +1134,6 @@ var getAnalytics = function(activityId, username, glpBase, students, minigames, 
                 glpBase.performance.score.avg = total.avg.score / total.count;
                 glpBase.performance.time.avg = total.avg.time / total.count;
                 glpBase.performance.accuracy.avg = total.avg.accuracy / total.count;
-
 
                 deferred.resolve();
             }catch (error) {
