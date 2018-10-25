@@ -156,7 +156,8 @@ exports.app = {
                         '/classes/groupings/:groupingId'
                     ],
                     permissions: [
-                        'put'
+                        'put',
+                        'delete'
                     ]
                 }
             ]
