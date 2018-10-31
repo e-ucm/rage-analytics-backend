@@ -112,7 +112,7 @@ describe('Config files  validations', function () {
         should(config.lrs.username).be.a.String();
         should(config.lrs.password).be.a.String();
         should(config.storm).be.an.Object();
-        should(config.storm.defaultAnalysisFolder).be.a.String();
+        should(config.storm.realtimeJar).be.a.String();
         should(config.storm.defaultAnalysisName).be.a.String();
         should(config.storm.path).be.a.String();
         should(config.storm.nimbusHost).be.a.String();
@@ -143,7 +143,7 @@ describe('Config files  validations', function () {
         should(testConfig.lrs.username).be.a.String();
         should(testConfig.lrs.password).be.a.String();
         should(testConfig.storm).be.an.Object();
-        should(testConfig.storm.defaultAnalysisFolder).be.a.String();
+        should(testConfig.storm.realtimeJar).be.a.String();
         should(testConfig.storm.defaultAnalysisName).be.a.String();
         should(testConfig.storm.path).be.a.String();
         should(testConfig.storm.nimbusHost).be.a.String();

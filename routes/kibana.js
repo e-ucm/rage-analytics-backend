@@ -2,7 +2,10 @@
 
 var express = require('express'),
     router = express.Router(),
+    restUtils = require('./rest-utils'),
     kibana = require('../lib/kibana/kibana');
+
+var activities = require('../lib/activities');
 
 /**
  * @api {post} /api/kibana/templates/:type/:id Adds a new template in .template index of ElasticSearch.
@@ -34,19 +37,7 @@ router.post('/templates/:type/:id', function (req, res) {
     if (req.params.type !== 'visualization' && req.params.type !== 'index') {
         res.json('Invalid type parameter', 400);
     } else {
-        req.app.esClient.index({
-            index: '.template',
-            type: req.params.type,
-            id: req.params.id,
-            body: req.body
-        }, function (error, response) {
-            if (!error) {
-                res.json(response);
-            } else {
-                res.status(error.status);
-                res.json(error);
-            }
-        });
+        restUtils.processResponse(kibana.indexTemplate(req.params.type, req.params.id, req.body, req.app.esClient));
     }
 });
 
@@ -173,31 +164,25 @@ router.post('/templates/:type/author/:idAuthor', function (req, res) {
  *        }]
  */
 router.get('/templates/:idAuthor', function (req, res) {
-    req.app.esClient.search({
-        size: 100,
-        from: 0,
-        index: '.template',
-        q: 'author:' + req.params.idAuthor
-    }, function (error, response) {
-        if (!error) {
-            var result = [];
-            if (response.hits) {
-                for (var i = 0; i < response.hits.hits.length; i++) {
-                    result[i] = {
-                        id: response.hits.hits[i]._id,
-                        title: response.hits.hits[i]._source.title,
-                        isDeveloper: response.hits.hits[i]._source.isDeveloper,
-                        isTeacher: response.hits.hits[i]._source.isTeacher
-                    };
-                }
-            }
-            res.json(result);
-        } else {
-            res.status(error.status);
-            res.json(error);
-        }
-    });
+    restUtils.processResponse(kibana.getTemplatesByAuthor(req.params.idAuthor, req.app.esClient)
+        .then(function (visualizations) {
+            var parsed = [];
+            visualizations.forEach(function (visualization) {
+                parsed.push(parseVisualization(visualization));
+            });
+            return parsed;
+        }), res);
 });
+
+
+var parseVisualization = function(visualization) {
+    return {
+        id: visualization._id,
+        title: visualization._source.title,
+        isDeveloper: visualization._source.isDeveloper,
+        isTeacher: visualization._source.isTeacher
+    };
+};
 
 /**
  * @api {get} /api/kibana/templates/index/:id Return the template with the id.
@@ -223,21 +208,7 @@ router.get('/templates/:idAuthor', function (req, res) {
  *
  */
 router.get('/templates/index/:id', function (req, res) {
-    req.app.esClient.search({
-        index: '.template',
-        q: '_id:' + req.params.id
-    }, function (error, response) {
-        if (!error) {
-            if (response.hits.hits[0]) {
-                res.json(response.hits.hits[0]);
-            } else {
-                res.json(new Error('Template not found', 404));
-            }
-        } else {
-            res.status(error.status);
-            res.json(error);
-        }
-    });
+    restUtils.processResponse(kibana.getIndexTemplate(req.params.id, req.app.esClient));
 });
 
 /**
@@ -395,7 +366,8 @@ router.post('/visualization/game/:gameId/:id', function (req, res) {
             fieldsObj = response.hits.hits[0]._source;
         }
         if (req.body.visualizationTemplate) {
-            setGameVisualizationByTemplate(req, res, req.body.visualizationTemplate, fieldsObj);
+            restUtils.processResponse(kibana.setGameVisualizationByTemplate(req.params.gameId,
+                req.params.id, req.body.visualizationTemplate, fieldsObj, req.app.esClient), res);
         } else {
             req.app.esClient.search({
                 index: '.template',
@@ -405,7 +377,8 @@ router.post('/visualization/game/:gameId/:id', function (req, res) {
                     // Replace template and save it
                     if (response.hits.hits[0]) {
                         var obj = response.hits.hits[0]._source;
-                        setGameVisualizationByTemplate(req, res, obj, fieldsObj);
+                        restUtils.processResponse(kibana.setGameVisualizationByTemplate(req.params.gameId,
+                            req.params.id, obj, fieldsObj, req.app.esClient), res);
                     } else {
                         res.json(new Error('Template not found', 404));
                     }
@@ -417,24 +390,6 @@ router.post('/visualization/game/:gameId/:id', function (req, res) {
         }
     });
 });
-
-var setGameVisualizationByTemplate = function (req, res, obj, fields) {
-    Object.keys(fields).forEach(function (key) {
-        obj.visState = obj.visState.replace(new RegExp(key, 'g'), fields[key]);
-    });
-    req.app.esClient.index({
-        index: '.games' + req.params.gameId,
-        type: 'visualization',
-        id: req.params.id,
-        body: obj
-    }, function (error, response) {
-        if (!error) {
-            return res.json(response);
-        }
-
-        return res.json(error);
-    });
-};
 
 /**
  * @api {get} /api/kibana/tuples/fields/game/:id Return the values that use a game for the visualizations
@@ -593,19 +548,7 @@ router.get('/visualization/list/:usr/:id', function (req, res) {
  *      }
  */
 router.post('/visualization/list/:id', function (req, res) {
-    req.app.esClient.index({
-        index: '.games' + req.params.id,
-        type: 'list',
-        id: req.params.id,
-        body: req.body
-    }, function (error, response) {
-        if (!error) {
-            res.json(response);
-        } else {
-            res.status(error.status);
-            res.json(error);
-        }
-    });
+    restUtils(kibana.indexVisualizationList(req.params.id, req.body, req.app.esClient), res);
 });
 
 /**
@@ -782,7 +725,6 @@ router.delete('/visualization/list/:gameId/:list/:idToRemove', function (req, re
  *
  * @apiParam {String} indexTemplate The index template id
  * @apiParam {String} indexName The index name
- * @apiParam {String} activityId The activity id
  *
  * @apiSuccess(200) Success.
  *
@@ -802,7 +744,45 @@ router.delete('/visualization/list/:gameId/:list/:idToRemove', function (req, re
  *      }
  */
 router.post('/index/:indexTemplate/:indexName', function (req, res) {
-    kibana.createRequiredIndexes(req.params.indexName, req.params.indexTemplate,
+    kibana.createKibanaIndices(req.params.indexName, req.params.indexTemplate,
+        req.headers['x-gleaner-user'], req.app.config, req.app.esClient)
+        .then(function(response) {
+            res.json(response);
+        })
+        .fail(function(error) {
+            res.status(error.status);
+            res.json(error);
+        });
+});
+
+
+
+/**
+ * @api {post} /api/kibana/classindex//:classId Adds a new index using the classId.
+ * @apiName PostIndex
+ * @apiGroup Kibana
+ *
+ * @apiParam {String} classId The class id
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "_index": ".kibana",
+ *          "_type": "index-pattern",
+ *          "_id": "0535H53W34g",
+ *          "_version": 1,
+ *          "_shards": {
+ *              "total": 2,
+ *              "successful": 1,
+ *              "failed": 0
+ *          },
+ *          "created": true
+ *      }
+ */
+router.post('/classindex/:classId', function (req, res) {
+    kibana.createRequiredIndexesForClass(req.params.classId,
         req.headers['x-gleaner-user'], req.app.config, req.app.esClient)
         .then(function(response) {
             res.json(response);
@@ -820,7 +800,7 @@ router.post('/index/:indexTemplate/:indexName', function (req, res) {
  *
  * @apiParam {String} gameId The game id
  * @apiParam {String} visualizationId The visualization id
- * @apiParam {String} activityId The activity id
+ * @apiParam {String} id The version or activity id
  *
  * @apiSuccess(200) Success.
  *
@@ -839,9 +819,47 @@ router.post('/index/:indexTemplate/:indexName', function (req, res) {
  *          "created": true
  *      }
  */
-router.post('/visualization/activity/:gameId/:visualizationId/:activityId', function (req, res) {
-    kibana.cloneVisualizationForActivity(req.params.gameId, req.params.visualizationId,
-        req.params.activityId, req.app.esClient)
+router.post('/visualization/activity/:gameId/:visualizationId/:id', function (req, res) {
+    kibana.cloneVisualizationForId(req.params.gameId, req.params.visualizationId,
+        req.params.id, req.app.esClient)
+        .then(function(result) {
+            res.json(result);
+        })
+        .fail(function(error) {
+            res.status(error.status);
+            res.json(error);
+        });
+});
+
+
+/**
+ * @api {post} /api/kibana/visualization/class/:classId Adds new visualization using the template visualization from the body
+ * @apiName PostVisualizationClass
+ * @apiGroup Kibana
+ *
+ * @apiParam {String} Body of the request The visualization
+ * @apiParam {String} classId The class id
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "_index": ".kibana",
+ *          "_type": "visualization",
+ *          "_id": "activityId",
+ *          "_version": 1,
+ *          "_shards": {
+ *              "total": 2,
+ *              "successful": 1,
+ *              "failed": 0
+ *          },
+ *          "created": true
+ *      }
+ */
+router.post('/visualization/class/:classId', function (req, res) {
+    kibana.cloneVisualizationForClass(req.body,
+        req.params.classId, req.app.esClient)
         .then(function(result) {
             res.json(result);
         })
@@ -890,7 +908,66 @@ router.post('/visualization/activity/:gameId/:visualizationId/:activityId', func
  *      }
  */
 router.post('/dashboard/activity/:activityId', function (req, res) {
-    kibana.createDashboard(req.body, req.params.activityId, req.app.esClient, req.app.config,
+
+    activities.findById(req.params.activityId)
+        .then(function (activityObj) {
+            if (activityObj) {
+                return kibana.createDashboard(req.body, req.params.activityId, activityObj.versionId, req.app.esClient, req.app.config,
+                    req.headers['x-gleaner-user'])
+                    .then(function(result) {
+                        res.json(result);
+                    });
+            }
+
+            res.status(404);
+            res.json({message: 'Activity not found'});
+        })
+        .fail(function(error) {
+            res.status(error.status);
+            res.json(error);
+        });
+});
+
+/**
+ * @api {post} /api/kibana/dashboard/class/:classId Adds a new dashboard in .kibana index of ElasticSearch.
+ * @apiName PostDashboardClass
+ * @apiGroup Kibana
+ *
+ * @apiParam {String} id The activity id
+ *
+ * @apiParamExample {json} Request-Example:
+ *      {
+ *          "title": "dashboard_123",
+ *          "description2": "default visualization",
+ *          "panelsJSON": "[{ id:visualization_123, type:visualization, panelIndex: 1, size_x:3, size_y:2, col:1, row:1}]",
+ *          "optionsJSON": "{"darkTheme":false}",
+ *          "uiStateJSON": "{vis: {legendOpen: false}}",
+ *          "version": 1,
+ *          "timeRestore": false,
+ *          "kibanaSavedObjectMeta": {
+ *              searchSourceJSON: '{"filter":[{"query":{"query_string":{"query":"*","analyze_wildcard":true}}}]}'
+ *          }
+ *      }
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "_index": ".kibana",
+ *          "_type": "visualization",
+ *          "_id": "classId",
+ *          "_version": 1,
+ *          "_shards": {
+ *              "total": 2,
+ *              "successful": 1,
+ *              "failed": 0
+ *          },
+ *          "created": true
+ *      }
+ */
+router.post('/dashboard/class/:classId', function (req, res) {
+    kibana.createDashboard(req.body, req.params.classId, req.params.classId, req.app.esClient, req.app.config,
         req.headers['x-gleaner-user'])
         .then(function(result) {
             res.json(result);
@@ -899,6 +976,47 @@ router.post('/dashboard/activity/:activityId', function (req, res) {
             res.status(error.status);
             res.json(error);
         });
+});
+
+/**
+ * @api {GET} /api/kibana/classvis/ Returns kibana visualizations for class
+ * @apiGroup Kibana
+ *
+ * @apiParam {String} id The activity id
+ *
+ * @apiParamExample {json} Request-Example:
+ *      {
+ *          "title": "dashboard_123",
+ *          "description2": "default visualization",
+ *          "panelsJSON": "[{ id:visualization_123, type:visualization, panelIndex: 1, size_x:3, size_y:2, col:1, row:1}]",
+ *          "optionsJSON": "{"darkTheme":false}",
+ *          "uiStateJSON": "{vis: {legendOpen: false}}",
+ *          "version": 1,
+ *          "timeRestore": false,
+ *          "kibanaSavedObjectMeta": {
+ *              searchSourceJSON: '{"filter":[{"query":{"query_string":{"query":"*","analyze_wildcard":true}}}]}'
+ *          }
+ *      }
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "_index": ".kibana",
+ *          "_type": "visualization",
+ *          "_id": "classId",
+ *          "_version": 1,
+ *          "_shards": {
+ *              "total": 2,
+ *              "successful": 1,
+ *              "failed": 0
+ *          },
+ *          "created": true
+ *      }
+ */
+router.get('/classvis/', function (req, res) {
+    res.json(require('../lib/kibana/classVisualizations'));
 });
 
 // jscs:enable requireCamelCaseOrUpperCaseIdentifiers

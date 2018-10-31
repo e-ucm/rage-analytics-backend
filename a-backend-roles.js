@@ -89,6 +89,7 @@ exports.app = {
                         '/analysis/:id',
                         '/games/public',
                         '/games/:gameId',
+                        '/kibana/classvis/',
                         '/games/:gameId/versions',
                         '/games/:gameId/versions/:versionId',
                         '/games/:gameId/versions/:versionId/activities/my',
@@ -110,6 +111,7 @@ exports.app = {
                         '/classes/:classId',
                         '/classes/:classId/remove',
                         '/activities/:activityId',
+                        '/offlinetraces/:activityId',
                         '/classes/external/:domain/:externalId',
                         '/classes/external/:domain/:externalId/remove',
                         '/activities/:activityId/remove',
@@ -123,6 +125,7 @@ exports.app = {
                 {
                     resources: [
                         '/classes',
+                        '/classes/bundle',
                         '/activities',
                         '/activities/bundle',
                         '/activities/:activityId/event/:event',
@@ -153,7 +156,8 @@ exports.app = {
                         '/classes/groupings/:groupingId'
                     ],
                     permissions: [
-                        'put'
+                        'put',
+                        'delete'
                     ]
                 }
             ]
@@ -178,6 +182,7 @@ exports.app = {
                         '/classes/:classId/remove',
                         '/classes/:classId/activities/my',
                         '/activities/my',
+                        '/offlinetraces/:activityId',
                         '/activities/:activityId/results',
                         '/activities/:activityId',
                         '/activities/:activityId/remove',
@@ -239,7 +244,8 @@ exports.app = {
                 {
                     resources: [
                         '/sessions/test/:versionId',
-                        '/games'
+                        '/games',
+                        '/games/bundle'
                     ],
                     permissions: [
                         'post'

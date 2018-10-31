@@ -61,6 +61,7 @@ describe('API Test', function (done) {
         require('./tests/attemptsTest')(request, db);
 
         require('./tests/analysisTest')(request, db);
+        require('./tests/offlinetracesTest')(request, db);
 
         // Test collector and track, also drop the database.
         require('./tests/collectorTest')(request, db, config);
@@ -77,6 +78,7 @@ describe('API Test', function (done) {
 
         require('./upgraderTests/processController')(request, app, db);
 
+        require('./tests/csvToXAPItest');
         done();
     });
 

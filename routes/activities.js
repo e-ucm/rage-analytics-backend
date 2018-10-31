@@ -6,6 +6,7 @@ var express = require('express'),
     Q = require('q');
 
 var activities = require('../lib/activities'),
+    kibana = require('../lib/kibana/kibana'),
     classes = require('../lib/classes'),
     getRealTimeData = require('../lib/tracesConverter');
 
@@ -145,8 +146,13 @@ module.exports = function (kafkaService, stormService) {
         var username = req.headers['x-gleaner-user'];
         restUtils.processResponse(classes.isAuthorizedFor(req.body.classId, username, 'post', '/activities/')
             .then(function (classReq) {
+
+                var allowAnonymous = req.body.allowAnonymous;
+                if (!allowAnonymous) {
+                    allowAnonymous = false;
+                }
                 return activities.createActivity(req.body.gameId, req.body.versionId, req.body.classId,
-                    username, req.body.name);
+                    username, req.body.name, undefined, req.body.offline, allowAnonymous);
             }), res);
     });
 
@@ -199,15 +205,19 @@ module.exports = function (kafkaService, stormService) {
                     rootId = '';
                 }
 
-                activities.createActivity(req.body.gameId, req.body.versionId, req.body.classId, username, req.body.name, rootId)
+                var allowAnonymous = req.body.allowAnonymous;
+                if (!allowAnonymous) {
+                    allowAnonymous = false;
+                }
+                activities.createActivity(req.body.gameId, req.body.versionId, req.body.classId, username, req.body.name, rootId, req.body.offline, allowAnonymous)
                 .then(function(activity) {
-                        return activities.kibana.getKibanaBaseVisualizations(config, activity, req.app.esClient)
+                        return kibana.getKibanaBaseVisualizations('tch', config, activity.gameId, req.app.esClient)
                         .then(function(visualizations) {
                             console.log('PostBundle -> VisObtained!');
-                            return activities.kibana.createIndex(config, activity, username, req.app.esClient)
+                            return kibana.createIndex(config, activity._id.toString(), activity.gameId, username, req.app.esClient)
                                 .then(function(result) {
                                     console.log('PostBundle -> IndexCreated!');
-                                    return activities.kibana.createVisualizationsAndDashboard(config, activity, visualizations, username, req.app.esClient);
+                                    return kibana.createVisualizationsAndDashboard(config, activity._id, activity.gameId, visualizations, username, req.app.esClient);
                                 })
                                 .then(function(result) {
                                     console.log('PostBundle -> VisAndDashCreated!');
