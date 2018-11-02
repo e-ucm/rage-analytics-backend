@@ -13,7 +13,7 @@ var activities = require('../lib/activities'),
 module.exports = function (kafkaService, stormService) {
 
     /**
-     * @api {get} /classes Returns the Activities.
+     * @api {get} /activities Returns the Activities.
      * @apiName GetActivities
      * @apiGroup Activities
      *
@@ -24,17 +24,21 @@ module.exports = function (kafkaService, stormService) {
      * @apiSuccessExample Success-Response:
      *      HTTP/1.1 200 OK
      *      {
-     *          "_id": "559a447831b76cec185bf501"
+     *          "_id": "559a447831b76cec185bf501",
+     *          "name": "Some Activity Name",
      *          "gameId": "559a447831b76cec185bf513",
      *          "versionId": "559a447831b76cec185bf514",
      *          "classId": "559a447831b76cec185bf515",
+     *          "rootId": "",
+     *          "offline": false,
      *          "created": "2015-07-06T09:00:50.630Z",
      *          "start": "2015-07-06T09:00:52.630Z",
      *          "end": "2015-07-06T09:03:45.631Z",
-     *          "name": "Some Activity Name",
+     *          "open": false,
+     *          "visible": false
      *          "allowAnonymous": false,
-     *          "teachers": ["Ben"],
-     *          "students": ["Alice", "Dan"]
+     *          "groups": [],
+     *          "groupings": [],
      *      }
      *
      */
@@ -52,17 +56,21 @@ module.exports = function (kafkaService, stormService) {
      * @apiSuccessExample Success-Response:
      *      HTTP/1.1 200 OK
      *      {
-     *          "_id": "559a447831b76cec185bf501"
+     *          "_id": "559a447831b76cec185bf501",
+     *          "name": "Some Activity Name",
      *          "gameId": "559a447831b76cec185bf513",
      *          "versionId": "559a447831b76cec185bf514",
      *          "classId": "559a447831b76cec185bf515",
+     *          "rootId": "",
+     *          "offline": false,
      *          "created": "2015-07-06T09:00:50.630Z",
      *          "start": "2015-07-06T09:00:52.630Z",
      *          "end": "2015-07-06T09:03:45.631Z",
-     *          "name": "Some Activity Name",
+     *          "open": false,
+     *          "visible": false
      *          "allowAnonymous": false,
-     *          "teachers": ["Ben"],
-     *          "students": ["Alice", "Dan"]
+     *          "groups": [],
+     *          "groupings": [],
      *      }
      *
      */
@@ -83,17 +91,21 @@ module.exports = function (kafkaService, stormService) {
      * @apiSuccessExample Success-Response:
      *      HTTP/1.1 200 OK
      *      {
-     *          "_id": "559a447831b76cec185bf501"
+     *          "_id": "559a447831b76cec185bf501",
+     *          "name": "Some Activity Name",
      *          "gameId": "559a447831b76cec185bf513",
      *          "versionId": "559a447831b76cec185bf514",
      *          "classId": "559a447831b76cec185bf515",
+     *          "rootId": "",
+     *          "offline": false,
      *          "created": "2015-07-06T09:00:50.630Z",
      *          "start": "2015-07-06T09:00:52.630Z",
      *          "end": "2015-07-06T09:03:45.631Z",
-     *          "name": "Some Activity Name",
+     *          "open": false,
+     *          "visible": false
      *          "allowAnonymous": false,
-     *          "teachers": ["Ben"],
-     *          "students": ["Alice", "Dan"]
+     *          "groups": [],
+     *          "groupings": [],
      *      }
      *
      */
@@ -122,7 +134,8 @@ module.exports = function (kafkaService, stormService) {
      *          "name": "New name",
      *          "gameId": "55e433c773415f105025d2d4",
      *          "versionId": "55e433c773415f105025d2d5",
-     *          "classId": "55e433c773415f105025d2d3"
+     *          "classId": "55e433c773415f105025d2d3",
+     *          "offline": false
      *      }
      *
      * @apiSuccess(200) Success.
@@ -130,15 +143,20 @@ module.exports = function (kafkaService, stormService) {
      * @apiSuccessExample Success-Response:
      *      HTTP/1.1 200 OK
      *      {
+     *          "_id": "5bdc46009b12ed8295ab13d0",
+     *          "name": "New name",
      *          "gameId": "55e433c773415f105025d2d4",
      *          "versionId": "55e433c773415f105025d2d5",
      *          "classId": "55e433c773415f105025d2d3",
-     *          "name": "New name",
-     *          "created": "2015-08-31T12:55:05.459Z",
-     *          "teachers": [
-     *              "user"
-     *          ],
-     *          "_id": "55e44ea9f1448e1067e64d6c"
+     *          "rootId": null,
+     *          "offline": false,
+     *          "groups": [],
+     *          "groupings": [],
+     *          "created": "2018-11-02T12:41:36.705Z",
+     *          "open": false,
+     *          "visible": false,
+     *          "allowAnonymous": false,
+     *          "trackingCode": "5bdc46009b12ed8295ab13d0g4b0dz9znb5"
      *      }
      *
      */
@@ -180,15 +198,20 @@ module.exports = function (kafkaService, stormService) {
      * @apiSuccessExample Success-Response:
      *      HTTP/1.1 200 OK
      *      {
+     *          "_id": "5bdc46009b12ed8295ab13d0",
+     *          "name": "New name",
      *          "gameId": "55e433c773415f105025d2d4",
      *          "versionId": "55e433c773415f105025d2d5",
      *          "classId": "55e433c773415f105025d2d3",
-     *          "name": "New name",
-     *          "created": "2015-08-31T12:55:05.459Z",
-     *          "teachers": [
-     *              "user"
-     *          ],
-     *          "_id": "55e44ea9f1448e1067e64d6c"
+     *          "rootId": null,
+     *          "offline": false,
+     *          "groups": [],
+     *          "groupings": [],
+     *          "created": "2018-11-02T12:41:36.705Z",
+     *          "open": false,
+     *          "visible": false,
+     *          "allowAnonymous": false,
+     *          "trackingCode": "5bdc46009b12ed8295ab13d0g4b0dz9znb5"
      *      }
      *
      */
@@ -253,14 +276,14 @@ module.exports = function (kafkaService, stormService) {
      * @apiParam {String} activityId The id of the activity.
      * @apiParam {String} [name] The new name of the activity
      * @apiParam {Boolean} [allowAnonymous] Whether this activity should process data from anonymous users or not.
-     * @apiParam {String[]} [students] Array with the username of the students that you want to add to the activity. Also can be a String
-     * @apiParam {String[]} [teachers] Array with the username of the teachers that you want to add to the activity. Also can be a String
+     * @apiParam {String[]} [groups] Array with the groups Ids of the groups that you want to add to the activity. Also can be a String.
+     * @apiParam {String[]} [groupings] Array with the groupings Ids of the groupings that you want to add to the activity. Also can be a String
      * @apiParamExample {json} Request-Example:
      *      {
      *          "name": "My New Name",
      *          "allowAnonymous": true,
-     *          "teachers": ["Some Teacher"],
-     *          "students": ["Some Student"]
+     *          "groups": ["groupID"],
+     *          "groupings": ["groupingID"]
      *      }
      *
      * @apiSuccess(200) Success.
@@ -268,17 +291,20 @@ module.exports = function (kafkaService, stormService) {
      * @apiSuccessExample Success-Response:
      *      HTTP/1.1 200 OK
      *      {
-     *          "_id": "559a447831b76cec185bf511"
-     *          "gameId": "559a447831b76cec185bf513",
-     *          "versionId": "559a447831b76cec185bf514",
-     *          "classId": "559a447831b76cec185bf515",
-     *          "created": "2015-07-06T09:00:50.630Z",
-     *          "start": "2015-07-06T09:01:52.636Z",
-     *          "end": "2015-07-06T09:03:45.631Z",
+     *          "_id": "5bdc46009b12ed8295ab13d0",
      *          "name": "My New Name",
+     *          "gameId": "55e433c773415f105025d2d4",
+     *          "versionId": "55e433c773415f105025d2d5",
+     *          "classId": "55e433c773415f105025d2d3",
+     *          "rootId": null,
+     *          "offline": false,
+     *          "groups": ["groupID"],
+     *          "groupings": ["groupingID"],
+     *          "created": "2018-11-02T12:41:36.705Z",
+     *          "open": false,
+     *          "visible": false,
      *          "allowAnonymous": true,
-     *          "teachers": ["Some Teacher"],
-     *          "students": ["Some Student"]
+     *          "trackingCode": "5bdc46009b12ed8295ab13d0g4b0dz9znb5"
      *      }
      */
     router.put('/:activityId', function (req, res) {
@@ -295,29 +321,33 @@ module.exports = function (kafkaService, stormService) {
      * @apiGroup Activities
      *
      * @apiParam {String} activityId The id of the activity.
-     * @apiParam {String[]} [students] Array with the username of the students that you want to remove from the activity. Also can be a String
-     * @apiParam {String[]} [teachers] Array with the username of the teachers that you want to remove from the activity. Also can be a String
+     * @apiParam {String[]} [groups] Array with the groups Ids of the groups that you want to add to the activity. Also can be a String.
+     * @apiParam {String[]} [groupings] Array with the groupings Ids of the groupings that you want to add to the activity. Also can be a String
      *
      * @apiParamExample {json} Request-Example:
      *      {
-     *          "teachers": ["Some Teacher"],
-     *          "students": ["Some Student"]
+     *          "groups": ["groupID"],
+     *          "groupings": ["groupingID"]
      *      }
      * @apiSuccess(200) Success.
      *
      * @apiSuccessExample Success-Response:
      *      HTTP/1.1 200 OK
      *      {
-     *          "_id": "559a447831b76cec185bf511"
-     *          "gameId": "559a447831b76cec185bf513",
-     *          "versionId": "559a447831b76cec185bf514",
-     *          "classId": "559a447831b76cec185bf515",
-     *          "created": "2015-07-06T09:00:50.630Z",
-     *          "start": "2015-07-06T09:01:52.636Z",
-     *          "end": "2015-07-06T09:03:45.631Z",
+     *          "_id": "5bdc46009b12ed8295ab13d0",
      *          "name": "My New Name",
-     *          "teachers": [],
-     *          "students": []
+     *          "gameId": "55e433c773415f105025d2d4",
+     *          "versionId": "55e433c773415f105025d2d5",
+     *          "classId": "55e433c773415f105025d2d3",
+     *          "rootId": null,
+     *          "offline": false,
+     *          "groups": [],
+     *          "groupings": [],
+     *          "created": "2018-11-02T12:41:36.705Z",
+     *          "open": false,
+     *          "visible": false,
+     *          "allowAnonymous": true,
+     *          "trackingCode": "5bdc46009b12ed8295ab13d0g4b0dz9znb5"
      *      }
      */
     router.put('/:activityId/remove', function (req, res) {
@@ -605,18 +635,22 @@ module.exports = function (kafkaService, stormService) {
      * @apiSuccessExample Success-Response:
      *      HTTP/1.1 200 OK
      *      {
-     *          "_id": "559a447831b76cec185bf511"
-     *          "gameId": "559a447831b76cec185bf513",
-     *          "versionId": "559a447831b76cec185bf514",
-     *          "classId": "559a447831b76cec185bf515",
-     *          "name": "The Activity Name",
-     *          "created": "2015-07-06T09:00:50.630Z",
+     *          "_id": "5bdc46009b12ed8295ab13d0",
+     *          "name": "My New Name",
+     *          "gameId": "55e433c773415f105025d2d4",
+     *          "versionId": "55e433c773415f105025d2d5",
+     *          "classId": "55e433c773415f105025d2d3",
+     *          "rootId": null,
+     *          "offline": false,
+     *          "groups": ["groupID"],
+     *          "groupings": ["groupingID"],
+     *          "created": "2018-11-02T12:41:36.705Z",
+     *          "open": false,
+     *          "visible": false,
+     *          "allowAnonymous": true,
+     *          "trackingCode": "5bdc46009b12ed8295ab13d0g4b0dz9znb5"
      *          "start": "2015-07-06T09:01:52.636Z",
      *          "end": "2015-07-06T09:03:45.631Z",
-     *          "name": "Some Activity Name",
-     *          "allowAnonymous": false,
-     *          "teachers": ["Ben"],
-     *          "students": ["Alice", "Dan"]
      *      }
      *
      */
