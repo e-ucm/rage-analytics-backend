@@ -208,7 +208,7 @@ var parseVisualization = function(visualization) {
  *
  */
 router.get('/templates/index/:id', function (req, res) {
-    restUtils.processResponse(kibana.getIndexTemplate(req.params.id, req.app.esClient));
+    restUtils.processResponse(kibana.getIndexTemplate(req.params.id, req.app.esClient), res);
 });
 
 /**
