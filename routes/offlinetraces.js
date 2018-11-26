@@ -9,6 +9,32 @@ module.exports = function (kafkaConfig) {
     var offlinetraces = require('../lib/offlinetraces')(kafkaConfig);
 
     /**
+     * @api {get} /api/offlinetraces/:activityId/kahoot Returns the Kahoot offlinetraces that has the given id.
+     * @apiName GetOflinetraces
+     * @apiGroup Oflinetraces
+     *
+     * @apiParam {String} id The Analysis id
+     *
+     * @apiSuccess(200) Success.
+     *
+     * @apiSuccessExample Success-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "_id": "559a447831b76cec185bf501",
+     *          "kahoot": true,
+     *          "name": "tracesdata.csv",
+     *          "activityId": "559a447831b76cec185bf502",
+     *          "author": "David",
+     *          "timestamp": "2015-07-06T09:00:50.630Z"
+     *      }
+     *
+     */
+    router.get('/:activityId/kahoot', function (req, res) {
+        var username = req.headers['x-gleaner-user'];
+        restUtils.processResponse(offlinetraces.findByActivityId(req.params.activityId, username, true), res);
+    });
+
+    /**
      * @api {get} /api/offlinetraces/:activityId Returns the offlinetraces that has the given id.
      * @apiName GetOflinetraces
      * @apiGroup Oflinetraces
@@ -30,7 +56,35 @@ module.exports = function (kafkaConfig) {
      */
     router.get('/:activityId', function (req, res) {
         var username = req.headers['x-gleaner-user'];
-        restUtils.processResponse(offlinetraces.findByActivityId(req.params.activityId, username), res);
+        restUtils.processResponse(offlinetraces.findByActivityId(req.params.activityId, username, false), res);
+    });
+
+
+    /**
+     * @api {post} /offlinetraces/:analisysId/kahoot Adds a new Kahoot OfflineTraces for a given versionId
+     * @apiName PostOflinetraces
+     * @apiGroup Oflinetraces
+     *
+     * @apiParam {String} analysisId The id of the analysis.
+     * @apiParamExample {} Request-Example:
+     *      An .xlsx file with the KAHOOT traces following the correct format:
+     *      https://kahoot.com/blog/2017/02/20/download-evaluate-kahoot-results-data/
+     *
+     * @apiSuccess(200) Success.
+     *
+     * @apiSuccessExample Success-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "_id": "559a447831b76cec185bf501",
+     *          "name": "realtime.jar",
+     *          "activityId": "559a447831b76cec185bf502",
+     *          "author": "David",
+     *          "timestamp": "2015-07-06T09:00:50.630Z"
+     *      }
+     */
+    router.post('/:activityId/kahoot', function (req, res) {
+        var username = req.headers['x-gleaner-user'];
+        restUtils.processResponse(offlinetraces.createOfflinetraces(req.params.activityId, username, req, res, true), res);
     });
 
     /**
@@ -63,7 +117,7 @@ module.exports = function (kafkaConfig) {
      */
     router.post('/:activityId', function (req, res) {
         var username = req.headers['x-gleaner-user'];
-        restUtils.processResponse(offlinetraces.createOfflinetraces(req.params.activityId, username, req, res), res);
+        restUtils.processResponse(offlinetraces.createOfflinetraces(req.params.activityId, username, req, res, false), res);
     });
 
     return router;
