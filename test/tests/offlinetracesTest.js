@@ -132,6 +132,24 @@ module.exports = function (request, db) {
             });
         });
 
+        it('should correctly process Kahoot results.xlsx file', function (done) {
+
+            var offlinetraces = require('../../lib/offlinetraces')();
+            var csvToXapi = require('../../lib/csvToXAPI');
+
+            var csvtraces = offlinetraces.kahootToCSV('./test/resources/kahootresults.xlsx');
+
+            should.not.exist(csvtraces.error);
+            for (var i = 0; i < csvtraces.length; ++i) {
+                var trace = csvtraces[i];
+                var resp = csvToXapi(trace);
+
+                should.not.exist(resp.error);
+                should(resp.statement).be.an.Object();
+            }
+            done();
+        });
+
         it('should not POST a new analysis when the activity does not exist', function (done) {
 
             request.post('/api/offlinetraces/' + idActivityNotFound)
@@ -223,5 +241,6 @@ module.exports = function (request, db) {
                         });
                 });
         });
+
     });
 };
