@@ -6,10 +6,11 @@ var express = require('express'),
 
 module.exports = function (kafkaConfig) {
 
-    var offlinetraces = require('../lib/offlinetraces')(kafkaConfig);
+    var offlinetraces = require('../lib/offlinetraces')();
 
     /**
-     * @api {get} /api/offlinetraces/:activityId/kahoot Returns the Kahoot offlinetraces that has the given id.
+     * @api {get} /api/offlinetraces/:activityId/kahoot Returns the Kahoot offlinetraces
+     * (meta-information about the uploaded Kahoot results file) that has the given id.
      * @apiName GetOflinetraces
      * @apiGroup Oflinetraces
      *
@@ -22,7 +23,7 @@ module.exports = function (kafkaConfig) {
      *      {
      *          "_id": "559a447831b76cec185bf501",
      *          "kahoot": true,
-     *          "name": "tracesdata.csv",
+     *          "name": "results.xslx",
      *          "activityId": "559a447831b76cec185bf502",
      *          "author": "David",
      *          "timestamp": "2015-07-06T09:00:50.630Z"
@@ -35,7 +36,8 @@ module.exports = function (kafkaConfig) {
     });
 
     /**
-     * @api {get} /api/offlinetraces/:activityId Returns the offlinetraces that has the given id.
+     * @api {get} /api/offlinetraces/:activityId Returns the offlinetraces
+     * (meta-information about the uploaded CSV file) that has the given id.
      * @apiName GetOflinetraces
      * @apiGroup Oflinetraces
      *
