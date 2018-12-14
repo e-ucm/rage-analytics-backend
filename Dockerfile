@@ -6,6 +6,7 @@ RUN apt-get update \
 
 # NodeJS installation, gpg keys listed at https://github.com/nodejs/node
 RUN set -ex \
+  && keyservers="hkp://p80.pool.sks-keyservers.net:80 ha.pool.sks-keyservers.net hkps.pool.sks-keyservers.net pool.sks-keyservers.net keyserver.ubuntu.com" \
   && for key in \
     94AE36675C464D64BAFA68DD7434390BDBE9B9C5 \
     FD3A5288F042B6850C66B31F09FE44734EB7990E \
@@ -15,7 +16,11 @@ RUN set -ex \
     B9AE9905FFD7803F25714661B63B535A4C206CA9 \
     56730D5401028683275BD23C23EFEFE93C4CFFFE \
   ; do \
-    gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
+    keyserver_ok=""; \
+    for keyserver in ${keyservers}; do \
+      gpg --keyserver ${keyserver} --recv-keys "$key"; >/dev/null 2>&1 && keyserver_ok="ok" && break;\
+    done; \
+    if [ -z "$keyserver_ok" ]; then echo "No valid response from keyservers"; exit 1; fi; \
   done
 
 ENV NPM_CONFIG_LOGLEVEL info
