@@ -52,7 +52,8 @@
     "retry": "^0.10.1",
     "shelljs": "^0.5.x",
     "underscore": "*",
-    "uuid": "^3.1.x"
+    "uuid": "^3.1.x",
+    "xlsx": "^0.14.1"
   },
   "devDependencies": {
     "apidoc": "0.15.1",

@@ -27,6 +27,7 @@ var idGame = new ObjectID('dummyGameId0'),
     idActivity = new ObjectID('dummySessId0'),
     idActivityOffline = new ObjectID('dummySessId4'),
     idActivityNotFound = new ObjectID('dummySessId2'),
+    idActivityNotFound2 = new ObjectID('dummySessId9'),
     idClass = new ObjectID('dummyClasId0'),
     idGroup = new ObjectID('dummyGrouId0'),
     idGrouping = new ObjectID('dummyGrogId0');
@@ -131,6 +132,24 @@ module.exports = function (request, db) {
             });
         });
 
+        it('should correctly process Kahoot results.xlsx file', function (done) {
+
+            var offlinetraces = require('../../lib/offlinetraces')();
+            var csvToXapi = require('../../lib/csvToXAPI');
+
+            var csvtraces = offlinetraces.kahootToCSV('./test/resources/kahootresults.xlsx');
+
+            should.not.exist(csvtraces.error);
+            for (var i = 0; i < csvtraces.length; ++i) {
+                var trace = csvtraces[i];
+                var resp = csvToXapi(trace);
+
+                should.not.exist(resp.error);
+                should(resp.statement).be.an.Object();
+            }
+            done();
+        });
+
         it('should not POST a new analysis when the activity does not exist', function (done) {
 
             request.post('/api/offlinetraces/' + idActivityNotFound)
@@ -140,7 +159,15 @@ module.exports = function (request, db) {
                 // .attach('analysis', './test/resources/flux.yml')
                 .expect('Content-Type', /json/)
                 .end(function (err, res) {
-                    done(err);
+                    request.post('/api/offlinetraces/' + idActivityNotFound2 + '/kahoot')
+                        .expect(400)
+                        .set('Accept', 'application/json')
+                        .set('X-Gleaner-User', 'username')
+                        // .attach('analysis', './test/resources/flux.yml')
+                        .expect('Content-Type', /json/)
+                        .end(function (err, res) {
+                            done(err);
+                        });
                 });
         });
 
@@ -154,7 +181,15 @@ module.exports = function (request, db) {
                 // .attach('analysis', './test/resources/flux.yml')
                 .expect('Content-Type', /json/)
                 .end(function (err, res) {
-                    done(err);
+                    request.post('/api/offlinetraces/' + idActivity + '/kahoot')
+                        .expect(400)
+                        .set('Accept', 'application/json')
+                        .set('X-Gleaner-User', 'username')
+                        // .attach('analysis', './test/resources/flux.yml')
+                        .expect('Content-Type', /json/)
+                        .end(function (err, res) {
+                            done(err);
+                        });
                 });
         });
 
@@ -169,7 +204,17 @@ module.exports = function (request, db) {
                 .end(function (err, res) {
                     should.not.exist(err);
                     should(res).be.Object();
-                    done();
+                    request.post('/api/offlinetraces/' + idActivityOffline  + '/kahoot')
+                        .expect(200)
+                        .set('Accept', 'application/json')
+                        .set('X-Gleaner-User', 'username')
+                        .attach('offlinetraceskahoot', './test/resources/results.xlsx')
+                        .expect('Content-Type', /json/)
+                        .end(function (err, res) {
+                            should.not.exist(err);
+                            should(res).be.Object();
+                            done();
+                        });
                 });
         });
 
@@ -180,12 +225,22 @@ module.exports = function (request, db) {
                 .end(function (err, res) {
                     should.not.exist(err);
                     should(res).be.Object();
-                    console.log('err');
-                    console.info(err);
+                    should.equal(res.body.length, 1);
                     should.equal(res.body[0].activityId, idActivityOffline.toString());
                     should.equal(res.body[0].name, 'offlinetraces.csv');
-                    done();
+                    request.get('/api/offlinetraces/' + idActivityOffline + '/kahoot')
+                        .expect(200)
+                        .set('X-Gleaner-User', 'username')
+                        .end(function (err, res) {
+                            should.not.exist(err);
+                            should(res).be.Object();
+                            should.equal(res.body.length, 1);
+                            should.equal(res.body[0].activityId, idActivityOffline.toString());
+                            should.equal(res.body[0].name, 'results.xlsx');
+                            done();
+                        });
                 });
         });
+
     });
 };
