@@ -23,9 +23,9 @@ RUN set -ex \
   ; do \
     keyserver_ok=""; \
     for keyserver in ${keyservers}; do \
-      gpg --keyserver ${keyserver} --recv-keys "$key"; >/dev/null 2>&1 && keyserver_ok="ok" && break; done; \
+      gpg --keyserver ${keyserver} --recv-keys "$key"; >/dev/null 2>&1 && keyserver_ok="ok" && break; \
     done; \
-    if [[ -z $keyserver_ok ]]; then echo "No valid response from keyservers"; exit 1; fi; \
+    if [ -z "$keyserver_ok" ]; then echo "No valid response from keyservers"; exit 1; fi; \
   done
 
 ENV NODE_VERSION 8.12.0
