@@ -26,6 +26,7 @@
     "test-win": "npm run lint && set NODE_ENV=test&& mocha -R spec",
     "test-travis": "npm run lint && npm run fast-setup && npm run test",
     "gen-apidoc": "apidoc -i ./routes -o ./public/apidoc",
+    "unify": "node ./bin/upgrade/unify.js",
     "upgrade": "node ./bin/upgrade/upgrade.js",
     "recover": "node ./bin/permissions-recover.js"
   },
