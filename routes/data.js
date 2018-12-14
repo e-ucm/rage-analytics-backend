@@ -1073,7 +1073,7 @@ var getAnalytics = function(activityId, username, glpBase, students, minigames, 
                     var currentNode = b.hits.hits[i]._source;
                     var activityId = b.hits.hits[i]._id;
 
-                    if (!currentNode.children || currentNode.children.length == 0) {
+                    if (!currentNode.children || currentNode.children.length === 0) {
                         var tmp = {};
 
                         if (students[username]) {
