@@ -718,147 +718,47 @@ var originalGlpBase = {
 // ################### REQUESTS ###################
 // ################################################
 
-var scoreRequest = {
-    query: {
-        bool: {
-            must: [
-              {
-                query_string: {
-                    analyze_wildcard: true,
-                    query: 'out.event:completed'
-                }
-            }
-            ],
-            must_not: []
-        }
-    },
-    size: 0,
-    _source: {
-        excludes: []
-    },
-    aggs: {
-        2: {
-            terms: {
-                field: 'out.name.keyword',
-                size: 1000,
-                order: {
-                    _term: 'asc'
-                }
-            },
-            aggs: {
-                3: {
-                    terms: {
-                        field: 'orginalId.keyword',
-                        size: 1000,
-                        order: {
-                            1: 'desc'
-                        }
-                    },
-                    aggs: {
-                        1: {
-                            max: {
-                                field: 'out.score'
-                            }
-                        }
+var scoreRequest = function(activityId){
+    return {
+        query: {
+            bool: {
+                must: [
+                  {
+                    query_string: {
+                        analyze_wildcard: true,
+                        query: 'out.event:completed AND activityId:' + activityId
                     }
                 }
+                ],
+                must_not: []
             }
-        }
-    }
-};
-
-var timeRequest = {
-    query: {
-        bool: {
-            must: [
-              {
-                query_string: {
-                    analyze_wildcard: true,
-                    query: 'out.event:completed'
-                }
-            }
-            ],
-            must_not: []
-        }
-    },
-    size: 0,
-    _source: {
-        excludes: []
-    },
-    aggs: {
-        2: {
-            terms: {
-                field: 'out.name.keyword',
-                size: 1000,
-                order: {
-                    _term: 'asc'
-                }
-            },
-            aggs: {
-                3: {
-                    terms: {
-                        field: 'orginalId.keyword',
-                        size: 1000,
-                        order: {
-                            1: 'desc'
-                        }
-                    },
-                    aggs: {
-                        1: {
-                            min: {
-                                field: 'out.ext.time'
-                            }
-                        }
+        },
+        size: 0,
+        _source: {
+            excludes: []
+        },
+        aggs: {
+            2: {
+                terms: {
+                    field: 'out.name.keyword',
+                    size: 1000,
+                    order: {
+                        _term: 'asc'
                     }
-                }
-            }
-        }
-    }
-};
-
-var accuracyRequest = {
-    query: {
-        bool: {
-            must: [
-              {
-                query_string: {
-                    query: 'out.event:completed',
-                    analyze_wildcard: true
-                }
-            }
-            ],
-            must_not: []
-        }
-    },
-    size: 0,
-    _source: {
-        excludes: []
-    },
-    aggs: {
-        4: {
-            terms: {
-                field: 'out.success',
-                size: 5,
-                order: {
-                    _count: 'desc'
-                }
-            },
-            aggs: {
-                5: {
-                    terms: {
-                        field: 'out.name.keyword',
-                        size: 1000,
-                        order: {
-                            _term: 'asc'
-                        }
-                    },
-                    aggs: {
-                        6: {
-                            terms: {
-                                field: 'orginalId.keyword',
-                                size: 1000,
-                                order: {
-                                    _count: 'desc'
+                },
+                aggs: {
+                    3: {
+                        terms: {
+                            field: 'orginalId.keyword',
+                            size: 1000,
+                            order: {
+                                1: 'desc'
+                            }
+                        },
+                        aggs: {
+                            1: {
+                                max: {
+                                    field: 'out.score'
                                 }
                             }
                         }
@@ -866,17 +766,123 @@ var accuracyRequest = {
                 }
             }
         }
-    }
+    };
 };
 
-var competencieRequest = function(student) {
+var timeRequest =  function(activityId){
+    return {
+        query: {
+            bool: {
+                must: [
+                  {
+                    query_string: {
+                        analyze_wildcard: true,
+                        query: 'out.event:completed AND activityId:' + activityId
+                    }
+                }
+                ],
+                must_not: []
+            }
+        },
+        size: 0,
+        _source: {
+            excludes: []
+        },
+        aggs: {
+            2: {
+                terms: {
+                    field: 'out.name.keyword',
+                    size: 1000,
+                    order: {
+                        _term: 'asc'
+                    }
+                },
+                aggs: {
+                    3: {
+                        terms: {
+                            field: 'orginalId.keyword',
+                            size: 1000,
+                            order: {
+                                1: 'desc'
+                            }
+                        },
+                        aggs: {
+                            1: {
+                                min: {
+                                    field: 'out.ext.time'
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    };
+};
+
+var accuracyRequest = function(activityId){
+    return {
+        query: {
+            bool: {
+                must: [
+                  {
+                    query_string: {
+                        query: 'out.event:completed AND activityId:' + activityId,
+                        analyze_wildcard: true
+                    }
+                }
+                ],
+                must_not: []
+            }
+        },
+        size: 0,
+        _source: {
+            excludes: []
+        },
+        aggs: {
+            4: {
+                terms: {
+                    field: 'out.success',
+                    size: 5,
+                    order: {
+                        _count: 'desc'
+                    }
+                },
+                aggs: {
+                    5: {
+                        terms: {
+                            field: 'out.name.keyword',
+                            size: 1000,
+                            order: {
+                                _term: 'asc'
+                            }
+                        },
+                        aggs: {
+                            6: {
+                                terms: {
+                                    field: 'orginalId.keyword',
+                                    size: 1000,
+                                    order: {
+                                        _count: 'desc'
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    };
+};
+
+var competencieRequest = function(activityId, student) {
     return {
         query: {
             bool: {
                 must: [
                   {
                     match: {
-                        _id: student
+                        _id: activityId + '_' + student
                     }
                 }
                 ]
@@ -935,7 +941,7 @@ var getScores = function(activityId, glpBase, students, minigames, esClient) {
     var deferred = Q.defer();
 
     console.log('Score');
-    dorequest(elasticIndex(activityId), scoreRequest, esClient)
+    dorequest(elasticIndex(activityId), scoreRequest(activityId), esClient)
         .then(function(b) {
             extractValues(b, 'score', glpBase, students, minigames);
             deferred.resolve();
@@ -951,7 +957,7 @@ var getAccuracy = function(activityId, glpBase, students, minigames, esClient) {
     var deferred = Q.defer();
 
     console.log('accuracy');
-    dorequest(elasticIndex(activityId), accuracyRequest, esClient)
+    dorequest(elasticIndex(activityId), accuracyRequest(activityId), esClient)
         .then(function(b) {
             for (var i = 0; i < b.aggregations['4'].buckets.length; i++) {
                 var won = b.aggregations['4'].buckets[i].key;
@@ -1036,7 +1042,7 @@ var getTimes = function(activityId, glpBase, students, minigames, esClient) {
     var deferred = Q.defer();
 
     console.log('Times');
-    dorequest(elasticIndex(activityId), timeRequest, esClient)
+    dorequest(elasticIndex(activityId), timeRequest(activityId), esClient)
         .then(function(b) {
             extractValues(b, 'time', glpBase, students, minigames);
             deferred.resolve();
@@ -1155,7 +1161,7 @@ var getCompetencies = function(activityId, username, glpBase, students, minigame
     var deferred = Q.defer();
 
     console.log('Competencies');
-    dorequest(competencieIndex(activityId), competencieRequest(username), esClient)
+    dorequest(competencieIndex(activityId), competencieRequest(activityId, username), esClient)
         .then(function(b) {
             for (var i = 0; i < b.hits.hits.length; i++) {
                 var currentNode = b.hits.hits[i]._source;
