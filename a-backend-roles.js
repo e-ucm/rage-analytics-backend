@@ -141,7 +141,8 @@ exports.app = {
                     resources: [
                         '/courses',
                         '/classes/:id/groups',
-                        '/classes/:id/groupings'
+                        '/classes/:id/groupings',
+                        '/activities/weights/:id'
                     ],
                     permissions: [
                         'get',

@@ -945,5 +945,136 @@ module.exports = function (kafkaService, stormService) {
             }), res);
     });
 
+    /**
+     * @api {get} /activities/weights/:id Returns the document that define how to obtain a specific variable using children activities.
+     * @apiName GetActivitiesWeights
+     * @apiGroup Activities
+     *
+     * @apiParam {String} id The Activity id
+     *
+     * @apiSuccess(200) Success.
+     *
+     * @apiSuccessExample Success-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "_id": "559a447831b76cec185bf501",
+     *          "weights": [
+     *              {
+     *                  "name": "variable1",
+     *                  "op": "+",
+     *                  "children": [
+     *                      {
+     *                          "id": "559a447831b76cec185bf502",
+     *                          "name": "variable1",
+     *                          "multiplier": 0.5
+     *                      },
+     *                      {
+     *                          "id": "559a447831b76cec185bf503",
+     *                          "name" "variable2",
+     *                          "multiplier": 2
+     *                      }
+     *                  ]
+     *              },
+     *              {
+     *                  "name": "variable2",
+     *                  "op": "*",
+     *                  "children": [
+     *                      {
+     *                          "id": "559a447831b76cec185bf502",
+     *                          "name": "variable2",
+     *                          "multiplier": 1
+     *                      }
+     *                  ]
+     *              }
+     *          ]
+     *      }
+     */
+    router.get('/weights/:id', function (req, res) {
+        var username = req.headers['x-gleaner-user'];
+        restUtils.processResponse(activities.isAuthorizedFor(req.params.id, username, 'get', '/activities/:activityId')
+            .then(function (activity) {
+                return req.app.esClient.search({
+                    index: 'analytics-'+req.params.id,
+                    q: '_id:weights_'+req.params.id
+                }).then(function (response) {
+                    if (response.hits.hits && response.hits.hits.length > 0) {
+                        res.json(response.hits.hits[0]._source);
+                    }
+                }).catch(function(error){
+                    res.status(error.status);
+                    res.json({message: 'No exist a weights document for Activity with id '+req.params.id});
+                });
+            }), res);
+    });
+
+    /**
+     * @api {post} /activities/weights/:id Post a document to define how to obtain a specific variable using children activities.
+     * @apiName GetActivitiesWeights
+     * @apiGroup Activities
+     *
+     * @apiParam {String} id The Activity id
+     *
+     * @apiSuccess(200) Success.
+     *
+     * @apiParamExample {json} Request-Example:
+     *      {
+     *          "weights": [
+     *              {
+     *                  "name": "variable1",
+     *                  "op": "+",
+     *                  "children": [
+     *                      {
+     *                          "id": "559a447831b76cec185bf502",
+     *                          "name": "variable1",
+     *                          "value": 0.5
+     *                      },
+     *                      {
+     *                          "id": "559a447831b76cec185bf503",
+     *                          "name": "variable2",
+     *                          "value": 2
+     *                      }
+     *                  ]
+     *              },
+     *              {
+     *                  "name": "variable2",
+     *                  "op": "*",
+     *                  "children": [
+     *                      {
+     *                          "id": "559a447831b76cec185bf502",
+     *                          "name": "variable2",
+     *                          "value": 1
+     *                      }
+     *                  ]
+     *              }
+     *          ]
+     *      }
+     *
+     * @apiSuccessExample Success-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *      }
+     */
+    router.post('/weights/:id', function (req, res) {
+        var username = req.headers['x-gleaner-user'];
+        restUtils.processResponse(activities.isAuthorizedFor(req.params.id, username, 'get', '/activities/:activityId')
+            .then(function (activity) {
+                return req.app.esClient.index({
+                    index: 'analytics-'+req.params.id,
+                    type: 'analytics',
+                    id: 'weights_'+req.params.id,
+                    body: req.body
+                }).then(function (response) {
+                    console.log('resp \n')
+                    console.log(response)
+                    res.json(response);
+                }).catch(function(error){
+                    console.log('error \n')
+                    console.log(error)
+                    res.status(error.status);
+                    res.json(error);
+                });
+            }), res);
+    });
+
     return router;
 };
