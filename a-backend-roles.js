@@ -100,6 +100,8 @@ exports.app = {
                         '/activities/:activityId/attempts',
                         '/activities/:activityId/attempts/my',
                         '/activities/:activityId/attempts/:username',
+                        '/activities/:activityId/offspring',
+                        '/activities/:activityId/children',
                         '/lti/keyid/:classId'
                     ],
                     permissions: [
