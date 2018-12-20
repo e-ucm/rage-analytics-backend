@@ -994,15 +994,15 @@ module.exports = function (kafkaService, stormService) {
         restUtils.processResponse(activities.isAuthorizedFor(req.params.id, username, 'get', '/activities/:activityId')
             .then(function (activity) {
                 return req.app.esClient.search({
-                    index: 'analytics-'+req.params.id,
-                    q: '_id:weights_'+req.params.id
+                    index: 'analytics-' + req.params.id,
+                    q: '_id:weights_' + req.params.id
                 }).then(function (response) {
                     if (response.hits.hits && response.hits.hits.length > 0) {
                         res.json(response.hits.hits[0]._source);
                     }
-                }).catch(function(error){
+                }).catch(function(error) {
                     res.status(error.status);
-                    res.json({message: 'No exist a weights document for Activity with id '+req.params.id});
+                    res.json({message: 'No exist a weights document for Activity with id ' + req.params.id});
                 });
             }), res);
     });
@@ -1026,12 +1026,12 @@ module.exports = function (kafkaService, stormService) {
      *                      {
      *                          "id": "559a447831b76cec185bf502",
      *                          "name": "variable1",
-     *                          "value": 0.5
+     *                          "multiplier": 0.5
      *                      },
      *                      {
      *                          "id": "559a447831b76cec185bf503",
      *                          "name": "variable2",
-     *                          "value": 2
+     *                          "multiplier": 2
      *                      }
      *                  ]
      *              },
@@ -1042,7 +1042,7 @@ module.exports = function (kafkaService, stormService) {
      *                      {
      *                          "id": "559a447831b76cec185bf502",
      *                          "name": "variable2",
-     *                          "value": 1
+     *                          "multiplier": 1
      *                      }
      *                  ]
      *              }
@@ -1057,19 +1057,43 @@ module.exports = function (kafkaService, stormService) {
     router.post('/weights/:id', function (req, res) {
         var username = req.headers['x-gleaner-user'];
         restUtils.processResponse(activities.isAuthorizedFor(req.params.id, username, 'get', '/activities/:activityId')
-            .then(function (activity) {
+            .then(function () {
+                var errors = [];
+                req.body.weights.forEach(function (weight) {
+                    if (!weight.name) {
+                        errors.push(new Error('The field variable name (name) is necessary \n'));
+                    }
+                    if (!weight.op || (weight.op !== '+' && weight.op !== '*')) {
+                        errors.push(new Error('The field operation (op) is necessary \n'));
+                    }
+                    if (weight.op === '*' && weight.children.length < 2) {
+                        errors.push(new Error('The field children need more than one child if the operation is multiply \n'));
+                    }
+                    weight.children.forEach(function(child) {
+                        if (!child.id) {
+                            errors.push(new Error('The field child (id) is necessary \n'));
+                        }
+                        if (!child.name) {
+                            errors.push(new Error('The field variable name (name) is necessary \n'));
+                        }
+                        if (!child.multiplier) {
+                            errors.push(new Error('The field multiplier is necessary \n'));
+                        }
+                    });
+                });
+                if (errors.length > 0) {
+                    var error = new Error(errors.toString());
+                    error.status = 400;
+                    throw error;
+                }
                 return req.app.esClient.index({
-                    index: 'analytics-'+req.params.id,
+                    index: 'analytics-' + req.params.id,
                     type: 'analytics',
-                    id: 'weights_'+req.params.id,
+                    id: 'weights_' + req.params.id,
                     body: req.body
                 }).then(function (response) {
-                    console.log('resp \n')
-                    console.log(response)
                     res.json(response);
-                }).catch(function(error){
-                    console.log('error \n')
-                    console.log(error)
+                }).catch(function(error) {
                     res.status(error.status);
                     res.json(error);
                 });
@@ -1131,9 +1155,9 @@ module.exports = function (kafkaService, stormService) {
 
     router.get('/:activityId/offspring', function (req, res) {
         var username = req.headers['x-gleaner-user'];
-        restUtils.processResponse(activities.isAuthorizedFor(req.params.activityId, username, 'get', '/activities/:activityId/offspring')
-            .then(function (activity) {
-                return activities.offspring(activity, req.app.esClient);
+        restUtils.processResponse(activities.isAuthorizedFor(req.params.activityId, username, 'get', '/activities/:activityId')
+            .then(function () {
+                return activities.offspring(req.params.activityId);
             }), res);
     });
 
@@ -1191,9 +1215,9 @@ module.exports = function (kafkaService, stormService) {
 
     router.get('/:activityId/children', function (req, res) {
         var username = req.headers['x-gleaner-user'];
-        restUtils.processResponse(activities.isAuthorizedFor(req.params.activityId, username, 'get', '/activities/:activityId/children')
-            .then(function (activity) {
-                return activities.children(activity, req.app.esClient);
+        restUtils.processResponse(activities.isAuthorizedFor(req.params.activityId, username, 'get', '/activities/:activityId')
+            .then(function () {
+                return activities.children(req.params.activityId);
             }), res);
     });
 
