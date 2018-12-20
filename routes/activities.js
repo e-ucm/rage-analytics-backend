@@ -1076,5 +1076,126 @@ module.exports = function (kafkaService, stormService) {
             }), res);
     });
 
+
+    /**
+     * @api {get} /activities/:activityId/offspring Obtain the offsprings of the given activity
+     * @apiName getActivityOffspring
+     * @apiGroup Activities
+     *
+     * @apiParam {String} activityId The activity id of the root node.
+     *
+     * @apiSuccess(200) Success.
+     *
+     * @apiSuccessExample Success-Response:
+     *      HTTP/1.1 200 OK
+     *      [
+     *          {
+     *              "_id" : ObjectId("5b9a528e15f2cd007ad68992"),
+     *              "name" : "1000000_mission_9u0bek58kw_(Dummy Mission)",
+     *              "gameId" : ObjectId("5b165d4ac7171c007719bc61"),
+     *              "versionId" : ObjectId("5b165d4ac7171c007719bc62"),
+     *              "classId" : ObjectId("5b9a528815f2cd007ad68990"),
+     *              "rootId" : "5b9a528a15f2cd007ad68991",
+     *              "parent" : ObjectId("1"),
+     *              "allowAnonymous" : false,
+     *              "groups" : [],
+     *              "groupings" : [],
+     *              "created" : ISODate("2018-09-13T12:05:34.122Z"),
+     *              "open" : true,
+     *              "visible" : false,
+     *              "trackingCode" : "5b9a528e15f2cd007ad68992qrrol0fmt38",
+     *              "start" : ISODate("2018-09-13T12:05:37.272Z"),
+     *              "end" : null
+     *          },
+     *          {
+     *              "_id" : ObjectId("5b9a528e15f2cd007ad68993"),
+     *              "name" : "1000000_activity_9u0bek58kw_qhh0dqn6sg_6_3_3681730053_(Activity 1)",
+     *              "gameId" : ObjectId("5b165d4ac7171c007719bc61"),
+     *              "versionId" : ObjectId("5b165d4ac7171c007719bc62"),
+     *              "classId" : ObjectId("5b9a528815f2cd007ad68990"),
+     *              "rootId" : "5b9a528a15f2cd007ad68991",
+     *              "parent" : ObjectId("2"),
+     *              "allowAnonymous" : false,
+     *              "groups" : [],
+     *              "groupings" : [],
+     *              "created" : ISODate("2018-09-13T12:05:34.128Z"),
+     *              "open" : true,
+     *              "visible" : false,
+     *              "trackingCode" : "5b9a528e15f2cd007ad68993en2pp3mly1f",
+     *              "start" : ISODate("2018-09-13T12:05:37.749Z"),
+     *              "end" : null
+     *          }
+     *      ]
+     *
+     */
+
+    router.get('/:activityId/offspring', function (req, res) {
+        var username = req.headers['x-gleaner-user'];
+        restUtils.processResponse(activities.isAuthorizedFor(req.params.activityId, username, 'get', '/activities/:activityId/offspring')
+            .then(function (activity) {
+                return activities.offspring(activity, req.app.esClient);
+            }), res);
+    });
+
+    /**
+     * @api {get} /activities/:activityId/children Obtain the offsprings of the given activity
+     * @apiName getActivityChildren
+     * @apiGroup Activities
+     *
+     * @apiParam {String} activityId The activity id of the parent.
+     *
+     * @apiSuccess(200) Success.
+     *
+     * @apiSuccessExample Success-Response:
+     *      HTTP/1.1 200 OK
+     *      [
+     *          {
+     *              "_id" : ObjectId("5b9a528e15f2cd007ad68992"),
+     *              "name" : "1000000_mission_9u0bek58kw_(Dummy Mission)",
+     *              "gameId" : ObjectId("5b165d4ac7171c007719bc61"),
+     *              "versionId" : ObjectId("5b165d4ac7171c007719bc62"),
+     *              "classId" : ObjectId("5b9a528815f2cd007ad68990"),
+     *              "rootId" : "5b9a528a15f2cd007ad68991",
+     *              "parent" : ObjectId("2"),
+     *              "allowAnonymous" : false,
+     *              "groups" : [],
+     *              "groupings" : [],
+     *              "created" : ISODate("2018-09-13T12:05:34.122Z"),
+     *              "open" : true,
+     *              "visible" : false,
+     *              "trackingCode" : "5b9a528e15f2cd007ad68992qrrol0fmt38",
+     *              "start" : ISODate("2018-09-13T12:05:37.272Z"),
+     *              "end" : null
+     *          },
+     *          {
+     *              "_id" : ObjectId("5b9a528e15f2cd007ad68993"),
+     *              "name" : "1000000_activity_9u0bek58kw_qhh0dqn6sg_6_3_3681730053_(Activity 1)",
+     *              "gameId" : ObjectId("5b165d4ac7171c007719bc61"),
+     *              "versionId" : ObjectId("5b165d4ac7171c007719bc62"),
+     *              "classId" : ObjectId("5b9a528815f2cd007ad68990"),
+     *              "rootId" : "5b9a528a15f2cd007ad68991",
+     *              "parent" : ObjectId("2"),
+     *              "allowAnonymous" : false,
+     *              "groups" : [],
+     *              "groupings" : [],
+     *              "created" : ISODate("2018-09-13T12:05:34.128Z"),
+     *              "open" : true,
+     *              "visible" : false,
+     *              "trackingCode" : "5b9a528e15f2cd007ad68993en2pp3mly1f",
+     *              "start" : ISODate("2018-09-13T12:05:37.749Z"),
+     *              "end" : null
+     *          }
+     *      ]
+     *
+     */
+
+    router.get('/:activityId/children', function (req, res) {
+        var username = req.headers['x-gleaner-user'];
+        restUtils.processResponse(activities.isAuthorizedFor(req.params.activityId, username, 'get', '/activities/:activityId/children')
+            .then(function (activity) {
+                return activities.children(activity, req.app.esClient);
+            }), res);
+    });
+
     return router;
 };
