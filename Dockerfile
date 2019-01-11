@@ -6,7 +6,7 @@ RUN apt-get update \
 
 # NodeJS installation, gpg keys listed at https://github.com/nodejs/node
 RUN set -ex \
-  && keyservers="hkp://p80.pool.sks-keyservers.net:80 ha.pool.sks-keyservers.net hkps.pool.sks-keyservers.net pool.sks-keyservers.net keyserver.ubuntu.com" \
+  && keyservers="hkp://ipv4.pool.sks-keyservers.net hkp://pgp.mit.edu:80 hkp://p80.pool.sks-keyservers.net:80 ha.pool.sks-keyservers.net hkps.pool.sks-keyservers.net pool.sks-keyservers.net keyserver.ubuntu.com" \
   && for key in \
     94AE36675C464D64BAFA68DD7434390BDBE9B9C5 \
     FD3A5288F042B6850C66B31F09FE44734EB7990E \
