@@ -390,37 +390,40 @@ var obtainPerformance = function(classe, scale, date, req) {
 
         var students = [], previous = [];
         if (response.hits && response.hits.hits.length) {
+            var source = response.hits.hits[0]._source;
+            var previousyear = source[(year - 1).toString()];
+
             if (response.hits.hits[0]._source[syear]) {
                 if (scale === 'year') {
-                    students = response.hits.hits[0]._source[syear].students;
+                    students = source[syear].students;
                 }else if (scale === 'month') {
                     var month = date.month();
 
                     // Obtain previous month
-                    if (month - 1 >= 0 && response.hits.hits[0]._source[syear].months[(month - 1).toString()]) {
-                        previous = response.hits.hits[0]._source[syear].months[(month - 1).toString()].students;
-                    }else if (month - 1 < 0 && response.hits.hits[0]._source[(year - 1).toString()].months['11']) {
-                        previous = response.hits.hits[0]._source[(year - 1).toString()].months['11'].students;
+                    if (month - 1 >= 0 && source[syear].months[(month - 1).toString()]) {
+                        previous = source[syear].months[(month - 1).toString()].students;
+                    }else if (month - 1 < 0 && previousyear && previousyear.months['11']) {
+                        previous = previousyear.months['11'].students;
                     }
 
                     // Obtain current month
-                    if (response.hits.hits[0]._source[syear].months[month.toString()]) {
-                        students = response.hits.hits[0]._source[syear].months[month.toString()].students;
+                    if (source[syear].months[month.toString()]) {
+                        students = source[syear].months[month.toString()].students;
                     }
 
                 }else if (scale === 'week') {
                     var week = date.week();
 
                     // Obtain previous week
-                    if (week - 1 >= 0 && response.hits.hits[0]._source[syear].weeks[(week - 1).toString()]) {
-                        previous = response.hits.hits[0]._source[syear].weeks[(week - 1).toString()].students;
-                    }else if (week - 1 < 0 && response.hits.hits[0]._source[(year - 1).toString()].weeks['51']) {
-                        previous = response.hits.hits[0]._source[(year - 1).toString()].weeks['51'].students;
+                    if (week - 1 >= 0 && source[syear].weeks[(week - 1).toString()]) {
+                        previous = source[syear].weeks[(week - 1).toString()].students;
+                    }else if (week - 1 < 0 && previousyear && previousyear.weeks['51']) {
+                        previous = previousyear.weeks['51'].students;
                     }
 
                     // Obtain current month
-                    if (response.hits.hits[0]._source[syear].weeks[week.toString()]) {
-                        students = response.hits.hits[0]._source[syear].weeks[week.toString()].students;
+                    if (source[syear].weeks[week.toString()]) {
+                        students = source[syear].weeks[week.toString()].students;
                     }
                 }
             }
@@ -718,7 +721,7 @@ var originalGlpBase = {
 // ################### REQUESTS ###################
 // ################################################
 
-var scoreRequest = function(activityId){
+var scoreRequest = function(activityId) {
     return {
         query: {
             bool: {
@@ -769,7 +772,7 @@ var scoreRequest = function(activityId){
     };
 };
 
-var timeRequest =  function(activityId){
+var timeRequest =  function(activityId) {
     return {
         query: {
             bool: {
@@ -820,7 +823,7 @@ var timeRequest =  function(activityId){
     };
 };
 
-var accuracyRequest = function(activityId){
+var accuracyRequest = function(activityId) {
     return {
         query: {
             bool: {
