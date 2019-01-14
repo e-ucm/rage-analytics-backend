@@ -237,10 +237,10 @@ module.exports = function (kafkaService, stormService) {
                         return kibana.getKibanaBaseVisualizations('tch', config, activity.gameId, req.app.esClient)
                         .then(function(visualizations) {
                             console.log('PostBundle -> VisObtained!');
-                            return kibana.createIndex(config, activity._id.toString(), activity.gameId, username, req.app.esClient)
+                            return activities.createRequiredStorage(config, activity, username, req.app.esClient)
                                 .then(function(result) {
                                     console.log('PostBundle -> IndexCreated!');
-                                    return kibana.createVisualizationsAndDashboard(config, activity._id, activity.gameId, visualizations, username, req.app.esClient);
+                                    return kibana.createVisualizationsAndDashboard(config, 'activity', activity, visualizations, username, req.app.esClient);
                                 })
                                 .then(function(result) {
                                     console.log('PostBundle -> VisAndDashCreated!');

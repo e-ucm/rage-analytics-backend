@@ -233,7 +233,7 @@ router.post('/bundle', function (req, res) {
             kibana.createRequiredIndexesForClass(classId, username, config, req.app.esClient)
                 .then(function (result) {
                     console.log('PostBundle -> IndexCreated!');
-                    return kibana.createVisualizationsAndDashboard(config, classId, null, visualizations, username,
+                    return kibana.createVisualizationsAndDashboard(config, 'class', classObj, visualizations, username,
                         req.app.esClient, extra);
                 })
                 .then(function (result) {
