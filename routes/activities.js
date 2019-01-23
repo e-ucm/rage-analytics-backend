@@ -311,7 +311,7 @@ module.exports = function (kafkaService, stormService) {
         var username = req.headers['x-gleaner-user'];
         restUtils.processResponse(activities.isAuthorizedFor(req.params.activityId, username, 'put', '/activities/:activityId')
             .then(function (activity) {
-                return activities.modifyActivity(req.params.activityId, req.body, true);
+                return activities.modifyActivity(req.params.activityId, req.body, true, req.app.esClient);
             }), res);
     });
 
@@ -354,7 +354,7 @@ module.exports = function (kafkaService, stormService) {
         var username = req.headers['x-gleaner-user'];
         restUtils.processResponse(activities.isAuthorizedFor(req.params.activityId, username, 'put', '/activities/:activityId/remove')
             .then(function (activity) {
-                return activities.modifyActivity(req.params.activityId, req.body, false);
+                return activities.modifyActivity(req.params.activityId, req.body, false, req.app.esClient);
             }), res);
     });
 

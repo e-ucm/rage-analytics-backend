@@ -197,8 +197,8 @@ router.post('/bundle', function (req, res) {
                                         username, req.app.esClient)
                                         .then(function(result) {
                                             console.log('PostBundle -> IndexCreated!');
-                                            return kibana.createVisualizationsAndDashboard(config, version._id.toString(),
-                                                gameId, visualizations, username, req.app.esClient, extra);
+                                            return kibana.createVisualizationsAndDashboard(config, 'version', version,
+                                                visualizations, username, req.app.esClient, extra);
                                         })
                                         .then(function(result) {
                                             console.log('PostBundle -> VisAndDashCreated!');
