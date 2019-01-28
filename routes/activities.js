@@ -170,7 +170,7 @@ module.exports = function (kafkaService, stormService) {
                     allowAnonymous = false;
                 }
                 return activities.createActivity(req.body.gameId, req.body.versionId, req.body.classId,
-                    username, req.body.name, undefined, req.body.offline, allowAnonymous);
+                    username, req.body.name, req.body.rootId, req.body.parentId, req.body.offline, allowAnonymous, req.app.esClient);
             }), res);
     });
 
@@ -223,16 +223,12 @@ module.exports = function (kafkaService, stormService) {
             .then(function (classReq) {
                 var deferred = Q.defer();
 
-                var rootId = req.body.rootId;
-                if (!req.body.rootId) {
-                    rootId = '';
-                }
-
                 var allowAnonymous = req.body.allowAnonymous;
                 if (!allowAnonymous) {
                     allowAnonymous = false;
                 }
-                activities.createActivity(req.body.gameId, req.body.versionId, req.body.classId, username, req.body.name, rootId, req.body.offline, allowAnonymous)
+                activities.createActivity(req.body.gameId, req.body.versionId, req.body.classId,
+                    username, req.body.name, req.body.rootId, req.body.parentId, req.body.offline, allowAnonymous, req.app.esClient)
                 .then(function(activity) {
                         return kibana.getKibanaBaseVisualizations('tch', config, activity.gameId, req.app.esClient)
                         .then(function(visualizations) {
