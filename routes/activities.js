@@ -995,6 +995,8 @@ module.exports = function (kafkaService, stormService) {
                 }).then(function (response) {
                     if (response.hits.hits && response.hits.hits.length > 0) {
                         res.json(response.hits.hits[0]._source);
+                    }else{
+                        res.json({weights: []});
                     }
                 }).catch(function(error) {
                     res.status(error.status);
