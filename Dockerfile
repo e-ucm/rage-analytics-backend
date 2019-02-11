@@ -9,6 +9,7 @@ RUN groupadd --gid 1000 node \
 
 # gpg keys listed at https://github.com/nodejs/node#release-team
 RUN set -ex \
+  && keyservers="hkp://p80.pool.sks-keyservers.net:80 ha.pool.sks-keyservers.net hkps.pool.sks-keyservers.net pool.sks-keyservers.net keyserver.ubuntu.com" \
   && for key in \
     94AE36675C464D64BAFA68DD7434390BDBE9B9C5 \
     FD3A5288F042B6850C66B31F09FE44734EB7990E \
@@ -20,9 +21,11 @@ RUN set -ex \
     77984A986EBC2AA786BC0F66B01FBB92821C587A \
     8FCCA13FEF1D0C2E91008E09770F7A9A5AE15600 \
   ; do \
-    gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$key" || \
-    gpg --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys "$key" || \
-    gpg --keyserver hkp://pgp.mit.edu:80 --recv-keys "$key" ; \
+    keyserver_ok=""; \
+    for keyserver in ${keyservers}; do \
+      gpg --keyserver ${keyserver} --recv-keys "$key"; >/dev/null 2>&1 && keyserver_ok="ok" && break;\
+    done; \
+    if [ -z "$keyserver_ok" ]; then echo "No valid response from keyservers"; exit 1; fi; \
   done
 
 ENV NODE_VERSION 8.12.0
