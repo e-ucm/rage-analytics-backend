@@ -1,4 +1,4 @@
-FROM java
+FROM openjdk:8-stretch
 
 # used to download sources, executables
 RUN apt-get update \
@@ -9,7 +9,7 @@ RUN groupadd --gid 1000 node \
 
 # gpg keys listed at https://github.com/nodejs/node#release-team
 RUN set -ex \
-  && keyservers="hkp://p80.pool.sks-keyservers.net:80 ha.pool.sks-keyservers.net hkps.pool.sks-keyservers.net pool.sks-keyservers.net keyserver.ubuntu.com" \
+  && keyservers="hkp://p80.pool.sks-keyservers.net:80 hkp://ipv4.pool.sks-keyservers.net hkp://pgp.mit.edu:80" \
   && for key in \
     94AE36675C464D64BAFA68DD7434390BDBE9B9C5 \
     FD3A5288F042B6850C66B31F09FE44734EB7990E \
@@ -23,7 +23,7 @@ RUN set -ex \
   ; do \
     keyserver_ok=""; \
     for keyserver in ${keyservers}; do \
-      gpg --keyserver ${keyserver} --recv-keys "$key"; >/dev/null 2>&1 && keyserver_ok="ok" && break;\
+      gpg --batch --keyserver ${keyserver} --recv-keys "$key"; >/dev/null 2>&1 && keyserver_ok="ok" && break;\
     done; \
     if [ -z "$keyserver_ok" ]; then echo "No valid response from keyservers"; exit 1; fi; \
   done
@@ -51,12 +51,15 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
 ENV YARN_VERSION 1.9.4
 
 RUN set -ex \
+  && keyservers="hkp://p80.pool.sks-keyservers.net:80 hkp://ipv4.pool.sks-keyservers.net hkp://pgp.mit.edu:80" \
   && for key in \
     6A010C5166006599AA17F08146C2130DFD2497F5 \
   ; do \
-    gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$key" || \
-    gpg --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys "$key" || \
-    gpg --keyserver hkp://pgp.mit.edu:80 --recv-keys "$key" ; \
+    keyserver_ok=""; \
+    for keyserver in ${keyservers}; do \
+      gpg --batch --keyserver ${keyserver} --recv-keys "$key"; >/dev/null 2>&1 && keyserver_ok="ok" && break;\
+    done; \
+    if [ -z "$keyserver_ok" ]; then echo "No valid response from keyservers"; exit 1; fi; \
   done \
   && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
   && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
