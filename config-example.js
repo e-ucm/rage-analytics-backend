@@ -61,5 +61,7 @@ exports.a2 = {
     a2AdminPassword: '{{a2AdminPassword}}'
 };
 exports.kibana = {
-    defaultIndex: '{{defaultKibanaIndex}}'
+    defaultIndex: '{{defaultKibanaIndex}}',
+    host: '{{kibanaUrl}}',
+    version: '{{kibanaVersion}}'
 };

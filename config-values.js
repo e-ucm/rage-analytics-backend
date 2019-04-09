@@ -139,7 +139,11 @@ exports.defaultValues = {
     elasticsearchModelVersion: '2',
     defaultKibanaIndex: 'default-kibana-index',
     maxSizeRequest: '1mb',
-    rawTracesFolder: './analysis/raw'
+    rawTracesFolder: './analysis/raw',
+    kibanaHost: 'localhost',
+    kibanaPort: 5601,
+    kibanaUrl: 'http://localhost:5601/',
+    kibanaVersion: '5.6.2'
 };
 
 exports.testValues = {
@@ -182,7 +186,11 @@ exports.testValues = {
     elasticsearchModelVersion: '2',
     defaultKibanaIndex: 'default-kibana-index',
     maxSizeRequest: '1mb',
-    rawTracesFolder: './analysis/rawtest'
+    rawTracesFolder: './analysis/rawtest',
+    kibanaHost: 'localhost',
+    kibanaPort: 5601,
+    kibanaUrl: 'http://localhost:5601/',
+    kibanaVersion: '5.6.2'
 };
 
 var prefix = 'RAGE_ANALYTICS_BACKEND_';
@@ -213,3 +221,6 @@ exports.testValues.lrsUrl = exports.defaultValues.lrsUrl;
 
 exports.defaultValues.kafkaUrl = exports.defaultValues.kzkHost + ':' + exports.defaultValues.kzkPort;
 exports.testValues.kafkaUrl = exports.defaultValues.kafkaUrl;
+
+exports.defaultValues.kibanaUrl = exports.defaultValues.kibanaHost + ':' + exports.defaultValues.kibanaPort;
+exports.testValues.kibanaUrl = exports.defaultValues.kibanaUrl;
