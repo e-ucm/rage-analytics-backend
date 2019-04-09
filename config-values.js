@@ -194,7 +194,7 @@ exports.testValues = {
 };
 
 var prefix = 'RAGE_ANALYTICS_BACKEND_';
-var links = ['kzk', 'lrs', 'mongo', 'a2', 'nimbus', 'elasticsearch'];
+var links = ['kzk', 'lrs', 'mongo', 'a2', 'nimbus', 'elasticsearch', 'kibana'];
 initFromEnv(exports.defaultValues, prefix, links);
 initFromEnv(exports.testValues, prefix, links);
 
@@ -222,5 +222,5 @@ exports.testValues.lrsUrl = exports.defaultValues.lrsUrl;
 exports.defaultValues.kafkaUrl = exports.defaultValues.kzkHost + ':' + exports.defaultValues.kzkPort;
 exports.testValues.kafkaUrl = exports.defaultValues.kafkaUrl;
 
-exports.defaultValues.kibanaUrl = exports.defaultValues.kibanaHost + ':' + exports.defaultValues.kibanaPort;
+exports.defaultValues.kibanaUrl = 'http://' + exports.defaultValues.kibanaHost + ':' + exports.defaultValues.kibanaPort + '/';
 exports.testValues.kibanaUrl = exports.defaultValues.kibanaUrl;
