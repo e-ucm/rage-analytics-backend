@@ -1019,5 +1019,111 @@ router.get('/classvis/', function (req, res) {
     res.json(require('../lib/kibana/classVisualizations'));
 });
 
+/**
+ * @api {post} /api/kibana/dashboardtemplates/:gameId Adds a new dashboard template for the game (or replaces if there is one already).
+ * 
+ * @apiName PostDashboardTemplates
+ * @apiGroup Kibana
+ *
+ * @apiParam {String} id The activity id
+ *
+ * @apiParamExample {json} Request-Example:
+ *      
+ *  {
+ *    "teacher":{
+ *      "attributes": {
+ *        "title": "dashboard_DEFAULT_DASHBOARD_ID",
+ *        "hits": 0,
+ *        "description": "",
+ *        "panelsJSON": "[{\"col\":3,\"id\":\"TimePicker_DEFAULT_DASHBOARD_ID\",\"panelIndex\":13,\"row\":1,\"size_x\":10,\"size_y\":3,\"type\":\"visualization\"}]",
+ *        "optionsJSON": "{\"darkTheme\":false}",
+ *        "uiStateJSON": "{\"P-0\":{\"vis\":{\"legendOpen\":false}}}",
+ *        "version": 1,
+ *        "timeRestore": true,
+ *        "timeTo": "now",
+ *        "timeFrom": "now-1h",
+ *        "refreshInterval": {
+ *          "display": "5 seconds",
+ *          "pause": false,
+ *          "section": 1,
+ *          "value": 5000
+ *        },
+ *        "kibanaSavedObjectMeta": {
+ *          "searchSourceJSON": "{\"filter\":[{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}}}],\"highlightAll\":true,\"version\":true}"
+ *        }
+ *      }
+ *    },
+ *    "developer": null
+ *  }
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "created": true
+ *      }
+ */
+router.post('/dashboardtemplates/:gameId', function (req, res) {
+    kibana.saveDashboardTemplate(req.body, req.params.gameId)
+        .then(function(result) {
+            res.json(result);
+        })
+        .fail(function(error) {
+            res.status(error.status);
+            res.json(error);
+        });
+});
+
+/**
+ * @api {get} /api/kibana/dashboardtemplates/:gameId gets the dashboard template that is used to replace the created dashboards.
+ * 
+ * @apiName getDashboardTemplates
+ * @apiGroup Kibana
+ *
+ * @apiParam {String} id The activity id
+ *
+ * @apiSuccess(200) Success.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *  {
+ *    "teacher":{
+ *      "attributes": {
+ *        "title": "dashboard_DEFAULT_DASHBOARD_ID",
+ *        "hits": 0,
+ *        "description": "",
+ *        "panelsJSON": "[{\"col\":3,\"id\":\"TimePicker_DEFAULT_DASHBOARD_ID\",\"panelIndex\":13,\"row\":1,\"size_x\":10,\"size_y\":3,\"type\":\"visualization\"}]",
+ *        "optionsJSON": "{\"darkTheme\":false}",
+ *        "uiStateJSON": "{\"P-0\":{\"vis\":{\"legendOpen\":false}}}",
+ *        "version": 1,
+ *        "timeRestore": true,
+ *        "timeTo": "now",
+ *        "timeFrom": "now-1h",
+ *        "refreshInterval": {
+ *          "display": "5 seconds",
+ *          "pause": false,
+ *          "section": 1,
+ *          "value": 5000
+ *        },
+ *        "kibanaSavedObjectMeta": {
+ *          "searchSourceJSON": "{\"filter\":[{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}}}],\"highlightAll\":true,\"version\":true}"
+ *        }
+ *      }
+ *    },
+ *    "developer": null
+ *  }
+ */
+router.get('/dashboardtemplates/:gameId', function (req, res) {
+    kibana.getDashboardTemplate(req.params.gameId)
+        .then(function(result) {
+            res.json(result);
+        })
+        .fail(function(error) {
+            res.status(error.status);
+            res.json(error);
+        });
+});
+
 // jscs:enable requireCamelCaseOrUpperCaseIdentifiers
 module.exports = router;
